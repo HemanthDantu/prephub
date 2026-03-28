@@ -1,0 +1,1772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SOLID Principles Learning Module</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0e1a;
+      --surface-1: #111827;
+      --surface-2: #1a2235;
+      --surface-3: #0f1726;
+      --border: rgba(255,255,255,0.08);
+      --text: #e5eefc;
+      --muted: #98a6c3;
+      --muted-2: #6f7b93;
+      --cyan: #00d4ff;
+      --purple: #7c3aed;
+      --green: #10b981;
+      --amber: #f59e0b;
+      --red: #ef4444;
+      --shadow: 0 20px 60px rgba(0,0,0,0.35);
+      --radius-xl: 22px;
+      --radius-lg: 16px;
+      --radius-md: 12px;
+      --max: 1180px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; background: radial-gradient(circle at top, #101834 0%, var(--bg) 45%, #070b14 100%); color: var(--text); font-family: 'Syne', system-ui, sans-serif; }
+    body { min-height: 100vh; }
+
+    a { color: inherit; }
+
+    .app {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      backdrop-filter: blur(14px);
+      background: rgba(10, 14, 26, 0.86);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .topbar-inner {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 16px 20px 14px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .topbar-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: clamp(1.05rem, 1rem + 1vw, 1.7rem);
+      letter-spacing: 0.02em;
+      font-weight: 800;
+    }
+
+    .brand small {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--muted);
+      font-size: 0.78rem;
+    }
+
+    .timer-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+      box-shadow: var(--shadow);
+    }
+
+    .timer-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .timer {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--cyan);
+      letter-spacing: 0.08em;
+    }
+
+    .timer.warning { color: var(--amber); }
+    .timer.critical {
+      color: var(--red);
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); text-shadow: 0 0 0 rgba(239,68,68,0.1); }
+      50% { transform: scale(1.06); text-shadow: 0 0 18px rgba(239,68,68,0.35); }
+    }
+
+    .nav-dots {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .nav-dot {
+      width: 38px;
+      height: 38px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.16);
+      background: rgba(255,255,255,0.03);
+      color: var(--muted);
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+    }
+
+    .nav-dot:hover,
+    .nav-dot:focus-visible {
+      transform: translateY(-1px);
+      border-color: rgba(0, 212, 255, 0.65);
+      outline: none;
+    }
+
+    .nav-dot.active {
+      background: rgba(0, 212, 255, 0.14);
+      border-color: rgba(0, 212, 255, 0.9);
+      color: var(--cyan);
+      box-shadow: 0 0 0 4px rgba(0, 212, 255, 0.08);
+    }
+
+    .nav-dot.done {
+      border-color: rgba(16, 185, 129, 0.8);
+      color: var(--green);
+      background: rgba(16, 185, 129, 0.06);
+    }
+
+    .progress-shell {
+      height: 10px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--cyan), var(--purple));
+      transition: width 1s linear;
+    }
+
+    main {
+      flex: 1;
+      width: 100%;
+    }
+
+    .section {
+      display: none;
+      padding: 34px 20px 130px;
+      animation: fade 0.35s ease;
+    }
+
+    .section.active { display: block; }
+
+    @keyframes fade {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .section-inner {
+      max-width: var(--max);
+      margin: 0 auto;
+    }
+
+    .hero {
+      padding: 26px 28px;
+      border-radius: var(--radius-xl);
+      background: linear-gradient(135deg, rgba(17,24,39,0.96), rgba(26,34,53,0.96));
+      border: 1px solid rgba(255,255,255,0.07);
+      box-shadow: var(--shadow);
+      margin-bottom: 24px;
+    }
+
+    .section-label {
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-size: 0.76rem;
+      margin-bottom: 12px;
+    }
+
+    .hero h2 {
+      margin: 0 0 12px;
+      font-size: clamp(1.8rem, 1.2rem + 2vw, 3rem);
+      line-height: 1.05;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 880px;
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.7;
+    }
+
+    .card-grid {
+      display: grid;
+      gap: 18px;
+    }
+
+    .card {
+      background: linear-gradient(180deg, rgba(17,24,39,0.98), rgba(17,24,39,0.88));
+      border: 1px solid var(--border);
+      border-left-width: 5px;
+      border-radius: var(--radius-lg);
+      padding: 20px 22px;
+      box-shadow: var(--shadow);
+    }
+
+    .card.eli5 { border-left-color: var(--amber); }
+    .card.analogy { border-left-color: var(--green); }
+    .card.technical { border-left-color: var(--cyan); }
+    .card.warning { border-left-color: var(--red); }
+    .card.quiz-card { border-left-color: var(--purple); }
+
+    .card-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    .card h3 {
+      margin: 0 0 10px;
+      font-size: clamp(1.1rem, 1rem + 0.8vw, 1.45rem);
+    }
+
+    .card p,
+    .card li {
+      color: #d3def4;
+      line-height: 1.75;
+      font-size: 0.98rem;
+    }
+
+    .card p:last-child { margin-bottom: 0; }
+    .card ul { margin: 8px 0 0 20px; padding: 0; }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1.2fr 0.95fr;
+      gap: 18px;
+    }
+
+    .mini-grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      margin-top: 16px;
+    }
+
+    .mini-panel {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 14px;
+      padding: 14px;
+    }
+
+    .mini-panel h4 {
+      margin: 0 0 8px;
+      font-size: 0.95rem;
+      color: var(--text);
+    }
+
+    .mini-panel p,
+    .mini-panel li { font-size: 0.92rem; color: var(--muted); }
+
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 0.8rem;
+      font-family: 'JetBrains Mono', monospace;
+      border: 1px solid transparent;
+    }
+
+    .pill.good { color: var(--green); border-color: rgba(16,185,129,0.25); background: rgba(16,185,129,0.08); }
+    .pill.caution { color: var(--amber); border-color: rgba(245,158,11,0.25); background: rgba(245,158,11,0.08); }
+    .pill.bad { color: var(--red); border-color: rgba(239,68,68,0.25); background: rgba(239,68,68,0.08); }
+    .pill.info { color: var(--cyan); border-color: rgba(0,212,255,0.25); background: rgba(0,212,255,0.08); }
+
+    .flow {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    .flow-step {
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: var(--text);
+      font-size: 0.88rem;
+    }
+
+    .flow-arrow {
+      color: var(--muted-2);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.05rem;
+    }
+
+    .diagram {
+      margin-top: 16px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.015));
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 18px;
+      padding: 18px;
+      overflow: hidden;
+    }
+
+    .diagram-title {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--muted);
+      font-size: 0.76rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    .responsibility-split {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .box {
+      background: var(--surface-2);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 16px;
+      padding: 16px;
+      min-height: 100px;
+      position: relative;
+    }
+
+    .box h4 {
+      margin: 0 0 8px;
+      font-size: 1rem;
+    }
+
+    .box p,
+    .box li { margin: 0; color: var(--muted); font-size: 0.9rem; line-height: 1.6; }
+    .box ul { margin: 0; padding-left: 18px; }
+
+    .box.center-highlight {
+      box-shadow: inset 0 0 0 1px rgba(0,212,255,0.18), 0 10px 30px rgba(0, 212, 255, 0.08);
+    }
+
+    .extensibility-rail,
+    .substitution-rail,
+    .dependency-stack,
+    .interface-split {
+      display: grid;
+      gap: 14px;
+    }
+
+    .rail-row,
+    .split-row,
+    .stack-row {
+      display: flex;
+      gap: 12px;
+      align-items: stretch;
+      flex-wrap: wrap;
+    }
+
+    .rail-box,
+    .stack-box,
+    .split-box {
+      flex: 1 1 180px;
+      padding: 14px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.07);
+      background: rgba(255,255,255,0.03);
+    }
+
+    .rail-box h4,
+    .stack-box h4,
+    .split-box h4 { margin: 0 0 8px; font-size: 0.96rem; }
+    .rail-box p,
+    .stack-box p,
+    .split-box p { margin: 0; color: var(--muted); font-size: 0.88rem; line-height: 1.6; }
+
+    .arrow-down,
+    .arrow-right {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted-2);
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      min-width: 24px;
+    }
+
+    pre {
+      margin: 0;
+      background: #050810;
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 16px;
+      padding: 18px;
+      overflow: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.86rem;
+      line-height: 1.7;
+      color: #dbeafe;
+    }
+
+    .code-blocks {
+      display: grid;
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .code-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.76rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 0 0 8px;
+    }
+
+    .token-key { color: #7dd3fc; }
+    .token-type { color: #c4b5fd; }
+    .token-method { color: #34d399; }
+    .token-string { color: #fbbf24; }
+    .token-comment { color: #6b7280; }
+    .token-annotation { color: #f472b6; }
+    .token-bad { color: #f87171; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 14px;
+      overflow: hidden;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.07);
+    }
+
+    th, td {
+      text-align: left;
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      vertical-align: top;
+    }
+
+    th {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      background: rgba(255,255,255,0.03);
+    }
+
+    td { color: #d6e1f7; font-size: 0.94rem; }
+    tr:last-child td { border-bottom: none; }
+
+    .quiz-options {
+      display: grid;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .quiz-option {
+      width: 100%;
+      text-align: left;
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.03);
+      color: var(--text);
+      border: 1px solid rgba(255,255,255,0.09);
+      cursor: pointer;
+      transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+      font: inherit;
+    }
+
+    .quiz-option:hover,
+    .quiz-option:focus-visible {
+      transform: translateY(-1px);
+      border-color: rgba(124, 58, 237, 0.85);
+      outline: none;
+    }
+
+    .quiz-option[disabled] {
+      cursor: default;
+      opacity: 0.96;
+    }
+
+    .quiz-option.correct {
+      border-color: rgba(16,185,129,0.85);
+      background: rgba(16,185,129,0.12);
+      color: #eafff7;
+    }
+
+    .quiz-option.wrong {
+      border-color: rgba(239,68,68,0.85);
+      background: rgba(239,68,68,0.12);
+      color: #fff5f5;
+    }
+
+    .quiz-result {
+      margin-top: 14px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      display: none;
+    }
+
+    .quiz-result.show { display: block; }
+    .quiz-result strong { display: block; margin-bottom: 6px; }
+
+    .takeaways {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .footer-nav {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 25;
+      background: rgba(10,14,26,0.9);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .footer-nav-inner {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .btn {
+      padding: 13px 18px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+      font: inherit;
+      cursor: pointer;
+      transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+      min-width: 140px;
+    }
+
+    .btn:hover,
+    .btn:focus-visible {
+      transform: translateY(-1px);
+      outline: none;
+      border-color: rgba(0,212,255,0.55);
+      background: rgba(255,255,255,0.07);
+    }
+
+    .btn.primary {
+      background: linear-gradient(90deg, rgba(0,212,255,0.14), rgba(124,58,237,0.18));
+      border-color: rgba(0,212,255,0.35);
+    }
+
+    .btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .completion-grid {
+      display: grid;
+      gap: 18px;
+      grid-template-columns: 1.1fr 0.95fr;
+    }
+
+    .celebrate {
+      font-size: 2.6rem;
+      margin-bottom: 12px;
+    }
+
+    .cheat-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .cheat-item {
+      padding: 14px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+    }
+
+    .cheat-item h4 {
+      margin: 0 0 6px;
+      font-size: 0.98rem;
+    }
+
+    .cheat-item p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.93rem;
+      line-height: 1.6;
+    }
+
+    .confusion-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .confusion-item {
+      padding: 14px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .confusion-item strong { color: var(--text); }
+    .confusion-item p { margin: 8px 0 0; color: var(--muted); }
+
+    @media (max-width: 960px) {
+      .two-col,
+      .completion-grid { grid-template-columns: 1fr; }
+      .responsibility-split { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 680px) {
+      .section { padding-top: 24px; }
+      .hero { padding: 22px 18px; }
+      .card { padding: 18px 16px; }
+      .topbar-inner, .footer-nav-inner { padding-left: 14px; padding-right: 14px; }
+      .nav-dot { width: 34px; height: 34px; font-size: 0.85rem; }
+      .btn { min-width: 0; flex: 1; }
+      .mini-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="topbar-row">
+          <div class="brand">
+            <h1>SOLID Principles</h1>
+            <small>Interactive 30-minute learning module</small>
+          </div>
+          <div class="timer-wrap" aria-live="polite">
+            <span class="timer-label">Time Left</span>
+            <span class="timer" id="timer">30:00</span>
+          </div>
+        </div>
+        <div class="topbar-row">
+          <nav class="nav-dots" aria-label="Section navigation">
+            <button class="nav-dot active" data-index="0" aria-label="Go to section 1">1</button>
+            <button class="nav-dot" data-index="1" aria-label="Go to section 2">2</button>
+            <button class="nav-dot" data-index="2" aria-label="Go to section 3">3</button>
+            <button class="nav-dot" data-index="3" aria-label="Go to section 4">4</button>
+            <button class="nav-dot" data-index="4" aria-label="Go to section 5">5</button>
+            <button class="nav-dot" data-index="5" aria-label="Go to completion screen">6</button>
+          </nav>
+        </div>
+        <div class="progress-shell" aria-hidden="true">
+          <div class="progress-bar" id="progressBar"></div>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="section active" data-section="0">
+        <div class="section-inner">
+          <div class="hero">
+            <div class="section-label">Section 1 of 5 · ~6 mins</div>
+            <h2>Single Responsibility Principle</h2>
+            <p>SRP is about keeping one class focused on one reason to change. It sounds simple, but this is usually where messy service classes, giant controllers, and impossible-to-test code start.</p>
+          </div>
+
+          <div class="card-grid">
+            <article class="card eli5">
+              <div class="card-label">🧒 ELI5</div>
+              <h3>One person, one main job</h3>
+              <p>Think of a restaurant. A chef should cook food. A cashier should take payments. A cleaner should clean tables. If one person tries to do all three, things become slow, confusing, and error-prone. In code, a class should also have one clear job.</p>
+            </article>
+
+            <article class="card analogy">
+              <div class="card-label">🔗 ANALOGY</div>
+              <h3>Your class should not be the whole team</h3>
+              <p>A class that validates input, talks to the database, formats PDFs, sends emails, and writes logs is like asking one engineer to be backend, frontend, QA, DevOps, and product manager at the same time. You might ship something, but it will be painful to change later.</p>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Technical</div>
+              <div class="two-col">
+                <div>
+                  <h3>What it means in real code</h3>
+                  <p><strong>Definition:</strong> A class should have only one reason to change. That means it should own one cohesive responsibility, not several unrelated ones.</p>
+                  <div class="mini-grid">
+                    <div class="mini-panel">
+                      <h4>Why it matters</h4>
+                      <ul>
+                        <li>Smaller blast radius when requirements change</li>
+                        <li>Cleaner unit tests and easier mocking</li>
+                        <li>Better readability and ownership boundaries</li>
+                      </ul>
+                    </div>
+                    <div class="mini-panel">
+                      <h4>Common smell</h4>
+                      <ul>
+                        <li>Classes named <code>*Manager</code> or <code>*Service</code> doing everything</li>
+                        <li>Methods mixing business rules and I/O</li>
+                        <li>Frequent changes for unrelated reasons</li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div class="badge-row">
+                    <span class="pill good">Focused class</span>
+                    <span class="pill caution">Cohesion over class count</span>
+                    <span class="pill bad">God object</span>
+                  </div>
+                  <div class="flow">
+                    <span class="flow-step">Validate</span><span class="flow-arrow">→</span>
+                    <span class="flow-step">Persist</span><span class="flow-arrow">→</span>
+                    <span class="flow-step">Notify</span>
+                  </div>
+                  <p>Each step can be its own collaborator instead of living inside one overloaded class.</p>
+                </div>
+                <div>
+                  <h3>Interview answer</h3>
+                  <p>“Single Responsibility means a class should do one cohesive thing and therefore have one main reason to change. I use it to keep business logic, persistence, formatting, and side effects separated so the code is easier to test and modify.”</p>
+                  <table>
+                    <thead>
+                      <tr><th>Ask yourself</th><th>Signal</th></tr>
+                    </thead>
+                    <tbody>
+                      <tr><td>Why would this class change?</td><td>If the answer is several unrelated reasons, SRP is weak.</td></tr>
+                      <tr><td>Can I describe the class in one sentence?</td><td>If not, responsibility is probably mixed.</td></tr>
+                      <tr><td>Can I unit test core logic without I/O?</td><td>If not, concerns may be tangled.</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div class="diagram">
+                <div class="diagram-title">Responsibility breakdown</div>
+                <div class="responsibility-split">
+                  <div class="box">
+                    <h4>Bad: UserService</h4>
+                    <ul>
+                      <li>validate user</li>
+                      <li>save to DB</li>
+                      <li>send welcome email</li>
+                      <li>format response</li>
+                    </ul>
+                  </div>
+                  <div class="box center-highlight">
+                    <h4>Better split</h4>
+                    <p>Each collaborator owns one concern, and orchestration stays simple.</p>
+                  </div>
+                  <div class="box">
+                    <h4>Separated classes</h4>
+                    <ul>
+                      <li>UserValidator</li>
+                      <li>UserRepository</li>
+                      <li>EmailNotifier</li>
+                      <li>UserRegistrationService</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <div class="code-blocks">
+                <div>
+                  <div class="code-title">Bad example</div>
+                  <pre><span class="token-key">public class</span> <span class="token-type">UserService</span> {
+  <span class="token-key">public void</span> <span class="token-method">register</span>(<span class="token-type">User</span> user) {
+    <span class="token-comment">// validation</span>
+    <span class="token-key">if</span> (user.getEmail() == <span class="token-key">null</span>) {
+      <span class="token-key">throw new</span> <span class="token-type">IllegalArgumentException</span>(<span class="token-string">"email required"</span>);
+    }
+
+    <span class="token-comment">// persistence</span>
+    saveToDatabase(user);
+
+    <span class="token-comment">// side effect</span>
+    sendWelcomeEmail(user);
+  }
+}</pre>
+                </div>
+                <div>
+                  <div class="code-title">Better example</div>
+                  <pre><span class="token-key">public class</span> <span class="token-type">UserRegistrationService</span> {
+  <span class="token-key">private final</span> <span class="token-type">UserValidator</span> validator;
+  <span class="token-key">private final</span> <span class="token-type">UserRepository</span> repository;
+  <span class="token-key">private final</span> <span class="token-type">EmailNotifier</span> notifier;
+
+  <span class="token-key">public</span> <span class="token-method">UserRegistrationService</span>(
+      <span class="token-type">UserValidator</span> validator,
+      <span class="token-type">UserRepository</span> repository,
+      <span class="token-type">EmailNotifier</span> notifier) {
+    <span class="token-key">this</span>.validator = validator;
+    <span class="token-key">this</span>.repository = repository;
+    <span class="token-key">this</span>.notifier = notifier;
+  }
+
+  <span class="token-key">public void</span> <span class="token-method">register</span>(<span class="token-type">User</span> user) {
+    validator.validate(user);
+    repository.save(user);
+    notifier.sendWelcome(user);
+  }
+}</pre>
+                </div>
+              </div>
+              <p>The second version still coordinates the workflow, but the responsibilities are separated. That makes testing and future changes much safer.</p>
+            </article>
+
+            <article class="card warning">
+              <div class="card-label">Warning</div>
+              <h3>SRP is not “make everything tiny”</h3>
+              <p>Do not split classes just to satisfy a slogan. The real goal is <strong>high cohesion</strong>, not maximum fragmentation. One class can have multiple methods, as long as they all serve the same responsibility.</p>
+            </article>
+
+            <article class="card quiz-card">
+              <div class="card-label">Quiz</div>
+              <h3>Which change most clearly violates SRP?</h3>
+              <p>A class named <code>InvoiceService</code> now calculates totals, saves invoices, sends emails, and renders PDF templates.</p>
+              <div class="quiz-options" data-answer="1">
+                <button class="quiz-option">A. It has more than one public method</button>
+                <button class="quiz-option">B. It mixes unrelated responsibilities with different reasons to change</button>
+                <button class="quiz-option">C. It depends on helper classes</button>
+                <button class="quiz-option">D. It uses constructor injection</button>
+              </div>
+              <div class="quiz-result">
+                <strong>Correct answer: B</strong>
+                <span>The problem is not the number of methods or dependencies. The issue is that business calculation, persistence, communication, and document rendering are separate concerns that change for different reasons.</span>
+              </div>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Mini takeaway</div>
+              <ul class="takeaways">
+                <li>SRP asks for one cohesive responsibility, not one method.</li>
+                <li>Different reasons to change usually mean different classes or collaborators.</li>
+                <li>Mixed I/O and business rules are a common production smell.</li>
+                <li>SRP often makes testing dramatically easier.</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" data-section="1">
+        <div class="section-inner">
+          <div class="hero">
+            <div class="section-label">Section 2 of 5 · ~6 mins</div>
+            <h2>Open/Closed Principle</h2>
+            <p>OCP is about designing code so you can add new behavior without repeatedly editing stable, already-working logic. In interviews, this usually shows up as replacing giant <code>if/else</code> blocks with polymorphism or strategy objects.</p>
+          </div>
+
+          <div class="card-grid">
+            <article class="card eli5">
+              <div class="card-label">🧒 ELI5</div>
+              <h3>Add a new toy without breaking the box</h3>
+              <p>Imagine a toy box with slots that let you add a new toy type without sawing the whole box open every time. Good software should let you plug in new behavior instead of reopening old code and risking bugs.</p>
+            </article>
+
+            <article class="card analogy">
+              <div class="card-label">🔗 ANALOGY</div>
+              <h3>Like adding a new payment method</h3>
+              <p>If every new payment type forces you to keep editing the checkout core, you are increasing risk in the most sensitive path. A better design lets you add a new payment strategy while the checkout flow stays stable.</p>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Technical</div>
+              <div class="two-col">
+                <div>
+                  <h3>What it means in real code</h3>
+                  <p><strong>Definition:</strong> Software entities should be open for extension but closed for modification. You should be able to add behavior with new code instead of constantly editing tested core logic.</p>
+                  <div class="mini-grid">
+                    <div class="mini-panel">
+                      <h4>Why it matters</h4>
+                      <ul>
+                        <li>Reduces regressions in stable code paths</li>
+                        <li>Makes features easier to add predictably</li>
+                        <li>Improves extensibility for evolving domains</li>
+                      </ul>
+                    </div>
+                    <div class="mini-panel">
+                      <h4>Common smell</h4>
+                      <ul>
+                        <li>Growing switch statements by type</li>
+                        <li>Repeated edits to the same class for every feature</li>
+                        <li>Feature flags and branching everywhere</li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div class="badge-row">
+                    <span class="pill good">Extend with new class</span>
+                    <span class="pill info">Use interfaces/strategies</span>
+                    <span class="pill bad">Edit central branch logic</span>
+                  </div>
+                </div>
+                <div>
+                  <h3>Interview answer</h3>
+                  <p>“Open/Closed means I try to design stable core flows so new behavior is added through extension points like interfaces, strategies, or polymorphism rather than repeatedly modifying a big conditional block.”</p>
+                  <table>
+                    <thead>
+                      <tr><th>Bad fit</th><th>Better fit</th></tr>
+                    </thead>
+                    <tbody>
+                      <tr><td>if type == CARD / PAYPAL / UPI</td><td><span class="pill good">PaymentProcessor</span> implementations</td></tr>
+                      <tr><td>Editing old class per feature</td><td>Adding a new implementation</td></tr>
+                      <tr><td>Hard-coded behavior</td><td>Registries, strategies, plugins</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div class="diagram">
+                <div class="diagram-title">Extension without changing the core</div>
+                <div class="extensibility-rail">
+                  <div class="rail-row">
+                    <div class="rail-box">
+                      <h4>CheckoutFlow</h4>
+                      <p>Stable orchestration: choose processor, execute, return result.</p>
+                    </div>
+                    <div class="arrow-right">→</div>
+                    <div class="rail-box">
+                      <h4>PaymentProcessor</h4>
+                      <p>Extension point interface.</p>
+                    </div>
+                  </div>
+                  <div class="rail-row">
+                    <div class="rail-box">
+                      <h4>CardProcessor</h4>
+                      <p>Existing behavior</p>
+                    </div>
+                    <div class="rail-box">
+                      <h4>PayPalProcessor</h4>
+                      <p>Existing behavior</p>
+                    </div>
+                    <div class="rail-box">
+                      <h4>UPIProcessor</h4>
+                      <p>New feature added without changing CheckoutFlow</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="code-blocks">
+                <div>
+                  <div class="code-title">Bad example</div>
+                  <pre><span class="token-key">public class</span> <span class="token-type">PaymentService</span> {
+  <span class="token-key">public void</span> <span class="token-method">pay</span>(<span class="token-type">String</span> type) {
+    <span class="token-key">if</span> (<span class="token-string">"CARD"</span>.equals(type)) {
+      processCard();
+    } <span class="token-key">else if</span> (<span class="token-string">"PAYPAL"</span>.equals(type)) {
+      processPayPal();
+    } <span class="token-key">else if</span> (<span class="token-string">"UPI"</span>.equals(type)) {
+      processUpi();
+    }
+  }
+}</pre>
+                </div>
+                <div>
+                  <div class="code-title">Better example</div>
+                  <pre><span class="token-key">public interface</span> <span class="token-type">PaymentProcessor</span> {
+  <span class="token-key">void</span> <span class="token-method">process</span>();
+}
+
+<span class="token-key">public class</span> <span class="token-type">CardProcessor</span> <span class="token-key">implements</span> <span class="token-type">PaymentProcessor</span> {
+  <span class="token-key">public void</span> <span class="token-method">process</span>() { <span class="token-comment">/* card logic */</span> }
+}
+
+<span class="token-key">public class</span> <span class="token-type">PaymentService</span> {
+  <span class="token-key">private final</span> <span class="token-type">Map</span>&lt;<span class="token-type">String</span>, <span class="token-type">PaymentProcessor</span>&gt; processors;
+
+  <span class="token-key">public</span> <span class="token-method">PaymentService</span>(<span class="token-type">Map</span>&lt;<span class="token-type">String</span>, <span class="token-type">PaymentProcessor</span>&gt; processors) {
+    <span class="token-key">this</span>.processors = processors;
+  }
+
+  <span class="token-key">public void</span> <span class="token-method">pay</span>(<span class="token-type">String</span> type) {
+    processors.get(type).process();
+  }
+}</pre>
+                </div>
+              </div>
+              <p>The second design is easier to extend. Adding a new payment type mainly means adding a new implementation and wiring it in, instead of rewriting the core service.</p>
+            </article>
+
+            <article class="card warning">
+              <div class="card-label">Warning</div>
+              <h3>Do not over-abstract too early</h3>
+              <p>OCP is not a command to create ten interfaces for a feature that only has one implementation and no variation. It pays off when you actually expect a family of behaviors to grow.</p>
+            </article>
+
+            <article class="card quiz-card">
+              <div class="card-label">Quiz</div>
+              <h3>Which design best supports Open/Closed?</h3>
+              <div class="quiz-options" data-answer="2">
+                <button class="quiz-option">A. A checkout class with more <code>else if</code> blocks for every new payment type</button>
+                <button class="quiz-option">B. A static utility with hard-coded type checks</button>
+                <button class="quiz-option">C. A stable checkout flow that depends on a <code>PaymentProcessor</code> interface and new implementations</button>
+                <button class="quiz-option">D. A single method with a larger switch statement</button>
+              </div>
+              <div class="quiz-result">
+                <strong>Correct answer: C</strong>
+                <span>OCP is strongest when stable orchestration depends on an extension point, and new behavior is added by introducing new implementations instead of modifying central conditional logic.</span>
+              </div>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Mini takeaway</div>
+              <ul class="takeaways">
+                <li>OCP tries to keep stable code stable.</li>
+                <li>Look for repeated edits to the same branching logic.</li>
+                <li>Interfaces, strategies, and polymorphism are common tools.</li>
+                <li>Use OCP where variation is expected, not everywhere by default.</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" data-section="2">
+        <div class="section-inner">
+          <div class="hero">
+            <div class="section-label">Section 3 of 5 · ~6 mins</div>
+            <h2>Liskov Substitution Principle</h2>
+            <p>LSP is the one people often memorize but struggle to explain. The practical meaning: if code works with a parent type, it should still work correctly when given any valid subtype.</p>
+          </div>
+
+          <div class="card-grid">
+            <article class="card eli5">
+              <div class="card-label">🧒 ELI5</div>
+              <h3>A replacement should still behave like the thing it replaces</h3>
+              <p>If a TV remote takes AA batteries, you can swap one AA brand for another and it should still work. But if someone gives you a fake “AA” battery that does not actually power the remote, it is not a proper replacement. Subclasses should behave like real substitutes.</p>
+            </article>
+
+            <article class="card analogy">
+              <div class="card-label">🔗 ANALOGY</div>
+              <h3>Like a new driver in the same lane rules</h3>
+              <p>If your system says “anything implementing this contract can go through this workflow,” then every implementation must obey the same expectations. If one subtype silently throws, refuses, or changes the meaning, the whole abstraction becomes unreliable.</p>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Technical</div>
+              <div class="two-col">
+                <div>
+                  <h3>What it means in real code</h3>
+                  <p><strong>Definition:</strong> Objects of a subtype should be replaceable for objects of the base type without breaking correctness. Subtypes must honor the contract of the parent type.</p>
+                  <div class="mini-grid">
+                    <div class="mini-panel">
+                      <h4>Violation signals</h4>
+                      <ul>
+                        <li>Subclass throws <code>UnsupportedOperationException</code> for parent behavior</li>
+                        <li>Subclass changes expected output semantics</li>
+                        <li>Caller needs subtype checks to stay safe</li>
+                      </ul>
+                    </div>
+                    <div class="mini-panel">
+                      <h4>Why it matters</h4>
+                      <ul>
+                        <li>Makes polymorphism trustworthy</li>
+                        <li>Avoids surprise runtime failures</li>
+                        <li>Keeps contracts meaningful</li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div class="badge-row">
+                    <span class="pill good">Subtype honors contract</span>
+                    <span class="pill bad">Subtype breaks assumptions</span>
+                    <span class="pill caution">Inheritance is not always the right reuse tool</span>
+                  </div>
+                </div>
+                <div>
+                  <h3>Interview answer</h3>
+                  <p>“Liskov Substitution means a subclass must be usable anywhere the parent type is expected without breaking behavior. If callers need special checks for certain subclasses, the inheritance contract is probably wrong.”</p>
+                  <table>
+                    <thead>
+                      <tr><th>Parent expects</th><th>LSP-safe subtype</th></tr>
+                    </thead>
+                    <tbody>
+                      <tr><td><code>Bird.fly()</code> works</td><td>Subtype can still fulfill fly contract</td></tr>
+                      <tr><td><code>Account.withdraw()</code> respects balance rules</td><td>Subtype preserves same rules or stronger guarantees</td></tr>
+                      <tr><td>Client trusts abstraction</td><td>No special subtype handling needed</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div class="diagram">
+                <div class="diagram-title">Substitution flow</div>
+                <div class="substitution-rail">
+                  <div class="rail-row">
+                    <div class="rail-box">
+                      <h4>Client code</h4>
+                      <p>Works with <code>NotificationSender</code></p>
+                    </div>
+                    <div class="arrow-right">→</div>
+                    <div class="rail-box">
+                      <h4>EmailSender</h4>
+                      <p>Valid substitute</p>
+                    </div>
+                    <div class="rail-box">
+                      <h4>SmsSender</h4>
+                      <p>Valid substitute</p>
+                    </div>
+                  </div>
+                  <div class="rail-row">
+                    <div class="rail-box" style="border-color: rgba(239,68,68,0.45); background: rgba(239,68,68,0.08);">
+                      <h4>Bad subtype</h4>
+                      <p>Throws unsupported operation for send() and forces client special-case logic.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="code-blocks">
+                <div>
+                  <div class="code-title">Bad example</div>
+                  <pre><span class="token-key">class</span> <span class="token-type">Bird</span> {
+  <span class="token-key">void</span> <span class="token-method">fly</span>() {}
+}
+
+<span class="token-key">class</span> <span class="token-type">Penguin</span> <span class="token-key">extends</span> <span class="token-type">Bird</span> {
+  <span class="token-annotation">@Override</span>
+  <span class="token-key">void</span> <span class="token-method">fly</span>() {
+    <span class="token-key">throw new</span> <span class="token-type">UnsupportedOperationException</span>();
+  }
+}</pre>
+                </div>
+                <div>
+                  <div class="code-title">Better example</div>
+                  <pre><span class="token-key">interface</span> <span class="token-type">Bird</span> {
+  <span class="token-key">void</span> <span class="token-method">move</span>();
+}
+
+<span class="token-key">interface</span> <span class="token-type">FlyingBird</span> <span class="token-key">extends</span> <span class="token-type">Bird</span> {
+  <span class="token-key">void</span> <span class="token-method">fly</span>();
+}
+
+<span class="token-key">class</span> <span class="token-type">Penguin</span> <span class="token-key">implements</span> <span class="token-type">Bird</span> {
+  <span class="token-key">public void</span> <span class="token-method">move</span>() { <span class="token-comment">/* swim/walk */</span> }
+}
+
+<span class="token-key">class</span> <span class="token-type">Sparrow</span> <span class="token-key">implements</span> <span class="token-type">FlyingBird</span> {
+  <span class="token-key">public void</span> <span class="token-method">move</span>() { <span class="token-comment">/* hop */</span> }
+  <span class="token-key">public void</span> <span class="token-method">fly</span>() { <span class="token-comment">/* fly */</span> }
+}</pre>
+                </div>
+              </div>
+              <p>The fix is not “make Penguin try harder.” The fix is designing the abstraction so the promises it makes are actually true for every subtype.</p>
+            </article>
+
+            <article class="card warning">
+              <div class="card-label">Warning</div>
+              <h3>LSP is about behavior, not just method signatures</h3>
+              <p>A subclass can compile perfectly and still violate LSP if it breaks expectations around invariants, side effects, exceptions, or return semantics.</p>
+            </article>
+
+            <article class="card quiz-card">
+              <div class="card-label">Quiz</div>
+              <h3>Which example most clearly breaks LSP?</h3>
+              <div class="quiz-options" data-answer="0">
+                <button class="quiz-option">A. A subclass overrides a method and throws <code>UnsupportedOperationException</code> where callers expect it to work</button>
+                <button class="quiz-option">B. A subclass adds a helper method</button>
+                <button class="quiz-option">C. A class implements two interfaces</button>
+                <button class="quiz-option">D. A method returns a subtype instead of a parent type</button>
+              </div>
+              <div class="quiz-result">
+                <strong>Correct answer: A</strong>
+                <span>If the parent contract says callers can invoke a method, and one subtype cannot honor that contract, substitution breaks. That is a classic LSP violation.</span>
+              </div>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Mini takeaway</div>
+              <ul class="takeaways">
+                <li>LSP is about preserving behavioral contracts.</li>
+                <li>If callers need subtype checks, your abstraction may be lying.</li>
+                <li>Unsupported operations in subclasses are a major red flag.</li>
+                <li>Composition is often safer than forcing inheritance.</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" data-section="3">
+        <div class="section-inner">
+          <div class="hero">
+            <div class="section-label">Section 4 of 5 · ~6 mins</div>
+            <h2>Interface Segregation Principle</h2>
+            <p>ISP says clients should not be forced to depend on methods they do not use. This usually means smaller, role-based interfaces instead of one oversized contract.</p>
+          </div>
+
+          <div class="card-grid">
+            <article class="card eli5">
+              <div class="card-label">🧒 ELI5</div>
+              <h3>Do not hand everyone a giant remote</h3>
+              <p>If someone only needs the volume button, do not force them to carry a giant remote full of buttons for streaming, gaming, camera control, and air conditioning. In code, give classes only the methods they actually need.</p>
+            </article>
+
+            <article class="card analogy">
+              <div class="card-label">🔗 ANALOGY</div>
+              <h3>Like team permissions</h3>
+              <p>A finance user should not receive admin, HR, and engineering controls in one mega portal. Likewise, a class that only prints should not be forced to implement scan, fax, upload, and archive methods.</p>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Technical</div>
+              <div class="two-col">
+                <div>
+                  <h3>What it means in real code</h3>
+                  <p><strong>Definition:</strong> No client should be forced to depend on methods it does not use. Prefer narrow, role-focused interfaces over one fat interface.</p>
+                  <div class="mini-grid">
+                    <div class="mini-panel">
+                      <h4>Common smell</h4>
+                      <ul>
+                        <li>Interface with many unrelated methods</li>
+                        <li>Implementations throwing unsupported exceptions</li>
+                        <li>Classes depending on methods they never call</li>
+                      </ul>
+                    </div>
+                    <div class="mini-panel">
+                      <h4>Why it matters</h4>
+                      <ul>
+                        <li>Reduces coupling</li>
+                        <li>Improves test setup and mocking</li>
+                        <li>Makes contracts easier to understand</li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div class="badge-row">
+                    <span class="pill good">Small role-based interfaces</span>
+                    <span class="pill info">Client-specific contracts</span>
+                    <span class="pill bad">Fat interfaces</span>
+                  </div>
+                </div>
+                <div>
+                  <h3>Interview answer</h3>
+                  <p>“Interface Segregation means I prefer smaller, focused interfaces so a class only depends on the operations it actually needs. It avoids fat contracts and reduces the chance of unsupported or irrelevant methods.”</p>
+                  <table>
+                    <thead>
+                      <tr><th>Bad</th><th>Better</th></tr>
+                    </thead>
+                    <tbody>
+                      <tr><td><code>Machine.print/scan/fax</code></td><td><code>Printer</code>, <code>Scanner</code>, <code>FaxSender</code></td></tr>
+                      <tr><td>Clients mock unused methods</td><td>Mocks stay small and relevant</td></tr>
+                      <tr><td>Subtype exceptions</td><td>Cleaner contracts</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div class="diagram">
+                <div class="diagram-title">Split one fat interface into role-based contracts</div>
+                <div class="interface-split">
+                  <div class="split-row">
+                    <div class="split-box" style="border-color: rgba(239,68,68,0.45); background: rgba(239,68,68,0.08);">
+                      <h4>Fat interface: MultiFunctionMachine</h4>
+                      <p>print(), scan(), fax(), upload(), archive()</p>
+                    </div>
+                  </div>
+                  <div class="split-row">
+                    <div class="split-box">
+                      <h4>Printer</h4>
+                      <p>print()</p>
+                    </div>
+                    <div class="split-box">
+                      <h4>Scanner</h4>
+                      <p>scan()</p>
+                    </div>
+                    <div class="split-box">
+                      <h4>FaxSender</h4>
+                      <p>fax()</p>
+                    </div>
+                    <div class="split-box">
+                      <h4>Archiver</h4>
+                      <p>upload(), archive()</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="code-blocks">
+                <div>
+                  <div class="code-title">Bad example</div>
+                  <pre><span class="token-key">interface</span> <span class="token-type">Machine</span> {
+  <span class="token-key">void</span> <span class="token-method">print</span>();
+  <span class="token-key">void</span> <span class="token-method">scan</span>();
+  <span class="token-key">void</span> <span class="token-method">fax</span>();
+}
+
+<span class="token-key">class</span> <span class="token-type">BasicPrinter</span> <span class="token-key">implements</span> <span class="token-type">Machine</span> {
+  <span class="token-key">public void</span> <span class="token-method">print</span>() {}
+  <span class="token-key">public void</span> <span class="token-method">scan</span>() { <span class="token-key">throw new</span> <span class="token-type">UnsupportedOperationException</span>(); }
+  <span class="token-key">public void</span> <span class="token-method">fax</span>() { <span class="token-key">throw new</span> <span class="token-type">UnsupportedOperationException</span>(); }
+}</pre>
+                </div>
+                <div>
+                  <div class="code-title">Better example</div>
+                  <pre><span class="token-key">interface</span> <span class="token-type">Printer</span> {
+  <span class="token-key">void</span> <span class="token-method">print</span>();
+}
+
+<span class="token-key">interface</span> <span class="token-type">Scanner</span> {
+  <span class="token-key">void</span> <span class="token-method">scan</span>();
+}
+
+<span class="token-key">class</span> <span class="token-type">BasicPrinter</span> <span class="token-key">implements</span> <span class="token-type">Printer</span> {
+  <span class="token-key">public void</span> <span class="token-method">print</span>() {}
+}
+
+<span class="token-key">class</span> <span class="token-type">OfficeMachine</span> <span class="token-key">implements</span> <span class="token-type">Printer</span>, <span class="token-type">Scanner</span> {
+  <span class="token-key">public void</span> <span class="token-method">print</span>() {}
+  <span class="token-key">public void</span> <span class="token-method">scan</span>() {}
+}</pre>
+                </div>
+              </div>
+              <p>When interfaces are focused, implementations are simpler and clients are not forced to carry behavior they do not need.</p>
+            </article>
+
+            <article class="card warning">
+              <div class="card-label">Warning</div>
+              <h3>ISP and SRP are related, but not the same</h3>
+              <p>SRP focuses on class responsibility. ISP focuses on client-facing contracts. A class can violate SRP without using interfaces at all, and an interface can violate ISP even if implementations are otherwise clean.</p>
+            </article>
+
+            <article class="card quiz-card">
+              <div class="card-label">Quiz</div>
+              <h3>Which change best applies ISP?</h3>
+              <div class="quiz-options" data-answer="3">
+                <button class="quiz-option">A. Add more methods to a shared interface so all clients use one contract</button>
+                <button class="quiz-option">B. Replace interfaces with one utility class</button>
+                <button class="quiz-option">C. Keep the same fat interface but ignore unused methods</button>
+                <button class="quiz-option">D. Split a broad interface into smaller, client-specific interfaces</button>
+              </div>
+              <div class="quiz-result">
+                <strong>Correct answer: D</strong>
+                <span>ISP prefers smaller, role-focused interfaces so clients depend only on what they use. That reduces unnecessary coupling and avoids unsupported behaviors.</span>
+              </div>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Mini takeaway</div>
+              <ul class="takeaways">
+                <li>Do not force clients to depend on methods they never use.</li>
+                <li>Fat interfaces often lead to unsupported operations.</li>
+                <li>Small interfaces make mocks, tests, and contracts cleaner.</li>
+                <li>Think in roles: printer, scanner, notifier, exporter, validator.</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" data-section="4">
+        <div class="section-inner">
+          <div class="hero">
+            <div class="section-label">Section 5 of 5 · ~6 mins</div>
+            <h2>Dependency Inversion Principle</h2>
+            <p>DIP is about depending on abstractions instead of concrete low-level details. This is the principle behind constructor injection, testable services, and flexible architecture layers.</p>
+          </div>
+
+          <div class="card-grid">
+            <article class="card eli5">
+              <div class="card-label">🧒 ELI5</div>
+              <h3>Do not build the house around one exact plug</h3>
+              <p>If your lamp only works with one weird wall socket in one room, moving it becomes painful. Better design uses a standard plug so different rooms can still power it. In code, high-level logic should not be tightly glued to one concrete implementation.</p>
+            </article>
+
+            <article class="card analogy">
+              <div class="card-label">🔗 ANALOGY</div>
+              <h3>Business logic should not marry infrastructure</h3>
+              <p>Your order workflow should care that a message was sent, not whether it was sent through Twilio, SES, Kafka, or a fake test adapter. DIP keeps business rules stable while infrastructure stays swappable.</p>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Technical</div>
+              <div class="two-col">
+                <div>
+                  <h3>What it means in real code</h3>
+                  <p><strong>Definition:</strong> High-level modules should not depend on low-level modules; both should depend on abstractions. Details should depend on policies, not the other way around.</p>
+                  <div class="mini-grid">
+                    <div class="mini-panel">
+                      <h4>Why it matters</h4>
+                      <ul>
+                        <li>Makes high-level services easier to test</li>
+                        <li>Allows replacing infrastructure implementations</li>
+                        <li>Supports cleaner layering and architecture boundaries</li>
+                      </ul>
+                    </div>
+                    <div class="mini-panel">
+                      <h4>Common smell</h4>
+                      <ul>
+                        <li><code>new</code> inside business services for external clients</li>
+                        <li>Business rules importing framework or vendor code directly</li>
+                        <li>Hard-to-mock code paths</li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div class="badge-row">
+                    <span class="pill good">Depend on interface</span>
+                    <span class="pill info">Inject collaborator</span>
+                    <span class="pill bad">Hard-coded concrete dependency</span>
+                  </div>
+                </div>
+                <div>
+                  <h3>Interview answer</h3>
+                  <p>“Dependency Inversion means my core business logic depends on abstractions, not concrete infrastructure classes. That lets me inject implementations, test the core behavior cleanly, and swap details without changing the policy layer.”</p>
+                  <table>
+                    <thead>
+                      <tr><th>High-level policy</th><th>Low-level detail</th></tr>
+                    </thead>
+                    <tbody>
+                      <tr><td>OrderService sends a receipt</td><td>EmailReceiptSender / SmsReceiptSender</td></tr>
+                      <tr><td>BillingService stores payment</td><td>PostgresPaymentRepository / InMemoryPaymentRepository</td></tr>
+                      <tr><td>Notification workflow</td><td>Kafka / HTTP / mock adapter</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div class="diagram">
+                <div class="diagram-title">Policy points to abstraction; details plug in below</div>
+                <div class="dependency-stack">
+                  <div class="stack-row">
+                    <div class="stack-box" style="box-shadow: inset 0 0 0 1px rgba(0,212,255,0.18);">
+                      <h4>OrderService</h4>
+                      <p>High-level business policy</p>
+                    </div>
+                  </div>
+                  <div class="stack-row">
+                    <div class="arrow-down">↓</div>
+                  </div>
+                  <div class="stack-row">
+                    <div class="stack-box">
+                      <h4>ReceiptSender</h4>
+                      <p>Abstraction the policy depends on</p>
+                    </div>
+                  </div>
+                  <div class="stack-row">
+                    <div class="arrow-down">↓</div>
+                  </div>
+                  <div class="stack-row">
+                    <div class="stack-box">
+                      <h4>EmailReceiptSender</h4>
+                      <p>Detail implementation</p>
+                    </div>
+                    <div class="stack-box">
+                      <h4>MockReceiptSender</h4>
+                      <p>Test implementation</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="code-blocks">
+                <div>
+                  <div class="code-title">Bad example</div>
+                  <pre><span class="token-key">public class</span> <span class="token-type">OrderService</span> {
+  <span class="token-key">private final</span> <span class="token-type">EmailSender</span> emailSender = <span class="token-key">new</span> <span class="token-type">EmailSender</span>();
+
+  <span class="token-key">public void</span> <span class="token-method">placeOrder</span>(<span class="token-type">Order</span> order) {
+    <span class="token-comment">// business logic</span>
+    emailSender.send(order.getCustomerEmail(), <span class="token-string">"order placed"</span>);
+  }
+}</pre>
+                </div>
+                <div>
+                  <div class="code-title">Better example</div>
+                  <pre><span class="token-key">public interface</span> <span class="token-type">ReceiptSender</span> {
+  <span class="token-key">void</span> <span class="token-method">sendReceipt</span>(<span class="token-type">Order</span> order);
+}
+
+<span class="token-key">public class</span> <span class="token-type">OrderService</span> {
+  <span class="token-key">private final</span> <span class="token-type">ReceiptSender</span> receiptSender;
+
+  <span class="token-key">public</span> <span class="token-method">OrderService</span>(<span class="token-type">ReceiptSender</span> receiptSender) {
+    <span class="token-key">this</span>.receiptSender = receiptSender;
+  }
+
+  <span class="token-key">public void</span> <span class="token-method">placeOrder</span>(<span class="token-type">Order</span> order) {
+    <span class="token-comment">// business logic</span>
+    receiptSender.sendReceipt(order);
+  }
+}</pre>
+                </div>
+              </div>
+              <p>This is why constructor injection is so common in Java applications. It supports DIP by making dependencies explicit and replaceable.</p>
+            </article>
+
+            <article class="card warning">
+              <div class="card-label">Warning</div>
+              <h3>DIP is not just “use interfaces everywhere”</h3>
+              <p>The point is architectural direction. High-level policy should not know concrete infrastructure details. Sometimes the abstraction can even be a small domain-facing port interface with only one implementation today.</p>
+            </article>
+
+            <article class="card quiz-card">
+              <div class="card-label">Quiz</div>
+              <h3>Which design best follows DIP?</h3>
+              <div class="quiz-options" data-answer="1">
+                <button class="quiz-option">A. Business service directly creates vendor SDK clients inside methods</button>
+                <button class="quiz-option">B. Business service depends on an abstraction and receives a concrete implementation through injection</button>
+                <button class="quiz-option">C. Business service uses static utility calls for all external work</button>
+                <button class="quiz-option">D. Business service imports every low-level class to stay flexible</button>
+              </div>
+              <div class="quiz-result">
+                <strong>Correct answer: B</strong>
+                <span>DIP is strongest when business policy points to an abstraction, while concrete infrastructure plugs in from the outside. That keeps the core testable and less coupled to implementation details.</span>
+              </div>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Mini takeaway</div>
+              <ul class="takeaways">
+                <li>High-level policy should depend on abstractions, not vendor details.</li>
+                <li>Constructor injection is a common practical expression of DIP.</li>
+                <li>DIP improves testability, layering, and replaceability.</li>
+                <li>Think in ports and adapters, not direct framework coupling.</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" data-section="5">
+        <div class="section-inner">
+          <div class="hero">
+            <div class="section-label">Completion screen · Review mode</div>
+            <h2>🎉 SOLID Cheat Sheet</h2>
+            <p>You have finished the module. Use this screen as a rapid interview refresher before a call or while doing active recall.</p>
+          </div>
+
+          <div class="completion-grid">
+            <div class="card technical">
+              <div class="card-label">Cheat sheet</div>
+              <div class="celebrate">🚀</div>
+              <h3>1-line interview answers</h3>
+              <div class="cheat-list">
+                <div class="cheat-item">
+                  <h4>SRP</h4>
+                  <p>A class should have one cohesive responsibility and one main reason to change.</p>
+                </div>
+                <div class="cheat-item">
+                  <h4>OCP</h4>
+                  <p>Code should be open to extension but closed to repeated modification of stable logic.</p>
+                </div>
+                <div class="cheat-item">
+                  <h4>LSP</h4>
+                  <p>Subtypes must be safely usable anywhere the parent type is expected, without breaking behavior.</p>
+                </div>
+                <div class="cheat-item">
+                  <h4>ISP</h4>
+                  <p>Clients should not be forced to depend on methods they do not use.</p>
+                </div>
+                <div class="cheat-item">
+                  <h4>DIP</h4>
+                  <p>High-level modules should depend on abstractions, not concrete low-level details.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="card analogy">
+              <div class="card-label">What to remember</div>
+              <h3>Fast mental model</h3>
+              <ul class="takeaways">
+                <li><strong>SRP:</strong> keep responsibilities cohesive.</li>
+                <li><strong>OCP:</strong> add new behavior without rewriting the core.</li>
+                <li><strong>LSP:</strong> do not lie with inheritance.</li>
+                <li><strong>ISP:</strong> give clients only the contract they need.</li>
+                <li><strong>DIP:</strong> keep business logic pointed at abstractions.</li>
+              </ul>
+
+              <h3 style="margin-top:22px;">Common confusion</h3>
+              <div class="confusion-list">
+                <div class="confusion-item">
+                  <strong>SRP vs ISP</strong>
+                  <p>SRP is about the responsibility of a class. ISP is about the size and relevance of a client-facing interface.</p>
+                </div>
+                <div class="confusion-item">
+                  <strong>OCP vs DIP</strong>
+                  <p>OCP is about extending behavior cleanly. DIP is about directing dependencies toward abstractions so high-level logic stays decoupled.</p>
+                </div>
+                <div class="confusion-item">
+                  <strong>LSP vs ISP</strong>
+                  <p>LSP is about subtype behavior staying valid. ISP is about not forcing extra methods into contracts.</p>
+                </div>
+              </div>
+
+              <h3 style="margin-top:22px;">Production code smells</h3>
+              <div class="badge-row">
+                <span class="pill bad">God classes</span>
+                <span class="pill bad">Huge switch blocks</span>
+                <span class="pill bad">UnsupportedOperationException</span>
+                <span class="pill bad">Fat interfaces</span>
+                <span class="pill bad">Hard-coded new dependencies</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer-nav">
+      <div class="footer-nav-inner">
+        <button class="btn" id="prevBtn">← Back</button>
+        <button class="btn primary" id="nextBtn">Next →</button>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    const sections = Array.from(document.querySelectorAll('.section'));
+    const dots = Array.from(document.querySelectorAll('.nav-dot'));
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const timerEl = document.getElementById('timer');
+    const progressBar = document.getElementById('progressBar');
+
+    let currentIndex = 0;
+    let visitedMax = 0;
+
+    function showSection(index) {
+      currentIndex = Math.max(0, Math.min(index, sections.length - 1));
+      visitedMax = Math.max(visitedMax, currentIndex);
+
+      sections.forEach((section, i) => {
+        section.classList.toggle('active', i === currentIndex);
+      });
+
+      dots.forEach((dot, i) => {
+        dot.classList.remove('active', 'done');
+        if (i === currentIndex) {
+          dot.classList.add('active');
+        } else if (i < visitedMax) {
+          dot.classList.add('done');
+        }
+      });
+
+      prevBtn.disabled = currentIndex === 0;
+      nextBtn.textContent = currentIndex === sections.length - 1 ? 'Review Again ↺' : (currentIndex === sections.length - 2 ? 'Finish / View Cheat Sheet →' : 'Next →');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    prevBtn.addEventListener('click', () => showSection(currentIndex - 1));
+    nextBtn.addEventListener('click', () => {
+      if (currentIndex === sections.length - 1) {
+        showSection(0);
+      } else {
+        showSection(currentIndex + 1);
+      }
+    });
+
+    dots.forEach(dot => {
+      dot.addEventListener('click', () => showSection(Number(dot.dataset.index)));
+    });
+
+    const totalSeconds = 30 * 60;
+    let remainingSeconds = totalSeconds;
+
+    function formatTime(seconds) {
+      const mins = String(Math.floor(seconds / 60)).padStart(2, '0');
+      const secs = String(seconds % 60).padStart(2, '0');
+      return `${mins}:${secs}`;
+    }
+
+    function updateTimer() {
+      timerEl.textContent = formatTime(remainingSeconds);
+      timerEl.classList.remove('warning', 'critical');
+
+      if (remainingSeconds <= 60) {
+        timerEl.classList.add('critical');
+      } else if (remainingSeconds <= 300) {
+        timerEl.classList.add('warning');
+      }
+
+      const elapsed = totalSeconds - remainingSeconds;
+      progressBar.style.width = `${(elapsed / totalSeconds) * 100}%`;
+
+      if (remainingSeconds > 0) {
+        remainingSeconds -= 1;
+      }
+    }
+
+    updateTimer();
+    setInterval(updateTimer, 1000);
+
+    document.querySelectorAll('.quiz-options').forEach(group => {
+      const correctIndex = Number(group.dataset.answer);
+      const options = Array.from(group.querySelectorAll('.quiz-option'));
+      const result = group.nextElementSibling;
+
+      options.forEach((btn, index) => {
+        btn.addEventListener('click', () => {
+          if (group.dataset.answered === 'true') return;
+          group.dataset.answered = 'true';
+
+          options.forEach((option, i) => {
+            option.disabled = true;
+            if (i === correctIndex) option.classList.add('correct');
+          });
+
+          if (index !== correctIndex) {
+            btn.classList.add('wrong');
+          }
+
+          result.classList.add('show');
+        });
+      });
+    });
+
+    showSection(0);
+  </script>
+</body>
+</html>

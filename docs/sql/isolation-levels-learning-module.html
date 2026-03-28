@@ -1,0 +1,1478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Isolation Levels Learning Module</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0a0e1a;
+      --surface:#111827;
+      --surface-2:#1a2235;
+      --surface-3:#050810;
+      --text:#e6eef8;
+      --muted:#98a5c3;
+      --cyan:#00d4ff;
+      --purple:#7c3aed;
+      --green:#10b981;
+      --amber:#f59e0b;
+      --red:#ef4444;
+      --border:rgba(255,255,255,.08);
+      --shadow:0 10px 35px rgba(0,0,0,.35);
+      --radius:20px;
+      --radius-sm:14px;
+    }
+
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body{
+      margin:0;
+      font-family:"Syne", system-ui, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(124,58,237,.12), transparent 28%),
+        radial-gradient(circle at top right, rgba(0,212,255,.10), transparent 22%),
+        linear-gradient(180deg, #090d18 0%, #0a0e1a 100%);
+      color:var(--text);
+      min-height:100vh;
+    }
+
+    .shell{
+      max-width:1180px;
+      margin:0 auto;
+      padding:28px 20px 44px;
+    }
+
+    .topbar{
+      position:sticky;
+      top:0;
+      z-index:20;
+      backdrop-filter: blur(12px);
+      background:rgba(10,14,26,.78);
+      border:1px solid rgba(255,255,255,.06);
+      border-radius:24px;
+      padding:16px 18px 18px;
+      box-shadow:var(--shadow);
+      margin-bottom:22px;
+    }
+
+    .topbar-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:14px;
+      align-items:center;
+      justify-content:space-between;
+    }
+
+    .title-wrap h1{
+      font-size:clamp(1.5rem, 2.8vw, 2.35rem);
+      margin:0 0 6px;
+      letter-spacing:.02em;
+    }
+
+    .title-wrap p{
+      margin:0;
+      color:var(--muted);
+      font-size:.98rem;
+    }
+
+    .status-wrap{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .pill{
+      background:var(--surface-2);
+      border:1px solid var(--border);
+      padding:12px 14px;
+      border-radius:999px;
+      min-width:128px;
+    }
+
+    .mono{
+      font-family:"JetBrains Mono", monospace;
+    }
+
+    #timer{
+      font-size:1rem;
+      font-weight:700;
+      color:var(--cyan);
+      transition:color .3s ease, transform .3s ease;
+    }
+
+    #timer.warning{ color:var(--amber); }
+    #timer.danger{
+      color:var(--red);
+      animation:pulse 1s infinite;
+    }
+
+    @keyframes pulse{
+      0%,100%{ transform:scale(1); opacity:1; }
+      50%{ transform:scale(1.06); opacity:.82; }
+    }
+
+    .progress-shell{
+      margin-top:16px;
+      width:100%;
+      height:12px;
+      border-radius:999px;
+      overflow:hidden;
+      background:#0f1526;
+      border:1px solid rgba(255,255,255,.06);
+      position:relative;
+    }
+
+    .progress-bar{
+      height:100%;
+      width:0%;
+      background:linear-gradient(90deg, var(--cyan), var(--purple));
+      transition:width .35s ease;
+    }
+
+    .dots{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:16px;
+      align-items:center;
+    }
+
+    .dot{
+      width:42px;
+      height:42px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background:var(--surface-2);
+      color:var(--text);
+      font-family:"JetBrains Mono", monospace;
+      font-weight:700;
+      cursor:pointer;
+      transition:all .2s ease;
+      display:grid;
+      place-items:center;
+      box-shadow:0 0 0 0 rgba(0,212,255,0);
+    }
+
+    .dot:hover{ transform:translateY(-1px); }
+    .dot.active{
+      background:rgba(0,212,255,.14);
+      border-color:rgba(0,212,255,.8);
+      color:var(--cyan);
+      box-shadow:0 0 0 4px rgba(0,212,255,.08);
+    }
+    .dot.done{
+      border:2px solid rgba(16,185,129,.95);
+      color:var(--green);
+      background:transparent;
+    }
+
+    .section{
+      display:none;
+      animation:fade .35s ease;
+    }
+
+    .section.active{ display:block; }
+
+    @keyframes fade{
+      from { opacity:0; transform:translateY(8px); }
+      to { opacity:1; transform:translateY(0); }
+    }
+
+    .hero-card,
+    .card,
+    .quiz-box,
+    .completion{
+      background:linear-gradient(180deg, rgba(255,255,255,.02), transparent), var(--surface);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+    }
+
+    .hero-card{
+      padding:28px;
+      margin-bottom:18px;
+      display:grid;
+      gap:18px;
+      grid-template-columns:1.25fr .95fr;
+    }
+
+    .hero-card h2{
+      margin:0;
+      font-size:clamp(1.55rem, 2.4vw, 2.2rem);
+      line-height:1.1;
+    }
+
+    .kicker{
+      color:var(--cyan);
+      text-transform:uppercase;
+      letter-spacing:.16em;
+      font-size:.78rem;
+      margin-bottom:10px;
+      display:block;
+    }
+
+    .lede{
+      color:var(--muted);
+      line-height:1.7;
+      font-size:1rem;
+      margin:14px 0 0;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(12, 1fr);
+      gap:18px;
+      margin-bottom:18px;
+    }
+
+    .col-7{ grid-column:span 7; }
+    .col-5{ grid-column:span 5; }
+    .col-6{ grid-column:span 6; }
+    .col-12{ grid-column:span 12; }
+
+    .card{
+      padding:22px 22px 20px;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .card::before{
+      content:"";
+      position:absolute;
+      inset:0 auto 0 0;
+      width:6px;
+      border-radius:20px 0 0 20px;
+      background:var(--cyan);
+    }
+
+    .card.eli5::before{ background:var(--amber); }
+    .card.analogy::before{ background:var(--green); }
+    .card.technical::before{ background:var(--cyan); }
+    .card.warning::before{ background:var(--red); }
+
+    .eyebrow{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      color:var(--muted);
+      font-size:.88rem;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      margin-bottom:10px;
+    }
+
+    .eyebrow .tag{
+      font-family:"JetBrains Mono", monospace;
+      color:var(--text);
+      font-weight:700;
+      font-size:.84rem;
+    }
+
+    .section-line{
+      font-size:.88rem;
+      color:var(--muted);
+      letter-spacing:.05em;
+      text-transform:uppercase;
+      margin-bottom:8px;
+    }
+
+    h3{
+      margin:0 0 12px;
+      font-size:1.35rem;
+      line-height:1.15;
+    }
+
+    p{
+      margin:0 0 12px;
+      line-height:1.72;
+      color:#dfe8f7;
+    }
+
+    ul{
+      margin:10px 0 0 18px;
+      padding:0;
+      color:#dfe8f7;
+      line-height:1.72;
+    }
+
+    li + li{ margin-top:8px; }
+
+    .callout-row{
+      display:grid;
+      grid-template-columns:repeat(3, 1fr);
+      gap:12px;
+      margin-top:16px;
+    }
+
+    .mini{
+      background:var(--surface-2);
+      border:1px solid var(--border);
+      border-radius:18px;
+      padding:14px;
+    }
+
+    .mini strong{
+      display:block;
+      margin-bottom:8px;
+      font-size:.95rem;
+    }
+
+    .mini span{
+      color:var(--muted);
+      line-height:1.6;
+      font-size:.92rem;
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:4px 10px;
+      border-radius:999px;
+      font-size:.78rem;
+      font-weight:700;
+      line-height:1;
+      border:1px solid transparent;
+      white-space:nowrap;
+    }
+
+    .badge.good{ background:rgba(16,185,129,.12); color:#9df7d3; border-color:rgba(16,185,129,.35); }
+    .badge.warn{ background:rgba(245,158,11,.12); color:#ffd894; border-color:rgba(245,158,11,.35); }
+    .badge.bad{ background:rgba(239,68,68,.12); color:#ffb6b6; border-color:rgba(239,68,68,.35); }
+    .badge.info{ background:rgba(0,212,255,.10); color:#8feaff; border-color:rgba(0,212,255,.35); }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      margin-top:14px;
+      font-size:.94rem;
+      overflow:hidden;
+      border-radius:18px;
+    }
+
+    th, td{
+      padding:14px 12px;
+      border-bottom:1px solid rgba(255,255,255,.07);
+      text-align:left;
+      vertical-align:top;
+    }
+
+    th{
+      color:#bcd0ec;
+      background:rgba(255,255,255,.03);
+      font-size:.82rem;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+
+    tr:last-child td{ border-bottom:none; }
+
+    .flow{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      align-items:center;
+      margin-top:16px;
+    }
+
+    .flow .step{
+      padding:10px 14px;
+      border-radius:999px;
+      background:var(--surface-2);
+      border:1px solid var(--border);
+      position:relative;
+      font-size:.92rem;
+      line-height:1.35;
+    }
+
+    .flow .arrow{
+      color:var(--muted);
+      font-size:1.1rem;
+      padding:0 2px;
+    }
+
+    .timeline{
+      display:grid;
+      gap:10px;
+      margin-top:14px;
+    }
+
+    .timeline-row{
+      display:grid;
+      grid-template-columns:90px 1fr 1fr;
+      gap:10px;
+      align-items:stretch;
+    }
+
+    .timeline-row .label,
+    .timeline-row .cell{
+      border-radius:16px;
+      padding:12px;
+      border:1px solid var(--border);
+      background:var(--surface-2);
+      min-height:66px;
+      display:flex;
+      align-items:center;
+    }
+
+    .timeline-row .label{
+      justify-content:center;
+      color:#b6c4dc;
+      font-weight:700;
+    }
+
+    .timeline-row .cell strong{
+      display:block;
+      margin-bottom:6px;
+      font-size:.92rem;
+    }
+
+    .timeline-row .cell span{
+      color:var(--muted);
+      line-height:1.5;
+      font-size:.88rem;
+    }
+
+    .code{
+      background:var(--surface-3);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:18px;
+      padding:16px 18px;
+      overflow:auto;
+      margin-top:14px;
+      font-family:"JetBrains Mono", monospace;
+      font-size:.88rem;
+      line-height:1.75;
+    }
+
+    .token-keyword{ color:#8feaff; }
+    .token-type{ color:#d9a8ff; }
+    .token-func{ color:#8effc3; }
+    .token-comment{ color:#7b8aa6; }
+    .token-string{ color:#ffd189; }
+    .token-number{ color:#ff9ab0; }
+    .token-annotation{ color:#ffd189; }
+
+    .quiz-box{
+      padding:22px;
+      border-color:rgba(124,58,237,.45);
+      margin-top:18px;
+      position:relative;
+    }
+
+    .quiz-title{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      color:#d6c8ff;
+      font-weight:700;
+      margin-bottom:14px;
+    }
+
+    .options{
+      display:grid;
+      gap:12px;
+    }
+
+    .option{
+      width:100%;
+      text-align:left;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.10);
+      background:var(--surface-2);
+      color:var(--text);
+      padding:14px 16px;
+      font-family:"Syne", sans-serif;
+      font-size:.98rem;
+      cursor:pointer;
+      transition:all .18s ease;
+    }
+
+    .option:hover:not(:disabled){
+      transform:translateY(-1px);
+      border-color:rgba(124,58,237,.55);
+    }
+
+    .option:disabled{ cursor:not-allowed; opacity:.95; }
+
+    .option.correct{
+      border-color:rgba(16,185,129,.9);
+      background:rgba(16,185,129,.12);
+      color:#d9fff0;
+    }
+
+    .option.incorrect{
+      border-color:rgba(239,68,68,.9);
+      background:rgba(239,68,68,.11);
+      color:#ffe0e0;
+    }
+
+    .explanation{
+      margin-top:14px;
+      border-top:1px solid rgba(255,255,255,.08);
+      padding-top:14px;
+      color:#dfe8f7;
+      display:none;
+    }
+
+    .explanation.show{ display:block; }
+
+    .nav-actions{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      margin-top:22px;
+    }
+
+    .btn{
+      appearance:none;
+      border:none;
+      cursor:pointer;
+      border-radius:999px;
+      padding:14px 18px;
+      font-family:"Syne", sans-serif;
+      font-weight:700;
+      font-size:.98rem;
+      transition:transform .18s ease, opacity .18s ease, background .18s ease;
+    }
+
+    .btn:hover{ transform:translateY(-1px); }
+    .btn:disabled{ opacity:.45; cursor:not-allowed; transform:none; }
+
+    .btn-secondary{
+      background:var(--surface-2);
+      color:var(--text);
+      border:1px solid var(--border);
+    }
+
+    .btn-primary{
+      background:linear-gradient(90deg, rgba(0,212,255,.9), rgba(124,58,237,.92));
+      color:#05101c;
+    }
+
+    .completion{
+      padding:32px;
+      display:none;
+      text-align:left;
+    }
+
+    .completion.active{ display:block; animation:fade .35s ease; }
+
+    .completion h2{
+      margin:8px 0 14px;
+      font-size:clamp(1.75rem, 3vw, 2.5rem);
+      line-height:1.1;
+    }
+
+    .completion p{
+      color:var(--muted);
+      max-width:760px;
+    }
+
+    .cheat-grid{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0, 1fr));
+      gap:16px;
+      margin-top:22px;
+    }
+
+    .cheat{
+      border:1px solid var(--border);
+      background:var(--surface-2);
+      border-radius:18px;
+      padding:18px;
+    }
+
+    .cheat h4{
+      margin:0 0 8px;
+      font-size:1.05rem;
+    }
+
+    .footer-note{
+      margin-top:18px;
+      color:var(--muted);
+      font-size:.92rem;
+    }
+
+    .legend{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:12px;
+    }
+
+    .legend .badge{ font-size:.74rem; }
+
+    .source-note{
+      margin-top:16px;
+      color:var(--muted);
+      font-size:.88rem;
+      line-height:1.6;
+    }
+
+    a{ color:var(--cyan); }
+
+    @media (max-width: 920px){
+      .hero-card{ grid-template-columns:1fr; }
+      .col-7, .col-5, .col-6{ grid-column:span 12; }
+      .timeline-row{ grid-template-columns:70px 1fr; }
+      .timeline-row .cell:last-child{ grid-column:2; }
+      .cheat-grid{ grid-template-columns:1fr; }
+      .callout-row{ grid-template-columns:1fr; }
+    }
+
+    @media (max-width: 620px){
+      .shell{ padding:16px 14px 36px; }
+      .topbar{ border-radius:20px; padding:14px; }
+      .card, .quiz-box, .completion, .hero-card{ padding:18px; }
+      .status-wrap{ width:100%; justify-content:flex-start; }
+      .dots{ gap:8px; }
+      .dot{ width:38px; height:38px; }
+      .nav-actions{ flex-direction:column-reverse; }
+      .btn{ width:100%; }
+      .timeline-row{ grid-template-columns:1fr; }
+      .timeline-row .cell:last-child{ grid-column:auto; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="topbar">
+      <div class="topbar-row">
+        <div class="title-wrap">
+          <h1>Isolation Levels</h1>
+          <p>30-minute interactive module for experienced engineers who want interview clarity, production intuition, and anomaly pattern recognition.</p>
+        </div>
+        <div class="status-wrap">
+          <div class="pill">
+            <div class="mono" style="font-size:.74rem;color:var(--muted);text-transform:uppercase;letter-spacing:.09em;">Time Left</div>
+            <div id="timer" class="mono">30:00</div>
+          </div>
+          <div class="pill">
+            <div class="mono" style="font-size:.74rem;color:var(--muted);text-transform:uppercase;letter-spacing:.09em;">Progress</div>
+            <div id="progressText" class="mono">0 / 5 sections</div>
+          </div>
+        </div>
+      </div>
+      <div class="progress-shell" aria-hidden="true">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+      <div class="dots" id="navDots" aria-label="Section navigation"></div>
+    </div>
+
+    <section class="section active" data-section="0">
+      <div class="hero-card">
+        <div>
+          <span class="kicker">Section 1 of 5 · ~6 mins</span>
+          <h2>Why isolation exists: without it, transactions can quietly lie to each other</h2>
+          <p class="lede">Isolation is about making concurrent work feel predictable. The big idea: multiple transactions can overlap in time, but your application still wants answers that make sense. This section gives you the anomaly vocabulary interviewers love to test.</p>
+          <div class="legend">
+            <span class="badge bad">Dirty read</span>
+            <span class="badge warn">Non-repeatable read</span>
+            <span class="badge warn">Phantom read</span>
+            <span class="badge bad">Lost update</span>
+            <span class="badge bad">Write skew</span>
+          </div>
+        </div>
+        <div class="mini">
+          <strong>What you should be able to say after this section</strong>
+          <span>“Isolation levels are trade-offs between correctness and concurrency. Each level blocks specific anomalies, and the hard part is recognizing which anomaly matters for the business rule you are protecting.”</span>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="card eli5 col-7">
+          <div class="section-line">Section 1 of 5 · ~6 mins</div>
+          <div class="eyebrow"><span class="tag">🧒 ELI5</span> Isolation in kid language</div>
+          <h3>Think of two kids editing the same sticker chart at once</h3>
+          <p>Imagine you and your brother both grab the family chore sticker chart. One of you erases a star but has not decided yet. The other peeks mid-erase and believes the star is really gone. That is how apps get confused: they react to work that was not actually finished.</p>
+          <p>Isolation levels are like house rules for the chart. Weak rules say, “Anyone can peek anytime.” Stronger rules say, “Only look at finished updates,” or even, “Pretend people took turns one by one.”</p>
+        </div>
+
+        <div class="card analogy col-5">
+          <div class="section-line">Section 1 of 5 · ~6 mins</div>
+          <div class="eyebrow"><span class="tag">🔗 ANALOGY</span> Coffee shop order board</div>
+          <h3>Baristas, whiteboards, and half-erased orders</h3>
+          <p>A coffee shop has one pickup board. If one barista rewrites order #42 while another barista reads it halfway through, the second barista may make the wrong drink. Isolation is the shop deciding how much “unfinished scribbling” others are allowed to see.</p>
+          <div class="callout-row">
+            <div class="mini">
+              <strong>Weak rule</strong>
+              <span>Read whatever is on the board right now.</span>
+            </div>
+            <div class="mini">
+              <strong>Better rule</strong>
+              <span>Only trust fully posted orders.</span>
+            </div>
+            <div class="mini">
+              <strong>Strongest rule</strong>
+              <span>Act like one barista updates at a time.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card technical col-12">
+          <div class="section-line">Section 1 of 5 · ~6 mins</div>
+          <div class="eyebrow"><span class="tag">Technical</span> Anomaly vocabulary you must know</div>
+          <h3>The five anomalies that make isolation levels real</h3>
+          <p><strong>Dirty read:</strong> Transaction B reads a value written by transaction A before A commits. If A rolls back, B observed fiction.</p>
+          <p><strong>Non-repeatable read:</strong> Transaction B reads the same row twice and gets different committed values because another transaction changed that row in between.</p>
+          <p><strong>Phantom read:</strong> Transaction B reruns a predicate query like <span class="mono">WHERE amount &gt; 100</span> and sees a different set of rows because another transaction inserted or deleted matching rows.</p>
+          <p><strong>Lost update:</strong> Two transactions read the same old value, both compute a new value, and one overwrites the other’s work.</p>
+          <p><strong>Write skew:</strong> Two transactions read overlapping facts, each updates a different row, and together they break a cross-row rule even though no single row looks invalid.</p>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Anomaly</th>
+                <th>What changes?</th>
+                <th>Interview memory hook</th>
+                <th>Severity</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Dirty read</td>
+                <td>You read uncommitted data</td>
+                <td>“I saw work that never became real.”</td>
+                <td><span class="badge bad">Very risky</span></td>
+              </tr>
+              <tr>
+                <td>Non-repeatable read</td>
+                <td>Same row, different committed value later</td>
+                <td>“I reread one row and it changed.”</td>
+                <td><span class="badge warn">Common</span></td>
+              </tr>
+              <tr>
+                <td>Phantom read</td>
+                <td>Same query, different row set later</td>
+                <td>“The population changed, not just one row.”</td>
+                <td><span class="badge warn">Set-level issue</span></td>
+              </tr>
+              <tr>
+                <td>Lost update</td>
+                <td>One write silently replaces another</td>
+                <td>“Last writer wins by accident.”</td>
+                <td><span class="badge bad">Business bug</span></td>
+              </tr>
+              <tr>
+                <td>Write skew</td>
+                <td>Different rows updated, shared rule broken</td>
+                <td>“Individually valid, jointly invalid.”</td>
+                <td><span class="badge bad">Subtle</span></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="flow" aria-label="anomaly flow">
+            <div class="step">Two transactions overlap</div>
+            <div class="arrow">→</div>
+            <div class="step">Reads happen on snapshots or live data</div>
+            <div class="arrow">→</div>
+            <div class="step">Writes race or reorder</div>
+            <div class="arrow">→</div>
+            <div class="step">Application observes an anomaly</div>
+          </div>
+
+          <div class="timeline">
+            <div class="timeline-row">
+              <div class="label mono">T1</div>
+              <div class="cell"><div><strong>Read account = 100</strong><span>Plans to deduct 10</span></div></div>
+              <div class="cell"><div><strong>Write account = 90</strong><span>Commits based on stale starting value</span></div></div>
+            </div>
+            <div class="timeline-row">
+              <div class="label mono">T2</div>
+              <div class="cell"><div><strong>Read account = 100</strong><span>Plans to deduct 20</span></div></div>
+              <div class="cell"><div><strong>Write account = 80</strong><span>T1's update vanished: lost update</span></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="quiz-box" data-answer="3">
+        <div class="quiz-title">🧠 Quiz · Which anomaly is this?</div>
+        <p>A doctor-on-call app requires <em>at least one</em> doctor on duty. Transaction A sees Dr. Lee on duty and takes Dr. Kim off. Transaction B sees Dr. Kim on duty and takes Dr. Lee off. Both commit. Now nobody is on duty. What happened?</p>
+        <div class="options">
+          <button class="option">Dirty read</button>
+          <button class="option">Non-repeatable read</button>
+          <button class="option">Lost update</button>
+          <button class="option">Write skew</button>
+        </div>
+        <div class="explanation">
+          <strong>Correct answer: Write skew.</strong> Each transaction updated a different row, so there was no direct overwrite. The failure came from breaking a cross-row rule: “at least one doctor must remain on duty.”
+        </div>
+      </div>
+
+      <div class="nav-actions">
+        <button class="btn btn-secondary" disabled>← Back</button>
+        <button class="btn btn-primary" data-next>Next section →</button>
+      </div>
+    </section>
+
+    <section class="section" data-section="1">
+      <div class="grid">
+        <div class="card eli5 col-6">
+          <div class="section-line">Section 2 of 5 · ~6 mins</div>
+          <div class="eyebrow"><span class="tag">🧒 ELI5</span> Read Uncommitted vs Read Committed</div>
+          <h3>Peeking at homework before your friend is done</h3>
+          <p><strong>Read Uncommitted</strong> is like copying your friend’s homework while they are still erasing and rewriting answers. You might copy something they later throw away.</p>
+          <p><strong>Read Committed</strong> says you can only look after they put the pencil down and say, “Done.” That prevents the most embarrassing kind of mistake: believing half-finished work.</p>
+        </div>
+
+        <div class="card warning col-6">
+          <div class="section-line">Section 2 of 5 · ~6 mins</div>
+          <div class="eyebrow"><span class="tag">Warning</span> Important PostgreSQL nuance</div>
+          <h3>PostgreSQL does not really expose dirty reads</h3>
+          <p>In SQL theory, <strong>Read Uncommitted</strong> allows dirty reads. In PostgreSQL specifically, requesting Read Uncommitted behaves like Read Committed, because PostgreSQL’s MVCC design does not expose uncommitted row versions the way people often imagine.</p>
+          <p>This is a great interview answer: <strong>“Read Uncommitted is the weakest standard level, but in PostgreSQL it maps to Read Committed.”</strong></p>
+        </div>
+
+        <div class="card analogy col-5">
+          <div class="section-line">Section 2 of 5 · ~6 mins</div>
+          <div class="eyebrow"><span class="tag">🔗 ANALOGY</span> Restaurant menu board</div>
+          <h3>Only trust dishes after the chef says “send it”</h3>
+          <p>If servers can read the kitchen board while dishes are still being crossed out, they can promise the wrong food to customers. Read Committed makes them wait for the chef’s final send-off. But the board can still change again before the server looks a second time.</p>
+        </div>
+
+        <div class="card technical col-7">
+          <div class="section-line">Section 2 of 5 · ~6 mins</div>
+          <div class="eyebrow"><span class="tag">Technical</span> Weakest practical levels</div>
+          <h3>What each level guarantees</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Level</th>
+                <th>Dirty reads</th>
+                <th>Non-repeatable reads</th>
+                <th>Phantoms</th>
+                <th>Typical use</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Read Uncommitted</td>
+                <td><span class="badge bad">Possible</span></td>
+                <td><span class="badge warn">Possible</span></td>
+                <td><span class="badge warn">Possible</span></td>
+                <td>Rarely used; almost never acceptable for critical business logic</td>
+              </tr>
+              <tr>
+                <td>Read Committed</td>
+                <td><span class="badge good">Blocked</span></td>
+                <td><span class="badge warn">Possible</span></td>
+                <td><span class="badge warn">Possible</span></td>
+                <td>Good default for many OLTP reads and short writes</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <p><strong>Interview answer:</strong> “Read Committed prevents dirty reads by making each statement see only committed data at statement start. But if I issue the same select again later in the same transaction, I might see a different committed value or even a different matching row set.”</p>
+
+          <div class="flow">
+            <div class="step">Statement starts</div>
+            <div class="arrow">→</div>
+            <div class="step">Sees committed rows as of that moment</div>
+            <div class="arrow">→</div>
+            <div class="step">Concurrent commit happens elsewhere</div>
+            <div class="arrow">→</div>
+            <div class="step">Next statement can see newer data</div>
+          </div>
+
+          <div class="code"><span class="token-comment">// JDBC example: choose an isolation level explicitly</span>
+<span class="token-type">Connection</span> conn = dataSource.<span class="token-func">getConnection</span>();
+conn.<span class="token-func">setAutoCommit</span>(<span class="token-keyword">false</span>);
+
+<span class="token-comment">// SQL standard weakest level (not truly distinct in PostgreSQL)</span>
+conn.<span class="token-func">setTransactionIsolation</span>(
+    <span class="token-type">Connection</span>.TRANSACTION_<span class="token-keyword">READ_UNCOMMITTED</span>
+);
+
+<span class="token-comment">// PostgreSQL default</span>
+conn.<span class="token-func">setTransactionIsolation</span>(
+    <span class="token-type">Connection</span>.TRANSACTION_<span class="token-keyword">READ_COMMITTED</span>
+);</div>
+        </div>
+
+        <div class="card technical col-12">
+          <div class="section-line">Section 2 of 5 · ~6 mins</div>
+          <div class="eyebrow"><span class="tag">Technical</span> Non-repeatable read example</div>
+          <h3>Same row, different answer later</h3>
+          <div class="timeline">
+            <div class="timeline-row">
+              <div class="label mono">T1</div>
+              <div class="cell"><div><strong>SELECT salary FROM employee WHERE id = 7 → 100000</strong><span>Read happens at time A</span></div></div>
+              <div class="cell"><div><strong>SELECT salary FROM employee WHERE id = 7 → 110000</strong><span>Second read sees newer committed value</span></div></div>
+            </div>
+            <div class="timeline-row">
+              <div class="label mono">T2</div>
+              <div class="cell"><div><strong>UPDATE employee SET salary = 110000 WHERE id = 7</strong><span>Commits between T1's two reads</span></div></div>
+              <div class="cell"><div><strong>COMMIT</strong><span>Its result becomes visible to later statements</span></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="quiz-box" data-answer="1">
+        <div class="quiz-title">🧠 Quiz · Read Committed intuition</div>
+        <p>Inside one transaction, you run the exact same <span class="mono">SELECT</span> twice. Another transaction commits a row change between those two statements. Under Read Committed, what can happen?</p>
+        <div class="options">
+          <button class="option">You will always get the exact same result both times.</button>
+          <button class="option">You can see a different committed value on the second read.</button>
+          <button class="option">You can see uncommitted data on the first read.</button>
+          <button class="option">The database must reject one transaction immediately.</button>
+        </div>
+        <div class="explanation">
+          <strong>Correct answer: You can see a different committed value on the second read.</strong> Read Committed gives each statement its own fresh committed view, so repeated statements can observe newer committed data.
+        </div>
+      </div>
+
+      <div class="nav-actions">
+        <button class="btn btn-secondary" data-back>← Back</button>
+        <button class="btn btn-primary" data-next>Next section →</button>
+      </div>
+    </section>
+
+    <section class="section" data-section="2">
+      <div class="grid">
+        <div class="card eli5 col-6">
+          <div class="section-line">Section 3 of 5 · ~6 mins</div>
+          <div class="eyebrow"><span class="tag">🧒 ELI5</span> Repeatable Read</div>
+          <h3>You take a photo of the room and keep using that photo</h3>
+          <p>Repeatable Read is like walking into a toy room, snapping a photo, and deciding, “For this whole game, I will trust only this photo.” If someone moves a toy later, your game still uses the original photo. So when you look at the same toy twice, it has not changed for you.</p>
+        </div>
+
+        <div class="card analogy col-6">
+          <div class="section-line">Section 3 of 5 · ~6 mins</div>
+          <div class="eyebrow"><span class="tag">🔗 ANALOGY</span> Frozen scoreboard snapshot</div>
+          <h3>One stable scoreboard for the whole play review</h3>
+          <p>A referee reviews an entire drive using the same frozen scoreboard image. Even if the stadium scoreboard changes later, the referee’s review does not. That is the key: one transaction-wide snapshot instead of one snapshot per statement.</p>
+        </div>
+
+        <div class="card technical col-8">
+          <div class="section-line">Section 3 of 5 · ~6 mins</div>
+          <div class="eyebrow"><span class="tag">Technical</span> Stable row reads, snapshot semantics</div>
+          <h3>What Repeatable Read buys you</h3>
+          <p>Repeatable Read is stronger than Read Committed because the transaction keeps a consistent snapshot for the whole transaction, not a fresh one per statement. That means rereading the same row gives the same visible version.</p>
+          <p><strong>Standard shorthand:</strong> dirty reads and non-repeatable reads are blocked, but phantom reads may still exist.</p>
+          <p><strong>PostgreSQL nuance:</strong> PostgreSQL’s Repeatable Read is stronger than the minimum SQL-standard promise and also avoids phantom reads, but it can still allow <em>serialization anomalies</em> such as write skew. That is exactly why Serializable still exists.</p>
+
+          <div class="flow">
+            <div class="step">Transaction begins</div>
+            <div class="arrow">→</div>
+            <div class="step">First query establishes snapshot</div>
+            <div class="arrow">→</div>
+            <div class="step">Later reads reuse same snapshot</div>
+            <div class="arrow">→</div>
+            <div class="step">Same row stays logically unchanged</div>
+          </div>
+
+          <div class="code"><span class="token-comment">// JDBC example: Repeatable Read</span>
+<span class="token-type">Connection</span> conn = dataSource.<span class="token-func">getConnection</span>();
+conn.<span class="token-func">setAutoCommit</span>(<span class="token-keyword">false</span>);
+conn.<span class="token-func">setTransactionIsolation</span>(
+    <span class="token-type">Connection</span>.TRANSACTION_<span class="token-keyword">REPEATABLE_READ</span>
+);
+
+<span class="token-comment">// First read establishes a stable snapshot</span>
+<span class="token-type">PreparedStatement</span> ps = conn.<span class="token-func">prepareStatement</span>(
+    <span class="token-string">"select balance from account where id = ?"</span>
+);</div>
+        </div>
+
+        <div class="card warning col-4">
+          <div class="section-line">Section 3 of 5 · ~6 mins</div>
+          <div class="eyebrow"><span class="tag">Warning</span> Stronger does not mean perfect</div>
+          <h3>Repeatable Read can still fail cross-row rules</h3>
+          <p>You may block simple reread surprises but still lose correctness on business rules involving multiple rows or predicates. Write skew is the classic trap: each transaction sees a stable snapshot, but the two snapshots together still permit a jointly invalid outcome.</p>
+          <div class="mini">
+            <strong>Interview line</strong>
+            <span>“Repeatable Read is snapshot stability, not full serial equivalence.”</span>
+          </div>
+        </div>
+
+        <div class="card technical col-12">
+          <div class="section-line">Section 3 of 5 · ~6 mins</div>
+          <div class="eyebrow"><span class="tag">Technical</span> Phantom intuition</div>
+          <h3>Row-level stability vs set-level stability</h3>
+          <p>People often memorize the difference like this: <strong>non-repeatable read</strong> is about one row changing, while <strong>phantom read</strong> is about the set of rows matching a predicate changing. That is a good mental model even though some engines, including PostgreSQL, provide stronger guarantees than the minimum standard requires.</p>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Question</th>
+                <th>Think row or set?</th>
+                <th>Example</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Did one known row change?</td>
+                <td><span class="badge info">Row-level</span></td>
+                <td>Employee #7 salary changed from 100k to 110k</td>
+              </tr>
+              <tr>
+                <td>Did the population matching my query change?</td>
+                <td><span class="badge info">Set-level</span></td>
+                <td>Orders over $100 suddenly include 3 extra rows</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="quiz-box" data-answer="2">
+        <div class="quiz-title">🧠 Quiz · What is the best summary?</div>
+        <p>Which statement best describes Repeatable Read in an interview?</p>
+        <div class="options">
+          <button class="option">It only prevents dirty reads and nothing else.</button>
+          <button class="option">It gives every statement a brand-new snapshot.</button>
+          <button class="option">It usually means one stable transaction snapshot, so rereading the same row gives the same result.</button>
+          <button class="option">It guarantees concurrent transactions behave exactly like one-by-one execution.</button>
+        </div>
+        <div class="explanation">
+          <strong>Correct answer: one stable transaction snapshot.</strong> That is the cleanest way to describe Repeatable Read. It is stronger than Read Committed, but it is not the same as full serial execution.
+        </div>
+      </div>
+
+      <div class="nav-actions">
+        <button class="btn btn-secondary" data-back>← Back</button>
+        <button class="btn btn-primary" data-next>Next section →</button>
+      </div>
+    </section>
+
+    <section class="section" data-section="3">
+      <div class="grid">
+        <div class="card eli5 col-6">
+          <div class="section-line">Section 4 of 5 · ~6 mins</div>
+          <div class="eyebrow"><span class="tag">🧒 ELI5</span> Serializable</div>
+          <h3>Everyone lines up and pretends they took turns</h3>
+          <p>Serializable is like kids taking turns at a toy box so neatly that, even if they were actually moving around at the same time, the final result looks exactly like they went one after another. No weird overlap stories are allowed.</p>
+        </div>
+
+        <div class="card analogy col-6">
+          <div class="section-line">Section 4 of 5 · ~6 mins</div>
+          <div class="eyebrow"><span class="tag">🔗 ANALOGY</span> Bank teller queue</div>
+          <h3>As if one teller finished each customer before the next began</h3>
+          <p>Even if multiple tellers worked in parallel behind the scenes, Serializable guarantees the outcome is equivalent to some safe queue order. That is why it is the easiest level to reason about and one of the most expensive to sustain under load.</p>
+        </div>
+
+        <div class="card technical col-8">
+          <div class="section-line">Section 4 of 5 · ~6 mins</div>
+          <div class="eyebrow"><span class="tag">Technical</span> Full isolation</div>
+          <h3>Transactions must appear sequential</h3>
+          <p>Serializable is the strongest standard isolation level. The database must ensure the final committed outcome is consistent with <strong>some</strong> one-by-one ordering of the transactions. That blocks dirty reads, non-repeatable reads, phantom reads, and deeper serialization anomalies like write skew.</p>
+          <p>The catch: stronger guarantees usually mean more coordination, more aborts/retries, less concurrency, or higher latency. That is why engineers do not blindly use Serializable everywhere.</p>
+
+          <div class="flow">
+            <div class="step">T1 and T2 run concurrently</div>
+            <div class="arrow">→</div>
+            <div class="step">Database detects unsafe conflict pattern</div>
+            <div class="arrow">→</div>
+            <div class="step">One transaction may be rolled back</div>
+            <div class="arrow">→</div>
+            <div class="step">Application retries</div>
+          </div>
+
+          <div class="code"><span class="token-comment">// Retry pattern matters with Serializable</span>
+<span class="token-keyword">for</span> (<span class="token-type">int</span> attempt = <span class="token-number">1</span>; attempt &lt;= <span class="token-number">3</span>; attempt++) {
+    <span class="token-keyword">try</span> (<span class="token-type">Connection</span> conn = dataSource.<span class="token-func">getConnection</span>()) {
+        conn.<span class="token-func">setAutoCommit</span>(<span class="token-keyword">false</span>);
+        conn.<span class="token-func">setTransactionIsolation</span>(
+            <span class="token-type">Connection</span>.TRANSACTION_<span class="token-keyword">SERIALIZABLE</span>
+        );
+
+        <span class="token-comment">// do reads + writes enforcing a business invariant</span>
+
+        conn.<span class="token-func">commit</span>();
+        <span class="token-keyword">break</span>;
+    } <span class="token-keyword">catch</span> (<span class="token-type">SQLException</span> e) {
+        <span class="token-comment">// on serialization failure, retry</span>
+    }
+}</div>
+        </div>
+
+        <div class="card technical col-4">
+          <div class="section-line">Section 4 of 5 · ~6 mins</div>
+          <div class="eyebrow"><span class="tag">Technical</span> When it shines</div>
+          <h3>Best fit scenarios</h3>
+          <ul>
+            <li>Money movement or inventory invariants</li>
+            <li>Cross-row rules that must never drift</li>
+            <li>Scheduling/booking systems with strict availability guarantees</li>
+            <li>Complex reporting transactions that must reflect one coherent world</li>
+          </ul>
+        </div>
+
+        <div class="card warning col-12">
+          <div class="section-line">Section 4 of 5 · ~6 mins</div>
+          <div class="eyebrow"><span class="tag">Warning</span> “Expensive” does not only mean CPU</div>
+          <h3>Why Serializable costs more</h3>
+          <p>Cost can show up as contention, waiting, reduced throughput, more deadlock/abort handling, or retry logic in the application. In PostgreSQL’s serializable mode, you should expect possible serialization failures and write code that can safely retry entire transactions.</p>
+        </div>
+      </div>
+
+      <div class="quiz-box" data-answer="3">
+        <div class="quiz-title">🧠 Quiz · Serializable intuition</div>
+        <p>What is the best mental model for Serializable?</p>
+        <div class="options">
+          <button class="option">Every query sees the newest committed rows as of statement start.</button>
+          <button class="option">The same row cannot change, but predicates still drift.</button>
+          <button class="option">Transactions can read half-finished writes, but writes are protected.</button>
+          <button class="option">The final result must look like the transactions ran one by one in some order.</button>
+        </div>
+        <div class="explanation">
+          <strong>Correct answer: the result must look sequential.</strong> That is the essence of serializability. The engine may still execute work concurrently internally, but the committed outcome must be equivalent to a safe serial order.
+        </div>
+      </div>
+
+      <div class="nav-actions">
+        <button class="btn btn-secondary" data-back>← Back</button>
+        <button class="btn btn-primary" data-next>Next section →</button>
+      </div>
+    </section>
+
+    <section class="section" data-section="4">
+      <div class="grid">
+        <div class="card eli5 col-6">
+          <div class="section-line">Section 5 of 5 · ~6 mins</div>
+          <div class="eyebrow"><span class="tag">🧒 ELI5</span> Picking the right level</div>
+          <h3>Choose the house rule that matches the game</h3>
+          <p>If kids are just counting toys, a simple “only trust finished changes” rule may be enough. But if they are deciding whether the last toy can be borrowed, you may need the strictest rule. Isolation level choice is about what kind of mistake your business can and cannot tolerate.</p>
+        </div>
+
+        <div class="card analogy col-6">
+          <div class="section-line">Section 5 of 5 · ~6 mins</div>
+          <div class="eyebrow"><span class="tag">🔗 ANALOGY</span> Door locks</div>
+          <h3>Not every room needs the same lock</h3>
+          <p>You do not put a bank vault lock on a pantry cabinet. But you also do not put a pantry latch on a vault. Read Committed is a practical everyday lock. Serializable is the vault lock for invariant-heavy workflows.</p>
+        </div>
+
+        <div class="card technical col-12">
+          <div class="section-line">Section 5 of 5 · ~6 mins</div>
+          <div class="eyebrow"><span class="tag">Technical</span> Interview cheat table</div>
+          <h3>How to compare levels quickly</h3>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Isolation level</th>
+                <th>Dirty read</th>
+                <th>Non-repeatable read</th>
+                <th>Phantom read</th>
+                <th>Good one-line interview answer</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Read Uncommitted</td>
+                <td><span class="badge bad">Can happen</span></td>
+                <td><span class="badge bad">Can happen</span></td>
+                <td><span class="badge bad">Can happen</span></td>
+                <td>Weakest standard level; dirty reads are allowed, so it is rarely appropriate.</td>
+              </tr>
+              <tr>
+                <td>Read Committed</td>
+                <td><span class="badge good">Blocked</span></td>
+                <td><span class="badge warn">Can happen</span></td>
+                <td><span class="badge warn">Can happen</span></td>
+                <td>Each statement sees only committed data as of statement start; default in PostgreSQL.</td>
+              </tr>
+              <tr>
+                <td>Repeatable Read</td>
+                <td><span class="badge good">Blocked</span></td>
+                <td><span class="badge good">Blocked</span></td>
+                <td><span class="badge warn">Standard: possible</span></td>
+                <td>One stable transaction snapshot; same row reread gives same result.</td>
+              </tr>
+              <tr>
+                <td>Serializable</td>
+                <td><span class="badge good">Blocked</span></td>
+                <td><span class="badge good">Blocked</span></td>
+                <td><span class="badge good">Blocked</span></td>
+                <td>Strongest level; committed outcome must be equivalent to some serial order.</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="callout-row">
+            <div class="mini">
+              <strong>Use Read Committed when…</strong>
+              <span>You want good concurrency and your workflow can tolerate re-reading newer committed values.</span>
+            </div>
+            <div class="mini">
+              <strong>Use Repeatable Read when…</strong>
+              <span>You need stable reads for a transaction and want snapshot consistency stronger than statement-level reads.</span>
+            </div>
+            <div class="mini">
+              <strong>Use Serializable when…</strong>
+              <span>You must protect business invariants that can break through subtle interleavings.</span>
+            </div>
+          </div>
+
+          <div class="flow">
+            <div class="step">What anomaly would hurt us?</div>
+            <div class="arrow">→</div>
+            <div class="step">Which level blocks it?</div>
+            <div class="arrow">→</div>
+            <div class="step">Can we afford the concurrency cost?</div>
+            <div class="arrow">→</div>
+            <div class="step">Add retries/locks if needed</div>
+          </div>
+        </div>
+
+        <div class="card technical col-12">
+          <div class="section-line">Section 5 of 5 · ~6 mins</div>
+          <div class="eyebrow"><span class="tag">Technical</span> 30-second interview answer</div>
+          <h3>Simple answer you can say aloud</h3>
+          <p>“Isolation levels define how much concurrent transactions are allowed to interfere with each other. Read Uncommitted is the weakest and can allow dirty reads. Read Committed blocks dirty reads but the same query can return different results later. Repeatable Read gives a stable transaction snapshot, so rereading the same row stays consistent. Serializable is the strongest and makes the final result equivalent to running transactions one by one, but it usually costs more in coordination and retries.”</p>
+        </div>
+
+        <div class="card warning col-12">
+          <div class="section-line">Section 5 of 5 · ~6 mins</div>
+          <div class="eyebrow"><span class="tag">Warning</span> Memorization trap</div>
+          <h3>Do not blindly memorize engine behavior as universal truth</h3>
+          <p>Interviewers sometimes ask for the textbook SQL-standard ladder, and sometimes they ask for your database engine’s real behavior. Say both when relevant: <strong>“Standard says X; PostgreSQL specifically behaves like Y.”</strong> That answer sounds senior because it shows you know both theory and implementation nuance.</p>
+        </div>
+      </div>
+
+      <div class="quiz-box" data-answer="0">
+        <div class="quiz-title">🧠 Quiz · Picking a level</div>
+        <p>You are implementing a booking workflow where subtle concurrent decisions must not violate availability rules. Which level is the safest default answer in an interview, assuming correctness matters more than throughput?</p>
+        <div class="options">
+          <button class="option">Serializable</button>
+          <button class="option">Read Uncommitted</button>
+          <button class="option">Read Committed</button>
+          <button class="option">Any level is fine if the app is fast</button>
+        </div>
+        <div class="explanation">
+          <strong>Correct answer: Serializable.</strong> For strict invariants and availability rules, Serializable is the cleanest isolation answer because it prevents anomalies that snapshot-based lower levels may still allow.
+        </div>
+      </div>
+
+      <div class="nav-actions">
+        <button class="btn btn-secondary" data-back>← Back</button>
+        <button class="btn btn-primary" id="finishBtn">Finish module ✨</button>
+      </div>
+    </section>
+
+    <section class="completion" id="completionScreen">
+      <div class="section-line">Completed · 30-minute module</div>
+      <h2>🎉 Nice work — you now have the isolation-level map in your head</h2>
+      <p>Here is the fast-scan cheat sheet. Read this once before an interview and you will sound much more deliberate when the conversation shifts from textbook definitions to real concurrency trade-offs.</p>
+
+      <div class="cheat-grid">
+        <div class="cheat">
+          <h4>Dirty read</h4>
+          <ul>
+            <li>You observed uncommitted data.</li>
+            <li>If the writer rolls back, your read was fake.</li>
+            <li>Main level associated with it: Read Uncommitted.</li>
+          </ul>
+        </div>
+        <div class="cheat">
+          <h4>Non-repeatable read</h4>
+          <ul>
+            <li>Same row read twice, different committed value later.</li>
+            <li>Typical under Read Committed.</li>
+          </ul>
+        </div>
+        <div class="cheat">
+          <h4>Phantom read</h4>
+          <ul>
+            <li>Same predicate query, different matching row set later.</li>
+            <li>Think set-level drift, not just one row drift.</li>
+          </ul>
+        </div>
+        <div class="cheat">
+          <h4>Lost update</h4>
+          <ul>
+            <li>Two writers start from the same old value.</li>
+            <li>One write silently wipes out the other.</li>
+          </ul>
+        </div>
+        <div class="cheat">
+          <h4>Write skew</h4>
+          <ul>
+            <li>Different rows updated, shared rule breaks.</li>
+            <li>Classic reason Serializable still matters.</li>
+          </ul>
+        </div>
+        <div class="cheat">
+          <h4>Read Uncommitted</h4>
+          <ul>
+            <li>Weakest standard level.</li>
+            <li>Dirty reads possible in theory.</li>
+            <li>Almost never the right production answer.</li>
+          </ul>
+        </div>
+        <div class="cheat">
+          <h4>Read Committed</h4>
+          <ul>
+            <li>Prevents dirty reads.</li>
+            <li>Each statement gets a fresh committed view.</li>
+            <li>Default in PostgreSQL.</li>
+          </ul>
+        </div>
+        <div class="cheat">
+          <h4>Repeatable Read</h4>
+          <ul>
+            <li>Stable transaction snapshot.</li>
+            <li>Same row reread gives same result.</li>
+            <li>In PostgreSQL, stronger than many simplified textbook summaries.</li>
+          </ul>
+        </div>
+        <div class="cheat">
+          <h4>Serializable</h4>
+          <ul>
+            <li>Strongest standard level.</li>
+            <li>Outcome must look like transactions ran one by one.</li>
+            <li>Expect coordination cost and possible retries.</li>
+          </ul>
+        </div>
+        <div class="cheat">
+          <h4>Best interview framing</h4>
+          <ul>
+            <li>Start with anomaly names.</li>
+            <li>Then explain which level blocks what.</li>
+            <li>Finish with the trade-off: correctness vs concurrency.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="source-note">
+        Content was written to match standard SQL interview vocabulary while preserving key PostgreSQL realities: PostgreSQL defaults to <span class="mono">READ COMMITTED</span>, maps <span class="mono">READ UNCOMMITTED</span> to <span class="mono">READ COMMITTED</span>, and provides a stronger-than-minimum implementation of <span class="mono">REPEATABLE READ</span>.
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const totalSections = 5;
+    const totalSeconds = 30 * 60;
+    const sections = Array.from(document.querySelectorAll('.section'));
+    const completionScreen = document.getElementById('completionScreen');
+    const navDots = document.getElementById('navDots');
+    const timerEl = document.getElementById('timer');
+    const progressBar = document.getElementById('progressBar');
+    const progressText = document.getElementById('progressText');
+    const visited = new Set([0]);
+    let current = 0;
+    let elapsed = 0;
+
+    function formatTime(seconds){
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      return String(mins).padStart(2,'0') + ':' + String(secs).padStart(2,'0');
+    }
+
+    function updateTimerUI(){
+      const remaining = Math.max(totalSeconds - elapsed, 0);
+      timerEl.textContent = formatTime(remaining);
+
+      timerEl.classList.remove('warning', 'danger');
+      if (remaining <= 60) {
+        timerEl.classList.add('danger');
+      } else if (remaining <= 300) {
+        timerEl.classList.add('warning');
+      }
+
+      const percent = Math.min((elapsed / totalSeconds) * 100, 100);
+      progressBar.style.width = percent + '%';
+    }
+
+    function buildDots(){
+      navDots.innerHTML = '';
+      for(let i = 0; i < totalSections; i++){
+        const btn = document.createElement('button');
+        btn.className = 'dot';
+        btn.type = 'button';
+        btn.textContent = i + 1;
+        btn.setAttribute('aria-label', 'Go to section ' + (i + 1));
+        btn.addEventListener('click', () => goToSection(i));
+        navDots.appendChild(btn);
+      }
+      syncDots();
+    }
+
+    function syncDots(){
+      const dots = Array.from(navDots.children);
+      dots.forEach((dot, i) => {
+        dot.classList.remove('active', 'done');
+        if(i === current && completionScreen.classList.contains('active') === false){
+          dot.classList.add('active');
+        } else if(visited.has(i) || completionScreen.classList.contains('active')) {
+          dot.classList.add('done');
+        }
+      });
+      progressText.textContent = `${visited.size} / ${totalSections} sections`;
+    }
+
+    function goToSection(index){
+      completionScreen.classList.remove('active');
+      sections.forEach(sec => sec.classList.remove('active'));
+      current = index;
+      sections[current].classList.add('active');
+      visited.add(current);
+      syncDots();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function showCompletion(){
+      sections.forEach(sec => sec.classList.remove('active'));
+      completionScreen.classList.add('active');
+      for (let i = 0; i < totalSections; i++) visited.add(i);
+      syncDots();
+      progressText.textContent = `${totalSections} / ${totalSections} sections`;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    document.querySelectorAll('[data-next]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if(current < totalSections - 1){
+          goToSection(current + 1);
+        }
+      });
+    });
+
+    document.querySelectorAll('[data-back]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if(current > 0){
+          goToSection(current - 1);
+        }
+      });
+    });
+
+    document.getElementById('finishBtn').addEventListener('click', showCompletion);
+
+    document.querySelectorAll('.quiz-box').forEach(quiz => {
+      const correctIndex = Number(quiz.dataset.answer);
+      const options = Array.from(quiz.querySelectorAll('.option'));
+      const explanation = quiz.querySelector('.explanation');
+
+      options.forEach((btn, idx) => {
+        btn.addEventListener('click', () => {
+          options.forEach(opt => opt.disabled = true);
+          options[correctIndex].classList.add('correct');
+          if(idx !== correctIndex){
+            btn.classList.add('incorrect');
+          }
+          explanation.classList.add('show');
+        }, { once: true });
+      });
+    });
+
+    setInterval(() => {
+      if (elapsed < totalSeconds) {
+        elapsed += 1;
+        updateTimerUI();
+      }
+    }, 1000);
+
+    buildDots();
+    updateTimerUI();
+  </script>
+</body>
+</html>

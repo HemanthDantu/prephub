@@ -1,0 +1,1225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DB Interview Reference Sheet</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0e1a;
+      --surface: #111827;
+      --surface-2: #1a2235;
+      --text: #e5eefb;
+      --muted: #a6b0c3;
+      --line: rgba(255,255,255,.08);
+      --cyan: #00d4ff;
+      --purple: #7c3aed;
+      --green: #10b981;
+      --amber: #f59e0b;
+      --red: #ef4444;
+      --shadow: 0 16px 40px rgba(0,0,0,.34);
+      --topbar-h: 78px;
+      --sidebar-w: 280px;
+      --radius: 18px;
+      --code-bg: #050810;
+      --max-content: 1280px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: "Syne", system-ui, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(124,58,237,.10), transparent 24%),
+        radial-gradient(circle at top right, rgba(0,212,255,.08), transparent 22%),
+        var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    code, pre, .mono { font-family: "JetBrains Mono", monospace; }
+
+    .topbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      backdrop-filter: blur(16px);
+      background: rgba(10,14,26,.82);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .topbar-inner {
+      max-width: calc(var(--max-content) + 48px);
+      margin: 0 auto;
+      padding: 14px 24px 10px;
+      display: grid;
+      grid-template-columns: 1.2fr auto auto;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .title-wrap h1 {
+      margin: 0;
+      font-size: 1.15rem;
+      letter-spacing: .02em;
+      font-weight: 800;
+    }
+
+    .title-wrap p {
+      margin: 2px 0 0;
+      color: var(--muted);
+      font-size: .82rem;
+      letter-spacing: .02em;
+    }
+
+    .mode-toggle {
+      appearance: none;
+      border: 1px solid rgba(0,212,255,.28);
+      background: linear-gradient(180deg, rgba(0,212,255,.12), rgba(124,58,237,.14));
+      color: var(--text);
+      border-radius: 999px;
+      padding: 12px 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform .18s ease, border-color .18s ease, background .18s ease;
+      white-space: nowrap;
+    }
+
+    .mode-toggle:hover {
+      transform: translateY(-1px);
+      border-color: rgba(0,212,255,.5);
+    }
+
+    .timer-block {
+      min-width: 128px;
+      text-align: right;
+    }
+
+    .timer-label {
+      display: block;
+      color: var(--muted);
+      font-size: .72rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      margin-bottom: 2px;
+    }
+
+    .timer {
+      font-size: 1.22rem;
+      font-weight: 700;
+      color: var(--green);
+      letter-spacing: .04em;
+    }
+
+    .timer.warn { color: var(--amber); }
+    .timer.danger { color: var(--red); animation: pulse 1s ease infinite; }
+
+    .progress-track {
+      height: 5px;
+      background: rgba(255,255,255,.06);
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--green), var(--cyan), var(--purple));
+      transition: width .6s linear, background .25s ease;
+    }
+
+    .progress-bar.warn { background: linear-gradient(90deg, var(--amber), #ffbf4d); }
+    .progress-bar.danger { background: linear-gradient(90deg, var(--red), #ff7b7b); }
+
+    .layout {
+      max-width: calc(var(--max-content) + 48px);
+      margin: 0 auto;
+      padding: calc(var(--topbar-h) + 28px) 24px 48px;
+      display: grid;
+      grid-template-columns: var(--sidebar-w) minmax(0,1fr);
+      gap: 24px;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: calc(var(--topbar-h) + 20px);
+      align-self: start;
+      background: linear-gradient(180deg, rgba(17,24,39,.95), rgba(26,34,53,.95));
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 14px;
+      max-height: calc(100vh - var(--topbar-h) - 42px);
+      overflow: auto;
+    }
+
+    .sidebar-title {
+      margin: 4px 6px 10px;
+      color: var(--muted);
+      font-size: .74rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      font-family: "JetBrains Mono", monospace;
+    }
+
+    .nav-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 12px;
+      border-radius: 12px;
+      color: var(--text);
+      background: transparent;
+      border: 1px solid transparent;
+      transition: background .18s ease, border-color .18s ease, transform .18s ease;
+      font-size: .95rem;
+    }
+
+    .nav-link span {
+      font-family: "JetBrains Mono", monospace;
+      color: var(--muted);
+      font-size: .82rem;
+    }
+
+    .nav-link:hover {
+      background: rgba(255,255,255,.03);
+      border-color: rgba(255,255,255,.07);
+      transform: translateX(2px);
+    }
+
+    .nav-link.active {
+      background: linear-gradient(180deg, rgba(0,212,255,.10), rgba(124,58,237,.12));
+      border-color: rgba(0,212,255,.28);
+      box-shadow: inset 0 0 0 1px rgba(124,58,237,.12);
+    }
+
+    .content {
+      min-width: 0;
+    }
+
+    .topic-section {
+      margin-bottom: 28px;
+      background: linear-gradient(180deg, rgba(17,24,39,.96), rgba(26,34,53,.95));
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      padding: 22px 18px 16px;
+      scroll-margin-top: calc(var(--topbar-h) + 18px);
+    }
+
+    .topic-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 2px 6px 16px;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 14px;
+    }
+
+    .topic-header h2 {
+      margin: 0;
+      font-size: 1.18rem;
+      font-weight: 800;
+      letter-spacing: .02em;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 102px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      color: var(--cyan);
+      background: rgba(0,212,255,.08);
+      border: 1px solid rgba(0,212,255,.18);
+      font-family: "JetBrains Mono", monospace;
+      font-size: .78rem;
+    }
+
+    .qa-card {
+      background: rgba(8,11,20,.34);
+      border: 1px solid rgba(255,255,255,.05);
+      border-radius: 16px;
+      overflow: hidden;
+      margin: 12px 0;
+      transition: border-color .18s ease, background .18s ease;
+    }
+
+    .qa-card:hover {
+      border-color: rgba(255,255,255,.09);
+      background: rgba(10,14,26,.42);
+    }
+
+    .question {
+      width: 100%;
+      background: transparent;
+      border: 0;
+      color: var(--text);
+      padding: 16px 18px;
+      text-align: left;
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 14px;
+      align-items: center;
+      font: inherit;
+      cursor: default;
+      border-left: 4px solid rgba(0,212,255,.55);
+    }
+
+    .question-text {
+      font-size: 1rem;
+      font-weight: 800;
+      letter-spacing: .01em;
+    }
+
+    .hint {
+      color: rgba(229,238,251,.32);
+      font-family: "JetBrains Mono", monospace;
+      font-size: .72rem;
+      text-transform: lowercase;
+      opacity: 0;
+      transition: opacity .18s ease;
+    }
+
+    .chev {
+      color: var(--muted);
+      transition: transform .25s ease, color .18s ease;
+      opacity: 0;
+    }
+
+    .answer-wrap {
+      display: grid;
+      grid-template-rows: 1fr;
+      transition: grid-template-rows .28s ease, opacity .22s ease;
+      opacity: 1;
+    }
+
+    .answer-wrap > .answer {
+      min-height: 0;
+    }
+
+    .answer {
+      padding: 0 18px 18px 24px;
+      color: #cad6eb;
+    }
+
+    .answer p {
+      margin: 0 0 10px;
+    }
+
+    .answer strong {
+      color: #f4f7fe;
+    }
+
+    .answer code:not(pre code) {
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.08);
+      padding: 2px 6px;
+      border-radius: 8px;
+      font-size: .92em;
+    }
+
+    pre {
+      margin: 12px 0 10px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: var(--code-bg);
+      border: 1px solid rgba(255,255,255,.06);
+      overflow: auto;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.02);
+    }
+
+    pre code {
+      display: block;
+      color: #d8e4ff;
+      font-size: .9rem;
+      line-height: 1.55;
+      white-space: pre;
+    }
+
+    .kw { color: #7dd3fc; }
+    .type { color: #c084fc; }
+    .str { color: #86efac; }
+    .fn { color: #f9a8d4; }
+    .cm { color: #7f8aa3; font-style: italic; }
+
+    body.recall .question {
+      cursor: pointer;
+    }
+
+    body.recall .hint,
+    body.recall .chev {
+      opacity: 1;
+    }
+
+    body.recall .answer-wrap {
+      grid-template-rows: 0fr;
+      opacity: .96;
+    }
+
+    body.recall .answer-wrap.is-open {
+      grid-template-rows: 1fr;
+      opacity: 1;
+    }
+
+    body.recall .qa-card:not(.open) .question:hover {
+      background: rgba(255,255,255,.02);
+    }
+
+    body.recall .qa-card.open .chev {
+      transform: rotate(180deg);
+      color: var(--cyan);
+    }
+
+    @media (max-width: 1100px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        position: sticky;
+        top: calc(var(--topbar-h) + 16px);
+        max-height: none;
+        overflow: hidden;
+      }
+
+      .nav-list {
+        flex-direction: row;
+        overflow: auto;
+        padding-bottom: 2px;
+      }
+
+      .nav-link {
+        white-space: nowrap;
+      }
+    }
+
+    @media (max-width: 760px) {
+      :root {
+        --topbar-h: 110px;
+      }
+
+      .topbar-inner {
+        grid-template-columns: 1fr;
+        text-align: left;
+      }
+
+      .timer-block {
+        text-align: left;
+      }
+
+      .mode-toggle {
+        width: 100%;
+      }
+
+      .topic-header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .question {
+        grid-template-columns: 1fr auto;
+      }
+
+      .question .hint {
+        grid-column: 1 / -1;
+        order: 3;
+      }
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); text-shadow: 0 0 0 rgba(239,68,68,0); }
+      50% { transform: scale(1.04); text-shadow: 0 0 18px rgba(239,68,68,.45); }
+      100% { transform: scale(1); text-shadow: 0 0 0 rgba(239,68,68,0); }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="title-wrap">
+        <h1>DB Interview Questions — 30-Minute Reference</h1>
+        <p>Fast scan. Tight answers. Recall mode for self-testing.</p>
+      </div>
+      <button class="mode-toggle" id="modeToggle" type="button">Switch to Recall Mode</button>
+      <div class="timer-block">
+        <span class="timer-label">Time left</span>
+        <span class="timer mono" id="timer">30:00</span>
+      </div>
+    </div>
+    <div class="progress-track" aria-hidden="true">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+  </header>
+
+  <main class="layout">
+    <aside class="sidebar" aria-label="Topic navigation">
+      <div class="sidebar-title">Topics</div>
+      <nav class="nav-list">
+        <a href="#keys-relationships" class="nav-link" data-nav-link>Keys &amp; Relationships <span>4</span></a>
+<a href="#schema-modeling" class="nav-link" data-nav-link>Schema &amp; Modeling <span>3</span></a>
+<a href="#transactions-consistency" class="nav-link" data-nav-link>Transactions &amp; Consistency <span>7</span></a>
+<a href="#sql-querying" class="nav-link" data-nav-link>SQL &amp; Querying <span>7</span></a>
+<a href="#indexing-storage" class="nav-link" data-nav-link>Indexing &amp; Storage <span>5</span></a>
+<a href="#hibernate-jpa" class="nav-link" data-nav-link>Hibernate / JPA / Spring <span>8</span></a>
+      </nav>
+    </aside>
+
+    <div class="content">
+      <section class="topic-section" id="keys-relationships" data-topic="Keys &amp; Relationships">
+<div class="topic-header">
+                    <h2>Keys &amp; Relationships</h2>
+                    <span class="badge">4 questions</span>
+                </div>
+
+            <article class="qa-card" data-qa>
+              <button class="question" type="button" aria-expanded="true" aria-controls="keys-relationships-q1">
+                <span class="question-text">Primary key vs unique key</span>
+                <span class="hint">click to reveal</span>
+                <span class="chev" aria-hidden="true">▾</span>
+              </button>
+              <div class="answer-wrap is-open" id="keys-relationships-q1">
+                <div class="answer">
+
+<p><strong>Primary key</strong> uniquely identifies each row, cannot be <code>NULL</code>, and there is only one primary key definition per table. It usually becomes the table’s main identifier.</p>
+<p><strong>Unique key</strong> also enforces uniqueness, but a table can have multiple unique constraints and databases generally allow <code>NULL</code> values depending on engine rules.</p>
+<pre><code><span class="kw">CREATE TABLE</span> users (
+  id <span class="type">INT</span> <span class="kw">PRIMARY KEY</span>,
+  email <span class="type">VARCHAR</span>(255) <span class="kw">UNIQUE</span>
+);</code></pre>
+
+                </div>
+              </div>
+            </article>
+
+            <article class="qa-card" data-qa>
+              <button class="question" type="button" aria-expanded="true" aria-controls="keys-relationships-q2">
+                <span class="question-text">Index vs primary key</span>
+                <span class="hint">click to reveal</span>
+                <span class="chev" aria-hidden="true">▾</span>
+              </button>
+              <div class="answer-wrap is-open" id="keys-relationships-q2">
+                <div class="answer">
+
+<p>An <strong>index</strong> is mainly for faster lookup. A <strong>primary key</strong> is a constraint that guarantees unique row identity and usually creates an index behind the scenes.</p>
+<p>Use an index to speed access patterns. Use a primary key to define the row’s canonical identifier.</p>
+
+                </div>
+              </div>
+            </article>
+
+            <article class="qa-card" data-qa>
+              <button class="question" type="button" aria-expanded="true" aria-controls="keys-relationships-q3">
+                <span class="question-text">What is a foreign key?</span>
+                <span class="hint">click to reveal</span>
+                <span class="chev" aria-hidden="true">▾</span>
+              </button>
+              <div class="answer-wrap is-open" id="keys-relationships-q3">
+                <div class="answer">
+
+<p>A <strong>foreign key</strong> links one table to another and enforces referential integrity. It ensures a child row points to a valid parent row.</p>
+<pre><code><span class="kw">CREATE TABLE</span> orders (
+  id <span class="type">INT</span> <span class="kw">PRIMARY KEY</span>,
+  user_id <span class="type">INT</span>,
+  <span class="kw">FOREIGN KEY</span> (user_id) <span class="kw">REFERENCES</span> users(id)
+);</code></pre>
+
+                </div>
+              </div>
+            </article>
+
+            <article class="qa-card" data-qa>
+              <button class="question" type="button" aria-expanded="true" aria-controls="keys-relationships-q4">
+                <span class="question-text">What is a composite key?</span>
+                <span class="hint">click to reveal</span>
+                <span class="chev" aria-hidden="true">▾</span>
+              </button>
+              <div class="answer-wrap is-open" id="keys-relationships-q4">
+                <div class="answer">
+
+<p>A <strong>composite key</strong> uses multiple columns together to identify a row. It is common in join tables and many-to-many relationships.</p>
+<pre><code><span class="kw">CREATE TABLE</span> enrollment (
+  student_id <span class="type">INT</span>,
+  course_id <span class="type">INT</span>,
+  <span class="kw">PRIMARY KEY</span> (student_id, course_id)
+);</code></pre>
+
+                </div>
+              </div>
+            </article>
+</section>
+<section class="topic-section" id="schema-modeling" data-topic="Schema &amp; Modeling">
+<div class="topic-header">
+                    <h2>Schema &amp; Modeling</h2>
+                    <span class="badge">3 questions</span>
+                </div>
+
+            <article class="qa-card" data-qa>
+              <button class="question" type="button" aria-expanded="true" aria-controls="schema-modeling-q1">
+                <span class="question-text">Normalization vs denormalization</span>
+                <span class="hint">click to reveal</span>
+                <span class="chev" aria-hidden="true">▾</span>
+              </button>
+              <div class="answer-wrap is-open" id="schema-modeling-q1">
+                <div class="answer">
+
+<p><strong>Normalization</strong> reduces duplicate data and improves consistency by splitting data into related tables.</p>
+<p><strong>Denormalization</strong> intentionally duplicates some data to reduce joins and improve read performance.</p>
+<p>Most production systems use a balance: normalize for correctness, denormalize selectively for read-heavy paths.</p>
+
+                </div>
+              </div>
+            </article>
+
+            <article class="qa-card" data-qa>
+              <button class="question" type="button" aria-expanded="true" aria-controls="schema-modeling-q2">
+                <span class="question-text">What is a view?</span>
+                <span class="hint">click to reveal</span>
+                <span class="chev" aria-hidden="true">▾</span>
+              </button>
+              <div class="answer-wrap is-open" id="schema-modeling-q2">
+                <div class="answer">
+
+<p>A <strong>view</strong> is a saved SQL query that behaves like a virtual table. It simplifies reuse, access control, and reporting queries.</p>
+<pre><code><span class="kw">CREATE VIEW</span> active_users <span class="kw">AS</span>
+<span class="kw">SELECT</span> id, email
+<span class="kw">FROM</span> users
+<span class="kw">WHERE</span> active = <span class="kw">TRUE</span>;</code></pre>
+
+                </div>
+              </div>
+            </article>
+
+            <article class="qa-card" data-qa>
+              <button class="question" type="button" aria-expanded="true" aria-controls="schema-modeling-q3">
+                <span class="question-text">SQL vs NoSQL</span>
+                <span class="hint">click to reveal</span>
+                <span class="chev" aria-hidden="true">▾</span>
+              </button>
+              <div class="answer-wrap is-open" id="schema-modeling-q3">
+                <div class="answer">
+
+<p><strong>SQL databases</strong> use structured schemas, strong relational modeling, joins, and transactional guarantees.</p>
+<p><strong>NoSQL databases</strong> trade some relational structure for flexible schemas, horizontal scale, and simpler access for specific workloads.</p>
+<p>Choose based on access patterns, consistency requirements, schema flexibility, and operational complexity.</p>
+
+                </div>
+              </div>
+            </article>
+</section>
+<section class="topic-section" id="transactions-consistency" data-topic="Transactions &amp; Consistency">
+<div class="topic-header">
+                    <h2>Transactions &amp; Consistency</h2>
+                    <span class="badge">7 questions</span>
+                </div>
+
+            <article class="qa-card" data-qa>
+              <button class="question" type="button" aria-expanded="true" aria-controls="transactions-consistency-q1">
+                <span class="question-text">What is ACID?</span>
+                <span class="hint">click to reveal</span>
+                <span class="chev" aria-hidden="true">▾</span>
+              </button>
+              <div class="answer-wrap is-open" id="transactions-consistency-q1">
+                <div class="answer">
+
+<p><strong>Atomicity</strong>: all operations in the transaction succeed or all are rolled back.</p>
+<p><strong>Consistency</strong>: data moves from one valid state to another valid state.</p>
+<p><strong>Isolation</strong>: concurrent transactions do not interfere in unsafe ways.</p>
+<p><strong>Durability</strong>: once committed, the data survives failures.</p>
+
+                </div>
+              </div>
+            </article>
+
+            <article class="qa-card" data-qa>
+              <button class="question" type="button" aria-expanded="true" aria-controls="transactions-consistency-q2">
+                <span class="question-text">What is a transaction?</span>
+                <span class="hint">click to reveal</span>
+                <span class="chev" aria-hidden="true">▾</span>
+              </button>
+              <div class="answer-wrap is-open" id="transactions-consistency-q2">
+                <div class="answer">
+
+<p>A <strong>transaction</strong> groups multiple database operations into one unit of work. It either commits fully or rolls back fully.</p>
+<pre><code><span class="kw">BEGIN</span>;
+<span class="kw">UPDATE</span> accounts <span class="kw">SET</span> balance = balance - 100 <span class="kw">WHERE</span> id = 1;
+<span class="kw">UPDATE</span> accounts <span class="kw">SET</span> balance = balance + 100 <span class="kw">WHERE</span> id = 2;
+<span class="kw">COMMIT</span>;</code></pre>
+
+                </div>
+              </div>
+            </article>
+
+            <article class="qa-card" data-qa>
+              <button class="question" type="button" aria-expanded="true" aria-controls="transactions-consistency-q3">
+                <span class="question-text">DELETE vs TRUNCATE vs DROP</span>
+                <span class="hint">click to reveal</span>
+                <span class="chev" aria-hidden="true">▾</span>
+              </button>
+              <div class="answer-wrap is-open" id="transactions-consistency-q3">
+                <div class="answer">
+
+<p><strong>DELETE</strong> removes selected rows and is typically logged row by row.</p>
+<p><strong>TRUNCATE</strong> removes all rows quickly and usually bypasses row-by-row logging.</p>
+<p><strong>DROP</strong> removes the table itself, including structure and data.</p>
+<p>Use <code>DELETE</code> when you need row-level filtering, <code>TRUNCATE</code> for fast table reset, and <code>DROP</code> when the object should no longer exist.</p>
+
+                </div>
+              </div>
+            </article>
+
+            <article class="qa-card" data-qa>
+              <button class="question" type="button" aria-expanded="true" aria-controls="transactions-consistency-q4">
+                <span class="question-text">What is database locking?</span>
+                <span class="hint">click to reveal</span>
+                <span class="chev" aria-hidden="true">▾</span>
+              </button>
+              <div class="answer-wrap is-open" id="transactions-consistency-q4">
+                <div class="answer">
+
+<p><strong>Locks</strong> coordinate concurrent access so reads and writes do not corrupt data. Common lock scopes are row-level and table-level.</p>
+<p>Lock contention becomes a performance problem when transactions stay open too long or many operations target the same rows.</p>
+
+                </div>
+              </div>
+            </article>
+
+            <article class="qa-card" data-qa>
+              <button class="question" type="button" aria-expanded="true" aria-controls="transactions-consistency-q5">
+                <span class="question-text">What is a deadlock?</span>
+                <span class="hint">click to reveal</span>
+                <span class="chev" aria-hidden="true">▾</span>
+              </button>
+              <div class="answer-wrap is-open" id="transactions-consistency-q5">
+                <div class="answer">
+
+<p>A <strong>deadlock</strong> happens when two transactions each hold resources the other needs, so both wait indefinitely until the database aborts one of them.</p>
+<p>Reduce deadlocks with short transactions, consistent lock order, and narrower update scope.</p>
+
+                </div>
+              </div>
+            </article>
+
+            <article class="qa-card" data-qa>
+              <button class="question" type="button" aria-expanded="true" aria-controls="transactions-consistency-q6">
+                <span class="question-text">What are isolation levels?</span>
+                <span class="hint">click to reveal</span>
+                <span class="chev" aria-hidden="true">▾</span>
+              </button>
+              <div class="answer-wrap is-open" id="transactions-consistency-q6">
+                <div class="answer">
+
+<p>Isolation levels define how much one transaction can see another transaction’s changes.</p>
+<p><strong>READ UNCOMMITTED</strong> allows dirty reads. <strong>READ COMMITTED</strong> prevents dirty reads. <strong>REPEATABLE READ</strong> prevents non-repeatable reads. <strong>SERIALIZABLE</strong> gives the strongest isolation but has the highest concurrency cost.</p>
+
+                </div>
+              </div>
+            </article>
+
+            <article class="qa-card" data-qa>
+              <button class="question" type="button" aria-expanded="true" aria-controls="transactions-consistency-q7">
+                <span class="question-text">Optimistic vs pessimistic locking</span>
+                <span class="hint">click to reveal</span>
+                <span class="chev" aria-hidden="true">▾</span>
+              </button>
+              <div class="answer-wrap is-open" id="transactions-consistency-q7">
+                <div class="answer">
+
+<p><strong>Optimistic locking</strong> assumes conflicts are rare and detects them at update time, typically with a version column.</p>
+<p><strong>Pessimistic locking</strong> locks data before updating so others must wait.</p>
+<pre><code><span class="cm">-- Pessimistic locking example</span>
+<span class="kw">SELECT</span> *
+<span class="kw">FROM</span> accounts
+<span class="kw">WHERE</span> id = 1
+<span class="kw">FOR UPDATE</span>;</code></pre>
+
+                </div>
+              </div>
+            </article>
+</section>
+<section class="topic-section" id="sql-querying" data-topic="SQL &amp; Querying">
+<div class="topic-header">
+                    <h2>SQL &amp; Querying</h2>
+                    <span class="badge">7 questions</span>
+                </div>
+
+            <article class="qa-card" data-qa>
+              <button class="question" type="button" aria-expanded="true" aria-controls="sql-querying-q1">
+                <span class="question-text">INNER JOIN vs LEFT JOIN</span>
+                <span class="hint">click to reveal</span>
+                <span class="chev" aria-hidden="true">▾</span>
+              </button>
+              <div class="answer-wrap is-open" id="sql-querying-q1">
+                <div class="answer">
+
+<p><strong>INNER JOIN</strong> returns only rows with matches on both sides.</p>
+<p><strong>LEFT JOIN</strong> returns all rows from the left table and matching rows from the right table; non-matches on the right come back as <code>NULL</code>.</p>
+<pre><code><span class="kw">SELECT</span> u.id, o.id
+<span class="kw">FROM</span> users u
+<span class="kw">LEFT JOIN</span> orders o <span class="kw">ON</span> u.id = o.user_id;</code></pre>
+
+                </div>
+              </div>
+            </article>
+
+            <article class="qa-card" data-qa>
+              <button class="question" type="button" aria-expanded="true" aria-controls="sql-querying-q2">
+                <span class="question-text">What is the N+1 problem?</span>
+                <span class="hint">click to reveal</span>
+                <span class="chev" aria-hidden="true">▾</span>
+              </button>
+              <div class="answer-wrap is-open" id="sql-querying-q2">
+                <div class="answer">
+
+<p>The <strong>N+1 problem</strong> happens when one query loads a parent list and then additional queries run for each row to load related data. That causes excessive round trips and poor performance.</p>
+<pre><code><span class="cm">// 1 query for users, then N queries for orders</span>
+<span class="type">List</span>&lt;User&gt; users = userRepo.findAll();
+<span class="kw">for</span> (User user : users) {
+  user.getOrders();
+}</code></pre>
+<p>Typical fixes are fetch joins, entity graphs, batch fetching, or DTO projections.</p>
+
+                </div>
+              </div>
+            </article>
+
+            <article class="qa-card" data-qa>
+              <button class="question" type="button" aria-expanded="true" aria-controls="sql-querying-q3">
+                <span class="question-text">What is a query execution plan?</span>
+                <span class="hint">click to reveal</span>
+                <span class="chev" aria-hidden="true">▾</span>
+              </button>
+              <div class="answer-wrap is-open" id="sql-querying-q3">
+                <div class="answer">
+
+<p>A <strong>query execution plan</strong> is the database optimizer’s chosen strategy for running a query. It shows whether the engine will use an index scan, full table scan, hash join, nested loop, sort, and more.</p>
+<p>Use <code>EXPLAIN</code> or the database-specific plan tools to diagnose performance issues and verify whether your indexes are actually being used.</p>
+
+                </div>
+              </div>
+            </article>
+
+            <article class="qa-card" data-qa>
+              <button class="question" type="button" aria-expanded="true" aria-controls="sql-querying-q4">
+                <span class="question-text">When does a full table scan happen?</span>
+                <span class="hint">click to reveal</span>
+                <span class="chev" aria-hidden="true">▾</span>
+              </button>
+              <div class="answer-wrap is-open" id="sql-querying-q4">
+                <div class="answer">
+
+<p>A <strong>full table scan</strong> happens when the optimizer decides reading every row is cheaper than using an index.</p>
+<p>Common reasons: no usable index, low selectivity, function-wrapped predicates, or small tables where sequential scan is faster anyway.</p>
+
+                </div>
+              </div>
+            </article>
+
+            <article class="qa-card" data-qa>
+              <button class="question" type="button" aria-expanded="true" aria-controls="sql-querying-q5">
+                <span class="question-text">What causes slow joins?</span>
+                <span class="hint">click to reveal</span>
+                <span class="chev" aria-hidden="true">▾</span>
+              </button>
+              <div class="answer-wrap is-open" id="sql-querying-q5">
+                <div class="answer">
+
+<p>Slow joins are commonly caused by missing indexes on join columns, large intermediate result sets, bad join order, stale statistics, or over-fetching too many columns.</p>
+<p>Typical fixes: add the right indexes, reduce result shape, filter earlier, review join order, and inspect the execution plan.</p>
+
+                </div>
+              </div>
+            </article>
+
+            <article class="qa-card" data-qa>
+              <button class="question" type="button" aria-expanded="true" aria-controls="sql-querying-q6">
+                <span class="question-text">What is selectivity?</span>
+                <span class="hint">click to reveal</span>
+                <span class="chev" aria-hidden="true">▾</span>
+              </button>
+              <div class="answer-wrap is-open" id="sql-querying-q6">
+                <div class="answer">
+
+<p><strong>Selectivity</strong> measures how well a column filters rows. High-selectivity columns like <code>email</code> are more useful for indexes than low-selectivity columns like <code>status</code> or <code>gender</code>.</p>
+<p>If many rows share the same value, the optimizer may ignore the index and scan instead.</p>
+
+                </div>
+              </div>
+            </article>
+
+            <article class="qa-card" data-qa>
+              <button class="question" type="button" aria-expanded="true" aria-controls="sql-querying-q7">
+                <span class="question-text">Why is my query slow even though indexes exist?</span>
+                <span class="hint">click to reveal</span>
+                <span class="chev" aria-hidden="true">▾</span>
+              </button>
+              <div class="answer-wrap is-open" id="sql-querying-q7">
+                <div class="answer">
+
+<p>Having an index does not guarantee usage. The optimizer may skip it if the predicate is non-sargable, the leading column in a composite index is missing, selectivity is low, or the query returns a large portion of the table.</p>
+<pre><code><span class="cm">-- Index on email may not help here</span>
+<span class="kw">SELECT</span> *
+<span class="kw">FROM</span> users
+<span class="kw">WHERE</span> <span class="fn">LOWER</span>(email) = <span class="str">'test@example.com'</span>;</code></pre>
+<p>Always confirm with an execution plan instead of assuming the index is helping.</p>
+
+                </div>
+              </div>
+            </article>
+</section>
+<section class="topic-section" id="indexing-storage" data-topic="Indexing &amp; Storage">
+<div class="topic-header">
+                    <h2>Indexing &amp; Storage</h2>
+                    <span class="badge">5 questions</span>
+                </div>
+
+            <article class="qa-card" data-qa>
+              <button class="question" type="button" aria-expanded="true" aria-controls="indexing-storage-q1">
+                <span class="question-text">What is an index?</span>
+                <span class="hint">click to reveal</span>
+                <span class="chev" aria-hidden="true">▾</span>
+              </button>
+              <div class="answer-wrap is-open" id="indexing-storage-q1">
+                <div class="answer">
+
+<p>An <strong>index</strong> is a separate data structure that helps the database locate rows faster without scanning the whole table.</p>
+<p>Indexes are most useful for columns used in <code>WHERE</code>, <code>JOIN</code>, <code>ORDER BY</code>, and sometimes <code>GROUP BY</code>.</p>
+
+                </div>
+              </div>
+            </article>
+
+            <article class="qa-card" data-qa>
+              <button class="question" type="button" aria-expanded="true" aria-controls="indexing-storage-q2">
+                <span class="question-text">Why not index everything?</span>
+                <span class="hint">click to reveal</span>
+                <span class="chev" aria-hidden="true">▾</span>
+              </button>
+              <div class="answer-wrap is-open" id="indexing-storage-q2">
+                <div class="answer">
+
+<p>Indexes speed reads, but they slow down <code>INSERT</code>, <code>UPDATE</code>, and <code>DELETE</code> because each write must also maintain the index structure.</p>
+<p>They also consume storage and can increase optimizer complexity. Good indexing is workload-specific, not blanket coverage.</p>
+
+                </div>
+              </div>
+            </article>
+
+            <article class="qa-card" data-qa>
+              <button class="question" type="button" aria-expanded="true" aria-controls="indexing-storage-q3">
+                <span class="question-text">What is a B-Tree index?</span>
+                <span class="hint">click to reveal</span>
+                <span class="chev" aria-hidden="true">▾</span>
+              </button>
+              <div class="answer-wrap is-open" id="indexing-storage-q3">
+                <div class="answer">
+
+<p>A <strong>B-Tree</strong> is the most common index structure in relational databases. It keeps keys sorted in a balanced tree so lookups, inserts, deletes, and range scans remain efficient.</p>
+<p>It works well for equality filters, prefix matches, sorting, and range queries like <code>&gt;</code>, <code>&lt;</code>, and <code>BETWEEN</code>.</p>
+
+                </div>
+              </div>
+            </article>
+
+            <article class="qa-card" data-qa>
+              <button class="question" type="button" aria-expanded="true" aria-controls="indexing-storage-q4">
+                <span class="question-text">Clustered vs non-clustered index</span>
+                <span class="hint">click to reveal</span>
+                <span class="chev" aria-hidden="true">▾</span>
+              </button>
+              <div class="answer-wrap is-open" id="indexing-storage-q4">
+                <div class="answer">
+
+<p><strong>Clustered index</strong> defines how table rows are physically ordered. Because data itself is stored in that order, a table can have only one clustered index.</p>
+<p><strong>Non-clustered index</strong> is a separate structure that stores indexed values plus a row locator pointing to the actual data. A table can have multiple non-clustered indexes.</p>
+
+                </div>
+              </div>
+            </article>
+
+            <article class="qa-card" data-qa>
+              <button class="question" type="button" aria-expanded="true" aria-controls="indexing-storage-q5">
+                <span class="question-text">When does an index hurt performance?</span>
+                <span class="hint">click to reveal</span>
+                <span class="chev" aria-hidden="true">▾</span>
+              </button>
+              <div class="answer-wrap is-open" id="indexing-storage-q5">
+                <div class="answer">
+
+<p>Indexes hurt when the write cost outweighs the read benefit, such as on heavily updated columns, low-selectivity columns, very small tables, or tables with too many overlapping indexes.</p>
+<p>They also hurt when query patterns prevent index use, such as applying functions to indexed columns or skipping the leading column in a composite index.</p>
+<pre><code><span class="kw">CREATE INDEX</span> idx_users_email <span class="kw">ON</span> users(email);</code></pre>
+
+                </div>
+              </div>
+            </article>
+</section>
+<section class="topic-section" id="hibernate-jpa" data-topic="Hibernate / JPA / Spring">
+<div class="topic-header">
+                    <h2>Hibernate / JPA / Spring</h2>
+                    <span class="badge">8 questions</span>
+                </div>
+
+            <article class="qa-card" data-qa>
+              <button class="question" type="button" aria-expanded="true" aria-controls="hibernate-jpa-q1">
+                <span class="question-text">Lazy vs eager loading</span>
+                <span class="hint">click to reveal</span>
+                <span class="chev" aria-hidden="true">▾</span>
+              </button>
+              <div class="answer-wrap is-open" id="hibernate-jpa-q1">
+                <div class="answer">
+
+<p><strong>Lazy loading</strong> defers loading related entities until the relation is accessed.</p>
+<p><strong>Eager loading</strong> loads related entities immediately with the parent.</p>
+<p>Lazy is usually safer as a default, but it must be managed carefully to avoid N+1 queries and session-boundary issues.</p>
+
+                </div>
+              </div>
+            </article>
+
+            <article class="qa-card" data-qa>
+              <button class="question" type="button" aria-expanded="true" aria-controls="hibernate-jpa-q2">
+                <span class="question-text">What is LazyInitializationException?</span>
+                <span class="hint">click to reveal</span>
+                <span class="chev" aria-hidden="true">▾</span>
+              </button>
+              <div class="answer-wrap is-open" id="hibernate-jpa-q2">
+                <div class="answer">
+
+<p><strong>LazyInitializationException</strong> occurs when code tries to access a lazily loaded association after the Hibernate session is already closed.</p>
+<p>Common fixes are fetch joins, DTO projections, explicit transaction boundaries, or loading required associations before leaving the service layer.</p>
+<pre><code><span class="kw">@Query</span>(<span class="str">"SELECT u FROM User u JOIN FETCH u.orders"</span>)
+<span class="type">List</span>&lt;User&gt; findUsersWithOrders();</code></pre>
+
+                </div>
+              </div>
+            </article>
+
+            <article class="qa-card" data-qa>
+              <button class="question" type="button" aria-expanded="true" aria-controls="hibernate-jpa-q3">
+                <span class="question-text">Why is Open-In-View dangerous?</span>
+                <span class="hint">click to reveal</span>
+                <span class="chev" aria-hidden="true">▾</span>
+              </button>
+              <div class="answer-wrap is-open" id="hibernate-jpa-q3">
+                <div class="answer">
+
+<p><strong>Open-In-View</strong> keeps the persistence context open through the web layer, which can hide lazy loading problems and trigger unexpected queries during serialization or view rendering.</p>
+<p>It often masks N+1 issues instead of forcing explicit data loading where it belongs.</p>
+
+                </div>
+              </div>
+            </article>
+
+            <article class="qa-card" data-qa>
+              <button class="question" type="button" aria-expanded="true" aria-controls="hibernate-jpa-q4">
+                <span class="question-text">Why use DTOs over entities?</span>
+                <span class="hint">click to reveal</span>
+                <span class="chev" aria-hidden="true">▾</span>
+              </button>
+              <div class="answer-wrap is-open" id="hibernate-jpa-q4">
+                <div class="answer">
+
+<p><strong>DTOs</strong> let you return only the fields the client needs, which avoids exposing internal entity graphs, reduces over-fetching, and prevents lazy loading surprises at the API boundary.</p>
+<p>They are also better for versioning and contract control.</p>
+
+                </div>
+              </div>
+            </article>
+
+            <article class="qa-card" data-qa>
+              <button class="question" type="button" aria-expanded="true" aria-controls="hibernate-jpa-q5">
+                <span class="question-text">Why does @Transactional placement matter?</span>
+                <span class="hint">click to reveal</span>
+                <span class="chev" aria-hidden="true">▾</span>
+              </button>
+              <div class="answer-wrap is-open" id="hibernate-jpa-q5">
+                <div class="answer">
+
+<p>In Spring, <code>@Transactional</code> is applied through proxies, so it typically works on public methods invoked through the Spring-managed bean, not on private self-invoked methods.</p>
+<p>Wrong placement can silently result in no transaction being created at all.</p>
+<pre><code><span class="kw">@Service</span>
+<span class="kw">public class</span> PaymentService {
+  <span class="kw">@Transactional</span>
+  <span class="kw">public void</span> transfer() {
+    <span class="cm">// commit or rollback as one unit</span>
+  }
+}</code></pre>
+
+                </div>
+              </div>
+            </article>
+
+            <article class="qa-card" data-qa>
+              <button class="question" type="button" aria-expanded="true" aria-controls="hibernate-jpa-q6">
+                <span class="question-text">Why do batch inserts matter?</span>
+                <span class="hint">click to reveal</span>
+                <span class="chev" aria-hidden="true">▾</span>
+              </button>
+              <div class="answer-wrap is-open" id="hibernate-jpa-q6">
+                <div class="answer">
+
+<p>Batch inserts reduce database round trips by sending multiple insert statements together. That can significantly improve throughput for bulk writes.</p>
+<p>In Hibernate, batching usually requires configuration and avoiding patterns that force flushes too often.</p>
+<pre><code><span class="cm"># Example Hibernate settings</span>
+spring.jpa.properties.hibernate.jdbc.batch_size=50
+spring.jpa.properties.hibernate.order_inserts=<span class="kw">true</span></code></pre>
+
+                </div>
+              </div>
+            </article>
+
+            <article class="qa-card" data-qa>
+              <button class="question" type="button" aria-expanded="true" aria-controls="hibernate-jpa-q7">
+                <span class="question-text">Why does Hibernate generate unexpected SQL?</span>
+                <span class="hint">click to reveal</span>
+                <span class="chev" aria-hidden="true">▾</span>
+              </button>
+              <div class="answer-wrap is-open" id="hibernate-jpa-q7">
+                <div class="answer">
+
+<p>Unexpected SQL usually comes from entity state transitions, cascade settings, flush timing, lazy associations, bidirectional relationships, and default fetching behavior.</p>
+<p>Turn on SQL logging and inspect generated queries instead of assuming the ORM is doing what you intended.</p>
+
+                </div>
+              </div>
+            </article>
+
+            <article class="qa-card" data-qa>
+              <button class="question" type="button" aria-expanded="true" aria-controls="hibernate-jpa-q8">
+                <span class="question-text">First-level vs second-level cache</span>
+                <span class="hint">click to reveal</span>
+                <span class="chev" aria-hidden="true">▾</span>
+              </button>
+              <div class="answer-wrap is-open" id="hibernate-jpa-q8">
+                <div class="answer">
+
+<p><strong>First-level cache</strong> is session-scoped and built into Hibernate. Repeated reads of the same entity in one session can reuse it without another database hit.</p>
+<p><strong>Second-level cache</strong> is optional, shared across sessions, and useful for stable, read-heavy data when cache invalidation is managed carefully.</p>
+
+                </div>
+              </div>
+            </article>
+</section>
+    </div>
+  </main>
+
+  <script>
+    const body = document.body;
+    const modeToggle = document.getElementById('modeToggle');
+    const timerEl = document.getElementById('timer');
+    const progressBar = document.getElementById('progressBar');
+    const qaCards = [...document.querySelectorAll('[data-qa]')];
+    const navLinks = [...document.querySelectorAll('[data-nav-link]')];
+    const sections = [...document.querySelectorAll('.topic-section')];
+
+    let mode = 'scan';
+
+    function setMode(nextMode) {
+      mode = nextMode;
+      body.classList.toggle('recall', mode === 'recall');
+      modeToggle.textContent = mode === 'scan' ? 'Switch to Recall Mode' : 'Switch to Scan Mode';
+
+      qaCards.forEach(card => {
+        const question = card.querySelector('.question');
+        const answerWrap = card.querySelector('.answer-wrap');
+        if (mode === 'scan') {
+          card.classList.add('open');
+          answerWrap.classList.add('is-open');
+          question.setAttribute('aria-expanded', 'true');
+        } else {
+          card.classList.remove('open');
+          answerWrap.classList.remove('is-open');
+          question.setAttribute('aria-expanded', 'false');
+        }
+      });
+    }
+
+    qaCards.forEach(card => {
+      const question = card.querySelector('.question');
+      const answerWrap = card.querySelector('.answer-wrap');
+
+      question.addEventListener('click', () => {
+        if (mode !== 'recall') return;
+        const isOpen = card.classList.toggle('open');
+        answerWrap.classList.toggle('is-open', isOpen);
+        question.setAttribute('aria-expanded', String(isOpen));
+      });
+    });
+
+    modeToggle.addEventListener('click', () => {
+      setMode(mode === 'scan' ? 'recall' : 'scan');
+    });
+
+    const TOTAL_SECONDS = 30 * 60;
+    let remaining = TOTAL_SECONDS;
+
+    function formatTime(sec) {
+      const minutes = String(Math.floor(sec / 60)).padStart(2, '0');
+      const seconds = String(sec % 60).padStart(2, '0');
+      return `${minutes}:${seconds}`;
+    }
+
+    function updateTimerUI() {
+      timerEl.textContent = formatTime(remaining);
+      const elapsedPct = ((TOTAL_SECONDS - remaining) / TOTAL_SECONDS) * 100;
+      progressBar.style.width = `${elapsedPct}%`;
+
+      timerEl.classList.remove('warn', 'danger');
+      progressBar.classList.remove('warn', 'danger');
+
+      if (remaining <= 60) {
+        timerEl.classList.add('danger');
+        progressBar.classList.add('danger');
+      } else if (remaining <= 300) {
+        timerEl.classList.add('warn');
+        progressBar.classList.add('warn');
+      }
+    }
+
+    updateTimerUI();
+
+    setInterval(() => {
+      if (remaining > 0) {
+        remaining -= 1;
+        updateTimerUI();
+      }
+    }, 1000);
+
+    const observer = new IntersectionObserver((entries) => {
+      const visible = entries
+        .filter(entry => entry.isIntersecting)
+        .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+
+      if (!visible) return;
+
+      const id = visible.target.id;
+      navLinks.forEach(link => {
+        const active = link.getAttribute('href') === `#${id}`;
+        link.classList.toggle('active', active);
+      });
+    }, {
+      rootMargin: '-120px 0px -55% 0px',
+      threshold: [0.1, 0.25, 0.45, 0.7]
+    });
+
+    sections.forEach(section => observer.observe(section));
+    setMode('scan');
+  </script>
+</body>
+</html>

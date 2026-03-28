@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Java Lambda Internals</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --surface: #111827;
+    --surface2: #1a2235;
+    --border: #1e3050;
+    --accent: #00d4ff;
+    --accent2: #7c3aed;
+    --accent3: #10b981;
+    --warn: #f59e0b;
+    --danger: #ef4444;
+    --text: #e2e8f0;
+    --text-dim: #64748b;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Syne', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+
+  .topbar {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(10,14,26,0.96); border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(12px);
+    display: flex; align-items: center; gap: 16px; padding: 0 24px; height: 56px;
+  }
+  .topbar-title { font-size: 13px; font-weight: 700; color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase; white-space: nowrap; }
+  .progress-bar-wrap { flex: 1; }
+  .progress-track { background: var(--border); border-radius: 4px; height: 5px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--accent2), var(--accent)); transition: width 1s linear; }
+  .nav-dots { display: flex; gap: 5px; }
+  .nav-dot {
+    width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--border);
+    background: transparent; cursor: pointer; font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; font-weight: 700; color: var(--text-dim); transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .nav-dot:hover { border-color: var(--accent); color: var(--accent); }
+  .nav-dot.active { border-color: var(--accent); background: var(--accent); color: var(--bg); }
+  .nav-dot.done { border-color: var(--accent3); color: var(--accent3); }
+  .timer {
+    font-family: 'JetBrains Mono', monospace; font-size: 19px; font-weight: 700;
+    color: var(--accent3); background: rgba(16,185,129,0.1); padding: 4px 12px;
+    border-radius: 6px; border: 1px solid rgba(16,185,129,0.3); min-width: 78px; text-align: center;
+    transition: color 0.3s, background 0.3s, border-color 0.3s;
+  }
+  .timer.warn { color: var(--warn); background: rgba(245,158,11,0.1); border-color: rgba(245,158,11,0.3); }
+  .timer.danger { color: var(--danger); background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.3); animation: pulse 1s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1}50%{opacity:0.55} }
+
+  .main { padding: 80px 24px 80px; max-width: 880px; margin: 0 auto; }
+  .section { display: none; }
+  .section.active { display: block; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)} }
+
+  .section-header { margin-bottom: 32px; }
+  .section-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 500; color: var(--accent2); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 8px; }
+  .section-title { font-size: 32px; font-weight: 800; line-height: 1.1; margin-bottom: 6px; }
+  .section-meta { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-dim); }
+
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 22px 24px; margin-bottom: 18px; }
+  .card-label { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 10px; }
+  .card.eli5 { border-color: rgba(245,158,11,0.45); background: rgba(245,158,11,0.04); }
+  .card.eli5::before { content: "🧒 ELI5"; font-size: 17px; display: block; margin-bottom: 8px; }
+  .card.eli5 .card-label { color: var(--warn); }
+  .card.analogy { border-color: rgba(16,185,129,0.4); background: rgba(16,185,129,0.04); }
+  .card.analogy::before { content: "🔗 ANALOGY"; font-size: 17px; display: block; margin-bottom: 8px; }
+  .card.analogy .card-label { color: var(--accent3); }
+  .card.technical { border-color: rgba(0,212,255,0.28); background: rgba(0,212,255,0.025); }
+  .card.technical .card-label { color: var(--accent); }
+  .card.warning { border-color: rgba(239,68,68,0.4); background: rgba(239,68,68,0.04); }
+  .card.warning .card-label { color: var(--danger); }
+  .card.purple { border-color: rgba(124,58,237,0.45); background: rgba(124,58,237,0.04); }
+  .card.purple .card-label { color: var(--accent2); }
+
+  p { line-height: 1.75; margin-bottom: 10px; font-size: 15px; }
+  p:last-child { margin-bottom: 0; }
+  strong { color: var(--accent); font-weight: 700; }
+  em { color: var(--accent3); font-style: normal; font-weight: 600; }
+  ul, ol { padding-left: 22px; }
+  li { line-height: 1.8; font-size: 14px; margin-bottom: 3px; }
+  h3 { font-size: 17px; font-weight: 700; margin: 22px 0 10px; }
+  h4 { font-size: 13px; font-weight: 700; margin: 14px 0 6px; color: var(--accent2); text-transform: uppercase; letter-spacing: 0.06em; }
+  hr { border: none; border-top: 1px solid var(--border); margin: 22px 0; }
+
+  pre, code { font-family: 'JetBrains Mono', monospace; }
+  pre { background: #050810; border: 1px solid var(--border); border-radius: 8px; padding: 16px 20px; overflow-x: auto; margin: 12px 0; line-height: 1.65; font-size: 12.5px; }
+  .ic { font-family: 'JetBrains Mono', monospace; background: rgba(0,212,255,0.1); padding: 1px 6px; border-radius: 4px; font-size: 12px; color: var(--accent); }
+  .ic2 { font-family: 'JetBrains Mono', monospace; background: rgba(124,58,237,0.12); padding: 1px 6px; border-radius: 4px; font-size: 12px; color: var(--accent2); }
+
+  /* syntax colors */
+  .kw { color: #c792ea; }
+  .ty { color: #82aaff; }
+  .st { color: #c3e88d; }
+  .cm { color: #546e7a; font-style: italic; }
+  .fn { color: var(--accent3); }
+  .nu { color: var(--warn); }
+  .an { color: #ffcb6b; }
+
+  /* step flow */
+  .step-flow { display: flex; align-items: center; gap: 7px; margin: 14px 0; flex-wrap: wrap; }
+  .step { background: var(--surface2); border: 1px solid var(--border); padding: 7px 13px; border-radius: 6px; font-size: 12px; font-weight: 600; line-height: 1.4; text-align: center; }
+  .step-arrow { color: var(--text-dim); font-size: 16px; }
+  .step.cyan { border-color: var(--accent); color: var(--accent); background: rgba(0,212,255,0.07); }
+  .step.green { border-color: var(--accent3); color: var(--accent3); background: rgba(16,185,129,0.07); }
+  .step.purple { border-color: var(--accent2); color: var(--accent2); background: rgba(124,58,237,0.08); }
+  .step.amber { border-color: var(--warn); color: var(--warn); background: rgba(245,158,11,0.08); }
+  .step.red { border-color: var(--danger); color: var(--danger); background: rgba(239,68,68,0.08); }
+
+  /* badge */
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+  .bg { background: rgba(16,185,129,0.18); color: var(--accent3); }
+  .by { background: rgba(245,158,11,0.18); color: var(--warn); }
+  .br { background: rgba(239,68,68,0.18); color: var(--danger); }
+  .bc { background: rgba(0,212,255,0.14); color: var(--accent); }
+  .bp { background: rgba(124,58,237,0.18); color: var(--accent2); }
+
+  /* tables */
+  .tbl { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 13px; }
+  .tbl th { background: var(--surface2); padding: 9px 13px; text-align: left; font-size: 11px; letter-spacing: 0.07em; text-transform: uppercase; color: var(--text-dim); border-bottom: 1px solid var(--border); }
+  .tbl td { padding: 10px 13px; border-bottom: 1px solid rgba(30,48,80,0.45); vertical-align: top; line-height: 1.5; }
+  .tbl tr:hover td { background: rgba(255,255,255,0.018); }
+
+  /* quiz */
+  .quiz-section { background: var(--surface2); border: 1px solid rgba(124,58,237,0.5); border-radius: 12px; padding: 22px; margin: 22px 0; }
+  .quiz-title { font-size: 12px; font-weight: 700; color: var(--accent2); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 14px; }
+  .quiz-q { font-size: 15px; font-weight: 600; margin-bottom: 14px; line-height: 1.6; }
+  .quiz-opts { display: flex; flex-direction: column; gap: 8px; }
+  .quiz-opt {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+    padding: 10px 15px; cursor: pointer; font-size: 13.5px; text-align: left;
+    transition: all 0.15s; color: var(--text); font-family: 'Syne', sans-serif;
+  }
+  .quiz-opt:hover:not(:disabled) { border-color: var(--accent2); background: rgba(124,58,237,0.08); }
+  .quiz-opt.correct { border-color: var(--accent3); background: rgba(16,185,129,0.14); color: var(--accent3); }
+  .quiz-opt.wrong { border-color: var(--danger); background: rgba(239,68,68,0.09); color: var(--danger); }
+  .quiz-opt.reveal { border-color: var(--accent3); background: rgba(16,185,129,0.07); color: var(--accent3); }
+  .quiz-fb { margin-top: 13px; padding: 11px 15px; border-radius: 8px; font-size: 13.5px; line-height: 1.65; display: none; }
+  .quiz-fb.show { display: block; }
+  .quiz-fb.good { background: rgba(16,185,129,0.09); border: 1px solid rgba(16,185,129,0.3); color: #6ee7b7; }
+  .quiz-fb.bad { background: rgba(239,68,68,0.07); border: 1px solid rgba(239,68,68,0.3); color: #fca5a5; }
+
+  /* nav buttons */
+  .nav-buttons { display: flex; justify-content: space-between; margin-top: 40px; padding-top: 22px; border-top: 1px solid var(--border); }
+  .btn { padding: 10px 24px; border-radius: 8px; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; border: none; transition: all 0.15s; letter-spacing: 0.03em; }
+  .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--text-dim); }
+  .btn-ghost:hover { border-color: var(--text-dim); color: var(--text); }
+  .btn-primary { background: var(--accent); color: var(--bg); }
+  .btn-primary:hover { background: #00bde8; }
+  .btn-success { background: var(--accent3); color: var(--bg); }
+  .btn-success:hover { background: #0ea472; }
+
+  /* two col */
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media(max-width:640px) { .twocol { grid-template-columns: 1fr; } }
+
+  /* method ref cards */
+  .mref-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 13px; margin: 14px 0; }
+  @media(max-width:640px) { .mref-grid { grid-template-columns: 1fr; } }
+  .mref-card { background: var(--surface2); border-radius: 10px; padding: 16px; border: 1px solid var(--border); }
+  .mref-type { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
+  .mref-syntax { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--accent); background: rgba(0,212,255,0.08); padding: 5px 10px; border-radius: 5px; margin-bottom: 8px; display: inline-block; }
+  .mref-desc { font-size: 13px; color: var(--text-dim); line-height: 1.55; }
+
+  /* functional interface cards */
+  .fi-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin: 14px 0; }
+  @media(max-width:640px) { .fi-grid { grid-template-columns: 1fr; } }
+  .fi-card { background: var(--surface2); border-radius: 10px; padding: 14px; border: 1px solid var(--border); }
+  .fi-name { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--accent); font-weight: 700; margin-bottom: 4px; }
+  .fi-sig { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent2); margin-bottom: 6px; }
+  .fi-desc { font-size: 12px; color: var(--text-dim); line-height: 1.5; margin-bottom: 6px; }
+  .fi-use { font-size: 11px; color: var(--accent3); }
+
+  /* bytecode compare */
+  .compare-box { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 14px 0; }
+  @media(max-width:640px) { .compare-box { grid-template-columns: 1fr; } }
+  .compare-panel { border-radius: 8px; overflow: hidden; }
+  .compare-header { padding: 8px 14px; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+  .compare-header.old { background: rgba(239,68,68,0.2); color: var(--danger); }
+  .compare-header.new { background: rgba(16,185,129,0.2); color: var(--accent3); }
+
+  /* capture diagram */
+  .capture-diagram { display: flex; gap: 12px; margin: 16px 0; align-items: flex-start; }
+  .mem-box { flex: 1; border-radius: 8px; padding: 14px; border: 1px solid; }
+  .mem-box.stack-box { border-color: rgba(0,212,255,0.3); background: rgba(0,212,255,0.04); }
+  .mem-box.heap-box { border-color: rgba(124,58,237,0.3); background: rgba(124,58,237,0.04); }
+  .mem-title { font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 10px; }
+  .mem-title.c { color: var(--accent); }
+  .mem-title.p { color: var(--accent2); }
+  .mem-row { display: flex; align-items: center; gap: 8px; padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 12px; font-family: 'JetBrains Mono', monospace; }
+  .mem-row:last-child { border-bottom: none; }
+  .mem-var { color: var(--accent3); flex: 1; }
+  .mem-val { color: var(--warn); }
+  .mem-badge { font-size: 9px; padding: 1px 6px; border-radius: 3px; font-weight: 700; }
+  .mb-final { background: rgba(16,185,129,0.2); color: var(--accent3); }
+  .mb-mut { background: rgba(239,68,68,0.2); color: var(--danger); }
+  .mem-arrow { font-size: 16px; color: var(--text-dim); align-self: center; }
+
+  /* completion */
+  #completion { display: none; text-align: center; padding: 60px 24px; }
+  .complete-emoji { font-size: 68px; margin-bottom: 20px; }
+  .complete-title { font-size: 34px; font-weight: 800; margin-bottom: 10px; }
+  .complete-sub { color: var(--text-dim); font-size: 15px; margin-bottom: 30px; line-height: 1.65; }
+  .cheat-sheet { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; max-width: 600px; margin: 0 auto 28px; text-align: left; }
+  .cheat-title { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent2); margin-bottom: 14px; }
+  .cheat-row { font-size: 13px; margin-bottom: 9px; line-height: 1.6; }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <span class="topbar-title">☕ Lambda Internals</span>
+  <div class="progress-bar-wrap">
+    <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  </div>
+  <div class="nav-dots" id="navDots"></div>
+  <div class="timer" id="timer">35:00</div>
+</div>
+
+<div class="main">
+
+<!-- =========================================================
+     SECTION 1 — Lambdas vs Anonymous Inner Classes
+     ========================================================= -->
+<div class="section active" id="sec0">
+  <div class="section-header">
+    <div class="section-label">Section 1 of 5 · ~7 mins</div>
+    <div class="section-title">Lambdas Are NOT Anonymous Inner Classes</div>
+    <div class="section-meta">invokedynamic · bytecode comparison · what the JVM actually does</div>
+  </div>
+
+  <div class="card eli5">
+    <div class="card-label">The core idea</div>
+    <p>You know how when someone asks you to do something, you can either <em>hire a whole new employee</em> (train them, give them a desk, fill out paperwork) — or just <em>hand them a sticky note</em> with the instructions? Before Java 8, when you wanted to pass behaviour around, the JVM hired a full employee (anonymous inner class — its own <code>.class</code> file, its own object on the heap). Lambdas are sticky notes. Lightweight, no extra class file, and the JVM figures out at runtime the most efficient way to use them.</p>
+  </div>
+
+  <div class="card analogy">
+    <div class="card-label">The contractor analogy</div>
+    <p>An <strong>anonymous inner class</strong> is like hiring a full-time contractor: you sign a contract, set up payroll, give them a badge, assign a desk — even if they'll only do one task once. An <strong>lambda</strong> is like texting a friend "hey can you grab milk?" — no contract, no desk, just the task itself passed around as a value.</p>
+    <p>The difference matters at the JVM level because anonymous inner classes create a real <code>.class</code> file on disk and a real object on the heap. Lambdas use a special JVM instruction called <strong>invokedynamic</strong> that defers how the lambda is represented until the first time it runs — and often avoids creating an object entirely.</p>
+  </div>
+
+  <h3>What the Compiler Actually Produces</h3>
+  <div class="card technical">
+    <div class="card-label">Anonymous inner class — old way (pre Java 8)</div>
+    <pre><span class="cm">// You write this:</span>
+Runnable r = <span class="kw">new</span> Runnable() {
+    <span class="an">@Override</span>
+    <span class="kw">public void</span> <span class="fn">run</span>() {
+        System.out.<span class="fn">println</span>(<span class="st">"Hello"</span>);
+    }
+};
+
+<span class="cm">// Compiler produces TWO .class files:</span>
+<span class="cm">//   MyClass.class</span>
+<span class="cm">//   MyClass$1.class   ← a brand-new class just for this one Runnable</span>
+<span class="cm">// At runtime: new MyClass$1() → a real object on the heap, every time</span></pre>
+
+    <div class="card-label" style="margin-top:16px">Lambda — new way (Java 8+)</div>
+    <pre><span class="cm">// You write this:</span>
+Runnable r = () -> System.out.<span class="fn">println</span>(<span class="st">"Hello"</span>);
+
+<span class="cm">// Compiler produces ONE .class file (MyClass.class).</span>
+<span class="cm">// The lambda body is compiled as a private static method inside MyClass:</span>
+<span class="cm">//   private static void lambda$0() { System.out.println("Hello"); }</span>
+<span class="cm">//</span>
+<span class="cm">// The call-site gets an invokedynamic instruction. On first call,</span>
+<span class="cm">// the JVM's LambdaMetafactory wires it up. On subsequent calls?</span>
+<span class="cm">// Often just a method call — no heap allocation at all.</span></pre>
+  </div>
+
+  <h3>The invokedynamic Instruction</h3>
+  <div class="card purple">
+    <div class="card-label">How invokedynamic works (simplified)</div>
+    <div class="step-flow">
+      <div class="step amber">First call hits<br>invokedynamic</div>
+      <div class="step-arrow">→</div>
+      <div class="step purple">JVM calls<br>LambdaMetafactory</div>
+      <div class="step-arrow">→</div>
+      <div class="step cyan">Bootstrap method<br>generates adapter class<br>(in memory, not on disk)</div>
+      <div class="step-arrow">→</div>
+      <div class="step green">Call-site linked.<br>Future calls go direct —<br>no bootstrap overhead</div>
+    </div>
+    <p style="margin-top:12px; font-size:13px;">This is the key insight: <strong>invokedynamic defers the "how" to runtime</strong>. The JVM can choose the most efficient strategy — sometimes it allocates an object, sometimes it doesn't (for non-capturing lambdas it can reuse a singleton). The compiler doesn't lock in the representation at compile time.</p>
+  </div>
+
+  <div class="card technical">
+    <div class="card-label">Non-capturing vs capturing — memory difference</div>
+    <pre><span class="cm">// NON-CAPTURING — no variables from outer scope used</span>
+Runnable r1 = () -> System.out.<span class="fn">println</span>(<span class="st">"Hello"</span>);
+<span class="cm">// JVM can use a SINGLETON — same object reused every time. Zero heap cost.</span>
+
+<span class="cm">// CAPTURING — uses 'name' from outer scope</span>
+String name = <span class="st">"Hemanth"</span>;
+Runnable r2 = () -> System.out.<span class="fn">println</span>(<span class="st">"Hello, "</span> + name);
+<span class="cm">// JVM must create a new object each time to hold the captured 'name'.</span>
+<span class="cm">// Still cheaper than anonymous inner class (no separate .class file),</span>
+<span class="cm">// but not free.</span></pre>
+  </div>
+
+  <div class="compare-box">
+    <div class="compare-panel">
+      <div class="compare-header old">Anonymous Inner Class</div>
+      <pre style="border-radius:0 0 8px 8px; margin:0; font-size:11.5px">✗ Separate .class file
+✗ new object every call
+✗ Can access non-final
+   outer vars (mutable refs)
+✗ Heavier syntax
+✓ Can have state/fields</pre>
+    </div>
+    <div class="compare-panel">
+      <div class="compare-header new">Lambda</div>
+      <pre style="border-radius:0 0 8px 8px; margin:0; font-size:11.5px">✓ No separate .class file
+✓ Singleton if non-capturing
+✓ invokedynamic = flexible
+✗ Only effectively final
+   captures allowed
+✓ Concise syntax</pre>
+    </div>
+  </div>
+
+  <div class="quiz-section">
+    <div class="quiz-title">🧠 Quick Check</div>
+    <div class="quiz-q">When you write a non-capturing lambda (it uses no variables from outside), the JVM can optimize it to:</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" onclick="answer(this,false,'q0')">Create a new object on the heap every time the lambda is assigned</button>
+      <button class="quiz-opt" onclick="answer(this,true,'q0')">Reuse a singleton — the same object instance every time, with zero heap allocation</button>
+      <button class="quiz-opt" onclick="answer(this,false,'q0')">Generate a new .class file at runtime for the lambda</button>
+      <button class="quiz-opt" onclick="answer(this,false,'q0')">Inline the code directly — lambdas are always inlined at compile time</button>
+    </div>
+    <div class="quiz-fb" id="fb-q0"></div>
+  </div>
+
+  <div class="nav-buttons">
+    <div></div>
+    <button class="btn btn-primary" onclick="go(1)">Next: Variable Capture →</button>
+  </div>
+</div>
+
+<!-- =========================================================
+     SECTION 2 — Effectively Final & Variable Capture
+     ========================================================= -->
+<div class="section" id="sec1">
+  <div class="section-header">
+    <div class="section-label">Section 2 of 5 · ~7 mins</div>
+    <div class="section-title">Variable Capture &amp; Effectively Final</div>
+    <div class="section-meta">Why lambdas can't capture mutable variables · Stack vs Heap connection</div>
+  </div>
+
+  <div class="card eli5">
+    <div class="card-label">The core idea</div>
+    <p>Imagine you hand a friend a printed recipe (a lambda). The recipe says "add 2 cups of sugar." That number is <em>frozen in print</em> — your friend can't know if you changed your mind to 3 cups after printing. If the recipe said "add as much sugar as the bowl currently has" — that's a reference to something that can change, and your friend might get a different answer depending on when they look. To keep things safe and predictable, Java says: <strong>you can only print variables into the recipe that you promise won't change</strong>. That promise is called "effectively final."</p>
+  </div>
+
+  <div class="card analogy">
+    <div class="card-label">The photograph analogy</div>
+    <p>A lambda is like taking a <strong>photograph</strong> of a value. Once the photo is taken, it doesn't update if the real thing changes. If you allowed capturing a mutable variable, the photo and the real thing would go out of sync — especially problematic when the lambda runs on a <em>different thread</em> long after the original method's stack frame is gone.</p>
+    <p>Java's rule ("effectively final") is really about this: <strong>the stack frame that owns the variable might not exist by the time the lambda runs</strong>. The lambda needs its own stable copy, not a live reference to a potentially-dead stack slot.</p>
+  </div>
+
+  <h3>Stack vs Heap — Why It Actually Matters</h3>
+  <div class="card technical">
+    <div class="card-label">The memory reason behind the rule</div>
+    <div class="capture-diagram">
+      <div class="mem-box stack-box">
+        <div class="mem-title c">Stack Frame — processOrder()</div>
+        <div class="mem-row"><span class="mem-var">orderId</span><span class="mem-val">"ORD-42"</span><span class="mem-badge mb-final">eff. final</span></div>
+        <div class="mem-row"><span class="mem-var">count</span><span class="mem-val">0</span><span class="mem-badge mb-mut">mutable ✗</span></div>
+        <div class="mem-row" style="margin-top:8px; border-top: 1px dashed rgba(255,255,255,0.1); padding-top:8px; color: var(--danger); font-size:11px;">⚠ Frame popped when<br>processOrder() returns</div>
+      </div>
+      <div class="mem-arrow">→</div>
+      <div class="mem-box heap-box">
+        <div class="mem-title p">Heap — Lambda Object</div>
+        <div class="mem-row"><span class="mem-var">captured orderId</span><span class="mem-val">"ORD-42"</span><span class="mem-badge mb-final">✓ safe copy</span></div>
+        <div class="mem-row" style="margin-top:8px; font-size:11px; color:var(--text-dim)">Lambda object lives on the heap.<br>Stack frame is GONE when this runs.<br>The copy is the only safe option.</div>
+      </div>
+    </div>
+    <p style="font-size:13px; margin-top:4px;">When you capture <span class="ic">orderId</span> in a lambda, Java copies its value into the lambda object on the heap. The original stack variable is gone when the method returns — but the lambda (and its copy) live on. If Java allowed capturing mutable variables, you'd have a race: the stack changes the value at the same time the lambda reads its copy. Chaos.</p>
+  </div>
+
+  <div class="card technical">
+    <div class="card-label">What "effectively final" means in code</div>
+    <pre><span class="kw">void</span> <span class="fn">processOrder</span>(String orderId) {
+    <span class="cm">// ✅ effectively final — never reassigned after initialization</span>
+    String prefix = <span class="st">"ORDER-"</span>;
+    Runnable r = () -> System.out.<span class="fn">println</span>(prefix + orderId);
+
+    <span class="cm">// ❌ NOT effectively final — reassigned later</span>
+    <span class="kw">int</span> count = <span class="nu">0</span>;
+    count++;  <span class="cm">// This single line makes 'count' not effectively final</span>
+    Runnable r2 = () -> System.out.<span class="fn">println</span>(count);
+    <span class="cm">// Compiler error: "Variable used in lambda should be effectively final"</span>
+}
+
+<span class="cm">// The "final" keyword is optional — the compiler just checks that</span>
+<span class="cm">// you never reassign it. These two are identical:</span>
+<span class="kw">final</span> String a = <span class="st">"hello"</span>;   <span class="cm">// explicitly final</span>
+String b = <span class="st">"hello"</span>;          <span class="cm">// effectively final (never reassigned)</span></pre>
+  </div>
+
+  <h3>The Common Workaround</h3>
+  <div class="card technical">
+    <div class="card-label">When you need a "mutable counter" inside a lambda</div>
+    <pre><span class="cm">// ❌ This won't compile:</span>
+<span class="kw">int</span> count = <span class="nu">0</span>;
+list.<span class="fn">forEach</span>(item -> count++);  <span class="cm">// ERROR</span>
+
+<span class="cm">// ✅ Wrap it in an array (1-element array is effectively final)</span>
+<span class="kw">int</span>[] count = {<span class="nu">0</span>};
+list.<span class="fn">forEach</span>(item -> count[<span class="nu">0</span>]++);  <span class="cm">// array ref is final, content isn't</span>
+
+<span class="cm">// ✅ Better: use AtomicInteger for thread safety</span>
+AtomicInteger count = <span class="kw">new</span> <span class="fn">AtomicInteger</span>(<span class="nu">0</span>);
+list.<span class="fn">forEach</span>(item -> count.<span class="fn">incrementAndGet</span>());
+
+<span class="cm">// ✅ Best for most cases: use streams + reduce/collect</span>
+<span class="kw">long</span> count = list.<span class="fn">stream</span>().<span class="fn">filter</span>(item -> item.<span class="fn">isActive</span>()).<span class="fn">count</span>();</pre>
+  </div>
+
+  <div class="card warning">
+    <div class="card-label">⚠️ Watch out: captured object references ARE allowed — but mutation through them is dangerous</div>
+    <pre><span class="cm">// The LIST reference is effectively final (never reassigned)</span>
+<span class="cm">// but you can still MUTATE the list — Java won't stop you!</span>
+List&lt;String&gt; names = <span class="kw">new</span> ArrayList&lt;&gt;();
+Runnable r = () -> names.<span class="fn">add</span>(<span class="st">"Hemanth"</span>);  <span class="cm">// compiles fine</span>
+<span class="cm">// But if 'r' runs on another thread concurrently → race condition.</span>
+<span class="cm">// "Effectively final" protects the REFERENCE, not the object's contents.</span></pre>
+  </div>
+
+  <div class="quiz-section">
+    <div class="quiz-title">🧠 Quick Check</div>
+    <div class="quiz-q">Why does Java require captured variables to be effectively final? Choose the most precise answer.</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" onclick="answer(this,false,'q1')">It's just a style preference to encourage cleaner code</button>
+      <button class="quiz-opt" onclick="answer(this,false,'q1')">The compiler can't figure out the variable's type if it's mutable</button>
+      <button class="quiz-opt" onclick="answer(this,true,'q1')">The lambda may outlive the stack frame that owns the variable — the value is copied to the heap, and allowing mutation would create unsynchronized copies that diverge</button>
+      <button class="quiz-opt" onclick="answer(this,false,'q1')">Mutable variables can't be stored on the heap</button>
+    </div>
+    <div class="quiz-fb" id="fb-q1"></div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn btn-ghost" onclick="go(0)">← Back</button>
+    <button class="btn btn-primary" onclick="go(2)">Next: Functional Interfaces →</button>
+  </div>
+</div>
+
+<!-- =========================================================
+     SECTION 3 — Functional Interfaces & SAM
+     ========================================================= -->
+<div class="section" id="sec2">
+  <div class="section-header">
+    <div class="section-label">Section 3 of 5 · ~7 mins</div>
+    <div class="section-title">Functional Interfaces &amp; SAM</div>
+    <div class="section-meta">Function · Predicate · Consumer · Supplier · BiFunction · @FunctionalInterface</div>
+  </div>
+
+  <div class="card eli5">
+    <div class="card-label">The core idea</div>
+    <p>A lambda is just a behaviour — but Java is strongly typed, so every behaviour needs a <em>type</em>. A functional interface is the "shape mold" that gives the lambda a type. It's like a form with exactly one blank line: "Do one thing here: ___". The lambda fills in that blank. The form is the interface, the blank line is the single abstract method (SAM).</p>
+  </div>
+
+  <div class="card analogy">
+    <div class="card-label">The vending machine analogy</div>
+    <p>Think of functional interfaces as different types of vending machines:</p>
+    <ul>
+      <li>🍎 <strong>Supplier</strong> — a machine that gives you something with no input. Just press the button: <em>"give me a value."</em></li>
+      <li>🗑️ <strong>Consumer</strong> — a machine that takes something and does work with it. You put something in and it processes it — no output back to you.</li>
+      <li>🔀 <strong>Function</strong> — a machine that takes one thing and gives back a different thing. Input → transform → output.</li>
+      <li>❓ <strong>Predicate</strong> — a machine that takes something and answers yes or no. "Is this item expired?"</li>
+      <li>🔀🔀 <strong>BiFunction</strong> — a Function machine but it takes <em>two</em> inputs and produces one output.</li>
+    </ul>
+  </div>
+
+  <h3>What is a SAM interface?</h3>
+  <div class="card technical">
+    <div class="card-label">Single Abstract Method — the rule behind lambdas</div>
+    <p>A <strong>SAM interface</strong> is an interface with exactly <em>one abstract method</em>. That's it. The lambda's body becomes the implementation of that one method. Java needs this constraint because otherwise the compiler wouldn't know <em>which</em> method the lambda implements.</p>
+    <pre><span class="cm">// This is a SAM interface:</span>
+<span class="an">@FunctionalInterface</span>
+<span class="kw">interface</span> <span class="ty">Transformer</span>&lt;T, R&gt; {
+    R <span class="fn">transform</span>(T input);  <span class="cm">// ← the ONE abstract method</span>
+
+    <span class="cm">// default methods are fine — they're not abstract</span>
+    <span class="kw">default</span> <span class="ty">Transformer</span>&lt;T, R&gt; <span class="fn">andLog</span>() {
+        <span class="kw">return</span> input -> {
+            R result = <span class="fn">transform</span>(input);
+            System.out.<span class="fn">println</span>(<span class="st">"Transformed: "</span> + result);
+            <span class="kw">return</span> result;
+        };
+    }
+}
+
+<span class="cm">// Using it with a lambda:</span>
+<span class="ty">Transformer</span>&lt;String, Integer&gt; lengthOf = s -> s.<span class="fn">length</span>();
+System.out.<span class="fn">println</span>(lengthOf.<span class="fn">transform</span>(<span class="st">"Hemanth"</span>));  <span class="cm">// 7</span></pre>
+  </div>
+
+  <div class="card technical">
+    <div class="card-label">Why does @FunctionalInterface matter?</div>
+    <p>It's a <strong>compile-time guard</strong>. If you accidentally add a second abstract method to the interface, the compiler immediately fails with a clear error instead of silently breaking all the lambdas using that interface.</p>
+    <pre><span class="an">@FunctionalInterface</span>
+<span class="kw">interface</span> <span class="ty">MyFunc</span> {
+    <span class="kw">void</span> <span class="fn">execute</span>();
+    <span class="kw">void</span> <span class="fn">cleanup</span>();  <span class="cm">// ← Compiler ERROR: "multiple non-overriding abstract methods"</span>
+    <span class="cm">// @FunctionalInterface caught this immediately.</span>
+    <span class="cm">// Without it, the error only surfaces when you try to use a lambda.</span>
+}</pre>
+  </div>
+
+  <h3>The Standard Library Functional Interfaces</h3>
+  <div class="fi-grid">
+    <div class="fi-card" style="border-color:rgba(0,212,255,0.3)">
+      <div class="fi-name">Function&lt;T, R&gt;</div>
+      <div class="fi-sig">R apply(T t)</div>
+      <div class="fi-desc">Takes one input, returns one output of (possibly) different type.</div>
+      <div class="fi-use">✦ data transformation, mapping</div>
+    </div>
+    <div class="fi-card" style="border-color:rgba(245,158,11,0.3)">
+      <div class="fi-name">Predicate&lt;T&gt;</div>
+      <div class="fi-sig">boolean test(T t)</div>
+      <div class="fi-desc">Takes one input, returns true/false. Composable with and(), or(), negate().</div>
+      <div class="fi-use">✦ filtering, validation</div>
+    </div>
+    <div class="fi-card" style="border-color:rgba(239,68,68,0.3)">
+      <div class="fi-name">Consumer&lt;T&gt;</div>
+      <div class="fi-sig">void accept(T t)</div>
+      <div class="fi-desc">Takes one input, returns nothing. Side-effects only.</div>
+      <div class="fi-use">✦ printing, saving, forEach</div>
+    </div>
+    <div class="fi-card" style="border-color:rgba(16,185,129,0.3)">
+      <div class="fi-name">Supplier&lt;T&gt;</div>
+      <div class="fi-sig">T get()</div>
+      <div class="fi-desc">Takes nothing, returns a value. Lazy evaluation / factory.</div>
+      <div class="fi-use">✦ lazy init, Optional.orElseGet</div>
+    </div>
+    <div class="fi-card" style="border-color:rgba(124,58,237,0.3)">
+      <div class="fi-name">BiFunction&lt;T,U,R&gt;</div>
+      <div class="fi-sig">R apply(T t, U u)</div>
+      <div class="fi-desc">Takes two inputs of different types, returns one output.</div>
+      <div class="fi-use">✦ merge, combine, reduce</div>
+    </div>
+    <div class="fi-card" style="border-color:rgba(0,212,255,0.15)">
+      <div class="fi-name">UnaryOperator&lt;T&gt;</div>
+      <div class="fi-sig">T apply(T t)</div>
+      <div class="fi-desc">Special Function where input and output are the same type.</div>
+      <div class="fi-use">✦ list.replaceAll(), transforms</div>
+    </div>
+  </div>
+
+  <div class="card technical">
+    <div class="card-label">All five in one real example</div>
+    <pre><span class="cm">// Scenario: processing order list in a Spring Boot service</span>
+
+<span class="ty">Supplier</span>&lt;List&lt;Order&gt;&gt;   fetcher   = () -> orderRepo.<span class="fn">findAll</span>();
+<span class="ty">Predicate</span>&lt;Order&gt;         isActive  = order -> order.<span class="fn">getStatus</span>() == ACTIVE;
+<span class="ty">Function</span>&lt;Order, String&gt;  toId      = order -> order.<span class="fn">getId</span>();
+<span class="ty">Consumer</span>&lt;String&gt;         logger    = id -> log.<span class="fn">info</span>(<span class="st">"Processing: {}"</span>, id);
+<span class="ty">BiFunction</span>&lt;String,String,String&gt; combine = (a, b) -> a + <span class="st">"-"</span> + b;
+
+fetcher.<span class="fn">get</span>()          <span class="cm">// Supplier: fetch list</span>
+    .<span class="fn">stream</span>()
+    .<span class="fn">filter</span>(isActive)    <span class="cm">// Predicate: keep only active</span>
+    .<span class="fn">map</span>(toId)           <span class="cm">// Function: Order → String id</span>
+    .<span class="fn">forEach</span>(logger);    <span class="cm">// Consumer: log each id</span>
+
+<span class="cm">// BiFunction used separately:</span>
+String tag = combine.<span class="fn">apply</span>(<span class="st">"ORDER"</span>, <span class="st">"42"</span>);  <span class="cm">// "ORDER-42"</span></pre>
+  </div>
+
+  <div class="quiz-section">
+    <div class="quiz-title">🧠 Quick Check</div>
+    <div class="quiz-q">You need to write a lambda that takes a <code>String</code> and returns a <code>Boolean</code>. Which functional interface fits best?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" onclick="answer(this,false,'q2')">Consumer&lt;String&gt;</button>
+      <button class="quiz-opt" onclick="answer(this,false,'q2')">Supplier&lt;Boolean&gt;</button>
+      <button class="quiz-opt" onclick="answer(this,true,'q2')">Predicate&lt;String&gt; — or Function&lt;String, Boolean&gt; (Predicate is preferred for boolean tests)</button>
+      <button class="quiz-opt" onclick="answer(this,false,'q2')">BiFunction&lt;String, String, Boolean&gt;</button>
+    </div>
+    <div class="quiz-fb" id="fb-q2"></div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn btn-ghost" onclick="go(1)">← Back</button>
+    <button class="btn btn-primary" onclick="go(3)">Next: Method References →</button>
+  </div>
+</div>
+
+<!-- =========================================================
+     SECTION 4 — Method References
+     ========================================================= -->
+<div class="section" id="sec3">
+  <div class="section-header">
+    <div class="section-label">Section 4 of 5 · ~7 mins</div>
+    <div class="section-title">Method References</div>
+    <div class="section-meta">4 types · when to use each · common gotchas</div>
+  </div>
+
+  <div class="card eli5">
+    <div class="card-label">The core idea</div>
+    <p>A method reference is just a lambda with a shorter name. Instead of writing <code>x -> Math.abs(x)</code>, you can write <code>Math::abs</code>. You're saying: "take this existing method and use it as a behaviour." It's like giving someone directions to a destination versus just handing them a pin on a map — same result, less words.</p>
+  </div>
+
+  <div class="card analogy">
+    <div class="card-label">The speed dial analogy</div>
+    <p>A lambda is like dialing a full phone number: <code>x -> x.toUpperCase()</code>. A method reference is a speed-dial button labeled <code>String::toUpperCase</code>. Same call, one tap. The four types of method references are just four different ways to pre-program that button: with a static function, with a specific object, with any object of a class, or with a constructor.</p>
+  </div>
+
+  <h3>The 4 Types</h3>
+  <div class="mref-grid">
+    <div class="mref-card" style="border-color:rgba(0,212,255,0.4)">
+      <div class="mref-type" style="color:var(--accent)">① Static Method</div>
+      <div class="mref-syntax">ClassName::staticMethod</div>
+      <div class="mref-desc">The method doesn't belong to any instance. The lambda's argument becomes the method's argument.</div>
+    </div>
+    <div class="mref-card" style="border-color:rgba(16,185,129,0.4)">
+      <div class="mref-type" style="color:var(--accent3)">② Instance (bound)</div>
+      <div class="mref-syntax">instance::method</div>
+      <div class="mref-desc">References a method on a <em>specific, already-known</em> object. The object is "bound" — captured just like a lambda variable.</div>
+    </div>
+    <div class="mref-card" style="border-color:rgba(124,58,237,0.4)">
+      <div class="mref-type" style="color:var(--accent2)">③ Instance (unbound)</div>
+      <div class="mref-syntax">ClassName::instanceMethod</div>
+      <div class="mref-desc">The first argument to the lambda becomes <code>this</code> — the receiver. Used when iterating over a collection of objects of that type.</div>
+    </div>
+    <div class="mref-card" style="border-color:rgba(245,158,11,0.4)">
+      <div class="mref-type" style="color:var(--warn)">④ Constructor</div>
+      <div class="mref-syntax">ClassName::new</div>
+      <div class="mref-desc">Creates a new object. The lambda's arguments become constructor arguments. Used as factories.</div>
+    </div>
+  </div>
+
+  <div class="card technical">
+    <div class="card-label">All 4 types in code — side by side</div>
+    <pre><span class="cm">// ① STATIC — ClassName::staticMethod</span>
+<span class="cm">// Lambda:           x -> Integer.parseInt(x)</span>
+<span class="ty">Function</span>&lt;String, Integer&gt; parse = Integer::<span class="fn">parseInt</span>;
+<span class="ty">Function</span>&lt;Integer, String&gt; abs   = Math::<span class="fn">abs</span>;   <span class="cm">// wait — Math.abs returns int</span>
+<span class="cm">// Use: parse.apply("42") → 42</span>
+
+<span class="cm">// ② INSTANCE (bound) — instance::method</span>
+<span class="cm">// Lambda:           s -> myPrefix.concat(s)</span>
+String myPrefix = <span class="st">"ORDER-"</span>;
+<span class="ty">Function</span>&lt;String, String&gt; addPrefix = myPrefix::<span class="fn">concat</span>;
+<span class="cm">// Use: addPrefix.apply("42") → "ORDER-42"</span>
+<span class="cm">// 'myPrefix' is the bound/captured object</span>
+
+<span class="cm">// ③ INSTANCE (unbound) — ClassName::instanceMethod</span>
+<span class="cm">// Lambda:           s -> s.toUpperCase()</span>
+<span class="ty">Function</span>&lt;String, String&gt; upper = String::<span class="fn">toUpperCase</span>;
+List&lt;String&gt; names = List.<span class="fn">of</span>(<span class="st">"alice"</span>, <span class="st">"bob"</span>);
+names.<span class="fn">stream</span>().<span class="fn">map</span>(String::<span class="fn">toUpperCase</span>).<span class="fn">toList</span>();
+<span class="cm">// The String in the stream becomes 'this' for toUpperCase()</span>
+
+<span class="cm">// ④ CONSTRUCTOR — ClassName::new</span>
+<span class="cm">// Lambda:           name -> new Order(name)</span>
+<span class="ty">Function</span>&lt;String, Order&gt; factory = Order::<span class="kw">new</span>;
+List&lt;Order&gt; orders = List.<span class="fn">of</span>(<span class="st">"ORD-1"</span>, <span class="st">"ORD-2"</span>)
+    .<span class="fn">stream</span>()
+    .<span class="fn">map</span>(Order::<span class="kw">new</span>)
+    .<span class="fn">toList</span>();</pre>
+  </div>
+
+  <h3>The Tricky One: Unbound vs Bound</h3>
+  <div class="card warning">
+    <div class="card-label">⚠️ Common confusion — unbound looks like static but isn't</div>
+    <pre><span class="cm">// These LOOK similar but are very different:</span>
+
+<span class="cm">// Static — Integer.parseInt is static, takes String, returns int</span>
+<span class="ty">Function</span>&lt;String, Integer&gt; f1 = Integer::<span class="fn">parseInt</span>;
+<span class="cm">//   signature: (String) → Integer ✓</span>
+
+<span class="cm">// Unbound — String.toUpperCase is an instance method</span>
+<span class="cm">// The Function's input becomes the receiver (this)</span>
+<span class="ty">Function</span>&lt;String, String&gt; f2 = String::<span class="fn">toUpperCase</span>;
+<span class="cm">//   signature: (String) → String ✓  ← the String is 'this', not an arg</span>
+
+<span class="cm">// How to tell the difference?</span>
+<span class="cm">// Check if the method is static in the class.</span>
+<span class="cm">// If it's static → Type ① (static)</span>
+<span class="cm">// If it's an instance method on ClassName → Type ③ (unbound)</span></pre>
+  </div>
+
+  <div class="card technical">
+    <div class="card-label">Real-world usage in a Spring Boot service</div>
+    <pre><span class="an">@Service</span>
+<span class="kw">public class</span> <span class="ty">OrderService</span> {
+
+    <span class="kw">private final</span> <span class="ty">OrderRepository</span> repo;
+    <span class="kw">private final</span> <span class="ty">OrderMapper</span>     mapper;
+
+    <span class="kw">public</span> List&lt;OrderDto&gt; <span class="fn">getActiveOrders</span>() {
+        <span class="kw">return</span> repo.<span class="fn">findAll</span>()
+            .<span class="fn">stream</span>()
+            .<span class="fn">filter</span>(Order::<span class="fn">isActive</span>)          <span class="cm">// ③ unbound — order.isActive()</span>
+            .<span class="fn">map</span>(mapper::<span class="fn">toDto</span>)              <span class="cm">// ② bound — mapper.toDto(order)</span>
+            .<span class="fn">sorted</span>(Comparator.<span class="fn">comparing</span>(OrderDto::<span class="fn">getCreatedAt</span>)) <span class="cm">// ③ unbound</span>
+            .<span class="fn">toList</span>();
+    }
+
+    <span class="kw">public</span> List&lt;Order&gt; <span class="fn">buildOrders</span>(List&lt;String&gt; ids) {
+        <span class="kw">return</span> ids.<span class="fn">stream</span>()
+            .<span class="fn">map</span>(Order::<span class="kw">new</span>)               <span class="cm">// ④ constructor ref</span>
+            .<span class="fn">toList</span>();
+    }
+}</pre>
+  </div>
+
+  <div class="quiz-section">
+    <div class="quiz-title">🧠 Quick Check</div>
+    <div class="quiz-q">In <code>list.stream().map(String::toUpperCase)</code>, which type of method reference is <code>String::toUpperCase</code>?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" onclick="answer(this,false,'q3')">Static method reference — toUpperCase is a static method on String</button>
+      <button class="quiz-opt" onclick="answer(this,false,'q3')">Bound instance reference — a specific String instance is captured</button>
+      <button class="quiz-opt" onclick="answer(this,true,'q3')">Unbound instance reference — each String in the stream becomes 'this', the receiver of toUpperCase()</button>
+      <button class="quiz-opt" onclick="answer(this,false,'q3')">Constructor reference</button>
+    </div>
+    <div class="quiz-fb" id="fb-q3"></div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn btn-ghost" onclick="go(2)">← Back</button>
+    <button class="btn btn-primary" onclick="go(4)">Next: Putting It Together →</button>
+  </div>
+</div>
+
+<!-- =========================================================
+     SECTION 5 — Putting It All Together
+     ========================================================= -->
+<div class="section" id="sec4">
+  <div class="section-header">
+    <div class="section-label">Section 5 of 5 · ~7 mins</div>
+    <div class="section-title">Putting It All Together</div>
+    <div class="section-meta">Composing lambdas · Interview-ready mental model · Common pitfalls</div>
+  </div>
+
+  <div class="card eli5">
+    <div class="card-label">The big picture</div>
+    <p>You now have all the pieces: lambdas compile to <em>invokedynamic</em> (not inner classes), they can only capture <em>effectively final</em> variables (because stack frames die), they need a <em>SAM interface</em> as their type, the standard library gives you 5 ready-made shapes (<em>Function, Predicate, Consumer, Supplier, BiFunction</em>), and method references are just <em>shorthand lambdas</em> in 4 flavors. All of this combines to make Java's functional-style stream pipelines work.</p>
+  </div>
+
+  <h3>Function Composition</h3>
+  <div class="card technical">
+    <div class="card-label">Chaining Functions with andThen() and compose()</div>
+    <pre><span class="ty">Function</span>&lt;String, String&gt; trim   = String::<span class="fn">trim</span>;         <span class="cm">// ③ unbound</span>
+<span class="ty">Function</span>&lt;String, String&gt; upper  = String::<span class="fn">toUpperCase</span>;  <span class="cm">// ③ unbound</span>
+<span class="ty">Function</span>&lt;String, Integer&gt; len   = String::<span class="fn">length</span>;       <span class="cm">// ③ unbound</span>
+
+<span class="cm">// andThen: left runs first, then right</span>
+<span class="ty">Function</span>&lt;String, Integer&gt; pipeline = trim.<span class="fn">andThen</span>(upper).<span class="fn">andThen</span>(len);
+pipeline.<span class="fn">apply</span>(<span class="st">"  hello  "</span>);  <span class="cm">// "  hello  " → "hello" → "HELLO" → 5</span>
+
+<span class="cm">// Predicate composition</span>
+<span class="ty">Predicate</span>&lt;String&gt; notNull  = s -> s != <span class="kw">null</span>;
+<span class="ty">Predicate</span>&lt;String&gt; notBlank = s -> !s.<span class="fn">isBlank</span>();
+<span class="ty">Predicate</span>&lt;String&gt; valid    = notNull.<span class="fn">and</span>(notBlank);
+<span class="ty">Predicate</span>&lt;String&gt; invalid  = valid.<span class="fn">negate</span>();
+
+List&lt;String&gt; input = List.<span class="fn">of</span>(<span class="st">"hello"</span>, <span class="st">""</span>, <span class="kw">null</span>, <span class="st">"world"</span>);
+input.<span class="fn">stream</span>().<span class="fn">filter</span>(valid).<span class="fn">toList</span>();  <span class="cm">// ["hello", "world"]</span></pre>
+  </div>
+
+  <h3>The Full Mental Model — Interview Version</h3>
+  <div class="card purple">
+    <div class="card-label">What to say when asked "how do lambdas work under the hood?"</div>
+    <div class="step-flow">
+      <div class="step cyan">You write a lambda</div>
+      <div class="step-arrow">→</div>
+      <div class="step amber">Compiler extracts body into a private static method</div>
+      <div class="step-arrow">→</div>
+      <div class="step purple">Call-site gets invokedynamic instruction</div>
+      <div class="step-arrow">→</div>
+      <div class="step green">First run: LambdaMetafactory bootstraps an adapter in-memory</div>
+      <div class="step-arrow">→</div>
+      <div class="step cyan">Call-site linked — subsequent calls go direct</div>
+    </div>
+    <p style="margin-top:14px; font-size:13.5px; line-height:1.7;">
+      <strong>Key difference from anonymous inner class:</strong> no <code>.class</code> file on disk, no guaranteed heap allocation (JVM decides). Capturing a variable copies its value to the heap into the lambda object. Only effectively-final values allowed because the original stack frame may be gone by the time the lambda runs. The lambda's type is always a SAM interface — <span class="ic">@FunctionalInterface</span> enforces the one-method contract at compile time.
+    </p>
+  </div>
+
+  <h3>Common Pitfalls to Know</h3>
+
+  <div class="card warning">
+    <div class="card-label">⚠️ 1. Checked exceptions in lambdas</div>
+    <pre><span class="cm">// Standard Function doesn't declare checked exceptions:</span>
+<span class="ty">Function</span>&lt;String, String&gt; read = path -> Files.<span class="fn">readString</span>(Path.<span class="fn">of</span>(path));
+<span class="cm">// ❌ Compile error: Unhandled IOException</span>
+
+<span class="cm">// Workaround: wrap in a helper or use a custom functional interface</span>
+<span class="an">@FunctionalInterface</span>
+<span class="kw">interface</span> <span class="ty">ThrowingFunction</span>&lt;T, R&gt; {
+    R <span class="fn">apply</span>(T t) <span class="kw">throws</span> Exception;
+}
+
+<span class="cm">// Or wrap inline:</span>
+<span class="ty">Function</span>&lt;String, String&gt; safeRead = path -> {
+    <span class="kw">try</span> { <span class="kw">return</span> Files.<span class="fn">readString</span>(Path.<span class="fn">of</span>(path)); }
+    <span class="kw">catch</span> (<span class="ty">IOException</span> e) { <span class="kw">throw new</span> <span class="ty">RuntimeException</span>(e); }
+};</pre>
+  </div>
+
+  <div class="card warning">
+    <div class="card-label">⚠️ 2. Serialization and lambdas</div>
+    <pre><span class="cm">// Lambdas are NOT serializable by default.</span>
+<span class="cm">// If you store a lambda in a serializable object — watch out.</span>
+<span class="cm">// Workaround (use sparingly — lambdas generally shouldn't be serialized):</span>
+<span class="ty">Serializable</span> &amp; <span class="ty">Runnable</span> r = () -> System.out.<span class="fn">println</span>(<span class="st">"ok"</span>);
+<span class="cm">// Cast to both interfaces simultaneously — valid in Java</span></pre>
+  </div>
+
+  <div class="card warning">
+    <div class="card-label">⚠️ 3. this inside a lambda vs anonymous inner class</div>
+    <pre><span class="kw">class</span> <span class="ty">OrderProcessor</span> {
+    String name = <span class="st">"Hemanth"</span>;
+
+    <span class="kw">void</span> <span class="fn">process</span>() {
+        <span class="cm">// Anonymous inner class: 'this' = the anonymous class instance</span>
+        Runnable anon = <span class="kw">new</span> Runnable() {
+            <span class="kw">public void</span> <span class="fn">run</span>() { System.out.<span class="fn">println</span>(<span class="kw">this</span>); } <span class="cm">// Runnable instance</span>
+        };
+
+        <span class="cm">// Lambda: 'this' = the enclosing OrderProcessor instance</span>
+        Runnable lambda = () -> System.out.<span class="fn">println</span>(<span class="kw">this</span>.<span class="fn">name</span>); <span class="cm">// "Hemanth"</span>
+        <span class="cm">// Lambdas don't introduce a new 'this' scope. Very useful!</span>
+    }
+}</pre>
+  </div>
+
+  <div class="card technical">
+    <div class="card-label">Primitives — avoid boxing with specialised interfaces</div>
+    <pre><span class="cm">// Function&lt;Integer, Integer&gt; boxes/unboxes — avoid in hot paths</span>
+<span class="ty">Function</span>&lt;Integer, Integer&gt; boxed   = x -> x * <span class="nu">2</span>;  <span class="cm">// Integer → int → Integer</span>
+
+<span class="cm">// Prefer primitive specialisations from java.util.function:</span>
+<span class="ty">IntUnaryOperator</span>           noBox   = x -> x * <span class="nu">2</span>;  <span class="cm">// int → int, zero boxing</span>
+<span class="ty">IntToLongFunction</span>          widen   = x -> x * 2L; <span class="cm">// int → long</span>
+<span class="ty">ToIntFunction</span>&lt;String&gt;      strlen  = String::<span class="fn">length</span>;
+<span class="ty">IntSupplier</span>                rand    = () -> <span class="nu">42</span>;
+<span class="cm">// Rule: any time you see Function&lt;Integer,...&gt; in a hot loop,</span>
+<span class="cm">// reach for the Int*/Long*/Double* variants instead.</span></pre>
+  </div>
+
+  <div class="quiz-section">
+    <div class="quiz-title">🧠 Final Check</div>
+    <div class="quiz-q">Inside a lambda, <code>this</code> refers to:</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" onclick="answer(this,false,'q4')">The lambda object itself (like an anonymous inner class)</button>
+      <button class="quiz-opt" onclick="answer(this,true,'q4')">The enclosing class instance — lambdas don't create a new 'this' scope</button>
+      <button class="quiz-opt" onclick="answer(this,false,'q4')">The functional interface the lambda implements</button>
+      <button class="quiz-opt" onclick="answer(this,false,'q4')">null — this is not accessible inside a lambda</button>
+    </div>
+    <div class="quiz-fb" id="fb-q4"></div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn btn-ghost" onclick="go(3)">← Back</button>
+    <button class="btn btn-success" onclick="finish()">✓ Complete Session</button>
+  </div>
+</div>
+
+<!-- COMPLETION SCREEN -->
+<div id="completion">
+  <div class="complete-emoji">🎉</div>
+  <div class="complete-title">Lambda Internals — Done!</div>
+  <div class="complete-sub">invokedynamic · effectively final · SAM interfaces ·<br>five standard functional interfaces · four method reference types</div>
+  <div class="cheat-sheet">
+    <div class="cheat-title">Cheat Sheet</div>
+    <div class="cheat-row">⚡ <strong>Lambdas ≠ anonymous inner classes</strong> — no .class file on disk; compiled to a private static method + <span class="ic">invokedynamic</span> call-site</div>
+    <div class="cheat-row">🔗 <strong>invokedynamic</strong> — defers the "how" to runtime; LambdaMetafactory bootstraps once; non-capturing lambdas can be singletons</div>
+    <div class="cheat-row">📸 <strong>Effectively final</strong> — captured variables are <em>copied</em> to heap; stack frame may be gone when lambda runs; mutation would cause unsynchronized copies</div>
+    <div class="cheat-row">🧩 <strong>SAM = Single Abstract Method</strong> — any interface with exactly one abstract method is a functional interface; <span class="ic">@FunctionalInterface</span> enforces this at compile time</div>
+    <div class="cheat-row">🔧 <strong>The Big 5</strong>: <span class="ic">Function&lt;T,R&gt;</span> (transform) · <span class="ic">Predicate&lt;T&gt;</span> (test) · <span class="ic">Consumer&lt;T&gt;</span> (use, no return) · <span class="ic">Supplier&lt;T&gt;</span> (produce, no input) · <span class="ic">BiFunction&lt;T,U,R&gt;</span> (two-input transform)</div>
+    <div class="cheat-row">🔀 <strong>Method refs</strong>: ① <span class="ic">Class::staticMethod</span> ② <span class="ic">obj::method</span> (bound) ③ <span class="ic">Class::instanceMethod</span> (unbound, first arg = this) ④ <span class="ic">Class::new</span> (constructor)</div>
+    <div class="cheat-row">⚠️ <strong>Pitfalls</strong>: checked exceptions need wrapping · <span class="ic">this</span> = enclosing class (not the lambda) · use primitive specializations (<span class="ic">IntFunction</span> etc.) to avoid boxing</div>
+  </div>
+  <button class="btn btn-ghost" onclick="restart()">↺ Review Again</button>
+</div>
+
+</div><!-- end .main -->
+
+<script>
+  // ── Timer ──────────────────────────────────────────────
+  const TOTAL = 35 * 60;
+  let elapsed = 0;
+  const timerEl = document.getElementById('timer');
+  const progressEl = document.getElementById('progressFill');
+  setInterval(() => {
+    elapsed++;
+    const rem = Math.max(0, TOTAL - elapsed);
+    const m = String(Math.floor(rem/60)).padStart(2,'0');
+    const s = String(rem%60).padStart(2,'0');
+    timerEl.textContent = `${m}:${s}`;
+    progressEl.style.width = `${Math.min(100,(elapsed/TOTAL)*100)}%`;
+    if (rem <= 60)  timerEl.className = 'timer danger';
+    else if (rem <= 300) timerEl.className = 'timer warn';
+  }, 1000);
+
+  // ── Navigation ─────────────────────────────────────────
+  const N = 5;
+  const TITLES = ['Lambda vs AIC','Capture','Functional I/F','Method Refs','All Together'];
+  let cur = 0;
+  const dotsEl = document.getElementById('navDots');
+  for (let i = 0; i < N; i++) {
+    const d = document.createElement('button');
+    d.className = 'nav-dot' + (i===0?' active':'');
+    d.textContent = i+1; d.title = TITLES[i]; d.id = 'dot'+i;
+    d.onclick = ()=>go(i);
+    dotsEl.appendChild(d);
+  }
+
+  function go(idx) {
+    document.getElementById('sec'+cur).classList.remove('active');
+    document.getElementById('dot'+cur).className = 'nav-dot done';
+    cur = idx;
+    document.getElementById('sec'+cur).classList.add('active');
+    document.getElementById('dot'+cur).className = 'nav-dot active';
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  function finish() {
+    document.getElementById('dot'+cur).className = 'nav-dot done';
+    document.getElementById('sec'+cur).classList.remove('active');
+    document.getElementById('completion').style.display = 'block';
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  function restart() {
+    document.getElementById('completion').style.display = 'none';
+    cur = 0;
+    for(let i=0;i<N;i++) document.getElementById('dot'+i).className = 'nav-dot'+(i===0?' active':'');
+    document.getElementById('sec0').classList.add('active');
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  // ── Quiz ───────────────────────────────────────────────
+  const CORRECT = {
+    q0: 'Reuse a singleton — the same object instance every time, with zero heap allocation',
+    q1: 'The lambda may outlive the stack frame that owns the variable — the value is copied to the heap, and allowing mutation would create unsynchronized copies that diverge',
+    q2: 'Predicate<String> — or Function<String, Boolean> (Predicate is preferred for boolean tests)',
+    q3: 'Unbound instance reference — each String in the stream becomes \'this\', the receiver of toUpperCase()',
+    q4: 'The enclosing class instance — lambdas don\'t create a new \'this\' scope'
+  };
+  const FEEDBACK = {
+    q0: { y: 'Correct! Non-capturing lambdas need no per-call state, so the JVM can create one instance and reuse it indefinitely. This is a key performance advantage over anonymous inner classes.', n: 'Not quite. The key optimization for non-capturing lambdas is that the JVM can use a singleton — no new object per call.' },
+    q1: { y: 'Exactly. The lambda object lives on the heap and may be passed to other threads or called long after the enclosing method returns. A mutable stack variable could change or disappear. Copying the value (and requiring it not to change) is the only safe model.', n: 'The real reason is about memory safety: the stack frame may be gone when the lambda executes. Mutation of the original would cause unsynchronized copies.' },
+    q2: { y: 'Right. Predicate<String> is the idiomatic choice for boolean tests — it also gives you and(), or(), negate() composition methods for free. Function<String, Boolean> would also work but is less idiomatic.', n: 'Think about it: Consumer takes input and returns nothing. Supplier takes nothing. BiFunction needs two inputs. The shape you need is "String in, boolean out" — that\'s Predicate<String>.' },
+    q3: { y: 'Correct. toUpperCase() is an instance method — it has no static version. When you write String::toUpperCase, the String element from the stream becomes the implicit receiver (this). This is the defining trait of an unbound reference.', n: 'Check: is toUpperCase() a static method? No — so it\'s not a static reference. Is there a specific String instance captured? No — so it\'s not bound. Each element in the stream becomes the receiver. That\'s unbound.' },
+    q4: { y: 'Correct — and this is a common interview gotcha. Unlike anonymous inner classes (which introduce their own this scope), a lambda is purely a code block. Inside it, this still refers to the enclosing class. Very useful for accessing instance fields without $ prefixes.', n: 'This is a key difference from anonymous inner classes. Lambdas do NOT introduce their own scope — this still points to the enclosing class instance.' }
+  };
+  const done = {};
+
+  function answer(btn, correct, id) {
+    if (done[id]) return;
+    done[id] = true;
+    btn.closest('.quiz-opts').querySelectorAll('.quiz-opt').forEach(o => {
+      o.disabled = true;
+      if (o.textContent.trim() === CORRECT[id]) o.classList.add('reveal');
+    });
+    btn.classList.add(correct ? 'correct' : 'wrong');
+    const fb = document.getElementById('fb-'+id);
+    fb.className = 'quiz-fb show ' + (correct ? 'good' : 'bad');
+    fb.textContent = (correct ? '✓ ' : '✗ ') + (correct ? FEEDBACK[id].y : FEEDBACK[id].n);
+  }
+</script>
+</body>
+</html>

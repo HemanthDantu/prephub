@@ -1,0 +1,1356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AOP & Proxies Learning Module</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+:root {
+      --bg: #0a0e1a;
+      --surface-1: #111827;
+      --surface-2: #1a2235;
+      --surface-3: #0f1726;
+      --border: rgba(255,255,255,0.08);
+      --text: #e5eefc;
+      --muted: #98a6c3;
+      --muted-2: #6f7b93;
+      --cyan: #00d4ff;
+      --purple: #7c3aed;
+      --green: #10b981;
+      --amber: #f59e0b;
+      --red: #ef4444;
+      --shadow: 0 20px 60px rgba(0,0,0,0.35);
+      --radius-xl: 22px;
+      --radius-lg: 16px;
+      --radius-md: 12px;
+      --max: 1180px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; background: radial-gradient(circle at top, #101834 0%, var(--bg) 45%, #070b14 100%); color: var(--text); font-family: 'Syne', system-ui, sans-serif; }
+    body { min-height: 100vh; }
+
+    a { color: inherit; }
+
+    .back-link {
+      display: inline-flex;
+      margin-top: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--muted);
+      text-decoration: none;
+    }
+
+    .back-link:hover { color: var(--cyan); }
+
+    .app {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      backdrop-filter: blur(14px);
+      background: rgba(10, 14, 26, 0.86);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .topbar-inner {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 16px 20px 14px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .topbar-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: clamp(1.05rem, 1rem + 1vw, 1.7rem);
+      letter-spacing: 0.02em;
+      font-weight: 800;
+    }
+
+    .brand small {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--muted);
+      font-size: 0.78rem;
+    }
+
+    .timer-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+      box-shadow: var(--shadow);
+    }
+
+    .timer-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .timer {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--cyan);
+      letter-spacing: 0.08em;
+    }
+
+    .timer.warning { color: var(--amber); }
+    .timer.critical {
+      color: var(--red);
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); text-shadow: 0 0 0 rgba(239,68,68,0.1); }
+      50% { transform: scale(1.06); text-shadow: 0 0 18px rgba(239,68,68,0.35); }
+    }
+
+    .nav-dots {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .nav-dot {
+      width: 38px;
+      height: 38px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.16);
+      background: rgba(255,255,255,0.03);
+      color: var(--muted);
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+    }
+
+    .nav-dot:hover,
+    .nav-dot:focus-visible {
+      transform: translateY(-1px);
+      border-color: rgba(0, 212, 255, 0.65);
+      outline: none;
+    }
+
+    .nav-dot.active {
+      background: rgba(0, 212, 255, 0.14);
+      border-color: rgba(0, 212, 255, 0.9);
+      color: var(--cyan);
+      box-shadow: 0 0 0 4px rgba(0, 212, 255, 0.08);
+    }
+
+    .nav-dot.done {
+      border-color: rgba(16, 185, 129, 0.8);
+      color: var(--green);
+      background: rgba(16, 185, 129, 0.06);
+    }
+
+    .progress-shell {
+      height: 10px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--cyan), var(--purple));
+      transition: width 1s linear;
+    }
+
+    main {
+      flex: 1;
+      width: 100%;
+    }
+
+    .section {
+      display: none;
+      padding: 34px 20px 130px;
+      animation: fade 0.35s ease;
+    }
+
+    .section.active { display: block; }
+
+    @keyframes fade {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .section-inner {
+      max-width: var(--max);
+      margin: 0 auto;
+    }
+
+    .hero {
+      padding: 26px 28px;
+      border-radius: var(--radius-xl);
+      background: linear-gradient(135deg, rgba(17,24,39,0.96), rgba(26,34,53,0.96));
+      border: 1px solid rgba(255,255,255,0.07);
+      box-shadow: var(--shadow);
+      margin-bottom: 24px;
+    }
+
+    .section-label {
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-size: 0.76rem;
+      margin-bottom: 12px;
+    }
+
+    .hero h2 {
+      margin: 0 0 12px;
+      font-size: clamp(1.8rem, 1.2rem + 2vw, 3rem);
+      line-height: 1.05;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 880px;
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.7;
+    }
+
+    .card-grid {
+      display: grid;
+      gap: 18px;
+    }
+
+    .card {
+      background: linear-gradient(180deg, rgba(17,24,39,0.98), rgba(17,24,39,0.88));
+      border: 1px solid var(--border);
+      border-left-width: 5px;
+      border-radius: var(--radius-lg);
+      padding: 20px 22px;
+      box-shadow: var(--shadow);
+    }
+
+    .card.eli5 { border-left-color: var(--amber); }
+    .card.analogy { border-left-color: var(--green); }
+    .card.technical { border-left-color: var(--cyan); }
+    .card.warning { border-left-color: var(--red); }
+    .card.quiz-card { border-left-color: var(--purple); }
+
+    .card-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    .card h3 {
+      margin: 0 0 10px;
+      font-size: clamp(1.1rem, 1rem + 0.8vw, 1.45rem);
+    }
+
+    .card p,
+    .card li {
+      color: #d3def4;
+      line-height: 1.75;
+      font-size: 0.98rem;
+    }
+
+    .card p:last-child { margin-bottom: 0; }
+    .card ul { margin: 8px 0 0 20px; padding: 0; }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1.2fr 0.95fr;
+      gap: 18px;
+    }
+
+    .mini-grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      margin-top: 16px;
+    }
+
+    .mini-panel {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 14px;
+      padding: 14px;
+    }
+
+    .mini-panel h4 {
+      margin: 0 0 8px;
+      font-size: 0.95rem;
+      color: var(--text);
+    }
+
+    .mini-panel p,
+    .mini-panel li { font-size: 0.92rem; color: var(--muted); }
+
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 0.8rem;
+      font-family: 'JetBrains Mono', monospace;
+      border: 1px solid transparent;
+    }
+
+    .pill.good { color: var(--green); border-color: rgba(16,185,129,0.25); background: rgba(16,185,129,0.08); }
+    .pill.caution { color: var(--amber); border-color: rgba(245,158,11,0.25); background: rgba(245,158,11,0.08); }
+    .pill.bad { color: var(--red); border-color: rgba(239,68,68,0.25); background: rgba(239,68,68,0.08); }
+    .pill.info { color: var(--cyan); border-color: rgba(0,212,255,0.25); background: rgba(0,212,255,0.08); }
+
+    .flow {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    .flow-step {
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: var(--text);
+      font-size: 0.88rem;
+    }
+
+    .flow-arrow {
+      color: var(--muted-2);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.05rem;
+    }
+
+    .diagram {
+      margin-top: 16px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.015));
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 18px;
+      padding: 18px;
+      overflow: hidden;
+    }
+
+    .diagram-title {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--muted);
+      font-size: 0.76rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    .responsibility-split {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .box {
+      background: var(--surface-2);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 16px;
+      padding: 16px;
+      min-height: 100px;
+      position: relative;
+    }
+
+    .box h4 {
+      margin: 0 0 8px;
+      font-size: 1rem;
+    }
+
+    .box p,
+    .box li { margin: 0; color: var(--muted); font-size: 0.9rem; line-height: 1.6; }
+    .box ul { margin: 0; padding-left: 18px; }
+
+    .box.center-highlight {
+      box-shadow: inset 0 0 0 1px rgba(0,212,255,0.18), 0 10px 30px rgba(0, 212, 255, 0.08);
+    }
+
+    .extensibility-rail,
+    .substitution-rail,
+    .dependency-stack,
+    .interface-split {
+      display: grid;
+      gap: 14px;
+    }
+
+    .rail-row,
+    .split-row,
+    .stack-row {
+      display: flex;
+      gap: 12px;
+      align-items: stretch;
+      flex-wrap: wrap;
+    }
+
+    .rail-box,
+    .stack-box,
+    .split-box {
+      flex: 1 1 180px;
+      padding: 14px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.07);
+      background: rgba(255,255,255,0.03);
+    }
+
+    .rail-box h4,
+    .stack-box h4,
+    .split-box h4 { margin: 0 0 8px; font-size: 0.96rem; }
+    .rail-box p,
+    .stack-box p,
+    .split-box p { margin: 0; color: var(--muted); font-size: 0.88rem; line-height: 1.6; }
+
+    .arrow-down,
+    .arrow-right {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted-2);
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      min-width: 24px;
+    }
+
+    pre {
+      margin: 0;
+      background: #050810;
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 16px;
+      padding: 18px;
+      overflow: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.86rem;
+      line-height: 1.7;
+      color: #dbeafe;
+    }
+
+    .code-blocks {
+      display: grid;
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .code-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.76rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 0 0 8px;
+    }
+
+    .token-key { color: #7dd3fc; }
+    .token-type { color: #c4b5fd; }
+    .token-method { color: #34d399; }
+    .token-string { color: #fbbf24; }
+    .token-comment { color: #6b7280; }
+    .token-annotation { color: #f472b6; }
+    .token-number { color: #f472b6; }
+    .token-bad { color: #f87171; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 14px;
+      overflow: hidden;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.07);
+    }
+
+    th, td {
+      text-align: left;
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      vertical-align: top;
+    }
+
+    th {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      background: rgba(255,255,255,0.03);
+    }
+
+    td { color: #d6e1f7; font-size: 0.94rem; }
+    tr:last-child td { border-bottom: none; }
+
+    .quiz-options {
+      display: grid;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .quiz-option {
+      width: 100%;
+      text-align: left;
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.03);
+      color: var(--text);
+      border: 1px solid rgba(255,255,255,0.09);
+      cursor: pointer;
+      transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+      font: inherit;
+    }
+
+    .quiz-option:hover,
+    .quiz-option:focus-visible {
+      transform: translateY(-1px);
+      border-color: rgba(124, 58, 237, 0.85);
+      outline: none;
+    }
+
+    .quiz-option[disabled] {
+      cursor: default;
+      opacity: 0.96;
+    }
+
+    .quiz-option.correct {
+      border-color: rgba(16,185,129,0.85);
+      background: rgba(16,185,129,0.12);
+      color: #eafff7;
+    }
+
+    .quiz-option.wrong {
+      border-color: rgba(239,68,68,0.85);
+      background: rgba(239,68,68,0.12);
+      color: #fff5f5;
+    }
+
+    .quiz-result {
+      margin-top: 14px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      display: none;
+    }
+
+    .quiz-result.show { display: block; }
+    .quiz-result strong { display: block; margin-bottom: 6px; }
+
+    .takeaways {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .footer-nav {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 25;
+      background: rgba(10,14,26,0.9);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .footer-nav-inner {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .btn {
+      padding: 13px 18px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+      font: inherit;
+      cursor: pointer;
+      transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+      min-width: 140px;
+    }
+
+    .btn:hover,
+    .btn:focus-visible {
+      transform: translateY(-1px);
+      outline: none;
+      border-color: rgba(0,212,255,0.55);
+      background: rgba(255,255,255,0.07);
+    }
+
+    .btn.primary {
+      background: linear-gradient(90deg, rgba(0,212,255,0.14), rgba(124,58,237,0.18));
+      border-color: rgba(0,212,255,0.35);
+    }
+
+    .btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .completion-grid {
+      display: grid;
+      gap: 18px;
+      grid-template-columns: 1.1fr 0.95fr;
+    }
+
+    .celebrate {
+      font-size: 2.6rem;
+      margin-bottom: 12px;
+    }
+
+    .cheat-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .cheat-item {
+      padding: 14px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+    }
+
+    .cheat-item h4 {
+      margin: 0 0 6px;
+      font-size: 0.98rem;
+    }
+
+    .cheat-item p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.93rem;
+      line-height: 1.6;
+    }
+
+    .confusion-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .confusion-item {
+      padding: 14px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .confusion-item strong { color: var(--text); }
+    .confusion-item p { margin: 8px 0 0; color: var(--muted); }
+
+    @media (max-width: 960px) {
+      .two-col,
+      .completion-grid { grid-template-columns: 1fr; }
+      .responsibility-split { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 680px) {
+      .section { padding-top: 24px; }
+      .hero { padding: 22px 18px; }
+      .card { padding: 18px 16px; }
+      .topbar-inner, .footer-nav-inner { padding-left: 14px; padding-right: 14px; }
+      .nav-dot { width: 34px; height: 34px; font-size: 0.85rem; }
+      .btn { min-width: 0; flex: 1; }
+      .mini-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="topbar-row">
+          <div class="brand">
+            <h1>AOP & Proxies</h1>
+            <small>Interactive 28-minute learning module</small>
+          </div>
+          <div class="timer-wrap" aria-live="polite">
+            <span class="timer-label">Time Left</span>
+            <span class="timer" id="timer">28:00</span>
+          </div>
+        </div>
+        <div class="topbar-row">
+          <nav class="nav-dots" aria-label="Section navigation"><button class="nav-dot active" data-index="0" aria-label="Go to section 1">1</button><button class="nav-dot" data-index="1" aria-label="Go to section 2">2</button><button class="nav-dot" data-index="2" aria-label="Go to section 3">3</button><button class="nav-dot" data-index="3" aria-label="Go to section 4">4</button><button class="nav-dot" data-index="4" aria-label="Go to completion screen">5</button></nav>
+        </div>
+        <div class="progress-shell" aria-hidden="true">
+          <div class="progress-bar" id="progressBar"></div>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      
+      <section class="section active" data-section="0">
+        <div class="section-inner">
+          <div class="hero">
+            <div class="section-label">Section 1 of 4 · ~7 mins</div>
+            <h2>Why AOP Exists</h2>
+            <p>AOP lets you apply cross-cutting concerns like logging or security without scattering code everywhere.</p>
+            <a class="back-link" href="index.html">← Back to Spring Boot</a>
+          </div>
+
+          <div class="card-grid">
+            <article class="card eli5">
+              <div class="card-label">🧒 ELI5</div>
+              <h3>Automatic stamp</h3>
+              <p>Every document gets a stamp automatically, so you do not stamp each page by hand.</p>
+            </article>
+
+            <article class="card analogy">
+              <div class="card-label">🔗 ANALOGY</div>
+              <h3>Security checkpoint</h3>
+              <p>Everyone passes through one checkpoint rather than each room having its own guard.</p>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Technical</div>
+              <div class="two-col">
+                <div>
+                  <h3>What it means in real code</h3>
+                  <p><strong>Definition:</strong> AOP wraps method calls with advice through proxies so cross-cutting logic is centralized.</p>
+                  <div class="mini-grid">
+                    <div class="mini-panel">
+                      <h4>Why it matters</h4>
+                      <ul>
+                        <li>Less duplicated code</li><li>Consistent policies</li><li>Separation of concerns</li>
+                      </ul>
+                    </div>
+                    <div class="mini-panel">
+                      <h4>Common pitfall</h4>
+                      <ul>
+                        <li>Logging in every method</li><li>Scattered security checks</li><li>Repeated timing code</li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div class="badge-row"><span class="pill good">Advice</span><span class="pill info">Pointcut</span><span class="pill caution">Proxy</span></div>
+                  
+                  <div class="flow"><span class="flow-step">Call proxy</span><span class="flow-arrow">→</span><span class="flow-step">Apply advice</span><span class="flow-arrow">→</span><span class="flow-step">Invoke target</span><span class="flow-arrow">→</span><span class="flow-step">Return result</span></div>
+                </div>
+                <div>
+                  <h3>Interview answer</h3>
+                  <p>“Spring AOP uses proxies to intercept method calls and apply cross-cutting logic like transactions.”</p>
+                  
+                  <table>
+                    <thead><tr><th>Concern</th><th>Example</th></tr></thead>
+                    <tbody><tr><td>Transactions</td><td><span class="pill good">@Transactional</span></td></tr><tr><td>Caching</td><td><span class="pill info">@Cacheable</span></td></tr><tr><td>Security</td><td><span class="pill caution">@PreAuthorize</span></td></tr></tbody>
+                  </table>
+                </div>
+              </div>
+              
+    <div class="code-blocks">
+    <div>
+      <div class="code-title">Simple @Around advice</div>
+      <pre>@Aspect
+@Component
+public class TimingAspect {
+  @Around("execution(* com.acme..*(..))")
+  public Object time(ProceedingJoinPoint pjp) throws Throwable {
+    long start = System.currentTimeMillis();
+    try { return pjp.proceed(); }
+    finally { log.info("{} took {}ms", pjp.getSignature(), System.currentTimeMillis() - start); }
+  }
+}</pre>
+    </div>
+    </div>
+              
+            </article>
+
+            <article class="card warning">
+              <div class="card-label">Warning</div>
+              <h3>Proxies add indirection</h3>
+              <p>Debugging through proxies can be confusing if you do not understand the call chain.</p>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Mini takeaway</div>
+              <ul class="takeaways">
+                <li>AOP centralizes cross-cutting concerns.</li><li>Proxies intercept calls.</li><li>Advice wraps method execution.</li>
+              </ul>
+            </article>
+
+            <article class="card quiz-card">
+              <div class="card-label">Quiz</div>
+              <h3>What is the primary mechanism behind Spring AOP?</h3>
+              <div class="quiz-options" data-answer="1">
+                <button class="quiz-option">A. Bytecode rewriting only</button><button class="quiz-option">B. Proxies intercepting method calls</button><button class="quiz-option">C. Reflection in each method</button><button class="quiz-option">D. JVM agents</button>
+              </div>
+              <div class="quiz-result">
+                <strong>Correct answer: B</strong>
+                <span>Spring AOP relies on proxies that intercept method calls.</span>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" data-section="1">
+        <div class="section-inner">
+          <div class="hero">
+            <div class="section-label">Section 2 of 4 · ~7 mins</div>
+            <h2>Proxy Types: JDK vs CGLIB</h2>
+            <p>Spring can proxy interfaces with JDK dynamic proxies or classes with CGLIB.</p>
+            
+          </div>
+
+          <div class="card-grid">
+            <article class="card eli5">
+              <div class="card-label">🧒 ELI5</div>
+              <h3>Stand-in actor</h3>
+              <p>A stand-in actor can play a role as long as they follow the same script.</p>
+            </article>
+
+            <article class="card analogy">
+              <div class="card-label">🔗 ANALOGY</div>
+              <h3>Adapter vs mold</h3>
+              <p>An adapter fits a standard plug, while a mold copies the shape exactly.</p>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Technical</div>
+              <div class="two-col">
+                <div>
+                  <h3>What it means in real code</h3>
+                  <p><strong>Definition:</strong> JDK proxies implement interfaces; CGLIB creates subclasses to proxy concrete classes.</p>
+                  <div class="mini-grid">
+                    <div class="mini-panel">
+                      <h4>Why it matters</h4>
+                      <ul>
+                        <li>Works with or without interfaces</li><li>Flexible proxying</li><li>Control over behavior</li>
+                      </ul>
+                    </div>
+                    <div class="mini-panel">
+                      <h4>Common pitfall</h4>
+                      <ul>
+                        <li>No interfaces with JDK proxies</li><li>Final classes with CGLIB</li><li>Unexpected proxy type</li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div class="badge-row"><span class="pill info">JDK proxy</span><span class="pill good">CGLIB</span><span class="pill caution">Final method</span></div>
+                  
+                  <div class="flow"><span class="flow-step">Pick proxy type</span><span class="flow-arrow">→</span><span class="flow-step">Create proxy</span><span class="flow-arrow">→</span><span class="flow-step">Intercept method</span><span class="flow-arrow">→</span><span class="flow-step">Delegate to target</span></div>
+                </div>
+                <div>
+                  <h3>Interview answer</h3>
+                  <p>“If a bean has an interface, Spring can use JDK proxies; otherwise it falls back to CGLIB.”</p>
+                  
+                  <table>
+                    <thead><tr><th>Proxy</th><th>Constraint</th></tr></thead>
+                    <tbody><tr><td>JDK</td><td><span class="pill info">Requires interface</span></td></tr><tr><td>CGLIB</td><td><span class="pill good">Subclass based</span></td></tr><tr><td>Final methods</td><td><span class="pill bad">Cannot be proxied</span></td></tr></tbody>
+                  </table>
+                </div>
+              </div>
+              
+    <div class="code-blocks">
+    <div>
+      <div class="code-title">Force CGLIB</div>
+      <pre>spring:
+  aop:
+    proxy-target-class: true</pre>
+    </div>
+    </div>
+              
+            </article>
+
+            <article class="card warning">
+              <div class="card-label">Warning</div>
+              <h3>Final methods are not advised</h3>
+              <p>CGLIB cannot override final methods, so advice will not apply.</p>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Mini takeaway</div>
+              <ul class="takeaways">
+                <li>JDK proxies need interfaces.</li><li>CGLIB proxies classes.</li><li>Final methods cannot be advised.</li>
+              </ul>
+            </article>
+
+            <article class="card quiz-card">
+              <div class="card-label">Quiz</div>
+              <h3>When does Spring use JDK dynamic proxies?</h3>
+              <div class="quiz-options" data-answer="1">
+                <button class="quiz-option">A. When no interfaces exist</button><button class="quiz-option">B. When an interface is present</button><button class="quiz-option">C. Always</button><button class="quiz-option">D. Only for @Configuration</button>
+              </div>
+              <div class="quiz-result">
+                <strong>Correct answer: B</strong>
+                <span>JDK proxies are used when the target implements an interface.</span>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" data-section="2">
+        <div class="section-inner">
+          <div class="hero">
+            <div class="section-label">Section 3 of 4 · ~7 mins</div>
+            <h2>Self-invocation and AOP Limitations</h2>
+            <p>Calls within the same class bypass the proxy, so advice does not apply.</p>
+            
+          </div>
+
+          <div class="card-grid">
+            <article class="card eli5">
+              <div class="card-label">🧒 ELI5</div>
+              <h3>Calling yourself</h3>
+              <p>If you call yourself, the assistant does not get a chance to help.</p>
+            </article>
+
+            <article class="card analogy">
+              <div class="card-label">🔗 ANALOGY</div>
+              <h3>Taking a shortcut</h3>
+              <p>If you bypass the checkpoint, no one checks your pass.</p>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Technical</div>
+              <div class="two-col">
+                <div>
+                  <h3>What it means in real code</h3>
+                  <p><strong>Definition:</strong> Spring AOP works through proxies, so only external calls go through the proxy and trigger advice.</p>
+                  <div class="mini-grid">
+                    <div class="mini-panel">
+                      <h4>Why it matters</h4>
+                      <ul>
+                        <li>Prevents false assumptions</li><li>Explains missing advice</li><li>Guides design choices</li>
+                      </ul>
+                    </div>
+                    <div class="mini-panel">
+                      <h4>Common pitfall</h4>
+                      <ul>
+                        <li>Advice not applied</li><li>Calling methods internally</li><li>Unexpected transaction boundaries</li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div class="badge-row"><span class="pill good">Proxy boundary</span><span class="pill bad">Self-call</span><span class="pill caution">Refactor</span></div>
+                  
+                  <div class="flow"><span class="flow-step">Caller -> Proxy</span><span class="flow-arrow">→</span><span class="flow-step">Proxy -> Target</span><span class="flow-arrow">→</span><span class="flow-step">Advice applied</span><span class="flow-arrow">→</span><span class="flow-step">Return</span></div>
+                </div>
+                <div>
+                  <h3>Interview answer</h3>
+                  <p>“Self-invocation bypasses proxies, so annotations like @Transactional or @Cacheable do not apply.”</p>
+                  
+                  <table>
+                    <thead><tr><th>Scenario</th><th>Result</th></tr></thead>
+                    <tbody><tr><td>External call</td><td><span class="pill good">Advice runs</span></td></tr><tr><td>Internal call</td><td><span class="pill bad">Advice skipped</span></td></tr><tr><td>Proxy-aware call</td><td><span class="pill info">Advice runs</span></td></tr></tbody>
+                  </table>
+                </div>
+              </div>
+              
+    <div class="code-blocks">
+    <div>
+      <div class="code-title">Self-invocation pitfall</div>
+      <pre>@Service
+public class BillingService {
+  @Transactional
+  public void charge() { ... }
+
+  public void run() {
+    charge(); // bypasses proxy
+  }
+}</pre>
+    </div>
+    </div>
+              
+            </article>
+
+            <article class="card warning">
+              <div class="card-label">Warning</div>
+              <h3>Transactions may not start</h3>
+              <p>Self-invocation is a common cause of @Transactional not working.</p>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Mini takeaway</div>
+              <ul class="takeaways">
+                <li>AOP applies only across proxy boundary.</li><li>Refactor to separate beans.</li><li>Be careful with self-calls.</li>
+              </ul>
+            </article>
+
+            <article class="card quiz-card">
+              <div class="card-label">Quiz</div>
+              <h3>Why might @Transactional not work on an internal method call?</h3>
+              <div class="quiz-options" data-answer="1">
+                <button class="quiz-option">A. Transactions require XML</button><button class="quiz-option">B. Proxy is bypassed</button><button class="quiz-option">C. It only works in tests</button><button class="quiz-option">D. It disables autowiring</button>
+              </div>
+              <div class="quiz-result">
+                <strong>Correct answer: B</strong>
+                <span>AOP advice only runs when calls go through the proxy.</span>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" data-section="3">
+        <div class="section-inner">
+          <div class="hero">
+            <div class="section-label">Section 4 of 4 · ~7 mins</div>
+            <h2>Common Spring AOP Use Cases</h2>
+            <p>AOP powers transactions, caching, security checks, and async execution in Spring.</p>
+            
+          </div>
+
+          <div class="card-grid">
+            <article class="card eli5">
+              <div class="card-label">🧒 ELI5</div>
+              <h3>Automatic rules</h3>
+              <p>You set rules once, and they apply automatically when people pass through.</p>
+            </article>
+
+            <article class="card analogy">
+              <div class="card-label">🔗 ANALOGY</div>
+              <h3>Toll booth</h3>
+              <p>Cars pass through a toll booth where rules apply without stopping traffic entirely.</p>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Technical</div>
+              <div class="two-col">
+                <div>
+                  <h3>What it means in real code</h3>
+                  <p><strong>Definition:</strong> Spring uses AOP to wrap methods with concerns like transaction boundaries, caching, and security.</p>
+                  <div class="mini-grid">
+                    <div class="mini-panel">
+                      <h4>Why it matters</h4>
+                      <ul>
+                        <li>Centralized policies</li><li>Consistency</li><li>Cleaner business logic</li>
+                      </ul>
+                    </div>
+                    <div class="mini-panel">
+                      <h4>Common pitfall</h4>
+                      <ul>
+                        <li>Cross-cutting logic in services</li><li>Manual transaction management</li><li>Scattered security checks</li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div class="badge-row"><span class="pill good">@Transactional</span><span class="pill info">@Cacheable</span><span class="pill caution">@Async</span></div>
+                  
+                  <div class="flow"><span class="flow-step">Call method</span><span class="flow-arrow">→</span><span class="flow-step">Apply transaction</span><span class="flow-arrow">→</span><span class="flow-step">Execute</span><span class="flow-arrow">→</span><span class="flow-step">Commit/rollback</span></div>
+                </div>
+                <div>
+                  <h3>Interview answer</h3>
+                  <p>“Spring AOP wraps service calls to manage transactions, caching, and security without cluttering code.”</p>
+                  
+                  <table>
+                    <thead><tr><th>Annotation</th><th>Concern</th></tr></thead>
+                    <tbody><tr><td>@Transactional</td><td><span class="pill good">ACID boundaries</span></td></tr><tr><td>@Cacheable</td><td><span class="pill info">Performance</span></td></tr><tr><td>@Async</td><td><span class="pill caution">Concurrency</span></td></tr></tbody>
+                  </table>
+                </div>
+              </div>
+              
+    <div class="code-blocks">
+    <div>
+      <div class="code-title">Transactional service</div>
+      <pre>@Service
+public class OrderService {
+  @Transactional
+  public void placeOrder(Order order) {
+    orderRepo.save(order);
+    inventory.reserve(order);
+  }
+}</pre>
+    </div>
+    </div>
+              
+            </article>
+
+            <article class="card warning">
+              <div class="card-label">Warning</div>
+              <h3>Hidden complexity</h3>
+              <p>AOP can hide behavior. Make sure team members know which annotations add side effects.</p>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Mini takeaway</div>
+              <ul class="takeaways">
+                <li>AOP powers core Spring features.</li><li>Use it to keep business code clean.</li><li>Document cross-cutting behavior.</li>
+              </ul>
+            </article>
+
+            <article class="card quiz-card">
+              <div class="card-label">Quiz</div>
+              <h3>Which Spring feature relies heavily on AOP proxies?</h3>
+              <div class="quiz-options" data-answer="1">
+                <button class="quiz-option">A. @Value</button><button class="quiz-option">B. @Transactional</button><button class="quiz-option">C. @ComponentScan</button><button class="quiz-option">D. @ConfigurationProperties</button>
+              </div>
+              <div class="quiz-result">
+                <strong>Correct answer: B</strong>
+                <span>@Transactional is implemented through AOP proxies.</span>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+      
+      <section class="section" data-section="4">
+        <div class="section-inner">
+          <div class="hero">
+            <div class="section-label">Completion screen · Review mode</div>
+            <h2>🎉 AOP & Proxies Cheat Sheet</h2>
+            <p>Use this to recall how proxies enable cross-cutting behavior like transactions and caching.</p>
+          </div>
+
+          <div class="completion-grid">
+            <div class="card technical">
+              <div class="card-label">Cheat sheet</div>
+              <div class="celebrate">🚀</div>
+              <h3>1-line interview answers</h3>
+              <div class="cheat-list">
+    <div class="cheat-item">
+      <h4>AOP</h4>
+      <p>Cross-cutting concerns applied via proxies.</p>
+    </div>
+    <div class="cheat-item">
+      <h4>JDK vs CGLIB</h4>
+      <p>JDK proxies require interfaces; CGLIB proxies classes.</p>
+    </div>
+    <div class="cheat-item">
+      <h4>Self-invocation</h4>
+      <p>Calls within the same class bypass the proxy.</p>
+    </div>
+    <div class="cheat-item">
+      <h4>Common uses</h4>
+      <p>@Transactional, @Cacheable, @Async.</p>
+    </div>
+              </div>
+            </div>
+
+            <div class="card analogy">
+              <div class="card-label">What to remember</div>
+              <h3>Fast mental model</h3>
+              <ul class="takeaways">
+                <li><strong>Proxies</strong>: intercept method calls.</li><li><strong>Pointcuts</strong>: select join points.</li><li><strong>Advice</strong>: before/after/around behavior.</li><li><strong>Limitations</strong>: self-invocation and final methods.</li>
+              </ul>
+              <h3 style="margin-top:22px;">Common traps</h3>
+              <div class="badge-row">
+                <span class="pill bad">Self-invocation</span><span class="pill bad">Final methods</span><span class="pill bad">Proxy type mismatch</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer-nav">
+      <div class="footer-nav-inner">
+        <button class="btn" id="prevBtn">← Back</button>
+        <button class="btn primary" id="nextBtn">Next →</button>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+const sections = Array.from(document.querySelectorAll('.section'));
+    const dots = Array.from(document.querySelectorAll('.nav-dot'));
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const timerEl = document.getElementById('timer');
+    const progressBar = document.getElementById('progressBar');
+
+function escapeHtml(str) {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+function highlightJava(code) {
+  const keywords = new Set([
+    'abstract','assert','boolean','break','byte','case','catch','char','class','const','continue','default',
+    'do','double','else','enum','extends','final','finally','float','for','goto','if','implements','import',
+    'instanceof','int','interface','long','native','new','package','private','protected','public','return','short',
+    'static','strictfp','super','switch','synchronized','this','throw','throws','transient','try','void','volatile',
+    'while','var','record','sealed','permits','non-sealed','yield'
+  ]);
+  const types = new Set([
+    'String','List','Map','Set','HashMap','ArrayList','LinkedList','Optional','Stream','CompletableFuture',
+    'ExecutorService','Runnable','Callable','Future','Thread','Duration','LocalDateTime','Object','Integer','Long',
+    'Boolean','Double','Float','UUID','Predicate','Function','Consumer','Supplier','Collectors','Path','ResponseEntity',
+    'HttpStatus','Authentication','SecurityFilterChain','EntityManager','Session','Pageable','JpaRepository','Optional',
+    'Component','Service','Repository','Controller','RestController','Autowired','Transactional','Bean','Configuration',
+    'BeanFactory','ApplicationContext','MockBean','SpringBootTest','WebMvcTest','MockMvc'
+  ]);
+  const tokenRegex = /(\/\*[\s\S]*?\*\/|\/\/[^\n]*|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|@[A-Za-z_][\w.]*|\b\d+(?:_\d+)*(?:\.\d+)?\b|\b[A-Za-z_][\w]*\b)/g;
+  let result = '';
+  let lastIndex = 0;
+  for (const match of code.matchAll(tokenRegex)) {
+    const value = match[0];
+    const index = match.index;
+    result += escapeHtml(code.slice(lastIndex, index));
+    let cls = '';
+    if (value.startsWith('//') || value.startsWith('/*')) {
+      cls = 'token-comment';
+    } else if (value.startsWith("\"") || value.startsWith("'")) {
+      cls = 'token-string';
+    } else if (value.startsWith('@')) {
+      cls = 'token-annotation';
+    } else if (/^\d/.test(value)) {
+      cls = 'token-number';
+    } else if (keywords.has(value)) {
+      cls = 'token-key';
+    } else if (types.has(value)) {
+      cls = 'token-type';
+    }
+    if (cls) {
+      result += "<span class=\"" + cls + "\">" + escapeHtml(value) + "</span>";
+    } else {
+      result += escapeHtml(value);
+    }
+    lastIndex = index + value.length;
+  }
+  result += escapeHtml(code.slice(lastIndex));
+  return result;
+}
+
+function applySyntaxHighlighting() {
+  document.querySelectorAll('pre').forEach(pre => {
+    const raw = pre.textContent;
+    pre.innerHTML = highlightJava(raw);
+  });
+}
+
+    let currentIndex = 0;
+    let visitedMax = 0;
+
+    function showSection(index) {
+      currentIndex = Math.max(0, Math.min(index, sections.length - 1));
+      visitedMax = Math.max(visitedMax, currentIndex);
+
+      sections.forEach((section, i) => {
+        section.classList.toggle('active', i === currentIndex);
+      });
+
+      dots.forEach((dot, i) => {
+        dot.classList.remove('active', 'done');
+        if (i === currentIndex) {
+          dot.classList.add('active');
+        } else if (i < visitedMax) {
+          dot.classList.add('done');
+        }
+      });
+
+      prevBtn.disabled = currentIndex === 0;
+      nextBtn.textContent = currentIndex === sections.length - 1 ? 'Review Again ↺' : (currentIndex === sections.length - 2 ? 'Finish / View Cheat Sheet →' : 'Next →');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    prevBtn.addEventListener('click', () => showSection(currentIndex - 1));
+    nextBtn.addEventListener('click', () => {
+      if (currentIndex === sections.length - 1) {
+        showSection(0);
+      } else {
+        showSection(currentIndex + 1);
+      }
+    });
+
+    dots.forEach(dot => {
+      dot.addEventListener('click', () => showSection(Number(dot.dataset.index)));
+    });
+
+    const totalSeconds = 28 * 60;
+    let remainingSeconds = totalSeconds;
+
+    function formatTime(seconds) {
+      const mins = String(Math.floor(seconds / 60)).padStart(2, '0');
+      const secs = String(seconds % 60).padStart(2, '0');
+      return `${mins}:${secs}`;
+    }
+
+    function updateTimer() {
+      timerEl.textContent = formatTime(remainingSeconds);
+      timerEl.classList.remove('warning', 'critical');
+
+      if (remainingSeconds <= 60) {
+        timerEl.classList.add('critical');
+      } else if (remainingSeconds <= 300) {
+        timerEl.classList.add('warning');
+      }
+
+      const elapsed = totalSeconds - remainingSeconds;
+      progressBar.style.width = `${(elapsed / totalSeconds) * 100}%`;
+
+      if (remainingSeconds > 0) {
+        remainingSeconds -= 1;
+      }
+    }
+
+    updateTimer();
+    setInterval(updateTimer, 1000);
+
+    document.querySelectorAll('.quiz-options').forEach(group => {
+      const correctIndex = Number(group.dataset.answer);
+      const options = Array.from(group.querySelectorAll('.quiz-option'));
+      const result = group.nextElementSibling;
+
+      options.forEach((btn, index) => {
+        btn.addEventListener('click', () => {
+          if (group.dataset.answered === 'true') return;
+          group.dataset.answered = 'true';
+
+          options.forEach((option, i) => {
+            option.disabled = true;
+            if (i === correctIndex) option.classList.add('correct');
+          });
+
+          if (index !== correctIndex) {
+            btn.classList.add('wrong');
+          }
+
+          result.classList.add('show');
+        });
+      });
+    });
+    applySyntaxHighlighting();
+
+    showSection(0);
+  </script>
+</body>
+</html>

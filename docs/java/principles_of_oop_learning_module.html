@@ -1,0 +1,1559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Principles of Object-Oriented Programming · 30-Minute Learning Module</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0a0e1a;
+      --surface:#111827;
+      --surface-2:#1a2235;
+      --text:#edf2ff;
+      --muted:#94a3b8;
+      --cyan:#00d4ff;
+      --purple:#7c3aed;
+      --green:#10b981;
+      --amber:#f59e0b;
+      --red:#ef4444;
+      --line:rgba(255,255,255,.08);
+      --shadow:0 18px 50px rgba(0,0,0,.32);
+      --radius:22px;
+      --mono:"JetBrains Mono", monospace;
+      --sans:"Syne", system-ui, sans-serif;
+    }
+
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:linear-gradient(180deg,#08101f 0%, #0a0e1a 100%);color:var(--text);font-family:var(--sans)}
+    body{min-height:100vh}
+    a{color:inherit}
+    button{font:inherit}
+    .app{
+      max-width:1240px;
+      margin:0 auto;
+      padding:20px 20px 48px;
+    }
+    .topbar{
+      position:sticky;
+      top:0;
+      z-index:20;
+      backdrop-filter:blur(14px);
+      background:rgba(10,14,26,.82);
+      border:1px solid rgba(255,255,255,.06);
+      box-shadow:var(--shadow);
+      border-radius:24px;
+      padding:18px 18px 14px;
+      margin-bottom:20px;
+    }
+    .topbar-row{
+      display:flex;
+      gap:16px;
+      align-items:center;
+      justify-content:space-between;
+      flex-wrap:wrap;
+    }
+    .brand{
+      min-width:260px;
+    }
+    .label{
+      font-family:var(--mono);
+      font-size:12px;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      color:var(--cyan);
+      opacity:.9;
+      margin-bottom:8px;
+    }
+    .brand h1{
+      margin:0;
+      font-size:clamp(1.3rem,2.6vw,2.25rem);
+      line-height:1.05;
+      font-weight:800;
+    }
+    .brand p{
+      margin:8px 0 0;
+      color:var(--muted);
+      max-width:660px;
+      font-size:.98rem;
+    }
+    .meta{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+    .chip{
+      border:1px solid rgba(255,255,255,.08);
+      background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));
+      border-radius:999px;
+      padding:10px 14px;
+      font-family:var(--mono);
+      font-size:.82rem;
+      color:#dbe8ff;
+    }
+    .timer{
+      min-width:148px;
+      text-align:center;
+      font-size:1.08rem;
+      font-weight:700;
+      letter-spacing:.06em;
+      transition:color .25s ease, border-color .25s ease, transform .25s ease;
+    }
+    .timer.warn{color:var(--amber); border-color:rgba(245,158,11,.45)}
+    .timer.danger{color:var(--red); border-color:rgba(239,68,68,.5); animation:pulse 1s infinite}
+    @keyframes pulse{
+      0%,100%{transform:scale(1)}
+      50%{transform:scale(1.03)}
+    }
+    .progress-shell{
+      margin-top:16px;
+      display:grid;
+      gap:12px;
+    }
+    .progress-track{
+      height:12px;
+      border-radius:999px;
+      background:rgba(255,255,255,.06);
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.05);
+    }
+    .progress-fill{
+      width:0%;
+      height:100%;
+      border-radius:999px;
+      background:linear-gradient(90deg,var(--purple),var(--cyan),var(--green));
+      transition:width .8s linear;
+      box-shadow:0 0 22px rgba(0,212,255,.25);
+    }
+    .nav-dots{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    .nav-dot{
+      width:42px;
+      height:42px;
+      border-radius:999px;
+      border:1.5px solid rgba(255,255,255,.18);
+      background:var(--surface);
+      color:#d8e5ff;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      transition:.22s ease;
+      font-family:var(--mono);
+      font-size:.92rem;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.05);
+    }
+    .nav-dot:hover{transform:translateY(-1px); border-color:rgba(0,212,255,.55)}
+    .nav-dot.active{
+      background:rgba(0,212,255,.12);
+      border-color:var(--cyan);
+      color:var(--cyan);
+      box-shadow:0 0 0 4px rgba(0,212,255,.08);
+    }
+    .nav-dot.done{
+      background:transparent;
+      border-color:rgba(16,185,129,.9);
+      color:var(--green);
+    }
+
+    .workspace{
+      display:grid;
+      grid-template-columns:minmax(0,1fr);
+      gap:20px;
+    }
+    .section{
+      display:none;
+      background:linear-gradient(180deg, rgba(255,255,255,.015), rgba(255,255,255,.01));
+      border:1px solid rgba(255,255,255,.06);
+      border-radius:28px;
+      padding:28px;
+      box-shadow:var(--shadow);
+    }
+    .section.active{display:block}
+    .eyebrow{
+      font-family:var(--mono);
+      text-transform:uppercase;
+      letter-spacing:.12em;
+      color:var(--muted);
+      font-size:.78rem;
+      margin-bottom:10px;
+    }
+    .section-header{
+      display:grid;
+      grid-template-columns:1.15fr .85fr;
+      gap:20px;
+      align-items:start;
+      margin-bottom:18px;
+    }
+    .section-title{
+      margin:0;
+      font-size:clamp(1.5rem,2.7vw,2.5rem);
+      line-height:1.04;
+      font-weight:800;
+    }
+    .section-intro{
+      margin:10px 0 0;
+      color:#c5d2ec;
+      font-size:1rem;
+      max-width:780px;
+    }
+    .quick-panel{
+      background:linear-gradient(180deg, rgba(124,58,237,.12), rgba(0,212,255,.06));
+      border:1px solid rgba(124,58,237,.25);
+      border-radius:22px;
+      padding:18px;
+    }
+    .quick-panel h3{
+      margin:0 0 10px;
+      font-size:1rem;
+      color:#f2f4ff;
+    }
+    .quick-panel ul{
+      margin:0;
+      padding-left:18px;
+      color:#dbe6ff;
+    }
+    .quick-panel li + li{margin-top:8px}
+
+    .grid{
+      display:grid;
+      gap:18px;
+    }
+    .grid.cols-2{
+      grid-template-columns:repeat(2,minmax(0,1fr));
+    }
+    .card{
+      background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.018));
+      border:1px solid rgba(255,255,255,.07);
+      border-left:6px solid var(--cyan);
+      border-radius:22px;
+      padding:20px 20px 18px;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
+    }
+    .card h3{
+      margin:0 0 12px;
+      font-size:1.15rem;
+      display:flex;
+      gap:10px;
+      align-items:center;
+    }
+    .card p, .card li{
+      color:#d7e2f7;
+      line-height:1.68;
+      font-size:1rem;
+    }
+    .card ul{margin:0; padding-left:20px}
+    .card li + li{margin-top:9px}
+    .eli5{border-left-color:var(--amber)}
+    .analogy{border-left-color:var(--green)}
+    .technical{border-left-color:var(--cyan)}
+    .warning{border-left-color:var(--red)}
+    .muted{color:var(--muted)}
+
+    .flow{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      margin-top:12px;
+    }
+    .flow-pill{
+      padding:10px 14px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.08);
+      background:#0f1728;
+      font-size:.95rem;
+      color:#dfe8ff;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
+    }
+    .arrow{
+      color:var(--cyan);
+      font-weight:800;
+      opacity:.9;
+    }
+
+    .table-wrap{
+      overflow:auto;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.07);
+      margin-top:14px;
+    }
+    table{
+      width:100%;
+      border-collapse:collapse;
+      min-width:620px;
+      background:rgba(5,8,16,.55);
+    }
+    th, td{
+      padding:14px 16px;
+      text-align:left;
+      border-bottom:1px solid rgba(255,255,255,.06);
+      vertical-align:top;
+    }
+    th{
+      background:rgba(255,255,255,.035);
+      font-family:var(--mono);
+      font-size:.8rem;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:#cfe2ff;
+    }
+    td{color:#dbe7fa}
+    .badge{
+      display:inline-flex;
+      padding:6px 10px;
+      border-radius:999px;
+      font-family:var(--mono);
+      font-size:.74rem;
+      line-height:1;
+      border:1px solid transparent;
+      white-space:nowrap;
+    }
+    .badge.good{color:#86efac; border-color:rgba(16,185,129,.35); background:rgba(16,185,129,.10)}
+    .badge.warn{color:#fdba74; border-color:rgba(245,158,11,.35); background:rgba(245,158,11,.10)}
+    .badge.bad{color:#fca5a5; border-color:rgba(239,68,68,.35); background:rgba(239,68,68,.10)}
+    .badge.info{color:#7dd3fc; border-color:rgba(0,212,255,.35); background:rgba(0,212,255,.10)}
+    .badge.purple{color:#c4b5fd; border-color:rgba(124,58,237,.35); background:rgba(124,58,237,.12)}
+
+    pre{
+      margin:14px 0 0;
+      padding:18px;
+      border-radius:18px;
+      background:#050810;
+      border:1px solid rgba(255,255,255,.06);
+      overflow:auto;
+      font-family:var(--mono);
+      font-size:.9rem;
+      line-height:1.6;
+      color:#dbe7ff;
+    }
+    .kw{color:#7c3aed;font-weight:700}
+    .type{color:#67e8f9}
+    .method{color:#93c5fd}
+    .str{color:#86efac}
+    .num{color:#f9a8d4}
+    .com{color:#7f8ea8;font-style:italic}
+    .anno{color:#f59e0b}
+    .field{color:#fcd34d}
+    .op{color:#c4b5fd}
+    .quiz-box{
+      margin-top:22px;
+      border:2px solid rgba(124,58,237,.45);
+      background:linear-gradient(180deg, rgba(124,58,237,.10), rgba(17,24,39,.68));
+      border-radius:24px;
+      padding:20px;
+    }
+    .quiz-box h3{
+      margin:0 0 6px;
+      color:#f3e8ff;
+      font-size:1.18rem;
+    }
+    .quiz-box p.lead{
+      margin:0 0 18px;
+      color:#d9cfff;
+    }
+    .quiz{
+      border-top:1px solid rgba(255,255,255,.08);
+      padding-top:18px;
+      margin-top:18px;
+    }
+    .quiz:first-of-type{
+      border-top:0;
+      padding-top:0;
+      margin-top:0;
+    }
+    .quiz h4{
+      margin:0 0 12px;
+      font-size:1rem;
+      color:#f6f2ff;
+    }
+    .options{
+      display:grid;
+      gap:10px;
+    }
+    .option{
+      text-align:left;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.09);
+      padding:13px 14px;
+      background:#101629;
+      color:#edf2ff;
+      cursor:pointer;
+      transition:.18s ease;
+    }
+    .option:hover:not(:disabled){
+      transform:translateY(-1px);
+      border-color:rgba(124,58,237,.6);
+      background:#131b31;
+    }
+    .option:disabled{cursor:not-allowed; opacity:1}
+    .option.correct{
+      background:rgba(16,185,129,.14);
+      border-color:rgba(16,185,129,.8);
+      color:#d1fae5;
+    }
+    .option.wrong{
+      background:rgba(239,68,68,.14);
+      border-color:rgba(239,68,68,.7);
+      color:#fee2e2;
+    }
+    .answer-note{
+      display:none;
+      margin-top:12px;
+      padding:12px 14px;
+      border-radius:16px;
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.08);
+      color:#dbe7ff;
+    }
+    .answer-note.show{display:block}
+    .answer-note strong{color:#fff}
+
+    .nav-footer{
+      display:flex;
+      gap:12px;
+      justify-content:space-between;
+      margin-top:28px;
+      flex-wrap:wrap;
+    }
+    .btn{
+      border-radius:18px;
+      padding:14px 18px;
+      border:1px solid rgba(255,255,255,.09);
+      background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));
+      color:#edf2ff;
+      cursor:pointer;
+      min-width:130px;
+      transition:.2s ease;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
+    }
+    .btn:hover{transform:translateY(-1px)}
+    .btn.primary{
+      border-color:rgba(0,212,255,.4);
+      background:linear-gradient(180deg, rgba(0,212,255,.16), rgba(124,58,237,.12));
+      color:#effcff;
+    }
+    .btn:disabled{
+      opacity:.42;
+      cursor:not-allowed;
+      transform:none;
+    }
+
+    .completion{
+      display:none;
+      background:linear-gradient(180deg, rgba(16,185,129,.10), rgba(124,58,237,.08));
+      border:1px solid rgba(16,185,129,.28);
+      border-radius:30px;
+      padding:34px;
+      box-shadow:var(--shadow);
+    }
+    .completion.active{display:block}
+    .completion h2{
+      margin:10px 0 10px;
+      font-size:clamp(1.9rem,3.5vw,3.2rem);
+      line-height:1.03;
+    }
+    .completion p{
+      color:#dbe7ff;
+      max-width:880px;
+      line-height:1.72;
+    }
+    .cheat{
+      margin-top:22px;
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:16px;
+    }
+    .cheat-card{
+      background:rgba(17,24,39,.7);
+      border:1px solid rgba(255,255,255,.07);
+      border-radius:22px;
+      padding:18px;
+    }
+    .cheat-card h3{
+      margin:0 0 10px;
+      font-size:1.08rem;
+    }
+    .cheat-card ul{
+      margin:0;
+      padding-left:18px;
+      color:#dbe7ff;
+      line-height:1.7;
+    }
+    .pill-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:18px;
+    }
+    .summary-pill{
+      padding:10px 12px;
+      border-radius:999px;
+      background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.08);
+      color:#eaf2ff;
+      font-family:var(--mono);
+      font-size:.82rem;
+    }
+    .footer-note{
+      margin-top:18px;
+      color:var(--muted);
+      font-size:.94rem;
+    }
+
+    @media (max-width: 920px){
+      .section-header,
+      .grid.cols-2,
+      .cheat{
+        grid-template-columns:1fr;
+      }
+      .topbar-row{
+        align-items:flex-start;
+      }
+      .meta{
+        justify-content:flex-start;
+      }
+      .section{
+        padding:22px;
+      }
+    }
+
+    @media (max-width: 640px){
+      .app{padding:14px 14px 34px}
+      .topbar{padding:16px 14px 12px}
+      .nav-dot{width:38px;height:38px}
+      .btn{flex:1}
+      .section{padding:18px}
+      .card{padding:16px}
+      pre{font-size:.82rem}
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="topbar-row">
+        <div class="brand">
+          <div class="label">30-minute learning module</div>
+          <h1>Principles of Object-Oriented Programming</h1>
+          <p>Fast, analogies-first review for an experienced engineer who wants sharp mental models, accurate Java examples, and interview-grade intuition.</p>
+        </div>
+        <div class="meta">
+          <div class="chip">5 sections · ~30 mins</div>
+          <div class="chip timer" id="timer">30:00</div>
+        </div>
+      </div>
+      <div class="progress-shell">
+        <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="nav-dots" id="navDots"></div>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <section class="section active" data-index="0">
+        <div class="section-header">
+          <div>
+            <div class="eyebrow">Section 1 of 5 · ~6 mins</div>
+            <h2 class="section-title">The OOP mental model: objects, state, behavior, and responsibility</h2>
+            <p class="section-intro">Before the four famous principles, you need a stable picture of what OOP is trying to optimize: modeling a system as collaborating objects with clear responsibilities instead of one giant pile of procedures and shared data.</p>
+          </div>
+          <aside class="quick-panel">
+            <h3>By the end of this section</h3>
+            <ul>
+              <li>You’ll separate <strong>class</strong>, <strong>object</strong>, and <strong>instance state</strong> cleanly.</li>
+              <li>You’ll see why OOP is really about <strong>responsibility boundaries</strong>.</li>
+              <li>You’ll know why “just putting data in classes” is not enough.</li>
+            </ul>
+          </aside>
+        </div>
+
+        <div class="grid">
+          <article class="card eli5">
+            <h3>🧒 ELI5 · A busy restaurant</h3>
+            <p>Imagine a restaurant. The cashier takes orders, the kitchen cooks, and the delivery person takes food out. Each person has their own job and their own little area to manage. Nobody needs to know every tiny detail of how the others work.</p>
+            <p>That’s the basic idea of OOP. Instead of one giant person doing everything, you split the work across “objects.” Each object keeps track of its own stuff and knows how to do its own job.</p>
+          </article>
+
+          <article class="card analogy">
+            <h3>🔗 ANALOGY · A team, not a spreadsheet</h3>
+            <p>A spreadsheet model says: “Here is all the data; now go write formulas over it.” An OOP model says: “Here are actors with responsibilities.”</p>
+            <div class="flow">
+              <span class="flow-pill">Customer places order</span>
+              <span class="arrow">→</span>
+              <span class="flow-pill">Cashier validates</span>
+              <span class="arrow">→</span>
+              <span class="flow-pill">Kitchen prepares</span>
+              <span class="arrow">→</span>
+              <span class="flow-pill">Driver delivers</span>
+            </div>
+            <p class="muted">Good OOP feels like routing work to the right role, not like dumping everything into a util class.</p>
+          </article>
+
+          <article class="card technical">
+            <h3>Technical card · What OOP is really buying you</h3>
+            <ul>
+              <li><strong>Objects</strong> bundle <strong>state</strong> and <strong>behavior</strong> together.</li>
+              <li><strong>Classes</strong> are blueprints; <strong>objects</strong> are runtime instances created from those blueprints.</li>
+              <li>Good object models reduce <strong>coupling</strong> and increase <strong>cohesion</strong>: each object owns related data and logic.</li>
+              <li>In mature codebases, OOP is less about “using classes” and more about <strong>assigning responsibilities well</strong>.</li>
+            </ul>
+
+<pre><span class="kw">class</span> <span class="type">BankAccount</span> {
+    <span class="kw">private</span> <span class="type">String</span> <span class="field">accountNumber</span>;
+    <span class="kw">private</span> <span class="type">double</span> <span class="field">balance</span>;
+
+    <span class="kw">public</span> <span class="type">BankAccount</span>(<span class="type">String</span> accountNumber, <span class="type">double</span> openingBalance) {
+        <span class="kw">this</span>.<span class="field">accountNumber</span> <span class="op">=</span> accountNumber;
+        <span class="kw">this</span>.<span class="field">balance</span> <span class="op">=</span> openingBalance;
+    }
+
+    <span class="kw">public</span> <span class="type">void</span> <span class="method">deposit</span>(<span class="type">double</span> amount) {
+        <span class="kw">if</span> (amount <span class="op">&lt;=</span> <span class="num">0</span>) <span class="kw">throw</span> <span class="kw">new</span> <span class="type">IllegalArgumentException</span>(<span class="str">"amount must be positive"</span>);
+        <span class="field">balance</span> <span class="op">+=</span> amount;
+    }
+
+    <span class="kw">public</span> <span class="type">double</span> <span class="method">currentBalance</span>() {
+        <span class="kw">return</span> <span class="field">balance</span>;
+    }
+}</pre>
+
+            <p>Notice the point: the account doesn’t just store data. It also owns the rules around that data.</p>
+
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Concept</th>
+                    <th>Meaning</th>
+                    <th>Why it matters</th>
+                    <th>Quick read</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Class</td>
+                    <td>Blueprint for creating objects</td>
+                    <td>Defines structure and behavior</td>
+                    <td><span class="badge info">Design-time</span></td>
+                  </tr>
+                  <tr>
+                    <td>Object</td>
+                    <td>Runtime instance with identity + state</td>
+                    <td>Actually receives messages and does work</td>
+                    <td><span class="badge good">Runtime</span></td>
+                  </tr>
+                  <tr>
+                    <td>Responsibility</td>
+                    <td>What this object should know or do</td>
+                    <td>Prevents God classes and scattered logic</td>
+                    <td><span class="badge purple">Core idea</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+
+          <article class="card warning">
+            <h3>Warning card · OOP can be faked</h3>
+            <p>Code is not “object-oriented” just because it uses classes. If your classes are only bags of getters/setters and all real logic lives elsewhere, you often end up with procedural code wearing OOP clothing.</p>
+          </article>
+        </div>
+
+        <div class="quiz-box">
+          <h3>Section quiz</h3>
+          <p class="lead">Three quick checks before you move on.</p>
+
+          <div class="quiz" data-correct="1" data-explanation="A good OOP class owns both the data and the rules that keep that data valid. That is what makes responsibility boundaries meaningful.">
+            <h4>1) Which statement best captures the core idea of OOP?</h4>
+            <div class="options">
+              <button class="option">A. Put every function into a class file</button>
+              <button class="option">B. Model a system as objects that own related data and behavior</button>
+              <button class="option">C. Replace all conditionals with inheritance</button>
+              <button class="option">D. Avoid using primitive types</button>
+            </div>
+            <div class="answer-note"></div>
+          </div>
+
+          <div class="quiz" data-correct="2" data-explanation="A class is the blueprint. The object is the runtime instance created from that blueprint.">
+            <h4>2) In Java, what is the relationship between a class and an object?</h4>
+            <div class="options">
+              <button class="option">A. They are the same thing with different names</button>
+              <button class="option">B. An object stores classes inside it</button>
+              <button class="option">C. A class defines structure/behavior; an object is a runtime instance</button>
+              <button class="option">D. A class only exists after an object is created</button>
+            </div>
+            <div class="answer-note"></div>
+          </div>
+
+          <div class="quiz" data-correct="3" data-explanation="When logic is shoved into services or utils while entity classes become passive data holders, you lose many of the design benefits OOP is meant to provide.">
+            <h4>3) Which design smell most strongly suggests weak OOP modeling?</h4>
+            <div class="options">
+              <button class="option">A. Small classes with one clear job</button>
+              <button class="option">B. Objects validating their own invariants</button>
+              <button class="option">C. Methods with descriptive names</button>
+              <button class="option">D. Data-only classes while business logic lives in unrelated helpers</button>
+            </div>
+            <div class="answer-note"></div>
+          </div>
+        </div>
+
+        <div class="nav-footer">
+          <button class="btn" disabled>← Back</button>
+          <button class="btn primary next-btn">Next section →</button>
+        </div>
+      </section>
+
+      <section class="section" data-index="1">
+        <div class="section-header">
+          <div>
+            <div class="eyebrow">Section 2 of 5 · ~6 mins</div>
+            <h2 class="section-title">Encapsulation: protect invariants, not just fields</h2>
+            <p class="section-intro">Encapsulation is often taught as “make fields private.” That is true, but incomplete. The real value is that an object controls how its own state can change, so invalid states become harder to create.</p>
+          </div>
+          <aside class="quick-panel">
+            <h3>Key ideas here</h3>
+            <ul>
+              <li>Encapsulation protects <strong>invariants</strong>.</li>
+              <li>It’s about exposing <strong>safe behavior</strong>, not hiding everything.</li>
+              <li>Good encapsulation makes change easier because callers depend on stable operations, not internals.</li>
+            </ul>
+          </aside>
+        </div>
+
+        <div class="grid">
+          <article class="card eli5">
+            <h3>🧒 ELI5 · A medicine bottle with a child lock</h3>
+            <p>You can still use the medicine bottle, but you cannot randomly mess with what is inside. There’s a safe way to open it and a safe way to use it.</p>
+            <p>Encapsulation is similar. The object says, “You can ask me to do certain things, but you don’t get to reach in and change my insides however you want.”</p>
+          </article>
+
+          <article class="card analogy">
+            <h3>🔗 ANALOGY · A vending machine interface</h3>
+            <p>You press buttons and insert money. You do <em>not</em> grab the internal motor or manually spin the shelf. The machine gives you a small public surface and hides the internal moving parts.</p>
+            <div class="flow">
+              <span class="flow-pill">Insert money</span>
+              <span class="arrow">→</span>
+              <span class="flow-pill">Select item</span>
+              <span class="arrow">→</span>
+              <span class="flow-pill">Machine validates</span>
+              <span class="arrow">→</span>
+              <span class="flow-pill">Dispense or reject</span>
+            </div>
+          </article>
+
+          <article class="card technical">
+            <h3>Technical card · Encapsulation in real Java code</h3>
+            <ul>
+              <li>Use <strong>private fields</strong> to prevent arbitrary mutation.</li>
+              <li>Expose <strong>behavioral methods</strong> such as <code>deposit()</code>, <code>changeAddress()</code>, <code>approve()</code> instead of raw setters when business rules matter.</li>
+              <li>Preserve <strong>invariants</strong>: rules that must always stay true, such as “balance cannot go negative” or “email must be valid.”</li>
+              <li>Encapsulation reduces breakage because callers rely on <strong>what the object does</strong>, not <strong>how it stores data</strong>.</li>
+            </ul>
+
+<pre><span class="kw">class</span> <span class="type">ShoppingCart</span> {
+    <span class="kw">private</span> <span class="kw">final</span> <span class="type">List</span>&lt;<span class="type">Item</span>&gt; <span class="field">items</span> <span class="op">=</span> <span class="kw">new</span> <span class="type">ArrayList</span>&lt;&gt;();
+    <span class="kw">private</span> <span class="type">double</span> <span class="field">total</span>;
+
+    <span class="kw">public</span> <span class="type">void</span> <span class="method">addItem</span>(<span class="type">Item</span> item) {
+        <span class="kw">if</span> (item <span class="op">==</span> <span class="kw">null</span>) <span class="kw">throw</span> <span class="kw">new</span> <span class="type">IllegalArgumentException</span>(<span class="str">"item required"</span>);
+        <span class="field">items</span>.add(item);
+        <span class="field">total</span> <span class="op">+=</span> item.<span class="method">price</span>();
+    }
+
+    <span class="kw">public</span> <span class="type">void</span> <span class="method">removeItem</span>(<span class="type">Item</span> item) {
+        <span class="kw">if</span> (<span class="field">items</span>.remove(item)) {
+            <span class="field">total</span> <span class="op">-=</span> item.<span class="method">price</span>();
+        }
+    }
+
+    <span class="kw">public</span> <span class="type">List</span>&lt;<span class="type">Item</span>&gt; <span class="method">itemsView</span>() {
+        <span class="kw">return</span> <span class="type">List</span>.<span class="method">copyOf</span>(<span class="field">items</span>);
+    }
+
+    <span class="kw">public</span> <span class="type">double</span> <span class="method">total</span>() {
+        <span class="kw">return</span> <span class="field">total</span>;
+    }
+}</pre>
+
+            <p>Returning <code>List.copyOf(items)</code> is part of encapsulation too. It stops callers from mutating internal state behind your back.</p>
+
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Approach</th>
+                    <th>What caller can do</th>
+                    <th>Risk</th>
+                    <th>Read</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Public mutable field</td>
+                    <td>Anything</td>
+                    <td>State corruption, no validation</td>
+                    <td><span class="badge bad">High risk</span></td>
+                  </tr>
+                  <tr>
+                    <td>Private field + raw setter</td>
+                    <td>Change state through a method</td>
+                    <td>Still weak if setter skips rules</td>
+                    <td><span class="badge warn">Medium</span></td>
+                  </tr>
+                  <tr>
+                    <td>Private field + behavior methods</td>
+                    <td>Request safe operations</td>
+                    <td>Object can enforce invariants</td>
+                    <td><span class="badge good">Strong</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+
+          <article class="card warning">
+            <h3>Warning card · Getters/setters are not automatic good design</h3>
+            <p>A class with 20 private fields and 40 getters/setters might be technically “encapsulated,” but it can still leak its internal model everywhere. The question is: does the object control its rules, or do callers control them?</p>
+          </article>
+        </div>
+
+        <div class="quiz-box">
+          <h3>Section quiz</h3>
+          <p class="lead">Check whether encapsulation feels concrete, not just theoretical.</p>
+
+          <div class="quiz" data-correct="1" data-explanation="Encapsulation is mainly about protecting an object's consistency and invariants by controlling how its state changes.">
+            <h4>1) What is the strongest reason to encapsulate state?</h4>
+            <div class="options">
+              <button class="option">A. To make classes look more formal</button>
+              <button class="option">B. To protect invariants and control legal state changes</button>
+              <button class="option">C. To avoid constructors</button>
+              <button class="option">D. To reduce the number of methods</button>
+            </div>
+            <div class="answer-note"></div>
+          </div>
+
+          <div class="quiz" data-correct="3" data-explanation="Returning a copy or unmodifiable view prevents external code from mutating your object's internal collection directly.">
+            <h4>2) Why is returning an internal mutable list directly often a bad idea?</h4>
+            <div class="options">
+              <button class="option">A. Lists are always slower than arrays</button>
+              <button class="option">B. Java forbids exposing collections from classes</button>
+              <button class="option">C. Callers can mutate your internal state without your validation logic</button>
+              <button class="option">D. It prevents garbage collection</button>
+            </div>
+            <div class="answer-note"></div>
+          </div>
+
+          <div class="quiz" data-correct="2" data-explanation="Behavioral methods like approve(), cancel(), or changeEmail() are often better than blind setters because they preserve domain rules and intent.">
+            <h4>3) Which API is usually more encapsulated for a domain object?</h4>
+            <div class="options">
+              <button class="option">A. setStatus(String status)</button>
+              <button class="option">B. approve() / reject() with validation inside</button>
+              <button class="option">C. public String status</button>
+              <button class="option">D. A static utility that edits the object’s fields directly</button>
+            </div>
+            <div class="answer-note"></div>
+          </div>
+        </div>
+
+        <div class="nav-footer">
+          <button class="btn prev-btn">← Back</button>
+          <button class="btn primary next-btn">Next section →</button>
+        </div>
+      </section>
+
+      <section class="section" data-index="2">
+        <div class="section-header">
+          <div>
+            <div class="eyebrow">Section 3 of 5 · ~6 mins</div>
+            <h2 class="section-title">Abstraction: show the contract, hide the machinery</h2>
+            <p class="section-intro">Abstraction reduces the amount a caller must understand. Instead of forcing everyone to know internal details, you expose a useful contract: what operations exist and what guarantees they provide.</p>
+          </div>
+          <aside class="quick-panel">
+            <h3>Focus points</h3>
+            <ul>
+              <li>Abstraction lets code depend on <strong>what</strong>, not <strong>how</strong>.</li>
+              <li>Interfaces and abstract classes are tools for expressing contracts.</li>
+              <li>It improves extensibility because implementations can vary behind the same API.</li>
+            </ul>
+          </aside>
+        </div>
+
+        <div class="grid">
+          <article class="card eli5">
+            <h3>🧒 ELI5 · Driving a car without knowing the engine</h3>
+            <p>You know the steering wheel turns the car, the brake stops it, and the accelerator makes it go. You do not need to know how fuel injection works before driving to the store.</p>
+            <p>That is abstraction. It gives you a useful set of controls without forcing you to study the hidden parts first.</p>
+          </article>
+
+          <article class="card analogy">
+            <h3>🔗 ANALOGY · A remote control, many devices</h3>
+            <p>The button says <strong>Power</strong>. One TV might use infrared, another Bluetooth, another Wi‑Fi. The user presses one concept; the implementation behind it varies.</p>
+            <div class="flow">
+              <span class="flow-pill">Client calls play()</span>
+              <span class="arrow">→</span>
+              <span class="flow-pill">Contract decides allowed action</span>
+              <span class="arrow">→</span>
+              <span class="flow-pill">Concrete implementation runs</span>
+            </div>
+          </article>
+
+          <article class="card technical">
+            <h3>Technical card · Interfaces, abstract classes, and API design</h3>
+            <ul>
+              <li><strong>Abstraction</strong> means emphasizing essential behavior while hiding irrelevant detail.</li>
+              <li>In Java, common tools are <strong>interfaces</strong> and <strong>abstract classes</strong>.</li>
+              <li>Code that depends on abstractions is typically easier to test, extend, and replace.</li>
+              <li>This is why dependency injection often targets interfaces: callers care about a capability, not a concrete class.</li>
+            </ul>
+
+<pre><span class="kw">interface</span> <span class="type">PaymentProcessor</span> {
+    <span class="type">Receipt</span> <span class="method">charge</span>(<span class="type">Money</span> amount);
+}
+
+<span class="kw">class</span> <span class="type">StripePaymentProcessor</span> <span class="kw">implements</span> <span class="type">PaymentProcessor</span> {
+    <span class="anno">@Override</span>
+    <span class="kw">public</span> <span class="type">Receipt</span> <span class="method">charge</span>(<span class="type">Money</span> amount) {
+        <span class="com">// call Stripe API, map response, return receipt</span>
+        <span class="kw">return</span> <span class="kw">new</span> <span class="type">Receipt</span>(<span class="str">"stripe-123"</span>);
+    }
+}
+
+<span class="kw">class</span> <span class="type">CheckoutService</span> {
+    <span class="kw">private</span> <span class="kw">final</span> <span class="type">PaymentProcessor</span> <span class="field">paymentProcessor</span>;
+
+    <span class="kw">public</span> <span class="type">CheckoutService</span>(<span class="type">PaymentProcessor</span> paymentProcessor) {
+        <span class="kw">this</span>.<span class="field">paymentProcessor</span> <span class="op">=</span> paymentProcessor;
+    }
+
+    <span class="kw">public</span> <span class="type">Receipt</span> <span class="method">checkout</span>(<span class="type">Money</span> total) {
+        <span class="kw">return</span> <span class="field">paymentProcessor</span>.<span class="method">charge</span>(total);
+    }
+}</pre>
+
+            <p><code>CheckoutService</code> does not care whether the implementation is Stripe, PayPal, or a fake test double. That is the payoff of abstraction.</p>
+
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Tool</th>
+                    <th>Best for</th>
+                    <th>Can carry state?</th>
+                    <th>Read</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Interface</td>
+                    <td>Pure capability / contract</td>
+                    <td>Not instance state</td>
+                    <td><span class="badge good">Flexible</span></td>
+                  </tr>
+                  <tr>
+                    <td>Abstract class</td>
+                    <td>Shared base behavior + partial template</td>
+                    <td>Yes</td>
+                    <td><span class="badge warn">Use with care</span></td>
+                  </tr>
+                  <tr>
+                    <td>Concrete class dependency</td>
+                    <td>Simple direct usage</td>
+                    <td>Yes</td>
+                    <td><span class="badge bad">More coupled</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+
+          <article class="card warning">
+            <h3>Warning card · Don’t abstract too early</h3>
+            <p>Abstraction is powerful, but premature abstraction creates extra layers with no real variability behind them. If you only have one stable implementation and no likely change axis, a concrete class may be enough for now.</p>
+          </article>
+        </div>
+
+        <div class="quiz-box">
+          <h3>Section quiz</h3>
+          <p class="lead">Make sure the contract-vs-implementation distinction is sharp.</p>
+
+          <div class="quiz" data-correct="0" data-explanation="Abstraction lets callers rely on a clear contract without knowing the internal implementation details.">
+            <h4>1) Which sentence best defines abstraction?</h4>
+            <div class="options">
+              <button class="option">A. Expose essential behavior while hiding unnecessary implementation detail</button>
+              <button class="option">B. Copy logic into subclasses to avoid repetition</button>
+              <button class="option">C. Prevent fields from being public</button>
+              <button class="option">D. Make all methods static</button>
+            </div>
+            <div class="answer-note"></div>
+          </div>
+
+          <div class="quiz" data-correct="1" data-explanation="Depending on an interface makes the service care about capability, not vendor-specific implementation.">
+            <h4>2) Why would a service depend on a <code>PaymentProcessor</code> interface instead of <code>StripePaymentProcessor</code> directly?</h4>
+            <div class="options">
+              <button class="option">A. Interfaces run faster in the JVM</button>
+              <button class="option">B. It reduces coupling and allows alternate implementations</button>
+              <button class="option">C. Interfaces automatically make code thread-safe</button>
+              <button class="option">D. Java requires every service to depend on an interface</button>
+            </div>
+            <div class="answer-note"></div>
+          </div>
+
+          <div class="quiz" data-correct="3" data-explanation="Abstracting before you have a real need for variation often adds indirection without value.">
+            <h4>3) Which is the most reasonable caution about abstraction?</h4>
+            <div class="options">
+              <button class="option">A. It should replace encapsulation</button>
+              <button class="option">B. It only matters in UI code</button>
+              <button class="option">C. It removes the need for tests</button>
+              <button class="option">D. Too much early abstraction can create needless complexity</button>
+            </div>
+            <div class="answer-note"></div>
+          </div>
+        </div>
+
+        <div class="nav-footer">
+          <button class="btn prev-btn">← Back</button>
+          <button class="btn primary next-btn">Next section →</button>
+        </div>
+      </section>
+
+      <section class="section" data-index="3">
+        <div class="section-header">
+          <div>
+            <div class="eyebrow">Section 4 of 5 · ~6 mins</div>
+            <h2 class="section-title">Inheritance: reuse with hierarchy — and with sharp edges</h2>
+            <p class="section-intro">Inheritance lets one type derive from another. It can model real subtype relationships and share behavior, but it also creates tight coupling and can age badly when the hierarchy no longer matches the domain.</p>
+          </div>
+          <aside class="quick-panel">
+            <h3>You should leave with</h3>
+            <ul>
+              <li>A clean sense of <strong>is-a</strong> versus <strong>has-a</strong>.</li>
+              <li>An intuition for when inheritance helps and when it traps you.</li>
+              <li>A practical bias toward modeling behavior, not just hierarchy.</li>
+            </ul>
+          </aside>
+        </div>
+
+        <div class="grid">
+          <article class="card eli5">
+            <h3>🧒 ELI5 · Family traits</h3>
+            <p>A child may inherit some traits from a parent, like eye color, but the child is still its own person. In code, a child class can reuse some behavior from a parent class and also add or change some of its own behavior.</p>
+          </article>
+
+          <article class="card analogy">
+            <h3>🔗 ANALOGY · Tools in the same family</h3>
+            <p>Imagine a base tool called <strong>Tool</strong> with common things like weight and brand. A <strong>Hammer</strong> and a <strong>Screwdriver</strong> are both tools, but they behave differently. That makes sense as a hierarchy because the “is-a” relationship is natural.</p>
+            <div class="flow">
+              <span class="flow-pill">Base type defines common contract</span>
+              <span class="arrow">→</span>
+              <span class="flow-pill">Subtype inherits</span>
+              <span class="arrow">→</span>
+              <span class="flow-pill">Subtype extends or overrides</span>
+            </div>
+          </article>
+
+          <article class="card technical">
+            <h3>Technical card · The real tradeoff in inheritance</h3>
+            <ul>
+              <li>Inheritance expresses an <strong>is-a</strong> relationship: a <code>Dog</code> is an <code>Animal</code>.</li>
+              <li>It enables reuse of fields and methods from a superclass.</li>
+              <li>Overriding lets subclasses provide specialized behavior.</li>
+              <li>But inheritance couples subclass and superclass tightly. Changes high in the tree can ripple downward.</li>
+            </ul>
+
+<pre><span class="kw">abstract</span> <span class="kw">class</span> <span class="type">Notification</span> {
+    <span class="kw">protected</span> <span class="kw">final</span> <span class="type">String</span> <span class="field">recipient</span>;
+
+    <span class="kw">protected</span> <span class="type">Notification</span>(<span class="type">String</span> recipient) {
+        <span class="kw">this</span>.<span class="field">recipient</span> <span class="op">=</span> recipient;
+    }
+
+    <span class="kw">public</span> <span class="kw">abstract</span> <span class="type">void</span> <span class="method">send</span>();
+}
+
+<span class="kw">class</span> <span class="type">EmailNotification</span> <span class="kw">extends</span> <span class="type">Notification</span> {
+    <span class="kw">public</span> <span class="type">EmailNotification</span>(<span class="type">String</span> recipient) {
+        <span class="kw">super</span>(recipient);
+    }
+
+    <span class="anno">@Override</span>
+    <span class="kw">public</span> <span class="type">void</span> <span class="method">send</span>() {
+        <span class="type">System</span>.out.<span class="method">println</span>(<span class="str">"Sending email to "</span> <span class="op">+</span> <span class="field">recipient</span>);
+    }
+}
+
+<span class="kw">class</span> <span class="type">SmsNotification</span> <span class="kw">extends</span> <span class="type">Notification</span> {
+    <span class="kw">public</span> <span class="type">SmsNotification</span>(<span class="type">String</span> recipient) {
+        <span class="kw">super</span>(recipient);
+    }
+
+    <span class="anno">@Override</span>
+    <span class="kw">public</span> <span class="type">void</span> <span class="method">send</span>() {
+        <span class="type">System</span>.out.<span class="method">println</span>(<span class="str">"Sending SMS to "</span> <span class="op">+</span> <span class="field">recipient</span>);
+    }
+}</pre>
+
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Question</th>
+                    <th>If answer is yes…</th>
+                    <th>If answer is no…</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Is the subtype truly an “is-a” of the parent?</td>
+                    <td><span class="badge good">Inheritance may fit</span></td>
+                    <td><span class="badge bad">Avoid hierarchy</span></td>
+                  </tr>
+                  <tr>
+                    <td>Do subclasses need the same core contract?</td>
+                    <td><span class="badge good">Shared base can help</span></td>
+                    <td><span class="badge warn">Prefer composition</span></td>
+                  </tr>
+                  <tr>
+                    <td>Will parent changes likely break children?</td>
+                    <td><span class="badge bad">Coupling risk</span></td>
+                    <td><span class="badge info">More stable</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+
+          <article class="card warning">
+            <h3>Warning card · The “is-a” test matters</h3>
+            <p>A classic mistake is inheriting for code reuse when the relationship is not a true subtype. A <code>Stack</code> is not really a general <code>List</code> just because both contain items. Reuse alone is not enough reason to inherit.</p>
+          </article>
+        </div>
+
+        <div class="quiz-box">
+          <h3>Section quiz</h3>
+          <p class="lead">Inheritance is useful, but it punishes sloppy modeling.</p>
+
+          <div class="quiz" data-correct="2" data-explanation="Inheritance makes the most sense when the child is genuinely a specialized form of the parent type.">
+            <h4>1) Which relationship is the best fit for inheritance?</h4>
+            <div class="options">
+              <button class="option">A. Car and Engine</button>
+              <button class="option">B. Order and PaymentGateway</button>
+              <button class="option">C. Dog and Animal</button>
+              <button class="option">D. Report and PdfExporter</button>
+            </div>
+            <div class="answer-note"></div>
+          </div>
+
+          <div class="quiz" data-correct="0" data-explanation="The biggest long-term cost of inheritance is often the tight coupling between parent and child.">
+            <h4>2) What is a major downside of inheritance?</h4>
+            <div class="options">
+              <button class="option">A. Changes in the superclass can ripple into subclasses</button>
+              <button class="option">B. Subclasses cannot define new methods</button>
+              <button class="option">C. It prevents polymorphism</button>
+              <button class="option">D. Java only allows one method per subclass</button>
+            </div>
+            <div class="answer-note"></div>
+          </div>
+
+          <div class="quiz" data-correct="3" data-explanation="Inheriting just to reuse code, without a real subtype relationship, is usually a design smell.">
+            <h4>3) When is inheritance most likely the wrong tool?</h4>
+            <div class="options">
+              <button class="option">A. When a subclass overrides a method responsibly</button>
+              <button class="option">B. When multiple subtypes share a real domain contract</button>
+              <button class="option">C. When you want specialized behavior for a common category</button>
+              <button class="option">D. When you only want to reuse implementation but there is no true “is-a” relationship</button>
+            </div>
+            <div class="answer-note"></div>
+          </div>
+        </div>
+
+        <div class="nav-footer">
+          <button class="btn prev-btn">← Back</button>
+          <button class="btn primary next-btn">Next section →</button>
+        </div>
+      </section>
+
+      <section class="section" data-index="4">
+        <div class="section-header">
+          <div>
+            <div class="eyebrow">Section 5 of 5 · ~6 mins</div>
+            <h2 class="section-title">Polymorphism: same message, different behavior — plus when to favor composition</h2>
+            <p class="section-intro">Polymorphism lets you write code against a common type while different concrete objects respond in their own way. This is where abstraction and inheritance become useful in practice. It is also why composition often outlives inheritance in real systems.</p>
+          </div>
+          <aside class="quick-panel">
+            <h3>What you’ll lock in</h3>
+            <ul>
+              <li>How dynamic dispatch works at a practical level.</li>
+              <li>Why polymorphism removes branching pressure from callers.</li>
+              <li>Why <strong>composition over inheritance</strong> is a healthy default in many codebases.</li>
+            </ul>
+          </aside>
+        </div>
+
+        <div class="grid">
+          <article class="card eli5">
+            <h3>🧒 ELI5 · Same button, different toy</h3>
+            <p>You press the same “start” button on two different toys. One spins. One lights up. The button is the same idea, but each toy knows how to respond in its own way.</p>
+            <p>That is polymorphism: same request, different object-specific behavior.</p>
+          </article>
+
+          <article class="card analogy">
+            <h3>🔗 ANALOGY · A music playlist with many speaker types</h3>
+            <p>You call <strong>play()</strong> on a phone speaker, a Bluetooth speaker, and a car stereo. Your code says one thing. The actual output path differs per device.</p>
+            <div class="flow">
+              <span class="flow-pill">Caller sees Speaker</span>
+              <span class="arrow">→</span>
+              <span class="flow-pill">Calls play()</span>
+              <span class="arrow">→</span>
+              <span class="flow-pill">Runtime picks concrete implementation</span>
+            </div>
+          </article>
+
+          <article class="card technical">
+            <h3>Technical card · Dynamic dispatch and composition</h3>
+            <ul>
+              <li><strong>Polymorphism</strong> allows one interface/reference type to point to many concrete implementations.</li>
+              <li>With <strong>runtime dispatch</strong>, the method that actually runs depends on the object’s concrete type, not the reference variable’s type.</li>
+              <li>This helps remove repetitive <code>if/else</code> or <code>switch</code> logic from callers.</li>
+              <li><strong>Composition</strong> means building behavior by assembling collaborating objects, which is often more flexible than deep inheritance trees.</li>
+            </ul>
+
+<pre><span class="kw">interface</span> <span class="type">Notifier</span> {
+    <span class="type">void</span> <span class="method">notify</span>(<span class="type">String</span> message);
+}
+
+<span class="kw">class</span> <span class="type">EmailNotifier</span> <span class="kw">implements</span> <span class="type">Notifier</span> {
+    <span class="anno">@Override</span>
+    <span class="kw">public</span> <span class="type">void</span> <span class="method">notify</span>(<span class="type">String</span> message) {
+        <span class="type">System</span>.out.<span class="method">println</span>(<span class="str">"EMAIL: "</span> <span class="op">+</span> message);
+    }
+}
+
+<span class="kw">class</span> <span class="type">SlackNotifier</span> <span class="kw">implements</span> <span class="type">Notifier</span> {
+    <span class="anno">@Override</span>
+    <span class="kw">public</span> <span class="type">void</span> <span class="method">notify</span>(<span class="type">String</span> message) {
+        <span class="type">System</span>.out.<span class="method">println</span>(<span class="str">"SLACK: "</span> <span class="op">+</span> message);
+    }
+}
+
+<span class="kw">class</span> <span class="type">AlertService</span> {
+    <span class="kw">private</span> <span class="kw">final</span> <span class="type">Notifier</span> <span class="field">notifier</span>;
+
+    <span class="kw">public</span> <span class="type">AlertService</span>(<span class="type">Notifier</span> notifier) {
+        <span class="kw">this</span>.<span class="field">notifier</span> <span class="op">=</span> notifier;
+    }
+
+    <span class="kw">public</span> <span class="type">void</span> <span class="method">sendAlert</span>(<span class="type">String</span> message) {
+        <span class="field">notifier</span>.<span class="method">notify</span>(message);
+    }
+}</pre>
+
+            <p><code>AlertService</code> can work with any <code>Notifier</code>. That flexibility comes from polymorphism. The fact that <code>AlertService</code> holds a <code>Notifier</code> is composition.</p>
+
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Design choice</th>
+                    <th>What it does well</th>
+                    <th>Main risk</th>
+                    <th>Rule of thumb</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Polymorphism</td>
+                    <td>Swap behavior behind a common contract</td>
+                    <td>Too many tiny abstractions if overused</td>
+                    <td><span class="badge good">Great for variation</span></td>
+                  </tr>
+                  <tr>
+                    <td>Inheritance</td>
+                    <td>Shared base behavior and subtype modeling</td>
+                    <td>Tight coupling</td>
+                    <td><span class="badge warn">Use selectively</span></td>
+                  </tr>
+                  <tr>
+                    <td>Composition</td>
+                    <td>Assemble behavior from smaller objects</td>
+                    <td>More objects to wire together</td>
+                    <td><span class="badge good">Healthy default</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+
+          <article class="card warning">
+            <h3>Warning card · Polymorphism is not “magic reuse”</h3>
+            <p>If every behavior difference is tiny and artificial, you may be creating an abstraction zoo. Use polymorphism when you have a real axis of variation that callers should not need to branch on themselves.</p>
+          </article>
+        </div>
+
+        <div class="quiz-box">
+          <h3>Section quiz</h3>
+          <p class="lead">This is the practical payoff section — same API, different runtime behavior.</p>
+
+          <div class="quiz" data-correct="1" data-explanation="Polymorphism allows code to invoke the same operation through a shared type while concrete objects behave differently.">
+            <h4>1) What is the clearest description of polymorphism?</h4>
+            <div class="options">
+              <button class="option">A. Copying parent methods into child classes</button>
+              <button class="option">B. Using one common type/reference to work with many concrete behaviors</button>
+              <button class="option">C. Making fields immutable</button>
+              <button class="option">D. Hiding constructors from clients</button>
+            </div>
+            <div class="answer-note"></div>
+          </div>
+
+          <div class="quiz" data-correct="0" data-explanation="At runtime, Java dispatches the overridden instance method based on the concrete object, not just the reference type.">
+            <h4>2) If a variable is typed as <code>Notifier</code> but actually holds a <code>SlackNotifier</code>, which <code>notify()</code> runs?</h4>
+            <div class="options">
+              <button class="option">A. SlackNotifier’s overridden method</button>
+              <button class="option">B. Always the interface version</button>
+              <button class="option">C. Both methods in sequence</button>
+              <button class="option">D. Java picks randomly unless you cast</button>
+            </div>
+            <div class="answer-note"></div>
+          </div>
+
+          <div class="quiz" data-correct="3" data-explanation="Composition avoids many of the fragility problems of inheritance by assembling behavior from separate collaborators instead of forcing it through a rigid hierarchy.">
+            <h4>3) Why is “composition over inheritance” often recommended?</h4>
+            <div class="options">
+              <button class="option">A. Composition eliminates interfaces</button>
+              <button class="option">B. Inheritance is illegal in most production code</button>
+              <button class="option">C. Composition is always faster at runtime</button>
+              <button class="option">D. Composition is usually more flexible and less tightly coupled</button>
+            </div>
+            <div class="answer-note"></div>
+          </div>
+        </div>
+
+        <div class="nav-footer">
+          <button class="btn prev-btn">← Back</button>
+          <button class="btn primary finish-btn">Finish module →</button>
+        </div>
+      </section>
+
+      <section class="completion" id="completionScreen">
+        <div class="label">Completion screen</div>
+        <div style="font-size:3rem">🎉</div>
+        <h2>You just reviewed the core OOP principles in one pass.</h2>
+        <p>Here’s the compressed cheat sheet. Read this once more before an interview, then try explaining each bullet out loud in your own words. If you can say the idea, the tradeoff, and a Java example, you’re in strong shape.</p>
+
+        <div class="pill-row">
+          <span class="summary-pill">State + behavior together</span>
+          <span class="summary-pill">Protect invariants</span>
+          <span class="summary-pill">Depend on contracts</span>
+          <span class="summary-pill">Use real subtype relationships</span>
+          <span class="summary-pill">Same message, different runtime behavior</span>
+          <span class="summary-pill">Composition is often the safer default</span>
+        </div>
+
+        <div class="cheat">
+          <div class="cheat-card">
+            <h3>1) OOP mental model</h3>
+            <ul>
+              <li>A class is a blueprint; an object is a runtime instance.</li>
+              <li>Good OOP assigns responsibilities to the right objects.</li>
+              <li>It improves cohesion and reduces scattered logic.</li>
+            </ul>
+          </div>
+          <div class="cheat-card">
+            <h3>2) Encapsulation</h3>
+            <ul>
+              <li>Not just private fields — it’s about controlling valid state changes.</li>
+              <li>Expose meaningful behavior methods, not blind mutation everywhere.</li>
+              <li>Protect internal collections and invariants.</li>
+            </ul>
+          </div>
+          <div class="cheat-card">
+            <h3>3) Abstraction</h3>
+            <ul>
+              <li>Expose essential behavior, hide implementation detail.</li>
+              <li>Interfaces express contracts; abstract classes can share partial behavior.</li>
+              <li>Depending on abstractions improves extensibility and testing.</li>
+            </ul>
+          </div>
+          <div class="cheat-card">
+            <h3>4) Inheritance</h3>
+            <ul>
+              <li>Use it for true <strong>is-a</strong> relationships, not just code reuse.</li>
+              <li>It can share behavior, but it creates tight coupling.</li>
+              <li>If the hierarchy feels forced, it probably is.</li>
+            </ul>
+          </div>
+          <div class="cheat-card">
+            <h3>5) Polymorphism</h3>
+            <ul>
+              <li>One interface/reference can work with many implementations.</li>
+              <li>Runtime dispatch chooses the concrete overridden method.</li>
+              <li>It reduces caller-side branching and centralizes behavior differences.</li>
+            </ul>
+          </div>
+          <div class="cheat-card">
+            <h3>6) Composition over inheritance</h3>
+            <ul>
+              <li>Prefer assembling behavior from collaborators when possible.</li>
+              <li>It is usually more flexible and easier to evolve than deep hierarchies.</li>
+              <li>Think <strong>has-a</strong> before you jump to <strong>is-a</strong>.</li>
+            </ul>
+          </div>
+        </div>
+
+        <p class="footer-note">Fast self-check: can you explain each of the four pillars with one analogy, one Java example, and one tradeoff? That’s usually enough to sound clear and confident.</p>
+        <div class="nav-footer">
+          <button class="btn" id="reviewBtn">← Review sections</button>
+          <button class="btn primary" id="restartBtn">Restart timer</button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const totalSeconds = 30 * 60;
+    let remainingSeconds = totalSeconds;
+    let currentIndex = 0;
+    let maxVisited = 0;
+    const sections = Array.from(document.querySelectorAll('.section'));
+    const completionScreen = document.getElementById('completionScreen');
+    const navDots = document.getElementById('navDots');
+    const timerEl = document.getElementById('timer');
+    const progressFill = document.getElementById('progressFill');
+
+    function buildNavDots() {
+      sections.forEach((_, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'nav-dot' + (i === 0 ? ' active' : '');
+        btn.textContent = i + 1;
+        btn.setAttribute('aria-label', 'Go to section ' + (i + 1));
+        btn.addEventListener('click', () => {
+          showSection(i);
+        });
+        navDots.appendChild(btn);
+      });
+    }
+
+    function updateNavDots() {
+      const dots = Array.from(navDots.children);
+      dots.forEach((dot, i) => {
+        dot.classList.remove('active', 'done');
+        if (i === currentIndex && completionScreen.classList.contains('active') === false) {
+          dot.classList.add('active');
+        } else if (i < currentIndex || i <= maxVisited - 1) {
+          dot.classList.add('done');
+        }
+      });
+    }
+
+    function showSection(index) {
+      completionScreen.classList.remove('active');
+      sections.forEach((section, i) => {
+        section.classList.toggle('active', i === index);
+      });
+      currentIndex = index;
+      maxVisited = Math.max(maxVisited, index);
+      updateNavDots();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function showCompletion() {
+      sections.forEach(section => section.classList.remove('active'));
+      completionScreen.classList.add('active');
+      currentIndex = sections.length;
+      maxVisited = sections.length - 1;
+      updateNavDots();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function formatTime(seconds) {
+      const mins = String(Math.floor(seconds / 60)).padStart(2, '0');
+      const secs = String(seconds % 60).padStart(2, '0');
+      return `${mins}:${secs}`;
+    }
+
+    function updateTimerUI() {
+      timerEl.textContent = formatTime(remainingSeconds);
+      const elapsed = totalSeconds - remainingSeconds;
+      progressFill.style.width = `${(elapsed / totalSeconds) * 100}%`;
+
+      timerEl.classList.remove('warn', 'danger');
+      if (remainingSeconds <= 60) {
+        timerEl.classList.add('danger');
+      } else if (remainingSeconds <= 300) {
+        timerEl.classList.add('warn');
+      }
+    }
+
+    let ticker = null;
+
+    function startTimer() {
+      if (ticker) clearInterval(ticker);
+      ticker = setInterval(() => {
+        if (remainingSeconds > 0) {
+          remainingSeconds -= 1;
+          updateTimerUI();
+        } else {
+          timerEl.classList.add('danger');
+        }
+      }, 1000);
+    }
+
+    document.addEventListener('click', (event) => {
+      if (event.target.matches('.next-btn')) {
+        showSection(Math.min(currentIndex + 1, sections.length - 1));
+      }
+      if (event.target.matches('.prev-btn')) {
+        showSection(Math.max(currentIndex - 1, 0));
+      }
+      if (event.target.matches('.finish-btn')) {
+        showCompletion();
+      }
+      if (event.target.id === 'reviewBtn') {
+        showSection(0);
+      }
+      if (event.target.id === 'restartBtn') {
+        remainingSeconds = totalSeconds;
+        updateTimerUI();
+        startTimer();
+        if (completionScreen.classList.contains('active')) {
+          showSection(0);
+        }
+      }
+    });
+
+    document.querySelectorAll('.quiz').forEach(quiz => {
+      const correctIndex = Number(quiz.dataset.correct);
+      const explanation = quiz.dataset.explanation;
+      const options = Array.from(quiz.querySelectorAll('.option'));
+      const note = quiz.querySelector('.answer-note');
+
+      options.forEach((option, index) => {
+        option.addEventListener('click', () => {
+          options.forEach(btn => btn.disabled = true);
+          options[correctIndex].classList.add('correct');
+
+          if (index !== correctIndex) {
+            option.classList.add('wrong');
+          }
+
+          const answerLetter = String.fromCharCode(65 + correctIndex);
+          note.innerHTML = `<strong>Correct answer: ${answerLetter}.</strong> ${explanation}`;
+          note.classList.add('show');
+        });
+      });
+    });
+
+    buildNavDots();
+    updateTimerUI();
+    updateNavDots();
+    startTimer();
+  </script>
+</body>
+</html>

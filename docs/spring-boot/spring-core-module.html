@@ -1,0 +1,1373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Spring Core — Interactive Learning Module</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #0a0e1a;
+  --surf1: #111827;
+  --surf2: #1a2235;
+  --surf3: #1e2d45;
+  --cyan: #00d4ff;
+  --purple: #7c3aed;
+  --green: #10b981;
+  --amber: #f59e0b;
+  --red: #ef4444;
+  --text: #e2e8f0;
+  --muted: #64748b;
+  --border: #1e2d45;
+  --font-body: 'Syne', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--font-body);
+  font-size:15px;
+  line-height:1.7;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+/* Subtle noise/grain overlay */
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:0;opacity:.4;
+}
+
+/* ─── TOP BAR ─── */
+#topbar{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  background:rgba(10,14,26,.92);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  padding:0 24px;
+}
+#topbar-inner{
+  max-width:900px;margin:0 auto;
+  display:flex;align-items:center;gap:16px;
+  height:56px;
+}
+#course-label{
+  font-family:var(--font-mono);
+  font-size:11px;color:var(--cyan);
+  letter-spacing:.1em;text-transform:uppercase;
+  white-space:nowrap;
+}
+#nav-dots{
+  display:flex;gap:8px;align-items:center;flex:1;
+  overflow-x:auto;scrollbar-width:none;
+}
+#nav-dots::-webkit-scrollbar{display:none}
+.dot{
+  width:28px;height:28px;border-radius:50%;
+  border:2px solid var(--muted);
+  background:transparent;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-mono);font-size:10px;color:var(--muted);
+  cursor:pointer;transition:all .2s;flex-shrink:0;
+}
+.dot:hover{border-color:var(--cyan);color:var(--cyan)}
+.dot.active{background:var(--cyan);border-color:var(--cyan);color:#000;font-weight:700}
+.dot.done{border-color:var(--green);color:var(--green)}
+#timer-box{
+  display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex-shrink:0;
+}
+#timer{
+  font-family:var(--font-mono);font-size:15px;font-weight:700;
+  color:var(--cyan);transition:color .3s;
+}
+#timer.warn{color:var(--amber)}
+#timer.danger{color:var(--red);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+#prog-wrap{
+  position:absolute;bottom:0;left:0;right:0;height:2px;
+  background:var(--surf2);
+}
+#prog-bar{height:2px;background:linear-gradient(90deg,var(--cyan),var(--purple));width:0;transition:width .5s}
+
+/* ─── MAIN CONTENT ─── */
+#app{max-width:900px;margin:0 auto;padding:80px 24px 40px;}
+
+/* ─── SECTION ─── */
+.section{display:none;animation:fadeIn .4s ease}
+.section.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+.section-meta{
+  font-family:var(--font-mono);font-size:11px;
+  color:var(--muted);letter-spacing:.08em;
+  text-transform:uppercase;margin-bottom:10px;
+}
+.section-title{
+  font-size:28px;font-weight:800;
+  background:linear-gradient(135deg,var(--cyan),var(--purple));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+  margin-bottom:6px;line-height:1.2;
+}
+.pomodoro-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--surf2);border:1px solid var(--border);
+  border-radius:20px;padding:4px 12px;
+  font-family:var(--font-mono);font-size:11px;color:var(--amber);
+  margin-bottom:28px;
+}
+
+/* ─── CARDS ─── */
+.card{
+  background:var(--surf1);
+  border-radius:12px;
+  padding:20px 24px;
+  margin-bottom:20px;
+  border-left:4px solid;
+  position:relative;
+}
+.card-eli5{border-left-color:var(--amber)}
+.card-analogy{border-left-color:var(--green)}
+.card-tech{border-left-color:var(--cyan)}
+.card-warn{border-left-color:var(--red)}
+.card-label{
+  font-family:var(--font-mono);font-size:11px;
+  letter-spacing:.08em;text-transform:uppercase;
+  margin-bottom:10px;font-weight:700;
+}
+.card-eli5 .card-label{color:var(--amber)}
+.card-analogy .card-label{color:var(--green)}
+.card-tech .card-label{color:var(--cyan)}
+.card-warn .card-label{color:var(--red)}
+.card p+p{margin-top:10px}
+
+/* ─── CODE BLOCKS ─── */
+pre{
+  background:#050810;
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:16px 20px;
+  overflow-x:auto;
+  font-family:var(--font-mono);
+  font-size:13px;
+  line-height:1.6;
+  margin:14px 0;
+}
+.kw{color:#c792ea}
+.an{color:var(--amber)}
+.cls{color:#82aaff}
+.str{color:var(--green)}
+.cmt{color:#546e7a;font-style:italic}
+.fn{color:var(--cyan)}
+.num{color:#f78c6c}
+
+/* ─── TABLE ─── */
+.table-wrap{overflow-x:auto;margin:16px 0}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{
+  background:var(--surf2);
+  font-family:var(--font-mono);
+  font-size:11px;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--muted);padding:10px 14px;text-align:left;
+  border-bottom:1px solid var(--border);
+}
+td{
+  padding:10px 14px;
+  border-bottom:1px solid var(--border);
+  vertical-align:top;
+}
+tr:hover td{background:rgba(255,255,255,.02)}
+.badge{
+  display:inline-block;padding:2px 10px;border-radius:12px;
+  font-family:var(--font-mono);font-size:11px;font-weight:700;
+}
+.badge-green{background:rgba(16,185,129,.15);color:var(--green)}
+.badge-amber{background:rgba(245,158,11,.15);color:var(--amber)}
+.badge-red{background:rgba(239,68,68,.15);color:var(--red)}
+.badge-cyan{background:rgba(0,212,255,.12);color:var(--cyan)}
+
+/* ─── FLOW DIAGRAM ─── */
+.flow{
+  display:flex;flex-wrap:wrap;align-items:center;
+  gap:6px;margin:16px 0;
+}
+.flow-step{
+  background:var(--surf2);
+  border:1px solid var(--border);
+  border-radius:8px;padding:8px 14px;
+  font-size:12px;font-family:var(--font-mono);
+  color:var(--text);white-space:nowrap;
+}
+.flow-step.highlight{border-color:var(--cyan);color:var(--cyan)}
+.flow-step.warn{border-color:var(--amber);color:var(--amber)}
+.flow-step.success{border-color:var(--green);color:var(--green)}
+.flow-arrow{color:var(--muted);font-size:16px}
+
+/* ─── QUIZ ─── */
+.quiz-box{
+  background:var(--surf1);
+  border:2px solid var(--purple);
+  border-radius:12px;
+  padding:24px;
+  margin-top:28px;
+}
+.quiz-label{
+  font-family:var(--font-mono);font-size:11px;
+  color:var(--purple);letter-spacing:.1em;text-transform:uppercase;
+  margin-bottom:12px;
+}
+.quiz-q{font-size:16px;font-weight:600;margin-bottom:18px;line-height:1.5}
+.quiz-opts{display:flex;flex-direction:column;gap:10px}
+.quiz-opt{
+  background:var(--surf2);
+  border:1px solid var(--border);
+  border-radius:8px;padding:12px 16px;
+  cursor:pointer;text-align:left;
+  font-family:var(--font-body);font-size:14px;color:var(--text);
+  transition:all .2s;
+}
+.quiz-opt:hover:not(:disabled){border-color:var(--purple);background:rgba(124,58,237,.1)}
+.quiz-opt.correct{border-color:var(--green)!important;background:rgba(16,185,129,.15)!important;color:var(--green)}
+.quiz-opt.wrong{border-color:var(--red)!important;background:rgba(239,68,68,.12)!important;color:var(--red)}
+.quiz-opt:disabled{cursor:default}
+.quiz-explain{
+  margin-top:16px;padding:14px;
+  background:rgba(124,58,237,.1);
+  border-left:3px solid var(--purple);
+  border-radius:0 8px 8px 0;
+  font-size:13px;color:#c4b5fd;display:none;
+}
+.quiz-explain.show{display:block}
+
+/* ─── NAV BUTTONS ─── */
+.nav-row{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-top:36px;padding-top:24px;
+  border-top:1px solid var(--border);
+}
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:11px 22px;border-radius:8px;
+  font-family:var(--font-body);font-size:14px;font-weight:600;
+  cursor:pointer;transition:all .2s;border:none;
+}
+.btn-ghost{
+  background:var(--surf2);color:var(--muted);border:1px solid var(--border);
+}
+.btn-ghost:hover{border-color:var(--cyan);color:var(--cyan)}
+.btn-primary{
+  background:linear-gradient(135deg,var(--cyan),var(--purple));
+  color:#fff;
+}
+.btn-primary:hover{opacity:.88;transform:translateY(-1px)}
+
+/* ─── COMPLETION ─── */
+#completion{display:none;text-align:center;padding:60px 20px}
+#completion.show{display:block;animation:fadeIn .5s ease}
+.completion-emoji{font-size:72px;margin-bottom:20px}
+.completion-title{font-size:32px;font-weight:800;margin-bottom:8px;
+  background:linear-gradient(135deg,var(--cyan),var(--purple));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.completion-sub{color:var(--muted);margin-bottom:36px}
+.cheatsheet{
+  background:var(--surf1);border:1px solid var(--border);
+  border-radius:12px;padding:28px;text-align:left;max-width:720px;margin:0 auto;
+}
+.cs-section{margin-bottom:20px}
+.cs-section-title{
+  font-family:var(--font-mono);font-size:11px;
+  color:var(--cyan);letter-spacing:.1em;text-transform:uppercase;
+  margin-bottom:10px;
+}
+.cs-item{
+  display:flex;gap:10px;font-size:13px;margin-bottom:6px;align-items:baseline;
+}
+.cs-item::before{content:'→';color:var(--purple);flex-shrink:0}
+.btn-restart{
+  margin-top:28px;
+  background:var(--surf2);border:1px solid var(--border);
+  color:var(--text);padding:12px 28px;border-radius:8px;
+  font-family:var(--font-body);font-size:14px;cursor:pointer;
+}
+.btn-restart:hover{border-color:var(--cyan);color:var(--cyan)}
+
+/* ─── MISC ─── */
+h3{font-size:16px;font-weight:700;color:var(--cyan);margin:18px 0 8px}
+h4{font-size:14px;font-weight:700;color:var(--amber);margin:14px 0 6px}
+ul,ol{padding-left:20px;margin:10px 0}
+li{margin-bottom:5px}
+strong{color:#f8fafc}
+.divider{height:1px;background:var(--border);margin:22px 0}
+.interview-box{
+  background:rgba(124,58,237,.08);
+  border:1px solid rgba(124,58,237,.3);
+  border-radius:8px;padding:14px 18px;margin:14px 0;
+}
+.interview-box .lbl{
+  font-family:var(--font-mono);font-size:10px;color:var(--purple);
+  letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;
+}
+
+/* ─── SCOPE VISUAL ─── */
+.scope-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin:14px 0}
+.scope-card{
+  background:var(--surf2);border-radius:8px;padding:14px;
+  border-top:3px solid;
+}
+.scope-card.sc-singleton{border-top-color:var(--cyan)}
+.scope-card.sc-proto{border-top-color:var(--purple)}
+.scope-card.sc-req{border-top-color:var(--green)}
+.scope-card.sc-sess{border-top-color:var(--amber)}
+.scope-card h4{margin:0 0 6px;font-size:13px}
+.scope-card p{font-size:12px;color:var(--muted)}
+
+/* Responsive */
+@media(max-width:600px){
+  #topbar-inner{gap:10px}
+  .section-title{font-size:22px}
+  .dot{width:24px;height:24px;font-size:9px}
+  #app{padding:72px 16px 32px}
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div id="topbar">
+  <div id="topbar-inner">
+    <div id="course-label">☕ Spring Core</div>
+    <div id="nav-dots"></div>
+    <div id="timer-box">
+      <div id="timer">3:10:00</div>
+    </div>
+  </div>
+  <div id="prog-wrap"><div id="prog-bar"></div></div>
+</div>
+
+<div id="app">
+
+  <!-- ═══════════════════════════════════════════════════════════
+       SECTION 1 — What is a Spring Bean
+  ════════════════════════════════════════════════════════════════ -->
+  <div class="section active" id="sec-0">
+    <div class="section-meta">Section 1 of 7 · Spring Core</div>
+    <div class="section-title">What is a Spring Bean?</div>
+    <div class="pomodoro-badge">🍅 Pomodoro · 25 min</div>
+
+    <div class="card card-eli5">
+      <div class="card-label">🧒 ELI5 — What is a Bean?</div>
+      <p>Imagine you run a restaurant. Every morning, <strong>you personally hire every single cook, dishwasher, and waiter</strong> — call each one yourself, tell them where to stand, make sure they know each other. Exhausting, right?</p>
+      <p>Now imagine you hire a <strong>manager</strong> (Spring). You just tell the manager <em>"I need a chef, a server, and a cashier"</em> — the manager handles hiring, introduces them to each other, and tells you when they're ready. That manager is Spring. The staff members are <strong>Beans</strong>.</p>
+    </div>
+
+    <div class="card card-tech">
+      <div class="card-label">⚙️ Technical</div>
+      <p>A <strong>Spring Bean</strong> is simply a Java object whose lifecycle is managed by the Spring IoC (Inversion of Control) container — not by you manually using <code>new</code>.</p>
+      <h3>Without Spring</h3>
+      <pre><span class="cmt">// YOU manage every dependency manually</span>
+<span class="cls">DataSource</span> ds = <span class="kw">new</span> <span class="cls">DataSource</span>();
+<span class="cls">AccountRepo</span> repo = <span class="kw">new</span> <span class="cls">AccountRepo</span>(ds);
+<span class="cls">TransactionService</span> svc = <span class="kw">new</span> <span class="cls">TransactionService</span>(repo);</pre>
+      <h3>With Spring (IoC)</h3>
+      <pre><span class="an">@Component</span>
+<span class="kw">public class</span> <span class="cls">TransactionService</span> {
+    <span class="kw">private final</span> <span class="cls">AccountRepo</span> repo;
+
+    <span class="kw">public</span> <span class="fn">TransactionService</span>(<span class="cls">AccountRepo</span> repo) {
+        <span class="kw">this</span>.repo = repo; <span class="cmt">// Spring injects this</span>
+    }
+}</pre>
+      <p>You declare <em>what you need</em>; Spring builds the dependency graph and wires everything. This is <strong>Inversion of Control (IoC)</strong>.</p>
+
+      <h3>The ApplicationContext</h3>
+      <p>Beans live in the <strong>ApplicationContext</strong> — think of it as a giant <code>Map&lt;String, Object&gt;</code> mapping bean names to instances:</p>
+      <pre><span class="cmt">// Conceptually:</span>
+<span class="cls">Map</span>&lt;<span class="cls">String</span>, <span class="cls">Object</span>&gt; context = {
+    <span class="str">"transactionService"</span> → TransactionService@1a2b3c,
+    <span class="str">"accountRepo"</span>        → AccountRepo@4d5e6f,
+    <span class="str">"dataSource"</span>         → DataSource@7g8h9i
+};</pre>
+      <p>By default, Spring creates <strong>exactly one instance</strong> of each bean per ApplicationContext — this is <strong>Singleton scope</strong>.</p>
+
+      <div class="interview-box">
+        <div class="lbl">💬 Interview Answer</div>
+        <p>"A Spring Bean is any object whose lifecycle — creation, dependency injection, initialization, and destruction — is managed by the Spring IoC container. Instead of manually constructing object graphs with <code>new</code>, you declare beans and their dependencies, and the container wires them together. This is Inversion of Control."</p>
+      </div>
+    </div>
+
+    <div class="card card-analogy">
+      <div class="card-label">🔗 Analogy — The Vending Machine</div>
+      <p>Without Spring: you have a <strong>pantry</strong> — you go find every ingredient yourself and cook. With Spring: you have a <strong>vending machine</strong>. You press the button ("give me a <code>TransactionService</code>") and it appears — fully assembled, dependencies included. Spring is the vending machine.</p>
+    </div>
+
+    <div class="quiz-box">
+      <div class="quiz-label">🧠 Quiz — Section 1</div>
+      <div class="quiz-q">What does "Inversion of Control" mean in the context of Spring?</div>
+      <div class="quiz-opts">
+        <button class="quiz-opt" onclick="answer(this,false,0)">A. Spring takes control of your database connections instead of the OS</button>
+        <button class="quiz-opt" onclick="answer(this,false,0)">B. Your code calls Spring framework methods to create objects</button>
+        <button class="quiz-opt" onclick="answer(this,true,0)">C. Spring manages object creation and wiring instead of your code doing it manually with <code>new</code></button>
+        <button class="quiz-opt" onclick="answer(this,false,0)">D. Spring reverses the order in which methods are called at runtime</button>
+      </div>
+      <div class="quiz-explain" id="explain-0">
+        ✅ IoC means <em>control is inverted</em> — instead of your code calling <code>new</code> to create and wire dependencies, you hand that responsibility to the Spring container. Your code just declares what it needs.
+      </div>
+    </div>
+
+    <div class="nav-row">
+      <button class="btn btn-ghost" disabled>← Back</button>
+      <button class="btn btn-primary" onclick="goTo(1)">Next: Component Annotations →</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       SECTION 2 — @Component, @Service, @Repository, @Controller
+  ════════════════════════════════════════════════════════════════ -->
+  <div class="section" id="sec-1">
+    <div class="section-meta">Section 2 of 7 · Spring Core</div>
+    <div class="section-title">@Component, @Service, @Repository, @Controller</div>
+    <div class="pomodoro-badge">🍅 Pomodoro · 25 min</div>
+
+    <div class="card card-eli5">
+      <div class="card-label">🧒 ELI5 — The Name Tags</div>
+      <p>Think of a school where everyone wears a name tag. All four annotations are basically the same name tag that says "Spring, manage this object!" But some name tags have a subtitle: <em>Chef</em>, <em>Librarian</em>, <em>Receptionist</em>. The subtitle doesn't change what the school does with you — it just tells everyone at a glance what your role is.</p>
+    </div>
+
+    <div class="card card-tech">
+      <div class="card-label">⚙️ Technical — Component Hierarchy</div>
+      <p>All four annotations are ultimately <strong>meta-annotated with <code>@Component</code></strong>. They all get picked up by Spring's component scan. The differences are mostly semantic — but <code>@Repository</code> has one real behavioral difference.</p>
+
+      <div class="flow">
+        <div class="flow-step highlight">@Component</div>
+        <div class="flow-arrow">⊂</div>
+        <div class="flow-step">@Service</div>
+        <div class="flow-arrow">|</div>
+        <div class="flow-step warn">@Repository</div>
+        <div class="flow-arrow">|</div>
+        <div class="flow-step">@Controller</div>
+        <div class="flow-arrow">|</div>
+        <div class="flow-step">@RestController</div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <tr><th>Annotation</th><th>Layer</th><th>Extra Behavior</th><th>Use When</th></tr>
+          <tr>
+            <td><code>@Component</code></td>
+            <td>Any</td>
+            <td><span class="badge badge-green">None</span></td>
+            <td>Generic component — utilities, helpers</td>
+          </tr>
+          <tr>
+            <td><code>@Service</code></td>
+            <td>Business Logic</td>
+            <td><span class="badge badge-green">Semantic only</span></td>
+            <td>Business/domain service classes</td>
+          </tr>
+          <tr>
+            <td><code>@Repository</code></td>
+            <td>Data Access</td>
+            <td><span class="badge badge-amber">Exception translation</span></td>
+            <td>DAO / repository classes touching DB</td>
+          </tr>
+          <tr>
+            <td><code>@Controller</code></td>
+            <td>Presentation</td>
+            <td><span class="badge badge-cyan">MVC handler mapping</span></td>
+            <td>Spring MVC controllers (returns views)</td>
+          </tr>
+          <tr>
+            <td><code>@RestController</code></td>
+            <td>Presentation</td>
+            <td><span class="badge badge-cyan">@Controller + @ResponseBody</span></td>
+            <td>REST API controllers (returns JSON)</td>
+          </tr>
+        </table>
+      </div>
+
+      <h3>@Repository — The Real Behavioral Difference</h3>
+      <p><code>@Repository</code> enables <strong>exception translation</strong>. Spring wraps raw JDBC/JPA exceptions (like <code>SQLException</code>) into Spring's <code>DataAccessException</code> hierarchy — so your service layer isn't coupled to the DB technology.</p>
+      <pre><span class="an">@Repository</span>
+<span class="kw">public class</span> <span class="cls">UserRepository</span> {
+    <span class="cmt">// If this throws SQLException,</span>
+    <span class="cmt">// Spring translates it to DataAccessException</span>
+    <span class="kw">public</span> <span class="cls">User</span> <span class="fn">findById</span>(<span class="kw">long</span> id) { ... }
+}</pre>
+
+      <h3>Why Use Semantic Annotations?</h3>
+      <ul>
+        <li><strong>Readability</strong> — tells humans what layer a class belongs to</li>
+        <li><strong>Tooling</strong> — IDEs and static analyzers can warn you about architectural violations</li>
+        <li><strong>Future-proofing</strong> — Spring can add layer-specific behavior later without you changing code</li>
+        <li><strong>AOP targeting</strong> — you can write aspects that apply only to <code>@Service</code> or <code>@Repository</code> beans</li>
+      </ul>
+
+      <div class="interview-box">
+        <div class="lbl">💬 Interview Answer</div>
+        <p>"All four are @Component specializations — they all register the class as a Spring bean. The difference is semantic layering: @Service signals business logic, @Repository signals data access and adds exception translation (SQLException → DataAccessException), and @Controller marks a class for Spring MVC handler mapping. Using the right annotation makes architecture intent explicit and allows Spring or AOP to target specific layers."</p>
+      </div>
+    </div>
+
+    <div class="card card-warn">
+      <div class="card-label">⚠️ Common Mistake</div>
+      <p>Using <code>@Component</code> everywhere — technically works, but you lose the architectural signal and <code>@Repository</code>'s exception translation. Always use the most specific annotation for the layer.</p>
+    </div>
+
+    <div class="quiz-box">
+      <div class="quiz-label">🧠 Quiz — Section 2</div>
+      <div class="quiz-q">Which annotation has a real behavioral difference beyond just being a semantic marker?</div>
+      <div class="quiz-opts">
+        <button class="quiz-opt" onclick="answer(this,false,1)">A. @Service — it adds transaction management automatically</button>
+        <button class="quiz-opt" onclick="answer(this,true,1)">B. @Repository — it enables exception translation wrapping SQL exceptions into DataAccessException</button>
+        <button class="quiz-opt" onclick="answer(this,false,1)">C. @Component — it bypasses component scanning for performance</button>
+        <button class="quiz-opt" onclick="answer(this,false,1)">D. @Controller — it automatically serializes return values to JSON</button>
+      </div>
+      <div class="quiz-explain" id="explain-1">
+        ✅ <code>@Repository</code> is the only one with real extra behavior: it activates Spring's <strong>PersistenceExceptionTranslationPostProcessor</strong>, which wraps technology-specific DB exceptions into Spring's <code>DataAccessException</code> hierarchy. <code>@Service</code> is purely semantic. <code>@Controller</code> needs <code>@ResponseBody</code> to serialize JSON (that's <code>@RestController</code>).
+      </div>
+    </div>
+
+    <div class="nav-row">
+      <button class="btn btn-ghost" onclick="goTo(0)">← Back</button>
+      <button class="btn btn-primary" onclick="goTo(2)">Next: Dependency Injection →</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       SECTION 3 — Dependency Injection
+  ════════════════════════════════════════════════════════════════ -->
+  <div class="section" id="sec-2">
+    <div class="section-meta">Section 3 of 7 · Spring Core</div>
+    <div class="section-title">Dependency Injection — 3 Styles</div>
+    <div class="pomodoro-badge">🍅 Pomodoro · 30 min</div>
+
+    <div class="card card-eli5">
+      <div class="card-label">🧒 ELI5 — Getting Your Tools</div>
+      <p>You're a carpenter. You need a hammer. Three ways to get it:</p>
+      <ol>
+        <li><strong>Constructor injection</strong>: You say "I won't start work unless you give me a hammer upfront." It's locked in. Non-negotiable. You always have it.</li>
+        <li><strong>Setter injection</strong>: You start work, and someone can drop off a hammer (or not) later. Good for optional tools.</li>
+        <li><strong>Field injection</strong>: Someone secretly puts a hammer in your toolbox while you're not looking. Convenient — but you can't see it or test without them.</li>
+      </ol>
+    </div>
+
+    <div class="card card-tech">
+      <div class="card-label">⚙️ Style 1: Constructor Injection (Recommended)</div>
+      <pre><span class="an">@Service</span>
+<span class="kw">public class</span> <span class="cls">OrderService</span> {
+
+    <span class="kw">private final</span> <span class="cls">PaymentGateway</span> gateway;
+    <span class="kw">private final</span> <span class="cls">InventoryClient</span> inventory;
+
+    <span class="cmt">// @Autowired optional since Spring 4.3 (single constructor)</span>
+    <span class="kw">public</span> <span class="fn">OrderService</span>(<span class="cls">PaymentGateway</span> gateway, <span class="cls">InventoryClient</span> inventory) {
+        <span class="kw">this</span>.gateway = gateway;
+        <span class="kw">this</span>.inventory = inventory;
+    }
+}</pre>
+      <p><strong>Why it's best:</strong></p>
+      <ul>
+        <li>Dependencies are <code>final</code> — immutable after construction</li>
+        <li>Testable without Spring — just pass mocks in the constructor</li>
+        <li>NPE-safe — if a dep is missing, the app fails fast at startup, not at runtime</li>
+        <li>Makes the dependency graph explicit and visible</li>
+      </ul>
+    </div>
+
+    <div class="card card-tech">
+      <div class="card-label">⚙️ Style 2: Setter Injection</div>
+      <pre><span class="an">@Service</span>
+<span class="kw">public class</span> <span class="cls">ReportService</span> {
+
+    <span class="kw">private</span> <span class="cls">MailSender</span> mailSender;
+
+    <span class="an">@Autowired</span>(required = <span class="kw">false</span>) <span class="cmt">// optional dep</span>
+    <span class="kw">public void</span> <span class="fn">setMailSender</span>(<span class="cls">MailSender</span> mailSender) {
+        <span class="kw">this</span>.mailSender = mailSender;
+    }
+}</pre>
+      <p>Use setter injection for <strong>optional dependencies</strong> — the bean can exist and function without the dependency being set. Note: <code>@Autowired(required=false)</code> — Spring won't throw if no matching bean is found.</p>
+    </div>
+
+    <div class="card card-tech">
+      <div class="card-label">⚙️ Style 3: Field Injection (Avoid in Production Code)</div>
+      <pre><span class="an">@Service</span>
+<span class="kw">public class</span> <span class="cls">BadService</span> {
+
+    <span class="an">@Autowired</span> <span class="cmt">// Spring injects via reflection</span>
+    <span class="kw">private</span> <span class="cls">UserRepository</span> userRepo;
+}</pre>
+      <p><strong>Problems:</strong></p>
+      <ul>
+        <li>Hidden dependencies — you can't tell what a class needs without reading the body</li>
+        <li>Breaks testing — can't pass mocks without a Spring context or Mockito reflection hacks</li>
+        <li>Field can't be <code>final</code> — allows mutable state</li>
+        <li>Spring team and IntelliJ both warn against it</li>
+      </ul>
+    </div>
+
+    <div class="card card-tech">
+      <div class="card-label">⚙️ @Autowired(required=false) — What Does It Do?</div>
+      <p>When you mark a dependency as <code>required=false</code>, Spring will inject the bean if one exists, but <strong>won't throw a <code>NoSuchBeanDefinitionException</code> if it doesn't</strong>. The field/setter is simply left null (or not called).</p>
+      <pre><span class="an">@Autowired</span>(required = <span class="kw">false</span>)
+<span class="kw">private</span> <span class="cls">CacheManager</span> cacheManager; <span class="cmt">// null if no cache configured</span>
+
+<span class="kw">public void</span> <span class="fn">doWork</span>() {
+    <span class="kw">if</span> (cacheManager != <span class="kw">null</span>) {
+        <span class="cmt">// use cache</span>
+    }
+    <span class="cmt">// otherwise proceed without cache</span>
+}</pre>
+      <p>The modern alternative is <code>Optional&lt;CacheManager&gt;</code> injection or using <code>@ConditionalOnBean</code>.</p>
+
+      <div class="table-wrap">
+        <table>
+          <tr><th>Style</th><th>Testability</th><th>Immutability</th><th>Recommended</th></tr>
+          <tr>
+            <td>Constructor</td>
+            <td><span class="badge badge-green">✓ Easy — just pass mocks</span></td>
+            <td><span class="badge badge-green">✓ Can use final</span></td>
+            <td><span class="badge badge-green">✓ Yes</span></td>
+          </tr>
+          <tr>
+            <td>Setter</td>
+            <td><span class="badge badge-amber">Requires setter call</span></td>
+            <td><span class="badge badge-amber">No final</span></td>
+            <td><span class="badge badge-amber">Optional deps only</span></td>
+          </tr>
+          <tr>
+            <td>Field</td>
+            <td><span class="badge badge-red">✗ Needs Spring/Reflection</span></td>
+            <td><span class="badge badge-red">✗ No final</span></td>
+            <td><span class="badge badge-red">✗ Avoid</span></td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="interview-box">
+        <div class="lbl">💬 Interview Answer</div>
+        <p>"Constructor injection is preferred because dependencies become final (immutable), the class is testable without a Spring context — you just pass mocks directly — and missing dependencies cause a startup failure rather than a runtime NPE. Field injection is convenient but hides dependencies, prevents final fields, and requires Spring or reflection hacks to test. Setter injection is appropriate for optional dependencies."</p>
+      </div>
+    </div>
+
+    <div class="quiz-box">
+      <div class="quiz-label">🧠 Quiz — Section 3</div>
+      <div class="quiz-q">Why does field injection break unit testing?</div>
+      <div class="quiz-opts">
+        <button class="quiz-opt" onclick="answer(this,false,2)">A. Spring doesn't support mocking field-injected beans</button>
+        <button class="quiz-opt" onclick="answer(this,false,2)">B. Fields are declared final so you can't change them in tests</button>
+        <button class="quiz-opt" onclick="answer(this,true,2)">C. The dependency is injected via reflection at runtime — without Spring or a reflection hack, you can't set it in a plain unit test</button>
+        <button class="quiz-opt" onclick="answer(this,false,2)">D. Field injection always throws a NullPointerException in test environments</button>
+      </div>
+      <div class="quiz-explain" id="explain-2">
+        ✅ With field injection, Spring uses reflection to set the private field. In a pure unit test (no Spring context), that injection never happens — the field stays null. You either need <code>@SpringBootTest</code> (slow, integration-style), Mockito's <code>@InjectMocks</code> (which also uses reflection), or you refactor to constructor injection — which is the right answer.
+      </div>
+    </div>
+
+    <div class="nav-row">
+      <button class="btn btn-ghost" onclick="goTo(1)">← Back</button>
+      <button class="btn btn-primary" onclick="goTo(3)">Next: Bean Scopes →</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       SECTION 4 — Bean Scopes
+  ════════════════════════════════════════════════════════════════ -->
+  <div class="section" id="sec-3">
+    <div class="section-meta">Section 4 of 7 · Spring Core</div>
+    <div class="section-title">Bean Scopes</div>
+    <div class="pomodoro-badge">🍅 Pomodoro · 30 min</div>
+
+    <div class="card card-eli5">
+      <div class="card-label">🧒 ELI5 — The Coffee Shop</div>
+      <p>Imagine four types of items at a coffee shop:</p>
+      <ul>
+        <li><strong>Singleton</strong>: The espresso machine. One machine for the entire shop, used by everyone. Always the same one.</li>
+        <li><strong>Prototype</strong>: A paper cup. Every customer gets a new one. Once they're done, the shop doesn't care what happens to it.</li>
+        <li><strong>Request</strong>: Your order slip. Created when you walk in, gone when your order is complete.</li>
+        <li><strong>Session</strong>: Your loyalty card. Exists as long as you're a regular customer (your "session"), then expires.</li>
+      </ul>
+    </div>
+
+    <div class="scope-grid">
+      <div class="scope-card sc-singleton">
+        <h4>@Singleton (default)</h4>
+        <p>One instance per ApplicationContext. Shared across all threads. Spring manages full lifecycle.</p>
+      </div>
+      <div class="scope-card sc-proto">
+        <h4>@Prototype</h4>
+        <p>New instance every time bean is requested. Spring does <strong>NOT</strong> manage its destruction — you are responsible for cleanup.</p>
+      </div>
+      <div class="scope-card sc-req">
+        <h4>@Request</h4>
+        <p>One instance per HTTP request. Only valid in a web context. Gone when the request ends.</p>
+      </div>
+      <div class="scope-card sc-sess">
+        <h4>@Session</h4>
+        <p>One instance per HTTP session. Persists across requests from the same user. Only valid in web context.</p>
+      </div>
+    </div>
+
+    <div class="card card-tech">
+      <div class="card-label">⚙️ Declaring Scopes</div>
+      <pre><span class="an">@Component</span>
+<span class="an">@Scope</span>(<span class="str">"singleton"</span>) <span class="cmt">// default — same as omitting @Scope</span>
+<span class="kw">public class</span> <span class="cls">SharedService</span> { }
+
+<span class="an">@Component</span>
+<span class="an">@Scope</span>(<span class="str">"prototype"</span>)
+<span class="kw">public class</span> <span class="cls">StatefulProcessor</span> { }
+
+<span class="cmt">// Web scopes — only valid with WebApplicationContext</span>
+<span class="an">@Component</span>
+<span class="an">@Scope</span>(value = <span class="str">"request"</span>, proxyMode = <span class="cls">ScopedProxyMode</span>.TARGET_CLASS)
+<span class="kw">public class</span> <span class="cls">RequestContext</span> { }
+
+<span class="an">@Component</span>
+<span class="an">@Scope</span>(value = <span class="str">"session"</span>, proxyMode = <span class="cls">ScopedProxyMode</span>.TARGET_CLASS)
+<span class="kw">public class</span> <span class="cls">UserSessionData</span> { }</pre>
+    </div>
+
+    <div class="card card-warn">
+      <div class="card-label">⚠️ The Stale Prototype Problem — Critical Interview Topic</div>
+      <p>What happens when you inject a <strong>Prototype bean into a Singleton</strong>?</p>
+      <pre><span class="an">@Component</span>
+<span class="kw">public class</span> <span class="cls">MySingletonService</span> {
+
+    <span class="an">@Autowired</span>
+    <span class="kw">private</span> <span class="cls">MyPrototypeBean</span> protoBean; <span class="cmt">// ← PROBLEM!</span>
+
+    <span class="kw">public void</span> <span class="fn">doWork</span>() {
+        protoBean.<span class="fn">process</span>(); <span class="cmt">// Always the SAME instance!</span>
+    }
+}</pre>
+      <p>The Singleton is created once. At that moment, Spring injects <em>one</em> Prototype instance. That instance gets stuck in the Singleton forever — it never gets a new Prototype. The "prototype" behavior is lost.</p>
+      <h3>Fix Option 1: ApplicationContext.getBean()</h3>
+      <pre><span class="an">@Component</span>
+<span class="kw">public class</span> <span class="cls">MySingletonService</span> <span class="kw">implements</span> <span class="cls">ApplicationContextAware</span> {
+
+    <span class="kw">private</span> <span class="cls">ApplicationContext</span> ctx;
+
+    <span class="an">@Override</span>
+    <span class="kw">public void</span> <span class="fn">setApplicationContext</span>(<span class="cls">ApplicationContext</span> ctx) {
+        <span class="kw">this</span>.ctx = ctx;
+    }
+
+    <span class="kw">public void</span> <span class="fn">doWork</span>() {
+        <span class="cls">MyPrototypeBean</span> fresh = ctx.<span class="fn">getBean</span>(<span class="cls">MyPrototypeBean</span>.class);
+        fresh.<span class="fn">process</span>(); <span class="cmt">// new instance each time ✓</span>
+    }
+}</pre>
+      <h3>Fix Option 2: @Lookup (Cleaner)</h3>
+      <pre><span class="an">@Component</span>
+<span class="kw">public abstract class</span> <span class="cls">MySingletonService</span> {
+
+    <span class="an">@Lookup</span>
+    <span class="kw">public abstract</span> <span class="cls">MyPrototypeBean</span> <span class="fn">getPrototypeBean</span>();
+
+    <span class="kw">public void</span> <span class="fn">doWork</span>() {
+        <span class="fn">getPrototypeBean</span>().<span class="fn">process</span>(); <span class="cmt">// Spring overrides this method</span>
+    }
+}</pre>
+      <p><code>@Lookup</code> tells Spring to CGLIB-subclass this method and make it return a fresh prototype bean every time. Much cleaner than injecting the ApplicationContext.</p>
+
+      <div class="interview-box">
+        <div class="lbl">💬 Interview Answer</div>
+        <p>"The stale prototype problem occurs when a prototype bean is injected into a singleton. Since the singleton is created once, the prototype instance is captured at that moment and never refreshed. The fixes are: calling <code>applicationContext.getBean()</code> at method invocation time, or using <code>@Lookup</code> which lets Spring override the method via CGLIB to return a fresh prototype on every call."</p>
+      </div>
+    </div>
+
+    <div class="quiz-box">
+      <div class="quiz-label">🧠 Quiz — Section 4</div>
+      <div class="quiz-q">You have a Prototype-scoped bean injected into a Singleton via constructor injection. How many instances of the Prototype bean will exist after 100 requests?</div>
+      <div class="quiz-opts">
+        <button class="quiz-opt" onclick="answer(this,false,3)">A. 100 — a new one is created per request</button>
+        <button class="quiz-opt" onclick="answer(this,true,3)">B. 1 — the Singleton captures the Prototype at construction time and reuses it forever</button>
+        <button class="quiz-opt" onclick="answer(this,false,3)">C. 0 — Spring throws an error mixing Singleton and Prototype scopes</button>
+        <button class="quiz-opt" onclick="answer(this,false,3)">D. It depends on whether @Transactional is present</button>
+      </div>
+      <div class="quiz-explain" id="explain-3">
+        ✅ This is the classic stale prototype trap. When the Singleton is created, Spring injects exactly one Prototype instance into the constructor. That instance is held for the entire lifetime of the Singleton — you never get a fresh one. To get a new Prototype per call, use <code>@Lookup</code> or fetch from <code>ApplicationContext.getBean()</code>.
+      </div>
+    </div>
+
+    <div class="nav-row">
+      <button class="btn btn-ghost" onclick="goTo(2)">← Back</button>
+      <button class="btn btn-primary" onclick="goTo(4)">Next: IoC Container →</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       SECTION 5 — IoC Container: BeanFactory vs ApplicationContext
+  ════════════════════════════════════════════════════════════════ -->
+  <div class="section" id="sec-4">
+    <div class="section-meta">Section 5 of 7 · Spring Core</div>
+    <div class="section-title">IoC Container — BeanFactory vs ApplicationContext</div>
+    <div class="pomodoro-badge">🍅 Pomodoro · 25 min</div>
+
+    <div class="card card-eli5">
+      <div class="card-label">🧒 ELI5 — Basic vs Premium Manager</div>
+      <p><strong>BeanFactory</strong> is a basic manager: "You ask for something, I'll make it." Minimal, lazy, nothing extra.</p>
+      <p><strong>ApplicationContext</strong> is the premium manager: same basics, but also does announcements (events), handles multiple languages (i18n), runs background tasks (AOP), and has everything set up before you arrive (eager initialization). Spring Boot uses ApplicationContext.</p>
+    </div>
+
+    <div class="card card-tech">
+      <div class="card-label">⚙️ BeanFactory</div>
+      <p><code>BeanFactory</code> is the root interface — the <em>minimal</em> IoC container. It's <strong>lazy</strong>: beans are only created when explicitly requested via <code>getBean()</code>. You almost never use it directly in modern Spring.</p>
+      <pre><span class="cls">BeanFactory</span> factory = <span class="kw">new</span> <span class="cls">XmlBeanFactory</span>(<span class="kw">new</span> <span class="cls">ClassPathResource</span>(<span class="str">"beans.xml"</span>));
+<span class="cls">MyService</span> svc = factory.<span class="fn">getBean</span>(<span class="str">"myService"</span>, <span class="cls">MyService</span>.class);
+<span class="cmt">// Bean created only NOW — not at startup</span></pre>
+    </div>
+
+    <div class="card card-tech">
+      <div class="card-label">⚙️ ApplicationContext — What Spring Boot Uses</div>
+      <p><code>ApplicationContext</code> extends <code>BeanFactory</code> and adds enterprise features:</p>
+      <ul>
+        <li><strong>Eager initialization</strong> — all Singleton beans are created at startup</li>
+        <li><strong>Events</strong> — <code>ApplicationEvent</code> / <code>@EventListener</code> support</li>
+        <li><strong>i18n</strong> — MessageSource for internationalization</li>
+        <li><strong>AOP</strong> — BeanPostProcessor integration (proxies are created here)</li>
+        <li><strong>Resource loading</strong> — classpath, filesystem, URL resources</li>
+        <li><strong>Environment abstraction</strong> — <code>@Value</code>, profiles, property sources</li>
+      </ul>
+
+      <div class="table-wrap">
+        <table>
+          <tr><th>Feature</th><th>BeanFactory</th><th>ApplicationContext</th></tr>
+          <tr><td>Bean creation</td><td><span class="badge badge-amber">Lazy (on demand)</span></td><td><span class="badge badge-green">Eager (at startup)</span></td></tr>
+          <tr><td>Application events</td><td><span class="badge badge-red">✗</span></td><td><span class="badge badge-green">✓</span></td></tr>
+          <tr><td>i18n / MessageSource</td><td><span class="badge badge-red">✗</span></td><td><span class="badge badge-green">✓</span></td></tr>
+          <tr><td>AOP / Proxies</td><td><span class="badge badge-amber">Manual only</span></td><td><span class="badge badge-green">✓ Auto</span></td></tr>
+          <tr><td>Environment / Profiles</td><td><span class="badge badge-red">✗</span></td><td><span class="badge badge-green">✓</span></td></tr>
+          <tr><td>Used by Spring Boot</td><td><span class="badge badge-red">No</span></td><td><span class="badge badge-green">Yes</span></td></tr>
+        </table>
+      </div>
+
+      <h3>Two Common Implementations</h3>
+      <pre><span class="cmt">// Annotation-based (what Spring Boot auto-creates)</span>
+<span class="cls">AnnotationConfigApplicationContext</span> ctx =
+    <span class="kw">new</span> <span class="cls">AnnotationConfigApplicationContext</span>(<span class="cls">AppConfig</span>.class);
+
+<span class="cmt">// XML-based (legacy)</span>
+<span class="cls">ClassPathXmlApplicationContext</span> ctx =
+    <span class="kw">new</span> <span class="cls">ClassPathXmlApplicationContext</span>(<span class="str">"applicationContext.xml"</span>);</pre>
+    </div>
+
+    <div class="card card-warn">
+      <div class="card-label">⚠️ Concurrency Gotcha — Singleton + Mutable State</div>
+      <p>Singleton beans are shared across ALL threads. If your <code>@Service</code> has mutable instance fields, you have a <strong>race condition</strong>:</p>
+      <pre><span class="an">@Service</span>
+<span class="kw">public class</span> <span class="cls">BadService</span> {
+    <span class="kw">private int</span> counter = <span class="num">0</span>; <span class="cmt">// ← DANGER: shared mutable state</span>
+
+    <span class="kw">public void</span> <span class="fn">increment</span>() {
+        counter++; <span class="cmt">// NOT thread-safe!</span>
+    }
+}</pre>
+      <p>Rule of thumb: <strong>Singleton beans should be stateless</strong>. If you need state, use Prototype scope, ThreadLocal, or synchronize properly.</p>
+    </div>
+
+    <div class="card card-tech">
+      <div class="card-label">⚙️ ApplicationContext Refresh Lifecycle</div>
+      <p>When does Spring instantiate beans? During the <strong>refresh()</strong> call:</p>
+      <div class="flow">
+        <div class="flow-step">Load Config</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">Parse Bean Defs</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step warn">refresh()</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step highlight">Instantiate Singletons</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step success">Context Ready</div>
+      </div>
+      <p>After <code>refresh()</code> completes, all Singleton beans are ready. If any bean fails to initialize, <code>refresh()</code> throws and the app doesn't start — a key advantage of eager initialization.</p>
+
+      <div class="interview-box">
+        <div class="lbl">💬 Interview Answer</div>
+        <p>"BeanFactory is the base IoC container — lazy, minimal, rarely used directly. ApplicationContext extends it with eager singleton initialization, event publishing, AOP integration, i18n, and profile/environment support. Spring Boot uses a AnnotationConfigServletWebServerApplicationContext. The key advantage of ApplicationContext's eager loading is fail-fast at startup — misconfigured beans are caught before serving any traffic."</p>
+      </div>
+    </div>
+
+    <div class="quiz-box">
+      <div class="quiz-label">🧠 Quiz — Section 5</div>
+      <div class="quiz-q">Your Spring Boot app starts up and immediately crashes before handling any request. What's the most likely advantage this demonstrates over BeanFactory?</div>
+      <div class="quiz-opts">
+        <button class="quiz-opt" onclick="answer(this,false,4)">A. BeanFactory would also crash — they behave identically at startup</button>
+        <button class="quiz-opt" onclick="answer(this,false,4)">B. ApplicationContext is slower to start because it loads too many beans</button>
+        <button class="quiz-opt" onclick="answer(this,true,4)">C. ApplicationContext eagerly initializes all Singleton beans at startup — a misconfigured bean fails fast before any traffic hits it</button>
+        <button class="quiz-opt" onclick="answer(this,false,4)">D. BeanFactory doesn't support @Component scanning so it would silently skip bad beans</button>
+      </div>
+      <div class="quiz-explain" id="explain-4">
+        ✅ This is the fail-fast advantage of ApplicationContext. BeanFactory is lazy — it only creates beans when requested, so a bad bean configuration would silently sit there until a request triggers <code>getBean()</code> and then crashes in production. ApplicationContext's eager initialization surfaces these problems at startup, which is far safer.
+      </div>
+    </div>
+
+    <div class="nav-row">
+      <button class="btn btn-ghost" onclick="goTo(3)">← Back</button>
+      <button class="btn btn-primary" onclick="goTo(5)">Next: Bean Lifecycle →</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       SECTION 6 — Bean Lifecycle
+  ════════════════════════════════════════════════════════════════ -->
+  <div class="section" id="sec-5">
+    <div class="section-meta">Section 6 of 7 · Spring Core</div>
+    <div class="section-title">Bean Lifecycle — Every Phase</div>
+    <div class="pomodoro-badge">🍅 Pomodoro · 30 min</div>
+
+    <div class="card card-eli5">
+      <div class="card-label">🧒 ELI5 — Hiring a New Employee</div>
+      <p>Think of a Spring bean as a new employee at your company:</p>
+      <ol>
+        <li><strong>Hired</strong> (instantiation) — they show up</li>
+        <li><strong>Given their tools</strong> (DI) — here's your laptop, badge, desk</li>
+        <li><strong>Filled out HR forms</strong> (Aware callbacks) — "what's your name? what department?"</li>
+        <li><strong>Pre-training review</strong> (BeanPostProcessor.before) — HR checks their paperwork</li>
+        <li><strong>Orientation</strong> (@PostConstruct) — they run their own setup routine</li>
+        <li><strong>Final HR signoff</strong> (BeanPostProcessor.after) — AOP wraps them in a proxy vest 🪄</li>
+        <li><strong>Working</strong> — doing their job</li>
+        <li><strong>Exit interview</strong> (@PreDestroy) — cleanup before they leave</li>
+      </ol>
+    </div>
+
+    <div class="card card-tech">
+      <div class="card-label">⚙️ The 8 Phases</div>
+
+      <div class="flow" style="flex-direction:column;align-items:flex-start;gap:4px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="flow-step" style="width:40px;text-align:center;background:rgba(0,212,255,.1);border-color:var(--cyan)">1</div>
+          <div><strong>Instantiation</strong> — constructor called, bare object created</div>
+        </div>
+        <div style="color:var(--muted);padding-left:20px">↓</div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="flow-step" style="width:40px;text-align:center;background:rgba(0,212,255,.1);border-color:var(--cyan)">2</div>
+          <div><strong>Dependency Injection</strong> — @Autowired fields/setters populated</div>
+        </div>
+        <div style="color:var(--muted);padding-left:20px">↓</div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="flow-step" style="width:40px;text-align:center;background:rgba(245,158,11,.1);border-color:var(--amber)">3</div>
+          <div><strong>Aware Callbacks</strong> — BeanNameAware, BeanFactoryAware, ApplicationContextAware</div>
+        </div>
+        <div style="color:var(--muted);padding-left:20px">↓</div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="flow-step" style="width:40px;text-align:center;background:rgba(124,58,237,.1);border-color:var(--purple)">4</div>
+          <div><strong>BeanPostProcessor.postProcessBeforeInitialization()</strong></div>
+        </div>
+        <div style="color:var(--muted);padding-left:20px">↓</div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="flow-step" style="width:40px;text-align:center;background:rgba(16,185,129,.1);border-color:var(--green)">5</div>
+          <div><strong>@PostConstruct</strong> / InitializingBean.afterPropertiesSet()</div>
+        </div>
+        <div style="color:var(--muted);padding-left:20px">↓</div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="flow-step" style="width:40px;text-align:center;background:rgba(124,58,237,.2);border-color:var(--purple)">6</div>
+          <div><strong>BeanPostProcessor.postProcessAfterInitialization()</strong> ← AOP proxies created HERE</div>
+        </div>
+        <div style="color:var(--muted);padding-left:20px">↓</div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="flow-step" style="width:40px;text-align:center;background:rgba(16,185,129,.2);border-color:var(--green)">7</div>
+          <div><strong>Bean Ready for Use</strong> — in ApplicationContext, serving requests</div>
+        </div>
+        <div style="color:var(--muted);padding-left:20px">↓ (on shutdown)</div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="flow-step" style="width:40px;text-align:center;background:rgba(239,68,68,.1);border-color:var(--red)">8</div>
+          <div><strong>@PreDestroy</strong> / DisposableBean.destroy() — cleanup</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card card-tech">
+      <div class="card-label">⚙️ Phase 5 & 8 — What You'll Actually Use</div>
+      <pre><span class="an">@Component</span>
+<span class="kw">public class</span> <span class="cls">ConnectionPool</span> {
+
+    <span class="kw">private</span> <span class="cls">DataSource</span> dataSource;
+
+    <span class="an">@PostConstruct</span> <span class="cmt">// Phase 5 — runs after DI is complete</span>
+    <span class="kw">public void</span> <span class="fn">init</span>() {
+        <span class="cmt">// Safe to use injected deps here</span>
+        dataSource.<span class="fn">setMaxPoolSize</span>(<span class="num">20</span>);
+        <span class="cls">System</span>.out.<span class="fn">println</span>(<span class="str">"Pool initialized"</span>);
+    }
+
+    <span class="an">@PreDestroy</span> <span class="cmt">// Phase 8 — runs before context shuts down</span>
+    <span class="kw">public void</span> <span class="fn">cleanup</span>() {
+        dataSource.<span class="fn">close</span>(); <span class="cmt">// release connections</span>
+        <span class="cls">System</span>.out.<span class="fn">println</span>(<span class="str">"Pool closed"</span>);
+    }
+}</pre>
+
+      <h3>Why @PostConstruct vs constructor?</h3>
+      <p>At constructor time, DI hasn't happened yet — injected fields are still null. <code>@PostConstruct</code> runs <em>after</em> Spring has set all dependencies, so it's safe to use them there.</p>
+    </div>
+
+    <div class="card card-tech">
+      <div class="card-label">⚙️ Phase 6 — BeanPostProcessor & AOP Proxies</div>
+      <p>This phase is where the magic happens. <code>postProcessAfterInitialization()</code> is called for every bean, and Spring's AOP infrastructure uses this hook to <strong>wrap your bean in a dynamic proxy</strong>.</p>
+      <pre><span class="cmt">// This is conceptually what Spring does with @Transactional:</span>
+<span class="cmt">// Your real bean ↓</span>
+<span class="cls">MyService</span> real = <span class="kw">new</span> <span class="cls">MyService</span>();
+<span class="cmt">// Spring wraps it in a proxy during postProcessAfterInitialization:</span>
+<span class="cls">MyService</span> proxy = <span class="cls">Proxy</span>.<span class="fn">create</span>(real, <span class="kw">new</span> <span class="cls">TransactionInterceptor</span>());
+<span class="cmt">// The ApplicationContext stores the PROXY, not the real bean</span></pre>
+      <p>This is why calling a <code>@Transactional</code> method from within the same class doesn't work — you're calling on <code>this</code> (the real object), bypassing the proxy.</p>
+
+      <h3>@Conditional & @ConditionalOnProperty</h3>
+      <p>Before a bean is even instantiated, Spring evaluates <code>@Conditional</code> annotations to decide whether to register the bean definition at all. This is the backbone of Spring Boot's autoconfiguration:</p>
+      <pre><span class="an">@Configuration</span>
+<span class="an">@ConditionalOnProperty</span>(name = <span class="str">"feature.cache.enabled"</span>, havingValue = <span class="str">"true"</span>)
+<span class="kw">public class</span> <span class="cls">CacheConfig</span> {
+    <span class="cmt">// Only loaded if feature.cache.enabled=true in properties</span>
+}</pre>
+
+      <div class="interview-box">
+        <div class="lbl">💬 Interview Answer</div>
+        <p>"The bean lifecycle has 8 phases: instantiation, DI, Aware callbacks, BeanPostProcessor.before, @PostConstruct/afterPropertiesSet, BeanPostProcessor.after — where AOP proxies are created — bean ready for use, and @PreDestroy on shutdown. Phase 6 is critical: that's where @Transactional, @Cacheable, and other AOP proxies are woven in. This is also why self-invocation of @Transactional methods doesn't work — you bypass the proxy."</p>
+      </div>
+    </div>
+
+    <div class="quiz-box">
+      <div class="quiz-label">🧠 Quiz — Section 6</div>
+      <div class="quiz-q">At which lifecycle phase are AOP proxies (like @Transactional) created?</div>
+      <div class="quiz-opts">
+        <button class="quiz-opt" onclick="answer(this,false,5)">A. Phase 1 — during instantiation via the constructor</button>
+        <button class="quiz-opt" onclick="answer(this,false,5)">B. Phase 2 — alongside @Autowired dependency injection</button>
+        <button class="quiz-opt" onclick="answer(this,false,5)">C. Phase 5 — during @PostConstruct initialization</button>
+        <button class="quiz-opt" onclick="answer(this,true,5)">D. Phase 6 — BeanPostProcessor.postProcessAfterInitialization()</button>
+      </div>
+      <div class="quiz-explain" id="explain-5">
+        ✅ AOP proxies are created in <strong>Phase 6</strong> — <code>postProcessAfterInitialization()</code>. Spring's <code>AbstractAutoProxyCreator</code> implements <code>BeanPostProcessor</code> and in this method, it checks if the bean needs proxying (due to @Transactional, @Cacheable, etc.) and wraps it. The ApplicationContext then stores the proxy reference, not the original bean.
+      </div>
+    </div>
+
+    <div class="nav-row">
+      <button class="btn btn-ghost" onclick="goTo(4)">← Back</button>
+      <button class="btn btn-primary" onclick="goTo(6)">Next: @SpringBootApplication + CGLIB →</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       SECTION 7 — @SpringBootApplication + CGLIB
+  ════════════════════════════════════════════════════════════════ -->
+  <div class="section" id="sec-6">
+    <div class="section-meta">Section 7 of 7 · Spring Core</div>
+    <div class="section-title">@SpringBootApplication + CGLIB</div>
+    <div class="pomodoro-badge">🍅 Pomodoro · 25 min</div>
+
+    <div class="card card-eli5">
+      <div class="card-label">🧒 ELI5 — The Master Key</div>
+      <p><code>@SpringBootApplication</code> is like a single master key that actually unlocks three doors: the <strong>configuration door</strong> (tell Spring your settings), the <strong>scanning door</strong> (go find all our staff), and the <strong>autoconfiguration door</strong> (set up all standard equipment automatically). One annotation, three jobs.</p>
+      <p>And CGLIB? Imagine you hired a <strong>stunt double</strong> for your configuration class. When someone calls your <code>dataSource()</code> method twice, the stunt double intercepts and says "hold on, we already have one of those" and returns the cached copy instead of making a new one. That's CGLIB proxying.</p>
+    </div>
+
+    <div class="card card-tech">
+      <div class="card-label">⚙️ @SpringBootApplication Unpacked</div>
+      <pre><span class="cmt">// @SpringBootApplication is literally a composite of:</span>
+<span class="an">@Configuration</span>      <span class="cmt">// Marks this class as a bean definition source</span>
+<span class="an">@EnableAutoConfiguration</span>  <span class="cmt">// Activates Spring Boot's auto-config</span>
+<span class="an">@ComponentScan</span>      <span class="cmt">// Scans this package and sub-packages for @Component</span>
+<span class="kw">public class</span> <span class="cls">MyApp</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cls">String</span>[] args) {
+        <span class="cls">SpringApplication</span>.<span class="fn">run</span>(<span class="cls">MyApp</span>.class, args);
+    }
+}</pre>
+
+      <h3>@EnableAutoConfiguration — How it Works</h3>
+      <p>This tells Spring Boot to read from:</p>
+      <ul>
+        <li><strong>Modern (Boot 2.7+):</strong> <code>META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports</code></li>
+        <li><strong>Legacy:</strong> <code>META-INF/spring.factories</code></li>
+      </ul>
+      <p>These files list hundreds of <code>@Configuration</code> classes. Spring Boot loads them all, but each one is guarded by <code>@ConditionalOnClass</code>, <code>@ConditionalOnProperty</code>, etc. — so only what's relevant to your classpath gets activated.</p>
+      <pre><span class="cmt">// SpringFactoriesLoader reads files like:</span>
+<span class="cmt">// org.springframework.boot.autoconfigure.EnableAutoConfiguration=\</span>
+<span class="cmt">//   ...DataSourceAutoConfiguration,\</span>
+<span class="cmt">//   ...JpaRepositoriesAutoConfiguration,\</span>
+<span class="cmt">//   ...WebMvcAutoConfiguration,\</span>
+<span class="cmt">//   ... (100+ more)</span></pre>
+    </div>
+
+    <div class="card card-tech">
+      <div class="card-label">⚙️ CGLIB Proxying of @Configuration</div>
+      <p>When you annotate a class with <code>@Configuration</code>, Spring uses <strong>CGLIB</strong> (Code Generation Library) to subclass it at runtime and intercept all <code>@Bean</code> method calls.</p>
+      <pre><span class="an">@Configuration</span>
+<span class="kw">public class</span> <span class="cls">AppConfig</span> {
+
+    <span class="an">@Bean</span>
+    <span class="kw">public</span> <span class="cls">DataSource</span> <span class="fn">dataSource</span>() {
+        <span class="kw">return new</span> <span class="cls">HikariDataSource</span>(); <span class="cmt">// creates a new instance</span>
+    }
+
+    <span class="an">@Bean</span>
+    <span class="kw">public</span> <span class="cls">UserRepository</span> <span class="fn">userRepository</span>() {
+        <span class="kw">return new</span> <span class="cls">UserRepository</span>(<span class="fn">dataSource</span>()); <span class="cmt">// calls dataSource()</span>
+    }
+
+    <span class="an">@Bean</span>
+    <span class="kw">public</span> <span class="cls">OrderRepository</span> <span class="fn">orderRepository</span>() {
+        <span class="kw">return new</span> <span class="cls">OrderRepository</span>(<span class="fn">dataSource</span>()); <span class="cmt">// calls dataSource() again</span>
+    }
+}</pre>
+      <p>You'd expect <code>dataSource()</code> called twice to create two <code>HikariDataSource</code> instances. But CGLIB intercepts the call and returns the <strong>same singleton</strong> from the ApplicationContext both times. ✅</p>
+    </div>
+
+    <div class="card card-warn">
+      <div class="card-label">⚠️ The Interview Trap — @Component + @Bean</div>
+      <p>If you put <code>@Bean</code> methods inside a <strong><code>@Component</code></strong> class (not <code>@Configuration</code>), CGLIB does NOT subclass it. Each direct call to <code>dataSource()</code> creates a brand new instance:</p>
+      <pre><span class="an">@Component</span> <span class="cmt">// ← NOT @Configuration — no CGLIB proxy!</span>
+<span class="kw">public class</span> <span class="cls">LiteConfig</span> {
+
+    <span class="an">@Bean</span>
+    <span class="kw">public</span> <span class="cls">DataSource</span> <span class="fn">dataSource</span>() {
+        <span class="kw">return new</span> <span class="cls">HikariDataSource</span>();
+    }
+
+    <span class="an">@Bean</span>
+    <span class="kw">public</span> <span class="cls">UserRepository</span> <span class="fn">userRepository</span>() {
+        <span class="cmt">// Creates a NEW DataSource — NOT the singleton one!</span>
+        <span class="kw">return new</span> <span class="cls">UserRepository</span>(<span class="fn">dataSource</span>());
+    }
+}</pre>
+      <p>This is called <strong>"Lite Mode"</strong> — @Bean methods in @Component classes are not intercepted. Cross-references between @Bean methods will create new instances instead of reusing singletons.</p>
+      <p><strong>Rule:</strong> If your @Bean methods call each other — always use <code>@Configuration</code>.</p>
+
+      <h3>proxyBeanMethods=false — When Would You Use It?</h3>
+      <pre><span class="an">@Configuration</span>(proxyBeanMethods = <span class="kw">false</span>)
+<span class="kw">public class</span> <span class="cls">FastConfig</span> { ... }</pre>
+      <p>Setting <code>proxyBeanMethods=false</code> disables CGLIB proxying — the class runs in Lite Mode. Use this when:</p>
+      <ul>
+        <li>Your @Bean methods <em>never</em> call each other (no cross-references)</li>
+        <li>You want faster startup (CGLIB subclassing adds overhead)</li>
+        <li>You're building a library or autoconfiguration class</li>
+      </ul>
+      <p>Spring Boot's own autoconfiguration classes use <code>proxyBeanMethods=false</code> for exactly this reason — they're designed to never cross-reference beans.</p>
+
+      <div class="interview-box">
+        <div class="lbl">💬 Interview Answer</div>
+        <p>"@SpringBootApplication is a meta-annotation combining @Configuration, @EnableAutoConfiguration, and @ComponentScan. @EnableAutoConfiguration uses SpringFactoriesLoader to discover and conditionally load auto-configuration classes. CGLIB proxies @Configuration classes so that calling a @Bean method returns the same singleton from the context — without CGLIB (i.e., @Component with @Bean), each call creates a new instance. proxyBeanMethods=false opts into Lite Mode — useful for autoconfiguration classes that have no inter-@Bean dependencies, giving faster startup."</p>
+      </div>
+    </div>
+
+    <div class="quiz-box">
+      <div class="quiz-label">🧠 Quiz — Section 7</div>
+      <div class="quiz-q">You have a @Component class with two @Bean methods where one calls the other. What happens at runtime?</div>
+      <div class="quiz-opts">
+        <button class="quiz-opt" onclick="answer(this,false,6)">A. Spring throws an error — @Bean methods can only be in @Configuration classes</button>
+        <button class="quiz-opt" onclick="answer(this,true,6)">B. The cross-reference creates a NEW bean instance instead of returning the singleton — this is Lite Mode and can cause subtle bugs</button>
+        <button class="quiz-opt" onclick="answer(this,false,6)">C. CGLIB still intercepts calls in @Component — same behavior as @Configuration</button>
+        <button class="quiz-opt" onclick="answer(this,false,6)">D. Spring automatically upgrades the class to @Configuration at runtime</button>
+      </div>
+      <div class="quiz-explain" id="explain-6">
+        ✅ This is the classic CGLIB interview trap. In <strong>Lite Mode</strong> (@Component with @Bean), Spring does NOT subclass the config class via CGLIB. Method calls execute as regular Java — each call to <code>dataSource()</code> runs the method body and creates a fresh object. You end up with multiple instances of what should be a singleton. Always use <code>@Configuration</code> when your @Bean methods have dependencies on each other.
+      </div>
+    </div>
+
+    <div class="nav-row">
+      <button class="btn btn-ghost" onclick="goTo(5)">← Back</button>
+      <button class="btn btn-primary" onclick="finish()">🎉 Complete Module</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       COMPLETION SCREEN
+  ════════════════════════════════════════════════════════════════ -->
+  <div id="completion">
+    <div class="completion-emoji">🌱☕🎉</div>
+    <div class="completion-title">Spring Core — Complete!</div>
+    <div class="completion-sub">You've covered all 7 modules. Here's your cheat sheet.</div>
+
+    <div class="cheatsheet">
+      <div class="cs-section">
+        <div class="cs-section-title">Spring Beans</div>
+        <div class="cs-item">A bean = Java object managed by Spring's IoC container, not by <code>new</code></div>
+        <div class="cs-item">IoC = you declare what you need; Spring builds and wires the graph</div>
+        <div class="cs-item">ApplicationContext = the big <code>Map&lt;name, instance&gt;</code> where beans live</div>
+        <div class="cs-item">Default scope = Singleton (one instance per ApplicationContext)</div>
+      </div>
+      <div class="cs-section">
+        <div class="cs-section-title">Component Annotations</div>
+        <div class="cs-item">All four (@Component, @Service, @Repository, @Controller) are picked up by component scan</div>
+        <div class="cs-item">@Repository is the only one with real extra behavior: exception translation (SQLException → DataAccessException)</div>
+        <div class="cs-item">Use the right annotation for architectural clarity and AOP targeting</div>
+      </div>
+      <div class="cs-section">
+        <div class="cs-section-title">Dependency Injection</div>
+        <div class="cs-item">Constructor injection = preferred: final fields, testable without Spring, fail-fast NPE</div>
+        <div class="cs-item">Setter injection = optional dependencies only</div>
+        <div class="cs-item">Field injection = avoid: hides deps, untestable, no final</div>
+        <div class="cs-item">@Autowired(required=false) = inject if available, null otherwise</div>
+      </div>
+      <div class="cs-section">
+        <div class="cs-section-title">Bean Scopes</div>
+        <div class="cs-item">Singleton: one per context, shared across threads — keep stateless!</div>
+        <div class="cs-item">Prototype: new instance per request — Spring doesn't manage destruction</div>
+        <div class="cs-item">Stale prototype trap: injecting prototype into singleton captures one instance forever</div>
+        <div class="cs-item">Fix: use @Lookup or applicationContext.getBean() at method invocation time</div>
+      </div>
+      <div class="cs-section">
+        <div class="cs-section-title">IoC Container</div>
+        <div class="cs-item">BeanFactory = lazy, minimal, base interface — rarely used directly</div>
+        <div class="cs-item">ApplicationContext = eager, adds events / i18n / AOP / profiles — what Spring Boot uses</div>
+        <div class="cs-item">Mutable state in Singleton @Service = race condition (shared across threads!)</div>
+      </div>
+      <div class="cs-section">
+        <div class="cs-section-title">Bean Lifecycle</div>
+        <div class="cs-item">8 phases: constructor → DI → Aware → BPP.before → @PostConstruct → BPP.after → ready → @PreDestroy</div>
+        <div class="cs-item">AOP proxies created in Phase 6: BeanPostProcessor.postProcessAfterInitialization()</div>
+        <div class="cs-item">Self-invocation of @Transactional = bypasses proxy = no transaction!</div>
+        <div class="cs-item">@Conditional / @ConditionalOnProperty = evaluated before bean even gets instantiated</div>
+      </div>
+      <div class="cs-section">
+        <div class="cs-section-title">@SpringBootApplication + CGLIB</div>
+        <div class="cs-item">@SpringBootApplication = @Configuration + @EnableAutoConfiguration + @ComponentScan</div>
+        <div class="cs-item">@EnableAutoConfiguration reads AutoConfiguration.imports (Boot 2.7+) or spring.factories</div>
+        <div class="cs-item">CGLIB subclasses @Configuration — calling @Bean methods returns the singleton, not a new object</div>
+        <div class="cs-item">@Component + @Bean = Lite Mode — no CGLIB — cross-calls create new instances (interview trap!)</div>
+        <div class="cs-item">proxyBeanMethods=false = opt-in Lite Mode for performance when no inter-@Bean deps exist</div>
+      </div>
+    </div>
+
+    <button class="btn-restart" onclick="restart()">↩ Restart Module</button>
+  </div>
+
+</div>
+
+<script>
+// ─── State ───────────────────────────────────────
+const SECTIONS = 7;
+const TOTAL_SECONDS = 190 * 60; // 190 minutes
+let current = 0;
+let done = new Set();
+let quizAnswered = new Array(SECTIONS).fill(false);
+let timerInterval;
+let elapsed = 0;
+
+// ─── DOM ─────────────────────────────────────────
+const timerEl = document.getElementById('timer');
+const progBar = document.getElementById('prog-bar');
+const navDots = document.getElementById('nav-dots');
+const completionEl = document.getElementById('completion');
+
+// ─── Build Nav Dots ───────────────────────────────
+const sectionNames = [
+  'Beans','Annotations','DI','Scopes','IoC','Lifecycle','CGLIB'
+];
+function buildDots() {
+  navDots.innerHTML = '';
+  for (let i = 0; i < SECTIONS; i++) {
+    const d = document.createElement('button');
+    d.className = 'dot' + (i === current ? ' active' : '') + (done.has(i) && i !== current ? ' done' : '');
+    d.textContent = i + 1;
+    d.title = sectionNames[i];
+    d.onclick = () => goTo(i);
+    navDots.appendChild(d);
+  }
+}
+
+// ─── Navigation ──────────────────────────────────
+function goTo(idx) {
+  if (idx < 0 || idx >= SECTIONS) return;
+  document.getElementById('sec-' + current).classList.remove('active');
+  done.add(current);
+  current = idx;
+  document.getElementById('sec-' + current).classList.add('active');
+  completionEl.classList.remove('show');
+  completionEl.style.display = 'none';
+  buildDots();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function finish() {
+  document.getElementById('sec-' + current).classList.remove('active');
+  done.add(current);
+  completionEl.style.display = 'block';
+  completionEl.classList.add('show');
+  buildDots();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function restart() {
+  current = 0;
+  done.clear();
+  elapsed = 0;
+  quizAnswered.fill(false);
+  completionEl.classList.remove('show');
+  completionEl.style.display = 'none';
+  document.getElementById('sec-0').classList.add('active');
+  // Reset quiz states
+  document.querySelectorAll('.quiz-opt').forEach(b => {
+    b.disabled = false;
+    b.classList.remove('correct', 'wrong');
+  });
+  document.querySelectorAll('.quiz-explain').forEach(e => e.classList.remove('show'));
+  buildDots();
+  updateTimer();
+}
+
+// ─── Quiz ─────────────────────────────────────────
+function answer(btn, correct, section) {
+  if (quizAnswered[section]) return;
+  quizAnswered[section] = true;
+  const box = btn.closest('.quiz-box');
+  const opts = box.querySelectorAll('.quiz-opt');
+  opts.forEach(b => {
+    b.disabled = true;
+    if (b === btn) {
+      b.classList.add(correct ? 'correct' : 'wrong');
+    }
+    if (!correct) {
+      // highlight correct answer
+      const txt = b.textContent;
+      // find the correct button by checking data — we'll use a different approach
+    }
+  });
+  if (!correct) {
+    // find and highlight correct option
+    opts.forEach(b => {
+      const onclick = b.getAttribute('onclick');
+      if (onclick && onclick.includes('true')) {
+        b.classList.add('correct');
+      }
+    });
+  }
+  const explain = document.getElementById('explain-' + section);
+  if (explain) explain.classList.add('show');
+}
+
+// ─── Timer ───────────────────────────────────────
+function formatTime(seconds) {
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = seconds % 60;
+  if (h > 0) return `${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+}
+
+function updateTimer() {
+  const remaining = Math.max(0, TOTAL_SECONDS - elapsed);
+  timerEl.textContent = formatTime(remaining);
+  const pct = Math.min(100, (elapsed / TOTAL_SECONDS) * 100);
+  progBar.style.width = pct + '%';
+  timerEl.classList.remove('warn', 'danger');
+  if (remaining <= 60) timerEl.classList.add('danger');
+  else if (remaining <= 300) timerEl.classList.add('warn');
+}
+
+timerInterval = setInterval(() => {
+  elapsed++;
+  updateTimer();
+}, 1000);
+
+// ─── Init ─────────────────────────────────────────
+buildDots();
+updateTimer();
+</script>
+</body>
+</html>

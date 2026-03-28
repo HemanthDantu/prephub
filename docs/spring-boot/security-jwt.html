@@ -1,0 +1,1319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spring Security & JWT Learning Module</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+:root {
+      --bg: #0a0e1a;
+      --surface-1: #111827;
+      --surface-2: #1a2235;
+      --surface-3: #0f1726;
+      --border: rgba(255,255,255,0.08);
+      --text: #e5eefc;
+      --muted: #98a6c3;
+      --muted-2: #6f7b93;
+      --cyan: #00d4ff;
+      --purple: #7c3aed;
+      --green: #10b981;
+      --amber: #f59e0b;
+      --red: #ef4444;
+      --shadow: 0 20px 60px rgba(0,0,0,0.35);
+      --radius-xl: 22px;
+      --radius-lg: 16px;
+      --radius-md: 12px;
+      --max: 1180px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; background: radial-gradient(circle at top, #101834 0%, var(--bg) 45%, #070b14 100%); color: var(--text); font-family: 'Syne', system-ui, sans-serif; }
+    body { min-height: 100vh; }
+
+    a { color: inherit; }
+
+    .app {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      backdrop-filter: blur(14px);
+      background: rgba(10, 14, 26, 0.86);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .topbar-inner {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 16px 20px 14px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .topbar-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: clamp(1.05rem, 1rem + 1vw, 1.7rem);
+      letter-spacing: 0.02em;
+      font-weight: 800;
+    }
+
+    .brand small {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--muted);
+      font-size: 0.78rem;
+    }
+
+    .timer-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+      box-shadow: var(--shadow);
+    }
+
+    .timer-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .timer {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--cyan);
+      letter-spacing: 0.08em;
+    }
+
+    .timer.warning { color: var(--amber); }
+    .timer.critical {
+      color: var(--red);
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); text-shadow: 0 0 0 rgba(239,68,68,0.1); }
+      50% { transform: scale(1.06); text-shadow: 0 0 18px rgba(239,68,68,0.35); }
+    }
+
+    .nav-dots {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .nav-dot {
+      width: 38px;
+      height: 38px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.16);
+      background: rgba(255,255,255,0.03);
+      color: var(--muted);
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+    }
+
+    .nav-dot:hover,
+    .nav-dot:focus-visible {
+      transform: translateY(-1px);
+      border-color: rgba(0, 212, 255, 0.65);
+      outline: none;
+    }
+
+    .nav-dot.active {
+      background: rgba(0, 212, 255, 0.14);
+      border-color: rgba(0, 212, 255, 0.9);
+      color: var(--cyan);
+      box-shadow: 0 0 0 4px rgba(0, 212, 255, 0.08);
+    }
+
+    .nav-dot.done {
+      border-color: rgba(16, 185, 129, 0.8);
+      color: var(--green);
+      background: rgba(16, 185, 129, 0.06);
+    }
+
+    .progress-shell {
+      height: 10px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--cyan), var(--purple));
+      transition: width 1s linear;
+    }
+
+    main {
+      flex: 1;
+      width: 100%;
+    }
+
+    .section {
+      display: none;
+      padding: 34px 20px 130px;
+      animation: fade 0.35s ease;
+    }
+
+    .section.active { display: block; }
+
+    @keyframes fade {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .section-inner {
+      max-width: var(--max);
+      margin: 0 auto;
+    }
+
+    .hero {
+      padding: 26px 28px;
+      border-radius: var(--radius-xl);
+      background: linear-gradient(135deg, rgba(17,24,39,0.96), rgba(26,34,53,0.96));
+      border: 1px solid rgba(255,255,255,0.07);
+      box-shadow: var(--shadow);
+      margin-bottom: 24px;
+    }
+
+    .section-label {
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-size: 0.76rem;
+      margin-bottom: 12px;
+    }
+
+    .hero h2 {
+      margin: 0 0 12px;
+      font-size: clamp(1.8rem, 1.2rem + 2vw, 3rem);
+      line-height: 1.05;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 880px;
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.7;
+    }
+
+    .card-grid {
+      display: grid;
+      gap: 18px;
+    }
+
+    .card {
+      background: linear-gradient(180deg, rgba(17,24,39,0.98), rgba(17,24,39,0.88));
+      border: 1px solid var(--border);
+      border-left-width: 5px;
+      border-radius: var(--radius-lg);
+      padding: 20px 22px;
+      box-shadow: var(--shadow);
+    }
+
+    .card.eli5 { border-left-color: var(--amber); }
+    .card.analogy { border-left-color: var(--green); }
+    .card.technical { border-left-color: var(--cyan); }
+    .card.warning { border-left-color: var(--red); }
+    .card.quiz-card { border-left-color: var(--purple); }
+
+    .card-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    .card h3 {
+      margin: 0 0 10px;
+      font-size: clamp(1.1rem, 1rem + 0.8vw, 1.45rem);
+    }
+
+    .card p,
+    .card li {
+      color: #d3def4;
+      line-height: 1.75;
+      font-size: 0.98rem;
+    }
+
+    .card p:last-child { margin-bottom: 0; }
+    .card ul { margin: 8px 0 0 20px; padding: 0; }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1.2fr 0.95fr;
+      gap: 18px;
+    }
+
+    .mini-grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      margin-top: 16px;
+    }
+
+    .mini-panel {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 14px;
+      padding: 14px;
+    }
+
+    .mini-panel h4 {
+      margin: 0 0 8px;
+      font-size: 0.95rem;
+      color: var(--text);
+    }
+
+    .mini-panel p,
+    .mini-panel li { font-size: 0.92rem; color: var(--muted); }
+
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 0.8rem;
+      font-family: 'JetBrains Mono', monospace;
+      border: 1px solid transparent;
+    }
+
+    .pill.good { color: var(--green); border-color: rgba(16,185,129,0.25); background: rgba(16,185,129,0.08); }
+    .pill.caution { color: var(--amber); border-color: rgba(245,158,11,0.25); background: rgba(245,158,11,0.08); }
+    .pill.bad { color: var(--red); border-color: rgba(239,68,68,0.25); background: rgba(239,68,68,0.08); }
+    .pill.info { color: var(--cyan); border-color: rgba(0,212,255,0.25); background: rgba(0,212,255,0.08); }
+
+    .flow {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    .flow-step {
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: var(--text);
+      font-size: 0.88rem;
+    }
+
+    .flow-arrow {
+      color: var(--muted-2);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.05rem;
+    }
+
+    .diagram {
+      margin-top: 16px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.015));
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 18px;
+      padding: 18px;
+      overflow: hidden;
+    }
+
+    .diagram-title {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--muted);
+      font-size: 0.76rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    .responsibility-split {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .box {
+      background: var(--surface-2);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 16px;
+      padding: 16px;
+      min-height: 100px;
+      position: relative;
+    }
+
+    .box h4 {
+      margin: 0 0 8px;
+      font-size: 1rem;
+    }
+
+    .box p,
+    .box li { margin: 0; color: var(--muted); font-size: 0.9rem; line-height: 1.6; }
+    .box ul { margin: 0; padding-left: 18px; }
+
+    .box.center-highlight {
+      box-shadow: inset 0 0 0 1px rgba(0,212,255,0.18), 0 10px 30px rgba(0, 212, 255, 0.08);
+    }
+
+    .extensibility-rail,
+    .substitution-rail,
+    .dependency-stack,
+    .interface-split {
+      display: grid;
+      gap: 14px;
+    }
+
+    .rail-row,
+    .split-row,
+    .stack-row {
+      display: flex;
+      gap: 12px;
+      align-items: stretch;
+      flex-wrap: wrap;
+    }
+
+    .rail-box,
+    .stack-box,
+    .split-box {
+      flex: 1 1 180px;
+      padding: 14px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.07);
+      background: rgba(255,255,255,0.03);
+    }
+
+    .rail-box h4,
+    .stack-box h4,
+    .split-box h4 { margin: 0 0 8px; font-size: 0.96rem; }
+    .rail-box p,
+    .stack-box p,
+    .split-box p { margin: 0; color: var(--muted); font-size: 0.88rem; line-height: 1.6; }
+
+    .arrow-down,
+    .arrow-right {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted-2);
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      min-width: 24px;
+    }
+
+    pre {
+      margin: 0;
+      background: #050810;
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 16px;
+      padding: 18px;
+      overflow: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.86rem;
+      line-height: 1.7;
+      color: #dbeafe;
+    }
+
+    .code-blocks {
+      display: grid;
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .code-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.76rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 0 0 8px;
+    }
+
+    .token-key { color: #7dd3fc; }
+    .token-type { color: #c4b5fd; }
+    .token-method { color: #34d399; }
+    .token-string { color: #fbbf24; }
+    .token-comment { color: #6b7280; }
+    .token-annotation { color: #f472b6; }
+    .token-number { color: #f472b6; }
+    .token-bad { color: #f87171; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 14px;
+      overflow: hidden;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.07);
+    }
+
+    th, td {
+      text-align: left;
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      vertical-align: top;
+    }
+
+    th {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      background: rgba(255,255,255,0.03);
+    }
+
+    td { color: #d6e1f7; font-size: 0.94rem; }
+    tr:last-child td { border-bottom: none; }
+
+    .quiz-options {
+      display: grid;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .quiz-option {
+      width: 100%;
+      text-align: left;
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.03);
+      color: var(--text);
+      border: 1px solid rgba(255,255,255,0.09);
+      cursor: pointer;
+      transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+      font: inherit;
+    }
+
+    .quiz-option:hover,
+    .quiz-option:focus-visible {
+      transform: translateY(-1px);
+      border-color: rgba(124, 58, 237, 0.85);
+      outline: none;
+    }
+
+    .quiz-option[disabled] {
+      cursor: default;
+      opacity: 0.96;
+    }
+
+    .quiz-option.correct {
+      border-color: rgba(16,185,129,0.85);
+      background: rgba(16,185,129,0.12);
+      color: #eafff7;
+    }
+
+    .quiz-option.wrong {
+      border-color: rgba(239,68,68,0.85);
+      background: rgba(239,68,68,0.12);
+      color: #fff5f5;
+    }
+
+    .quiz-result {
+      margin-top: 14px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      display: none;
+    }
+
+    .quiz-result.show { display: block; }
+    .quiz-result strong { display: block; margin-bottom: 6px; }
+
+    .takeaways {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .footer-nav {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 25;
+      background: rgba(10,14,26,0.9);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .footer-nav-inner {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .btn {
+      padding: 13px 18px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+      font: inherit;
+      cursor: pointer;
+      transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+      min-width: 140px;
+    }
+
+    .btn:hover,
+    .btn:focus-visible {
+      transform: translateY(-1px);
+      outline: none;
+      border-color: rgba(0,212,255,0.55);
+      background: rgba(255,255,255,0.07);
+    }
+
+    .btn.primary {
+      background: linear-gradient(90deg, rgba(0,212,255,0.14), rgba(124,58,237,0.18));
+      border-color: rgba(0,212,255,0.35);
+    }
+
+    .btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .completion-grid {
+      display: grid;
+      gap: 18px;
+      grid-template-columns: 1.1fr 0.95fr;
+    }
+
+    .celebrate {
+      font-size: 2.6rem;
+      margin-bottom: 12px;
+    }
+
+    .cheat-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .cheat-item {
+      padding: 14px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+    }
+
+    .cheat-item h4 {
+      margin: 0 0 6px;
+      font-size: 0.98rem;
+    }
+
+    .cheat-item p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.93rem;
+      line-height: 1.6;
+    }
+
+    .confusion-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .confusion-item {
+      padding: 14px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .confusion-item strong { color: var(--text); }
+    .confusion-item p { margin: 8px 0 0; color: var(--muted); }
+
+    @media (max-width: 960px) {
+      .two-col,
+      .completion-grid { grid-template-columns: 1fr; }
+      .responsibility-split { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 680px) {
+      .section { padding-top: 24px; }
+      .hero { padding: 22px 18px; }
+      .card { padding: 18px 16px; }
+      .topbar-inner, .footer-nav-inner { padding-left: 14px; padding-right: 14px; }
+      .nav-dot { width: 34px; height: 34px; font-size: 0.85rem; }
+      .btn { min-width: 0; flex: 1; }
+      .mini-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="topbar-row">
+          <div class="brand">
+            <h1>Spring Security & JWT</h1>
+            <small>Interactive 28-minute learning module</small>
+          </div>
+          <div class="timer-wrap" aria-live="polite">
+            <span class="timer-label">Time Left</span>
+            <span class="timer" id="timer">28:00</span>
+          </div>
+        </div>
+        <div class="topbar-row">
+          <nav class="nav-dots" aria-label="Section navigation"><button class="nav-dot active" data-index="0" aria-label="Go to section 1">1</button><button class="nav-dot " data-index="1" aria-label="Go to section 2">2</button><button class="nav-dot " data-index="2" aria-label="Go to section 3">3</button><button class="nav-dot " data-index="3" aria-label="Go to section 4">4</button><button class="nav-dot " data-index="4" aria-label="Go to completion screen">5</button></nav>
+        </div>
+        <div class="progress-shell" aria-hidden="true">
+          <div class="progress-bar" id="progressBar"></div>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      
+      <section class="section active" data-section="0">
+        <div class="section-inner">
+          <div class="hero">
+            <div class="section-label">Section 1 of 4 · ~7 mins</div>
+            <h2>Authn, Authz & Filter Chain</h2>
+            <p>Spring Security runs requests through a filter chain to authenticate and authorize.</p>
+          </div>
+
+          <div class="card-grid">
+            <article class="card eli5">
+              <div class="card-label">🧒 ELI5</div>
+              <h3>Club entry rules</h3>
+              <p>You show your ID at the door, then the bouncer checks if you can enter the VIP area.</p>
+            </article>
+
+            <article class="card analogy">
+              <div class="card-label">🔗 ANALOGY</div>
+              <h3>Airport security</h3>
+              <p>You pass identity checks first, then your boarding permissions decide where you go.</p>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Technical</div>
+              <div class="two-col">
+                <div>
+                  <h3>What it means in real code</h3>
+                  <p><strong>Definition:</strong> Authentication proves who you are; authorization decides what you can access.</p>
+                  <div class="mini-grid">
+                    <div class="mini-panel">
+                      <h4>Why it matters</h4>
+                      <ul>
+                        <li>Clear security boundaries</li><li>Defense in depth</li><li>Consistent access control</li>
+                      </ul>
+                    </div>
+                    <div class="mini-panel">
+                      <h4>Common smell</h4>
+                      <ul>
+                        <li>Mixing authn and authz</li><li>Skipping filters for some routes</li><li>Hard-coded roles</li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div class="badge-row">
+                    <span class="pill good">Filter chain</span><span class="pill info">Role-based access</span><span class="pill bad">Skip auth</span>
+                  </div>
+                  <div class="flow"><span class="flow-step">Request</span><span class="flow-arrow">→</span><span class="flow-step">Authenticate</span><span class="flow-arrow">→</span><span class="flow-step">Authorize</span><span class="flow-arrow">→</span><span class="flow-step">Handle response</span></div>
+                </div>
+                <div>
+                  <h3>Interview answer</h3>
+                  <p>“Spring Security authenticates first, then authorizes through the filter chain based on roles and rules.”</p>
+                  <table>
+                    <thead><tr><th>Step</th><th>Purpose</th></tr></thead>
+                    <tbody><tr><td>Authentication</td><td><span class="pill good">Identity</span></td></tr><tr><td>Authorization</td><td><span class="pill info">Permissions</span></td></tr><tr><td>CSRF</td><td><span class="pill caution">Stateful forms</span></td></tr></tbody>
+                  </table>
+                </div>
+              </div>
+              
+    <div class="code-blocks">
+      
+    <div>
+      <div class="code-title">Filter chain snippet</div>
+      <pre><span class="token-comment">http.authorizeHttpRequests(auth -&gt; auth
+  .requestMatchers(class=@@STR0@@&gt;@@STR1@@).hasRole(class=@@STR2@@&gt;@@STR3@@)
+  .anyRequest().authenticated());</span></pre>
+    </div>
+    </div>
+              <p>The filter chain enforces authentication and authorization consistently.</p>
+            </article>
+
+            <article class="card warning">
+              <div class="card-label">Warning</div>
+              <h3>Avoid public endpoints by accident</h3>
+              <p>Be explicit about which paths are public; default to secure.</p>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Mini takeaway</div>
+              <ul class="takeaways">
+                <li>Authn before authz.</li><li>Filter chain is the pipeline.</li><li>Least privilege.</li>
+              </ul>
+            </article>
+
+            <article class="card quiz-card">
+              <div class="card-label">Quiz</div>
+              <h3>What does authorization decide?</h3>
+              <div class="quiz-options" data-answer="1">
+                <button class="quiz-option">A. Who you are</button><button class="quiz-option">B. What you can access</button><button class="quiz-option">C. How tokens are signed</button><button class="quiz-option">D. How passwords are stored</button>
+              </div>
+              <div class="quiz-result">
+                <strong>Correct answer: B</strong>
+                <span>Authorization decides what resources you can access.</span>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+      <section class="section " data-section="1">
+        <div class="section-inner">
+          <div class="hero">
+            <div class="section-label">Section 2 of 4 · ~7 mins</div>
+            <h2>JWT Structure & Validation</h2>
+            <p>JWTs are signed tokens that carry claims; validation must happen on every request.</p>
+          </div>
+
+          <div class="card-grid">
+            <article class="card eli5">
+              <div class="card-label">🧒 ELI5</div>
+              <h3>Signed permission slip</h3>
+              <p>A signed note says you’re allowed to do something, and the signature proves it’s real.</p>
+            </article>
+
+            <article class="card analogy">
+              <div class="card-label">🔗 ANALOGY</div>
+              <h3>Stamped passport</h3>
+              <p>Border officers verify the stamp to ensure it’s authentic.</p>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Technical</div>
+              <div class="two-col">
+                <div>
+                  <h3>What it means in real code</h3>
+                  <p><strong>Definition:</strong> JWTs have header, payload, signature; servers verify signature and expiry.</p>
+                  <div class="mini-grid">
+                    <div class="mini-panel">
+                      <h4>Why it matters</h4>
+                      <ul>
+                        <li>Stateless authentication</li><li>Portable claims</li><li>Scalable APIs</li>
+                      </ul>
+                    </div>
+                    <div class="mini-panel">
+                      <h4>Common smell</h4>
+                      <ul>
+                        <li>Skipping signature checks</li><li>Long-lived access tokens</li><li>No clock skew handling</li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div class="badge-row">
+                    <span class="pill good">Verify signature</span><span class="pill info">Short-lived tokens</span><span class="pill bad">Trust payload blindly</span>
+                  </div>
+                  <div class="flow"><span class="flow-step">Receive token</span><span class="flow-arrow">→</span><span class="flow-step">Verify signature</span><span class="flow-arrow">→</span><span class="flow-step">Check exp</span><span class="flow-arrow">→</span><span class="flow-step">Build auth</span></div>
+                </div>
+                <div>
+                  <h3>Interview answer</h3>
+                  <p>“I verify JWT signature and expiry on every request; I never trust payload without validation.”</p>
+                  <table>
+                    <thead><tr><th>Part</th><th>Purpose</th></tr></thead>
+                    <tbody><tr><td>Header</td><td><span class="pill info">Alg + type</span></td></tr><tr><td>Payload</td><td><span class="pill good">Claims</span></td></tr><tr><td>Signature</td><td><span class="pill good">Integrity</span></td></tr></tbody>
+                  </table>
+                </div>
+              </div>
+              
+    <div class="code-blocks">
+      
+    <div>
+      <div class="code-title">JWT validation (conceptual)</div>
+      <pre><span class="token-comment">if (!jwt.verifySignature(key)) throw new SecurityException();
+if (jwt.isExpired()) throw new SecurityException();</span></pre>
+    </div>
+    </div>
+              <p>Validation happens on every request; no server session required.</p>
+            </article>
+
+            <article class="card warning">
+              <div class="card-label">Warning</div>
+              <h3>Never trust unsigned tokens</h3>
+              <p>A token without a verified signature is not trustworthy.</p>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Mini takeaway</div>
+              <ul class="takeaways">
+                <li>Validate signature & expiry.</li><li>JWTs are stateless.</li><li>Claims are only trusted after verification.</li>
+              </ul>
+            </article>
+
+            <article class="card quiz-card">
+              <div class="card-label">Quiz</div>
+              <h3>What must be checked on every request?</h3>
+              <div class="quiz-options" data-answer="0">
+                <button class="quiz-option">A. Signature and expiry</button><button class="quiz-option">B. Only payload</button><button class="quiz-option">C. Only issuer name</button><button class="quiz-option">D. Only token length</button>
+              </div>
+              <div class="quiz-result">
+                <strong>Correct answer: A</strong>
+                <span>Signature and expiry must be validated for every request.</span>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+      <section class="section " data-section="2">
+        <div class="section-inner">
+          <div class="hero">
+            <div class="section-label">Section 3 of 4 · ~7 mins</div>
+            <h2>Access vs Refresh Tokens</h2>
+            <p>Access tokens should be short-lived; refresh tokens extend sessions safely.</p>
+          </div>
+
+          <div class="card-grid">
+            <article class="card eli5">
+              <div class="card-label">🧒 ELI5</div>
+              <h3>Short pass + long ticket</h3>
+              <p>You use a short pass for entry and a longer ticket to get a new pass.</p>
+            </article>
+
+            <article class="card analogy">
+              <div class="card-label">🔗 ANALOGY</div>
+              <h3>Concert wristband</h3>
+              <p>Your wristband gets you in, but you can replace it at the booth with your ticket.</p>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Technical</div>
+              <div class="two-col">
+                <div>
+                  <h3>What it means in real code</h3>
+                  <p><strong>Definition:</strong> Access tokens expire quickly; refresh tokens issue new access tokens.</p>
+                  <div class="mini-grid">
+                    <div class="mini-panel">
+                      <h4>Why it matters</h4>
+                      <ul>
+                        <li>Limit damage if stolen</li><li>Allow session continuity</li><li>Support rotation</li>
+                      </ul>
+                    </div>
+                    <div class="mini-panel">
+                      <h4>Common smell</h4>
+                      <ul>
+                        <li>Long-lived access tokens</li><li>No rotation</li><li>Storing refresh in localStorage</li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div class="badge-row">
+                    <span class="pill good">Short access</span><span class="pill info">Refresh rotation</span><span class="pill bad">Long-lived access</span>
+                  </div>
+                  <div class="flow"><span class="flow-step">Login</span><span class="flow-arrow">→</span><span class="flow-step">Access token</span><span class="flow-arrow">→</span><span class="flow-step">Expires</span><span class="flow-arrow">→</span><span class="flow-step">Refresh → new access</span></div>
+                </div>
+                <div>
+                  <h3>Interview answer</h3>
+                  <p>“I keep access tokens short-lived and use refresh tokens with rotation to reduce risk.”</p>
+                  <table>
+                    <thead><tr><th>Token</th><th>Lifetime</th></tr></thead>
+                    <tbody><tr><td>Access</td><td><span class="pill good">Minutes</span></td></tr><tr><td>Refresh</td><td><span class="pill info">Days/Weeks</span></td></tr><tr><td>Session</td><td><span class="pill caution">Depends</span></td></tr></tbody>
+                  </table>
+                </div>
+              </div>
+              
+    <div class="code-blocks">
+      
+    <div>
+      <div class="code-title">Refresh flow (conceptual)</div>
+      <pre><span class="token-comment">POST /auth/refresh -&gt; new access token
+Invalidate old refresh token</span></pre>
+    </div>
+    </div>
+              <p>Rotate refresh tokens to reduce replay risk.</p>
+            </article>
+
+            <article class="card warning">
+              <div class="card-label">Warning</div>
+              <h3>Don’t store refresh tokens in JS-accessible storage</h3>
+              <p>Prefer HttpOnly cookies to reduce XSS risk.</p>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Mini takeaway</div>
+              <ul class="takeaways">
+                <li>Access short-lived.</li><li>Refresh rotates.</li><li>Storage matters.</li>
+              </ul>
+            </article>
+
+            <article class="card quiz-card">
+              <div class="card-label">Quiz</div>
+              <h3>Why keep access tokens short-lived?</h3>
+              <div class="quiz-options" data-answer="1">
+                <button class="quiz-option">A. Faster login</button><button class="quiz-option">B. Reduce damage if stolen</button><button class="quiz-option">C. Easier to debug</button><button class="quiz-option">D. Required by Spring</button>
+              </div>
+              <div class="quiz-result">
+                <strong>Correct answer: B</strong>
+                <span>Short-lived tokens limit exposure if compromised.</span>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+      <section class="section " data-section="3">
+        <div class="section-inner">
+          <div class="hero">
+            <div class="section-label">Section 4 of 4 · ~7 mins</div>
+            <h2>Token Storage & CSRF</h2>
+            <p>Storage decisions affect XSS/CSRF risks and overall security.</p>
+          </div>
+
+          <div class="card-grid">
+            <article class="card eli5">
+              <div class="card-label">🧒 ELI5</div>
+              <h3>Where you keep your key</h3>
+              <p>If you leave a key on the table, anyone can grab it. If you lock it, it’s safer.</p>
+            </article>
+
+            <article class="card analogy">
+              <div class="card-label">🔗 ANALOGY</div>
+              <h3>Mailbox vs pocket</h3>
+              <p>A mailbox is protected; a note left outside isn’t.</p>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Technical</div>
+              <div class="two-col">
+                <div>
+                  <h3>What it means in real code</h3>
+                  <p><strong>Definition:</strong> Authorization headers avoid CSRF, while cookies require CSRF protection.</p>
+                  <div class="mini-grid">
+                    <div class="mini-panel">
+                      <h4>Why it matters</h4>
+                      <ul>
+                        <li>Reduce XSS/CSRF risk</li><li>Prevent token theft</li><li>Comply with best practices</li>
+                      </ul>
+                    </div>
+                    <div class="mini-panel">
+                      <h4>Common smell</h4>
+                      <ul>
+                        <li>Storing access token in localStorage</li><li>Disabling CSRF blindly</li><li>No secure cookie flags</li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div class="badge-row">
+                    <span class="pill good">HttpOnly cookies</span><span class="pill info">Authorization header</span><span class="pill bad">localStorage tokens</span>
+                  </div>
+                  <div class="flow"><span class="flow-step">Token stored</span><span class="flow-arrow">→</span><span class="flow-step">Browser sends</span><span class="flow-arrow">→</span><span class="flow-step">Server validates</span><span class="flow-arrow">→</span><span class="flow-step">Allow/deny</span></div>
+                </div>
+                <div>
+                  <h3>Interview answer</h3>
+                  <p>“If I use cookies, I keep CSRF enabled. If I use Authorization headers, CSRF is less relevant.”</p>
+                  <table>
+                    <thead><tr><th>Storage</th><th>Risk</th></tr></thead>
+                    <tbody><tr><td>HttpOnly cookie</td><td><span class="pill good">Lower XSS</span></td></tr><tr><td>localStorage</td><td><span class="pill bad">XSS risk</span></td></tr><tr><td>Authorization header</td><td><span class="pill info">No CSRF</span></td></tr></tbody>
+                  </table>
+                </div>
+              </div>
+              
+    <div class="code-blocks">
+      
+    <div>
+      <div class="code-title">Cookie flags</div>
+      <pre><span class="token-comment">Set-Cookie: refresh=...; HttpOnly; Secure; SameSite=Strict</span></pre>
+    </div>
+    </div>
+              <p>Security is a system — token storage matters as much as validation.</p>
+            </article>
+
+            <article class="card warning">
+              <div class="card-label">Warning</div>
+              <h3>Don’t disable CSRF blindly</h3>
+              <p>If you use cookies, CSRF protection is still important.</p>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Mini takeaway</div>
+              <ul class="takeaways">
+                <li>Storage affects risk.</li><li>Cookies need CSRF.</li><li>Prefer secure flags.</li>
+              </ul>
+            </article>
+
+            <article class="card quiz-card">
+              <div class="card-label">Quiz</div>
+              <h3>Which storage option reduces XSS exposure?</h3>
+              <div class="quiz-options" data-answer="1">
+                <button class="quiz-option">A. localStorage</button><button class="quiz-option">B. HttpOnly cookie</button><button class="quiz-option">C. URL param</button><button class="quiz-option">D. SessionStorage</button>
+              </div>
+              <div class="quiz-result">
+                <strong>Correct answer: B</strong>
+                <span>HttpOnly cookies are not accessible to JavaScript and reduce XSS risk.</span>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+      
+      <section class="section" data-section="4">
+        <div class="section-inner">
+          <div class="hero">
+            <div class="section-label">Completion screen · Review mode</div>
+            <h2>🎉 Spring Security & JWT Cheat Sheet</h2>
+            <p>Use this to recall filter flow, JWT structure, and security pitfalls.</p>
+          </div>
+
+          <div class="completion-grid">
+            <div class="card technical">
+              <div class="card-label">Cheat sheet</div>
+              <div class="celebrate">🚀</div>
+              <h3>1-line interview answers</h3>
+              <div class="cheat-list">
+    <div class="cheat-item">
+      <h4>Filter chain</h4>
+      <p>SecurityFilterChain defines the pipeline of checks.</p>
+    </div>
+    <div class="cheat-item">
+      <h4>JWT</h4>
+      <p>Always verify signature + expiry.</p>
+    </div>
+    <div class="cheat-item">
+      <h4>Refresh</h4>
+      <p>Use short-lived access tokens with refresh rotation.</p>
+    </div>
+    <div class="cheat-item">
+      <h4>Storage</h4>
+      <p>Prefer HttpOnly cookies for refresh tokens.</p>
+    </div></div>
+            </div>
+
+            <div class="card analogy">
+              <div class="card-label">What to remember</div>
+              <h3>Fast mental model</h3>
+              <ul class="takeaways">
+                <li><strong>Authn vs Authz:</strong> identity then permissions.</li><li><strong>JWT:</strong> signed claims, stateless validation.</li><li><strong>Refresh tokens:</strong> short access, long refresh.</li><li><strong>Storage:</strong> avoid XSS risk.</li>
+              </ul>
+              <h3 style="margin-top:22px;">Common traps</h3>
+              <div class="badge-row">
+                <span class="pill bad">Storing tokens in localStorage</span><span class="pill bad">Skipping signature verification</span><span class="pill bad">No token rotation</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer-nav">
+      <div class="footer-nav-inner">
+        <button class="btn" id="prevBtn">← Back</button>
+        <button class="btn primary" id="nextBtn">Next →</button>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+const sections = Array.from(document.querySelectorAll('.section'));
+    const dots = Array.from(document.querySelectorAll('.nav-dot'));
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const timerEl = document.getElementById('timer');
+    const progressBar = document.getElementById('progressBar');
+
+function escapeHtml(str) {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+function highlightJava(code) {
+  const keywords = new Set([
+    'abstract','assert','boolean','break','byte','case','catch','char','class','const','continue','default',
+    'do','double','else','enum','extends','final','finally','float','for','goto','if','implements','import',
+    'instanceof','int','interface','long','native','new','package','private','protected','public','return','short',
+    'static','strictfp','super','switch','synchronized','this','throw','throws','transient','try','void','volatile',
+    'while','var','record','sealed','permits','non-sealed','yield'
+  ]);
+  const types = new Set([
+    'String','List','Map','Set','HashMap','ArrayList','LinkedList','Optional','Stream','CompletableFuture',
+    'ExecutorService','Runnable','Callable','Future','Thread','Duration','LocalDateTime','Object','Integer','Long',
+    'Boolean','Double','Float','UUID','Predicate','Function','Consumer','Supplier','Collectors','Path','ResponseEntity',
+    'HttpStatus','Authentication','SecurityFilterChain','EntityManager','Session','Pageable','JpaRepository','Optional',
+    'Component','Service','Repository','Controller','RestController','Autowired','Transactional','Bean','Configuration',
+    'BeanFactory','ApplicationContext','MockBean','SpringBootTest','WebMvcTest','MockMvc'
+  ]);
+  const tokenRegex = /(\/\*[\s\S]*?\*\/|\/\/[^\n]*|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|@[A-Za-z_][\w.]*|\b\d+(?:_\d+)*(?:\.\d+)?\b|\b[A-Za-z_][\w]*\b)/g;
+  let result = '';
+  let lastIndex = 0;
+  for (const match of code.matchAll(tokenRegex)) {
+    const value = match[0];
+    const index = match.index;
+    result += escapeHtml(code.slice(lastIndex, index));
+    let cls = '';
+    if (value.startsWith('//') || value.startsWith('/*')) {
+      cls = 'token-comment';
+    } else if (value.startsWith("\"") || value.startsWith("'")) {
+      cls = 'token-string';
+    } else if (value.startsWith('@')) {
+      cls = 'token-annotation';
+    } else if (/^\d/.test(value)) {
+      cls = 'token-number';
+    } else if (keywords.has(value)) {
+      cls = 'token-key';
+    } else if (types.has(value)) {
+      cls = 'token-type';
+    }
+    if (cls) {
+      result += "<span class=\"" + cls + "\">" + escapeHtml(value) + "</span>";
+    } else {
+      result += escapeHtml(value);
+    }
+    lastIndex = index + value.length;
+  }
+  result += escapeHtml(code.slice(lastIndex));
+  return result;
+}
+
+function applySyntaxHighlighting() {
+  document.querySelectorAll('pre').forEach(pre => {
+    const raw = pre.textContent;
+    pre.innerHTML = highlightJava(raw);
+  });
+}
+
+    let currentIndex = 0;
+    let visitedMax = 0;
+
+    function showSection(index) {
+      currentIndex = Math.max(0, Math.min(index, sections.length - 1));
+      visitedMax = Math.max(visitedMax, currentIndex);
+
+      sections.forEach((section, i) => {
+        section.classList.toggle('active', i === currentIndex);
+      });
+
+      dots.forEach((dot, i) => {
+        dot.classList.remove('active', 'done');
+        if (i === currentIndex) {
+          dot.classList.add('active');
+        } else if (i < visitedMax) {
+          dot.classList.add('done');
+        }
+      });
+
+      prevBtn.disabled = currentIndex === 0;
+      nextBtn.textContent = currentIndex === sections.length - 1 ? 'Review Again ↺' : (currentIndex === sections.length - 2 ? 'Finish / View Cheat Sheet →' : 'Next →');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    prevBtn.addEventListener('click', () => showSection(currentIndex - 1));
+    nextBtn.addEventListener('click', () => {
+      if (currentIndex === sections.length - 1) {
+        showSection(0);
+      } else {
+        showSection(currentIndex + 1);
+      }
+    });
+
+    dots.forEach(dot => {
+      dot.addEventListener('click', () => showSection(Number(dot.dataset.index)));
+    });
+
+    const totalSeconds = 28 * 60;
+    let remainingSeconds = totalSeconds;
+
+    function formatTime(seconds) {
+      const mins = String(Math.floor(seconds / 60)).padStart(2, '0');
+      const secs = String(seconds % 60).padStart(2, '0');
+      return `${mins}:${secs}`;
+    }
+
+    function updateTimer() {
+      timerEl.textContent = formatTime(remainingSeconds);
+      timerEl.classList.remove('warning', 'critical');
+
+      if (remainingSeconds <= 60) {
+        timerEl.classList.add('critical');
+      } else if (remainingSeconds <= 300) {
+        timerEl.classList.add('warning');
+      }
+
+      const elapsed = totalSeconds - remainingSeconds;
+      progressBar.style.width = `${(elapsed / totalSeconds) * 100}%`;
+
+      if (remainingSeconds > 0) {
+        remainingSeconds -= 1;
+      }
+    }
+
+    updateTimer();
+    setInterval(updateTimer, 1000);
+
+    document.querySelectorAll('.quiz-options').forEach(group => {
+      const correctIndex = Number(group.dataset.answer);
+      const options = Array.from(group.querySelectorAll('.quiz-option'));
+      const result = group.nextElementSibling;
+
+      options.forEach((btn, index) => {
+        btn.addEventListener('click', () => {
+          if (group.dataset.answered === 'true') return;
+          group.dataset.answered = 'true';
+
+          options.forEach((option, i) => {
+            option.disabled = true;
+            if (i === correctIndex) option.classList.add('correct');
+          });
+
+          if (index !== correctIndex) {
+            btn.classList.add('wrong');
+          }
+
+          result.classList.add('show');
+        });
+      });
+    });
+    applySyntaxHighlighting();
+
+    showSection(0);
+  </script>
+</body>
+</html>

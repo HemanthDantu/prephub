@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Java GC Masterclass</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --surface: #111827;
+    --surface2: #1a2235;
+    --border: #1e3050;
+    --accent: #00d4ff;
+    --accent2: #7c3aed;
+    --accent3: #10b981;
+    --warn: #f59e0b;
+    --danger: #ef4444;
+    --text: #e2e8f0;
+    --text-dim: #64748b;
+    --eden: #064e3b;
+    --eden-b: #10b981;
+    --survivor: #1e3a5f;
+    --survivor-b: #3b82f6;
+    --old: #3b1a6b;
+    --old-b: #7c3aed;
+    --dead: #2d1515;
+    --dead-b: #ef4444;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Syne', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Top Bar */
+  .topbar {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(10,14,26,0.95);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(12px);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 24px; height: 56px;
+  }
+  .topbar-title { font-size: 14px; font-weight: 700; color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase; }
+  .timer-wrap { display: flex; align-items: center; gap: 10px; }
+  .timer {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 20px; font-weight: 700;
+    color: var(--accent3);
+    background: rgba(16,185,129,0.1);
+    padding: 4px 12px; border-radius: 6px;
+    border: 1px solid rgba(16,185,129,0.3);
+    min-width: 80px; text-align: center;
+    transition: color 0.3s, background 0.3s, border-color 0.3s;
+  }
+  .timer.warn { color: var(--warn); background: rgba(245,158,11,0.1); border-color: rgba(245,158,11,0.3); }
+  .timer.danger { color: var(--danger); background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.3); animation: pulse 1s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
+  
+  .progress-bar-wrap { flex: 1; max-width: 300px; margin: 0 20px; }
+  .progress-track { background: var(--border); border-radius: 4px; height: 6px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--accent2), var(--accent)); transition: width 1s linear; }
+
+  /* Nav dots */
+  .nav-dots { display: flex; gap: 6px; align-items: center; }
+  .nav-dot {
+    width: 28px; height: 28px; border-radius: 50%;
+    border: 2px solid var(--border);
+    background: transparent; cursor: pointer;
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700;
+    color: var(--text-dim); transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .nav-dot:hover { border-color: var(--accent); color: var(--accent); }
+  .nav-dot.active { border-color: var(--accent); background: var(--accent); color: var(--bg); }
+  .nav-dot.done { border-color: var(--accent3); color: var(--accent3); }
+
+  /* Main content */
+  .main { padding-top: 80px; padding-bottom: 80px; max-width: 860px; margin: 0 auto; padding-left: 24px; padding-right: 24px; }
+
+  /* Section header */
+  .section-header { margin-bottom: 32px; }
+  .section-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 500; color: var(--accent2); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 8px; }
+  .section-title { font-size: 32px; font-weight: 800; line-height: 1.1; margin-bottom: 8px; }
+  .section-meta { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-dim); }
+
+  /* Cards */
+  .card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    padding: 24px; margin-bottom: 20px;
+  }
+  .card-label { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 12px; }
+  .card.eli5 { border-color: rgba(245,158,11,0.4); background: rgba(245,158,11,0.05); }
+  .card.eli5 .card-label { color: var(--warn); }
+  .card.eli5::before { content: "🧒 ELI5"; font-size: 18px; display: block; margin-bottom: 8px; }
+  .card.analogy { border-color: rgba(16,185,129,0.4); background: rgba(16,185,129,0.05); }
+  .card.analogy .card-label { color: var(--accent3); }
+  .card.analogy::before { content: "🔗 ANALOGY"; font-size: 18px; display: block; margin-bottom: 8px; }
+  .card.technical { border-color: rgba(0,212,255,0.3); background: rgba(0,212,255,0.03); }
+  .card.technical .card-label { color: var(--accent); }
+  .card.warning { border-color: rgba(239,68,68,0.4); background: rgba(239,68,68,0.05); }
+  .card.warning .card-label { color: var(--danger); }
+
+  p { line-height: 1.7; margin-bottom: 10px; font-size: 15px; }
+  p:last-child { margin-bottom: 0; }
+  strong { color: var(--accent); font-weight: 700; }
+  em { color: var(--accent3); font-style: normal; font-weight: 600; }
+
+  /* Code */
+  pre, code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+  }
+  pre {
+    background: #050810;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    overflow-x: auto;
+    margin: 12px 0;
+    line-height: 1.6;
+  }
+  .k { color: #c792ea; }
+  .s { color: #c3e88d; }
+  .c { color: #546e7a; font-style: italic; }
+  .n { color: var(--accent); }
+  .v { color: var(--warn); }
+  .f { color: var(--accent3); }
+
+  /* Diagrams */
+  .heap-diagram { margin: 20px 0; }
+  .heap-row { display: flex; gap: 4px; margin-bottom: 4px; height: 40px; border-radius: 6px; overflow: hidden; }
+  .heap-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-dim); margin-bottom: 6px; }
+  .heap-block {
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700;
+    border-radius: 4px; text-align: center; line-height: 1.2;
+    transition: all 0.3s;
+  }
+  .block-eden { background: var(--eden); border: 1px solid var(--eden-b); color: var(--eden-b); }
+  .block-s0 { background: var(--survivor); border: 1px solid var(--survivor-b); color: var(--survivor-b); }
+  .block-s1 { background: var(--survivor); border: 1px solid var(--survivor-b); color: var(--survivor-b); }
+  .block-old { background: var(--old); border: 1px solid var(--old-b); color: var(--old-b); }
+  .block-meta { background: #1a1a2e; border: 1px solid #4a4a7c; color: #9090cc; }
+  .block-dead { background: var(--dead); border: 1px solid var(--dead-b); color: var(--dead-b); font-size: 9px; }
+  .block-live { background: rgba(16,185,129,0.2); border: 1px solid var(--accent3); color: var(--accent3); font-size: 9px; }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 12px; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 2px; }
+
+  /* GC Type Table */
+  .gc-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 13px; }
+  .gc-table th { background: var(--surface2); padding: 10px 14px; text-align: left; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-dim); border-bottom: 1px solid var(--border); }
+  .gc-table td { padding: 10px 14px; border-bottom: 1px solid rgba(30,48,80,0.5); vertical-align: top; line-height: 1.5; }
+  .gc-table tr:hover td { background: rgba(255,255,255,0.02); }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+  .badge-green { background: rgba(16,185,129,0.2); color: var(--accent3); }
+  .badge-yellow { background: rgba(245,158,11,0.2); color: var(--warn); }
+  .badge-red { background: rgba(239,68,68,0.2); color: var(--danger); }
+  .badge-blue { background: rgba(0,212,255,0.15); color: var(--accent); }
+
+  /* Algorithm steps */
+  .step-flow { display: flex; align-items: center; gap: 8px; margin: 16px 0; flex-wrap: wrap; }
+  .step { background: var(--surface2); border: 1px solid var(--border); padding: 8px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; }
+  .step-arrow { color: var(--text-dim); font-size: 18px; }
+  .step.phase-mark { border-color: var(--warn); color: var(--warn); background: rgba(245,158,11,0.1); }
+  .step.phase-sweep { border-color: var(--danger); color: var(--danger); background: rgba(239,68,68,0.1); }
+  .step.phase-compact { border-color: var(--accent2); color: var(--accent2); background: rgba(124,58,237,0.1); }
+  .step.phase-copy { border-color: var(--accent); color: var(--accent); background: rgba(0,212,255,0.1); }
+
+  /* G1 Region Grid */
+  .g1-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 4px; margin: 16px 0; }
+  .g1-region {
+    aspect-ratio: 1; border-radius: 4px; display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 700;
+    cursor: default; transition: transform 0.15s;
+  }
+  .g1-region:hover { transform: scale(1.1); }
+  .g1-e { background: var(--eden); border: 1px solid var(--eden-b); color: var(--eden-b); }
+  .g1-s { background: var(--survivor); border: 1px solid var(--survivor-b); color: var(--survivor-b); }
+  .g1-o { background: var(--old); border: 1px solid var(--old-b); color: var(--old-b); }
+  .g1-h { background: rgba(245,158,11,0.2); border: 1px solid var(--warn); color: var(--warn); }
+  .g1-f { background: var(--surface2); border: 1px solid var(--border); color: var(--text-dim); }
+  .g1-label { font-size: 12px; margin-bottom: 8px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace; }
+
+  /* JVM Flag rows */
+  .flag-row { display: flex; gap: 16px; align-items: flex-start; padding: 16px; border-bottom: 1px solid var(--border); }
+  .flag-row:last-child { border-bottom: none; }
+  .flag-name { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--accent); font-weight: 700; min-width: 220px; flex-shrink: 0; }
+  .flag-desc { font-size: 14px; line-height: 1.5; flex: 1; }
+
+  /* Quiz */
+  .quiz-section { background: var(--surface2); border: 1px solid rgba(124,58,237,0.5); border-radius: 12px; padding: 24px; margin: 24px 0; }
+  .quiz-title { font-size: 13px; font-weight: 700; color: var(--accent2); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 16px; }
+  .quiz-q { font-size: 15px; font-weight: 600; margin-bottom: 14px; line-height: 1.5; }
+  .quiz-options { display: flex; flex-direction: column; gap: 8px; }
+  .quiz-opt {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+    padding: 10px 16px; cursor: pointer; font-size: 14px; text-align: left;
+    transition: all 0.15s; color: var(--text);
+  }
+  .quiz-opt:hover { border-color: var(--accent2); background: rgba(124,58,237,0.08); }
+  .quiz-opt.correct { border-color: var(--accent3); background: rgba(16,185,129,0.15); color: var(--accent3); }
+  .quiz-opt.wrong { border-color: var(--danger); background: rgba(239,68,68,0.1); color: var(--danger); }
+  .quiz-opt.reveal { border-color: var(--accent3); background: rgba(16,185,129,0.08); color: var(--accent3); }
+  .quiz-feedback { margin-top: 14px; padding: 12px 16px; border-radius: 8px; font-size: 14px; line-height: 1.6; display: none; }
+  .quiz-feedback.show { display: block; }
+  .quiz-feedback.good { background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); color: var(--accent3); }
+  .quiz-feedback.bad { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.3); color: #fca5a5; }
+
+  /* Nav buttons */
+  .nav-buttons { display: flex; justify-content: space-between; margin-top: 40px; padding-top: 24px; border-top: 1px solid var(--border); }
+  .btn {
+    padding: 10px 24px; border-radius: 8px; font-family: 'Syne', sans-serif;
+    font-size: 14px; font-weight: 700; cursor: pointer; border: none; transition: all 0.15s;
+    letter-spacing: 0.04em;
+  }
+  .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--text-dim); }
+  .btn-ghost:hover { border-color: var(--text-dim); color: var(--text); }
+  .btn-primary { background: var(--accent); color: var(--bg); }
+  .btn-primary:hover { background: #00bde8; }
+  .btn-success { background: var(--accent3); color: var(--bg); }
+
+  /* STW visual */
+  .stw-visual { display: flex; gap: 8px; flex-direction: column; margin: 16px 0; }
+  .thread-row { display: flex; align-items: center; gap: 8px; height: 32px; }
+  .thread-label { width: 80px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-dim); flex-shrink: 0; }
+  .thread-bar { flex: 1; height: 100%; border-radius: 4px; display: flex; overflow: hidden; }
+  .thread-run { background: rgba(16,185,129,0.3); border: 1px solid rgba(16,185,129,0.5); flex: 3; display: flex; align-items: center; justify-content: center; font-size: 9px; color: var(--accent3); }
+  .thread-stop { background: rgba(239,68,68,0.2); border: 1px solid rgba(239,68,68,0.4); flex: 1; display: flex; align-items: center; justify-content: center; font-size: 9px; color: var(--danger); }
+  .thread-resume { background: rgba(16,185,129,0.3); border: 1px solid rgba(16,185,129,0.5); flex: 2; display: flex; align-items: center; justify-content: center; font-size: 9px; color: var(--accent3); }
+  .gc-thread-bar { flex: 1; height: 100%; border-radius: 4px; display: flex; overflow: hidden; }
+  .gc-idle { background: transparent; flex: 3; }
+  .gc-work { background: rgba(124,58,237,0.3); border: 1px solid rgba(124,58,237,0.5); flex: 1; display: flex; align-items: center; justify-content: center; font-size: 9px; color: var(--accent2); }
+  .gc-done { background: transparent; flex: 2; }
+
+  /* Completion */
+  #completion { display: none; text-align: center; padding: 60px 24px; }
+  .complete-emoji { font-size: 72px; margin-bottom: 24px; }
+  .complete-title { font-size: 36px; font-weight: 800; margin-bottom: 12px; }
+  .complete-sub { color: var(--text-dim); font-size: 16px; margin-bottom: 32px; line-height: 1.6; }
+
+  /* Section visibility */
+  .section { display: none; }
+  .section.active { display: block; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  ul { padding-left: 20px; }
+  li { line-height: 1.8; font-size: 14px; margin-bottom: 2px; }
+
+  .inline-code { font-family: 'JetBrains Mono', monospace; background: rgba(0,212,255,0.1); padding: 1px 6px; border-radius: 4px; font-size: 12px; color: var(--accent); }
+
+  hr { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+  h3 { font-size: 17px; font-weight: 700; margin: 20px 0 10px; color: var(--text); }
+  h4 { font-size: 14px; font-weight: 700; margin: 16px 0 8px; color: var(--accent2); text-transform: uppercase; letter-spacing: 0.06em; }
+
+  .twoCol { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media(max-width: 600px) { .twoCol { grid-template-columns: 1fr; } .flag-row { flex-direction: column; } }
+
+  .algo-compare { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin: 16px 0; }
+  @media(max-width: 700px) { .algo-compare { grid-template-columns: 1fr; } }
+  .algo-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+  .algo-card-title { font-size: 13px; font-weight: 800; margin-bottom: 10px; }
+  .algo-card-pro { color: var(--accent3); font-size: 12px; margin-bottom: 4px; }
+  .algo-card-con { color: var(--danger); font-size: 12px; margin-bottom: 4px; }
+  .algo-card-note { color: var(--text-dim); font-size: 11px; margin-top: 8px; font-style: italic; }
+</style>
+</head>
+<body>
+
+<!-- Top Bar -->
+<div class="topbar">
+  <span class="topbar-title">☕ JVM GC Masterclass</span>
+  <div class="progress-bar-wrap">
+    <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  </div>
+  <div class="nav-dots" id="navDots"></div>
+  <div class="timer-wrap">
+    <span style="font-size:11px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace;">⏱</span>
+    <div class="timer" id="timer">35:00</div>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- ========== SECTION 1: HEAP + GC BASICS ========== -->
+  <div class="section active" id="sec0">
+    <div class="section-header">
+      <div class="section-label">Section 1 of 5 · ~6 mins</div>
+      <div class="section-title">What Is Garbage Collection?</div>
+      <div class="section-meta">Heap anatomy · Object lifecycle · Why GC exists</div>
+    </div>
+
+    <div class="card eli5">
+      <div class="card-label">The core idea</div>
+      <p>Imagine your bedroom. As you play, you create wrappers, cups, toys all over the floor. Eventually it gets so messy you can't find anything. So periodically, someone (the GC) walks in, picks up everything you're no longer touching, and throws it away.</p>
+      <p>In Java — every <code>new MyObject()</code> you write puts a "toy" on the floor (the <strong>heap</strong>). When no part of your program holds a reference to that object anymore, it becomes <em>garbage</em>. The JVM's garbage collector finds and reclaims that memory automatically, so you don't have to call <code>free()</code> like in C.</p>
+    </div>
+
+    <div class="card analogy">
+      <div class="card-label">The apartment building analogy</div>
+      <p>The JVM heap is like an apartment building with <strong>three wings</strong>:</p>
+      <ul>
+        <li>🌱 <strong>Eden (Young Gen)</strong> — New tenant apartments. Most objects are born here. High turnover — most die quickly.</li>
+        <li>🏠 <strong>Survivor Spaces (S0, S1)</strong> — Objects that survived one cleanup get moved here temporarily.</li>
+        <li>🏛️ <strong>Old Gen (Tenured)</strong> — Long-term residents. Objects that survived many cleanups live here. Less frequent cleanup.</li>
+      </ul>
+      <p>There's also a <strong>Metaspace</strong> — the building's blueprint room (class metadata, method bytecode). It lives in native memory, outside the heap.</p>
+    </div>
+
+    <h3>The Heap Layout</h3>
+    <div class="card technical">
+      <div class="card-label">Memory structure</div>
+      <div class="heap-diagram">
+        <div class="heap-label">JVM HEAP (default: Young Gen = 1/3, Old Gen = 2/3)</div>
+        <div class="heap-row">
+          <div class="heap-block block-eden" style="flex:6">Eden Space<br><span style="font-size:8px;opacity:0.7">new objects born here</span></div>
+          <div class="heap-block block-s0" style="flex:1">S0<br><span style="font-size:8px;opacity:0.7">Survivor</span></div>
+          <div class="heap-block block-s1" style="flex:1">S1<br><span style="font-size:8px;opacity:0.7">Survivor</span></div>
+          <div class="heap-block block-old" style="flex:10">Old Generation (Tenured)<br><span style="font-size:8px;opacity:0.7">long-lived objects promoted here</span></div>
+          <div class="heap-block block-meta" style="flex:2">Meta<br><span style="font-size:8px;opacity:0.7">space</span></div>
+        </div>
+      </div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:var(--eden-b)"></div><span>Eden</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--survivor-b)"></div><span>Survivor (S0/S1)</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--old-b)"></div><span>Old Gen</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:#9090cc"></div><span>Metaspace</span></div>
+      </div>
+    </div>
+
+    <h3>Object Lifecycle</h3>
+    <div class="card technical">
+      <div class="card-label">Birth → Death</div>
+      <div class="step-flow">
+        <div class="step" style="border-color:var(--eden-b);color:var(--eden-b)">new Obj() → Eden</div>
+        <div class="step-arrow">→</div>
+        <div class="step" style="border-color:var(--accent3);color:var(--accent3)">Minor GC runs</div>
+        <div class="step-arrow">→</div>
+        <div class="step" style="border-color:var(--survivor-b);color:var(--survivor-b)">Survived? → S0</div>
+        <div class="step-arrow">→</div>
+        <div class="step" style="border-color:var(--survivor-b);color:var(--survivor-b)">More GCs → S0↔S1</div>
+        <div class="step-arrow">→</div>
+        <div class="step" style="border-color:var(--old-b);color:var(--old-b)">Age ≥ threshold → Old Gen</div>
+      </div>
+      <p style="margin-top:12px; font-size:13px; color: var(--text-dim)">Each surviving Minor GC increments the object's <strong>age counter</strong>. Default promotion threshold is 15 (configurable with <span class="inline-code">-XX:MaxTenuringThreshold</span>).</p>
+    </div>
+
+    <div class="quiz-section">
+      <div class="quiz-title">🧠 Quick Check</div>
+      <div class="quiz-q">Where does a newly created object (<code>new String("hello")</code>) live first?</div>
+      <div class="quiz-options">
+        <button class="quiz-opt" onclick="checkQuiz(this, true, 'sec0q1')">Eden Space</button>
+        <button class="quiz-opt" onclick="checkQuiz(this, false, 'sec0q1')">Old Generation</button>
+        <button class="quiz-opt" onclick="checkQuiz(this, false, 'sec0q1')">Metaspace</button>
+        <button class="quiz-opt" onclick="checkQuiz(this, false, 'sec0q1')">Survivor S0</button>
+      </div>
+      <div class="quiz-feedback" id="fb-sec0q1"></div>
+    </div>
+
+    <div class="nav-buttons">
+      <div></div>
+      <button class="btn btn-primary" onclick="goToSection(1)">Next: GC Types →</button>
+    </div>
+  </div>
+
+  <!-- ========== SECTION 2: MINOR / MAJOR / FULL GC ========== -->
+  <div class="section" id="sec1">
+    <div class="section-header">
+      <div class="section-label">Section 2 of 5 · ~7 mins</div>
+      <div class="section-title">Minor GC vs Major GC vs Full GC</div>
+      <div class="section-meta">Triggers · Scope · Cost · What gets collected</div>
+    </div>
+
+    <div class="card eli5">
+      <div class="card-label">The core idea</div>
+      <p>Back to your bedroom. Sometimes you just quickly clean your desk (Minor GC — fast, frequent, small area). Sometimes you clean your whole room (Major GC — slower, bigger area). And sometimes your parents make you clean your entire home including the garage and attic (Full GC — everything stops, takes forever, everyone's annoyed).</p>
+    </div>
+
+    <table class="gc-table">
+      <thead>
+        <tr>
+          <th>GC Type</th>
+          <th>What it cleans</th>
+          <th>Triggered by</th>
+          <th>Speed</th>
+          <th>STW?</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Minor GC</strong></td>
+          <td>Young Generation only (Eden + Survivors)</td>
+          <td>Eden space is full</td>
+          <td><span class="badge badge-green">Fast (ms)</span></td>
+          <td><span class="badge badge-yellow">Short STW</span></td>
+        </tr>
+        <tr>
+          <td><strong>Major GC</strong></td>
+          <td>Old Generation (sometimes overlaps with Full GC in docs)</td>
+          <td>Old Gen fills up; promotion failure</td>
+          <td><span class="badge badge-yellow">Slower (10x+)</span></td>
+          <td><span class="badge badge-red">Longer STW</span></td>
+        </tr>
+        <tr>
+          <td><strong>Full GC</strong></td>
+          <td>Entire heap + Metaspace + code cache</td>
+          <td>Old Gen full, <code>System.gc()</code>, Metaspace full, promotion failure, explicit trigger</td>
+          <td><span class="badge badge-red">Slow (seconds)</span></td>
+          <td><span class="badge badge-red">Long STW ⚠️</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="card analogy">
+      <div class="card-label">Why Minor GC is so much faster</div>
+      <p>The JVM leverages the <strong>Weak Generational Hypothesis</strong>: <em>most objects die young</em>. Think about it — in a web request, you create dozens of short-lived objects (request bodies, DTOs, local variables). They're garbage before the response is even sent.</p>
+      <p>Because Eden is small and <em>most</em> of it is dead, Minor GC has very few live objects to copy out — it mostly just wipes the slate clean. That's why it's fast: less work to do.</p>
+    </div>
+
+    <h3>What Triggers a Full GC? (Production-critical)</h3>
+    <div class="card warning">
+      <div class="card-label">⚠️ Full GC triggers to watch for</div>
+      <ul>
+        <li><strong>Old Gen exhaustion</strong> — Objects promoted from Young Gen fill Old Gen completely</li>
+        <li><strong>Promotion failure</strong> — Young Gen survivor objects can't fit into Old Gen during Minor GC</li>
+        <li><strong>Metaspace full</strong> — Too many class definitions loaded (common in OSGi, reflection-heavy apps)</li>
+        <li><strong><code>System.gc()</code> call</strong> — Someone called it explicitly (almost always a bug)</li>
+        <li><strong>Concurrent Mode Failure (CMS)</strong> — Background collection can't keep up with allocation rate</li>
+        <li><strong>Humongous object allocation failure (G1)</strong> — Very large objects that don't fit in a region</li>
+      </ul>
+    </div>
+
+    <h3>A Real-World Scenario</h3>
+    <div class="card technical">
+      <div class="card-label">What happens in a typical Spring Boot request</div>
+      <pre><span class="c">// During a POST /api/orders request...</span>
+<span class="c">// Each of these creates short-lived objects in Eden:</span>
+<span class="k">OrderRequest</span> req = <span class="n">objectMapper</span>.<span class="f">readValue</span>(body, OrderRequest.class); <span class="c">// born in Eden</span>
+<span class="k">Order</span> order = <span class="n">orderService</span>.<span class="f">create</span>(req);          <span class="c">// born in Eden</span>
+<span class="k">OrderResponse</span> response = <span class="n">mapper</span>.<span class="f">toResponse</span>(order); <span class="c">// born in Eden</span>
+<span class="c">// After response is sent, all 3 objects become garbage</span>
+<span class="c">// → Next Minor GC wipes them. Old Gen untouched.</span>
+
+<span class="c">// BUT: if your app holds a static cache that keeps growing:</span>
+<span class="k">static</span> Map&lt;String, Order&gt; cache = <span class="k">new</span> HashMap&lt;&gt;(); <span class="c">// objects promoted to Old Gen</span>
+<span class="c">// Eventually Old Gen fills → Full GC → your app freezes for 5 seconds</span></pre>
+    </div>
+
+    <div class="quiz-section">
+      <div class="quiz-title">🧠 Quick Check</div>
+      <div class="quiz-q">Your app's Old Generation keeps filling up, causing repeated Full GCs. What is the most likely root cause?</div>
+      <div class="quiz-options">
+        <button class="quiz-opt" onclick="checkQuiz(this, false, 'sec1q1')">Eden space is too small</button>
+        <button class="quiz-opt" onclick="checkQuiz(this, true, 'sec1q1')">Too many long-lived objects being promoted to Old Gen (likely a memory leak or over-caching)</button>
+        <button class="quiz-opt" onclick="checkQuiz(this, false, 'sec1q1')">Minor GC is running too frequently</button>
+        <button class="quiz-opt" onclick="checkQuiz(this, false, 'sec1q1')">Metaspace is too large</button>
+      </div>
+      <div class="quiz-feedback" id="fb-sec1q1"></div>
+    </div>
+
+    <div class="nav-buttons">
+      <button class="btn btn-ghost" onclick="goToSection(0)">← Back</button>
+      <button class="btn btn-primary" onclick="goToSection(2)">Next: GC Algorithms →</button>
+    </div>
+  </div>
+
+  <!-- ========== SECTION 3: ALGORITHMS ========== -->
+  <div class="section" id="sec2">
+    <div class="section-header">
+      <div class="section-label">Section 3 of 5 · ~8 mins</div>
+      <div class="section-title">GC Algorithms</div>
+      <div class="section-meta">Mark-and-Sweep · Mark-Compact · Copying</div>
+    </div>
+
+    <div class="card eli5">
+      <div class="card-label">The core idea</div>
+      <p>There are different strategies for cleaning your room. Some people pick up only the trash and leave everything in place (Mark-and-Sweep). Some people pick up trash <em>and</em> rearrange everything neatly on one side (Mark-Compact). And some people just move everything good to a brand new room and abandon the messy one (Copying). Each has trade-offs.</p>
+    </div>
+
+    <hr>
+
+    <h3>1. Mark-and-Sweep</h3>
+    <div class="step-flow">
+      <div class="step phase-mark">Phase 1: Mark</div>
+      <div class="step-arrow">→</div>
+      <div class="step phase-sweep">Phase 2: Sweep</div>
+    </div>
+    <div class="twoCol">
+      <div class="card technical" style="margin-bottom:0">
+        <div class="card-label">How it works</div>
+        <p><strong>Mark:</strong> Starting from GC Roots (stack variables, static fields, JNI refs), traverse all reachable objects and mark them as "alive".</p>
+        <p><strong>Sweep:</strong> Walk the entire heap. Any object <em>not</em> marked = garbage. Free that memory.</p>
+      </div>
+      <div class="card" style="margin-bottom:0; border-color:var(--danger); background:rgba(239,68,68,0.04)">
+        <div class="card-label" style="color:var(--danger)">The Problem</div>
+        <p>After sweeping, free memory is scattered in <strong>fragments</strong> throughout the heap — like holes in Swiss cheese. A large new object might not fit even though total free memory is enough. This is <em>memory fragmentation</em>.</p>
+      </div>
+    </div>
+    <pre style="margin-top:16px"><span class="c">// After Mark-and-Sweep — fragmented memory:</span>
+<span class="c">// [OBJ-A][FREE][OBJ-C][FREE][FREE][OBJ-F][FREE][FREE]</span>
+<span class="c">// Need 3 contiguous blocks? Can't allocate even though 4 blocks free!</span></pre>
+
+    <hr>
+
+    <h3>2. Mark-Compact</h3>
+    <div class="step-flow">
+      <div class="step phase-mark">Phase 1: Mark</div>
+      <div class="step-arrow">→</div>
+      <div class="step phase-compact">Phase 2: Compact</div>
+    </div>
+    <div class="card technical">
+      <div class="card-label">How it works</div>
+      <p><strong>Mark</strong> (same as above). Then <strong>Compact</strong>: slide all live objects to one end of the heap, filling gaps. Now free memory is one contiguous chunk at the end.</p>
+      <pre><span class="c">// Before:  [OBJ-A][dead][OBJ-C][dead][dead][OBJ-F]</span>
+<span class="c">// After:   [OBJ-A][OBJ-C][OBJ-F][FREE FREE FREE FREE]</span></pre>
+      <p><strong>Pro:</strong> No fragmentation. New allocations are just a pointer bump (super fast). <strong>Con:</strong> Compaction is expensive — you have to move objects and update all references pointing to them.</p>
+      <p style="color: var(--text-dim); font-size: 13px;">Used in: Old Generation of many collectors (Serial, Parallel GC, G1 for Old Gen cleanup).</p>
+    </div>
+
+    <hr>
+
+    <h3>3. Copying (Semi-Space)</h3>
+    <div class="step-flow">
+      <div class="step phase-copy">Phase 1: Find live objects in "From"</div>
+      <div class="step-arrow">→</div>
+      <div class="step phase-copy">Phase 2: Copy to "To" space</div>
+      <div class="step-arrow">→</div>
+      <div class="step phase-copy">Phase 3: Swap From/To</div>
+    </div>
+    <div class="card technical">
+      <div class="card-label">How it works</div>
+      <p>Split space into two halves: <em>From</em> and <em>To</em>. Only allocate in <em>From</em>. When it fills, copy all live objects to <em>To</em> (compacted automatically). Wipe <em>From</em>. Swap names.</p>
+      <pre><span class="c">// Eden is "From":  [OBJ-A][dead][dead][OBJ-D][dead][dead][OBJ-G]</span>
+<span class="c">// After Minor GC → Survivor "To": [OBJ-A][OBJ-D][OBJ-G] + bump pointer at end</span>
+<span class="c">// Eden wiped clean. Allocation in next Eden is now a single pointer increment!</span></pre>
+      <p><strong>Pro:</strong> Extremely fast allocation (pointer bump). Automatically compact. <strong>Con:</strong> Wastes 50% of the space (one half always empty). Fine for Young Gen (small), terrible for Old Gen (large).</p>
+      <p style="color: var(--text-dim); font-size: 13px;">Used in: Young Generation (Eden → Survivor is exactly the Copying algorithm). S0 and S1 alternate as From/To.</p>
+    </div>
+
+    <div class="algo-compare">
+      <div class="algo-card" style="border-color: var(--warn)">
+        <div class="algo-card-title" style="color:var(--warn)">Mark-and-Sweep</div>
+        <div class="algo-card-pro">✓ Simple</div>
+        <div class="algo-card-pro">✓ No object moving</div>
+        <div class="algo-card-con">✗ Fragmentation</div>
+        <div class="algo-card-con">✗ Slow allocation over time</div>
+        <div class="algo-card-note">Rarely used alone in modern JVMs</div>
+      </div>
+      <div class="algo-card" style="border-color: var(--accent2)">
+        <div class="algo-card-title" style="color:var(--accent2)">Mark-Compact</div>
+        <div class="algo-card-pro">✓ No fragmentation</div>
+        <div class="algo-card-pro">✓ Fast allocation</div>
+        <div class="algo-card-con">✗ Expensive compaction</div>
+        <div class="algo-card-con">✗ Longer STW pauses</div>
+        <div class="algo-card-note">Old Gen cleanup in most collectors</div>
+      </div>
+      <div class="algo-card" style="border-color: var(--accent)">
+        <div class="algo-card-title" style="color:var(--accent)">Copying</div>
+        <div class="algo-card-pro">✓ Ultra-fast allocation</div>
+        <div class="algo-card-pro">✓ Auto-compact</div>
+        <div class="algo-card-con">✗ 50% memory waste</div>
+        <div class="algo-card-con">✗ Poor for large/old data</div>
+        <div class="algo-card-note">Young Gen (Eden↔Survivor)</div>
+      </div>
+    </div>
+
+    <div class="quiz-section">
+      <div class="quiz-title">🧠 Quick Check</div>
+      <div class="quiz-q">Why does the JVM use the <strong>Copying</strong> algorithm for Young Generation but NOT for Old Generation?</div>
+      <div class="quiz-options">
+        <button class="quiz-opt" onclick="checkQuiz(this, false, 'sec2q1')">Because old objects are harder to mark</button>
+        <button class="quiz-opt" onclick="checkQuiz(this, true, 'sec2q1')">Copying wastes 50% of memory, which is acceptable for the small Young Gen but prohibitive for the large Old Gen</button>
+        <button class="quiz-opt" onclick="checkQuiz(this, false, 'sec2q1')">Old Gen objects can't be moved</button>
+        <button class="quiz-opt" onclick="checkQuiz(this, false, 'sec2q1')">Copying is slower than Mark-Compact for large spaces</button>
+      </div>
+      <div class="quiz-feedback" id="fb-sec2q1"></div>
+    </div>
+
+    <div class="nav-buttons">
+      <button class="btn btn-ghost" onclick="goToSection(1)">← Back</button>
+      <button class="btn btn-primary" onclick="goToSection(3)">Next: G1GC →</button>
+    </div>
+  </div>
+
+  <!-- ========== SECTION 4: G1GC ========== -->
+  <div class="section" id="sec3">
+    <div class="section-header">
+      <div class="section-label">Section 4 of 5 · ~7 mins</div>
+      <div class="section-title">G1GC — Garbage First</div>
+      <div class="section-meta">Regions · Why it's the default · How it achieves predictable pauses</div>
+    </div>
+
+    <div class="card eli5">
+      <div class="card-label">The core idea</div>
+      <p>Old collectors had fixed neighborhoods: Young Gen was always on the left, Old Gen always on the right. G1 threw that out. Instead, it divides the heap into equal little <strong>regions</strong>, like a grid of city blocks. Each block can dynamically become "Eden," "Old," or whatever the JVM needs. And when cleaning, G1 is smart — it cleans the <em>most garbage-filled</em> blocks first (hence "Garbage First"). This gives much more predictable pause times.</p>
+    </div>
+
+    <h3>The Region Grid</h3>
+    <div class="card technical">
+      <div class="card-label">G1 heap: ~2048 equal-sized regions (1MB – 32MB each)</div>
+      <div class="g1-label">Hover over a region to see its type:</div>
+      <div class="g1-grid" id="g1Grid"></div>
+      <div class="legend" style="margin-top:12px">
+        <div class="legend-item"><div class="legend-dot" style="background:var(--eden-b)"></div><span>E = Eden</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--survivor-b)"></div><span>S = Survivor</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--old-b)"></div><span>O = Old</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--warn)"></div><span>H = Humongous (≥half region)</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--surface2)"></div><span>_ = Free</span></div>
+      </div>
+      <p style="font-size:13px; color:var(--text-dim); margin-top:12px">Key insight: There's no hard boundary between Young and Old Gen anymore. The JVM assigns region roles dynamically based on what's needed. This avoids the "fixed size" problems of Serial/Parallel GC.</p>
+    </div>
+
+    <h3>G1 Collection Phases</h3>
+    <div class="card technical">
+      <div class="card-label">How a G1 cycle works</div>
+      <div class="step-flow">
+        <div class="step" style="border-color:var(--accent3);color:var(--accent3)">Young GC<br><span style="font-size:10px">STW, copies Eden→Survivor/Old</span></div>
+        <div class="step-arrow">→</div>
+        <div class="step" style="border-color:var(--accent2);color:var(--accent2)">Concurrent Marking<br><span style="font-size:10px">parallel with app threads</span></div>
+        <div class="step-arrow">→</div>
+        <div class="step" style="border-color:var(--warn);color:var(--warn)">Remark (STW)<br><span style="font-size:10px">finalize marking</span></div>
+        <div class="step-arrow">→</div>
+        <div class="step" style="border-color:var(--accent);color:var(--accent)">Mixed GC<br><span style="font-size:10px">Young + selected Old regions</span></div>
+      </div>
+      <p style="font-size: 13px; margin-top: 12px;"><strong>Mixed GC</strong> is where "Garbage First" shines: G1 picks the Old Gen regions with the <em>most garbage</em> (highest return on investment) and collects only those. You never have to collect the entire Old Gen at once.</p>
+    </div>
+
+    <h3>Why is G1 the Default Since Java 9?</h3>
+    <div class="card technical">
+      <div class="card-label">G1 vs Parallel GC (the old default)</div>
+      <table class="gc-table">
+        <thead><tr><th>Feature</th><th>Parallel GC (Java 8 default)</th><th>G1GC (Java 9+ default)</th></tr></thead>
+        <tbody>
+          <tr><td>Heap size sweet spot</td><td>Small–Medium (&lt;4GB)</td><td>Medium–Large (4GB+, up to TB)</td></tr>
+          <tr><td>Pause predictability</td><td>Unpredictable — stop whole heap</td><td><span class="badge badge-green">Configurable pause target</span></td></tr>
+          <tr><td>Full GC frequency</td><td>More frequent</td><td>Rare (avoided by Mixed GC)</td></tr>
+          <tr><td>Throughput</td><td>Higher raw throughput</td><td>Slightly lower, but acceptable</td></tr>
+          <tr><td>Fragmentation</td><td>Problem over time</td><td><span class="badge badge-green">Compacts via region evacuation</span></td></tr>
+          <tr><td>Concurrent work</td><td>Mostly STW</td><td><span class="badge badge-green">Marking runs concurrently</span></td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:13px; margin-top:8px; color: var(--text-dim)">Most modern JVM apps run with 8GB–64GB heaps. Parallel GC was designed for smaller heaps. G1 scales far better and gives operators a way to <em>bound worst-case pause time</em> — critical for latency-sensitive services.</p>
+    </div>
+
+    <div class="quiz-section">
+      <div class="quiz-title">🧠 Quick Check</div>
+      <div class="quiz-q">What does "Garbage First" mean in G1GC — what exactly is collected "first"?</div>
+      <div class="quiz-options">
+        <button class="quiz-opt" onclick="checkQuiz(this, false, 'sec3q1')">Objects created first (oldest) are collected first</button>
+        <button class="quiz-opt" onclick="checkQuiz(this, false, 'sec3q1')">The most recently allocated objects are garbage-collected first</button>
+        <button class="quiz-opt" onclick="checkQuiz(this, true, 'sec3q1')">Heap regions with the highest proportion of garbage are collected first — maximizing reclaimed memory per pause</button>
+        <button class="quiz-opt" onclick="checkQuiz(this, false, 'sec3q1')">Young Generation is always collected before Old Generation</button>
+      </div>
+      <div class="quiz-feedback" id="fb-sec3q1"></div>
+    </div>
+
+    <div class="nav-buttons">
+      <button class="btn btn-ghost" onclick="goToSection(2)">← Back</button>
+      <button class="btn btn-primary" onclick="goToSection(4)">Next: JVM Flags + STW →</button>
+    </div>
+  </div>
+
+  <!-- ========== SECTION 5: FLAGS + STW ========== -->
+  <div class="section" id="sec4">
+    <div class="section-header">
+      <div class="section-label">Section 5 of 5 · ~7 mins</div>
+      <div class="section-title">JVM Flags &amp; Stop-the-World Pauses</div>
+      <div class="section-meta">-Xmx · -Xms · -XX:+UseG1GC · MaxGCPauseMillis · STW explained</div>
+    </div>
+
+    <div class="card eli5">
+      <div class="card-label">Stop-the-World — The core idea</div>
+      <p>Imagine you're trying to count people in a busy train station while they're all moving. Impossible, right? So the JVM hits a giant <strong>pause button</strong> — all your application threads freeze in place. The GC thread then safely walks the heap, marks live objects, and moves things around. When done, everyone unfreezes. That freeze is called a <strong>Stop-the-World (STW)</strong> pause.</p>
+      <p>In production, this means: while GC is running, your API handles <em>zero requests</em>. A 2-second Full GC pause on a payment service = 2 seconds of timeouts and unhappy users.</p>
+    </div>
+
+    <h3>Stop-the-World Visualized</h3>
+    <div class="card technical">
+      <div class="card-label">Thread timeline during a Full GC pause</div>
+      <div class="stw-visual">
+        <div class="thread-row"><div class="thread-label">Thread-1</div><div class="thread-bar"><div class="thread-run">RUNNING</div><div class="thread-stop">FROZEN</div><div class="thread-resume">RUNNING</div></div></div>
+        <div class="thread-row"><div class="thread-label">Thread-2</div><div class="thread-bar"><div class="thread-run">RUNNING</div><div class="thread-stop">FROZEN</div><div class="thread-resume">RUNNING</div></div></div>
+        <div class="thread-row"><div class="thread-label">Thread-3</div><div class="thread-bar"><div class="thread-run">RUNNING</div><div class="thread-stop">FROZEN</div><div class="thread-resume">RUNNING</div></div></div>
+        <div class="thread-row"><div class="thread-label">GC Thread</div><div class="gc-thread-bar"><div class="gc-idle"></div><div class="gc-work">COLLECTING</div><div class="gc-done"></div></div></div>
+      </div>
+      <p style="font-size:12px; color:var(--text-dim); margin-top:8px">↑ During the FROZEN window, no HTTP responses sent, no DB queries executed, no Kafka messages processed.</p>
+    </div>
+
+    <h3>What Causes STW?</h3>
+    <div class="card technical">
+      <div class="card-label">Root causes</div>
+      <ul style="margin-bottom:8px">
+        <li><strong>Root scanning</strong> — Must freeze to get a consistent view of GC roots (stack, statics)</li>
+        <li><strong>Object relocation</strong> — When objects move (Copying / Compact), all references to them must be updated atomically — you can't do this while threads are reading those references</li>
+        <li><strong>Write barriers</strong> — Some STW is needed to finalize concurrent marking (Remark phase in G1)</li>
+      </ul>
+      <p style="font-size:13px; color: var(--text-dim)">Modern collectors like G1 minimize STW by doing as much work <em>concurrently</em> as possible (marking happens while your app runs), but they can't eliminate it entirely for the relocation phase.</p>
+    </div>
+
+    <h3>The Essential JVM Flags</h3>
+    <div class="card technical" style="padding: 0; overflow: hidden;">
+      <div class="flag-row">
+        <div class="flag-name">-Xms&lt;size&gt;</div>
+        <div class="flag-desc"><strong>Initial heap size.</strong> The JVM starts with this amount of memory.<br><code>-Xms512m</code> or <code>-Xms2g</code>. Setting equal to <code>-Xmx</code> avoids heap resizing overhead at startup — common in production.</div>
+      </div>
+      <div class="flag-row">
+        <div class="flag-name">-Xmx&lt;size&gt;</div>
+        <div class="flag-desc"><strong>Maximum heap size.</strong> The JVM will never grow beyond this.<br><code>-Xmx4g</code>. If your app needs more, it throws <code>OutOfMemoryError</code>. Too high → long GC pauses. Too low → frequent GC.</div>
+      </div>
+      <div class="flag-row">
+        <div class="flag-name">-XX:+UseG1GC</div>
+        <div class="flag-desc"><strong>Explicitly enable G1GC.</strong> (Default since Java 9, but useful to be explicit in config, or to force it on Java 8).<br>Pair with <code>-XX:+PrintGCDetails -XX:+PrintGCDateStamps</code> to log GC events.</div>
+      </div>
+      <div class="flag-row">
+        <div class="flag-name">-XX:MaxGCPauseMillis=<br>   &lt;ms&gt;</div>
+        <div class="flag-desc"><strong>G1's pause time target.</strong> Default is 200ms. G1 will <em>try</em> to keep STW pauses under this — it's a goal, not a hard guarantee.<br><code>-XX:MaxGCPauseMillis=100</code> for latency-sensitive services. Lowering this makes G1 collect in smaller increments more frequently.</div>
+      </div>
+    </div>
+
+    <h3>Practical Example: Tuning for a Spring Boot Service</h3>
+    <div class="card technical">
+      <div class="card-label">A real startup command</div>
+      <pre><span class="c"># Production-grade JVM flags for a Spring Boot microservice</span>
+java \
+  <span class="n">-Xms2g</span> <span class="n">-Xmx2g</span>                       <span class="c"># Fixed heap size (no resizing overhead)</span>
+  <span class="n">-XX:+UseG1GC</span>                          <span class="c"># Explicit G1 (good habit even on Java 17)</span>
+  <span class="n">-XX:MaxGCPauseMillis=200</span>              <span class="c"># Target max pause time</span>
+  <span class="n">-XX:+UseStringDeduplication</span>           <span class="c"># G1 bonus: dedup String objects</span>
+  <span class="n">-XX:+PrintGCDetails</span>                   <span class="c"># Log GC events (send to Datadog/CloudWatch)</span>
+  <span class="n">-XX:+HeapDumpOnOutOfMemoryError</span>       <span class="c"># Dump on OOM for analysis</span>
+  <span class="n">-XX:HeapDumpPath=/var/log/heapdump.hprof</span> \
+  -jar app.jar</pre>
+    </div>
+
+    <div class="card warning">
+      <div class="card-label">⚠️ STW in production — things to watch for</div>
+      <ul>
+        <li>GC pause &gt; <strong>500ms</strong> → health checks fail → load balancer removes instance from rotation</li>
+        <li>GC pause &gt; <strong>database query timeout</strong> → cascading failures</li>
+        <li>Frequent Full GC = memory leak or undersized heap — <strong>always investigate</strong></li>
+        <li>Monitor: <code>jstat -gc &lt;pid&gt; 1000</code> or expose GC metrics via Micrometer/Actuator in Spring Boot</li>
+      </ul>
+    </div>
+
+    <div class="quiz-section">
+      <div class="quiz-title">🧠 Final Check</div>
+      <div class="quiz-q">You set <code>-XX:MaxGCPauseMillis=50</code> on a G1GC JVM. Your app's p99 latency spikes to 300ms occasionally. Which of these is the best explanation?</div>
+      <div class="quiz-options">
+        <button class="quiz-opt" onclick="checkQuiz(this, false, 'sec4q1')">G1GC is ignoring the flag — use Parallel GC instead</button>
+        <button class="quiz-opt" onclick="checkQuiz(this, false, 'sec4q1')">The flag guarantees 50ms max — the latency spike must be a network issue</button>
+        <button class="quiz-opt" onclick="checkQuiz(this, true, 'sec4q1')">MaxGCPauseMillis is a target, not a guarantee. G1 may still have longer pauses (e.g. a forced Full GC or large promotion). Investigate GC logs.</button>
+        <button class="quiz-opt" onclick="checkQuiz(this, false, 'sec4q1')">Increase -Xmx to give the JVM more heap</button>
+      </div>
+      <div class="quiz-feedback" id="fb-sec4q1"></div>
+    </div>
+
+    <div class="nav-buttons">
+      <button class="btn btn-ghost" onclick="goToSection(3)">← Back</button>
+      <button class="btn btn-success" onclick="completeCourse()">✓ Complete Session</button>
+    </div>
+  </div>
+
+  <!-- ========== COMPLETION ========== -->
+  <div id="completion">
+    <div class="complete-emoji">🎉</div>
+    <div class="complete-title">GC Masterclass Complete!</div>
+    <div class="complete-sub">You covered heap anatomy, GC types, three core algorithms,<br>G1GC internals, JVM tuning flags, and Stop-the-World mechanics.</div>
+    <div style="background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:24px; max-width:560px; margin: 0 auto 32px; text-align:left;">
+      <div style="font-size:12px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--accent2); margin-bottom:16px;">Cheat Sheet — What to Remember</div>
+      <p style="font-size:13px; margin-bottom:8px">🌱 <strong>Eden → Survivor → Old Gen</strong> — object lifecycle, driven by Minor GCs</p>
+      <p style="font-size:13px; margin-bottom:8px">⚡ <strong>Minor GC</strong> = fast (Young only) · <strong>Full GC</strong> = expensive (entire heap)</p>
+      <p style="font-size:13px; margin-bottom:8px">🧹 <strong>Mark-Sweep</strong> (fragments) · <strong>Mark-Compact</strong> (slow, no frag) · <strong>Copying</strong> (fast, 50% waste)</p>
+      <p style="font-size:13px; margin-bottom:8px">🗺️ <strong>G1</strong> uses heap regions, picks garbage-densest regions first, targets predictable pauses</p>
+      <p style="font-size:13px; margin-bottom:8px">🚩 <strong>-Xms -Xmx</strong> (heap size) · <strong>-XX:+UseG1GC</strong> · <strong>-XX:MaxGCPauseMillis</strong> (pause target)</p>
+      <p style="font-size:13px; margin-bottom:0">⏸️ <strong>STW</strong> = all app threads frozen. Caused by root scanning + object relocation. Minimize by watching Full GC frequency.</p>
+    </div>
+    <button class="btn btn-ghost" onclick="goToSection(0); document.getElementById('completion').style.display='none'; document.querySelector('.main').style.display='block';">↺ Review Again</button>
+  </div>
+
+</div>
+
+<script>
+  // ===== Timer =====
+  let totalSeconds = 35 * 60;
+  let elapsed = 0;
+  const timerEl = document.getElementById('timer');
+  const progressEl = document.getElementById('progressFill');
+  setInterval(() => {
+    elapsed++;
+    const remaining = Math.max(0, totalSeconds - elapsed);
+    const m = Math.floor(remaining / 60).toString().padStart(2, '0');
+    const s = (remaining % 60).toString().padStart(2, '0');
+    timerEl.textContent = `${m}:${s}`;
+    progressEl.style.width = `${Math.min(100, (elapsed / totalSeconds) * 100)}%`;
+    if (remaining <= 300) timerEl.className = 'timer warn';
+    if (remaining <= 60) timerEl.className = 'timer danger';
+  }, 1000);
+
+  // ===== Navigation =====
+  const sectionCount = 5;
+  const sectionTimes = [6, 7, 8, 7, 7];
+  let currentSection = 0;
+  const completed = new Set();
+
+  // Build nav dots
+  const navDotsEl = document.getElementById('navDots');
+  for (let i = 0; i < sectionCount; i++) {
+    const dot = document.createElement('button');
+    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+    dot.textContent = i + 1;
+    dot.title = ['Heap Basics', 'GC Types', 'Algorithms', 'G1GC', 'Flags + STW'][i];
+    dot.onclick = () => goToSection(i);
+    dot.id = `dot${i}`;
+    navDotsEl.appendChild(dot);
+  }
+
+  function goToSection(idx) {
+    if (idx >= sectionCount) { completeCourse(); return; }
+    completed.add(currentSection);
+    document.getElementById(`sec${currentSection}`).classList.remove('active');
+    document.getElementById(`dot${currentSection}`).classList.remove('active');
+    document.getElementById(`dot${currentSection}`).classList.add('done');
+    currentSection = idx;
+    document.getElementById(`sec${idx}`).classList.add('active');
+    document.getElementById(`dot${idx}`).className = 'nav-dot active';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function completeCourse() {
+    completed.add(currentSection);
+    document.querySelector('.main').style.display = 'none';
+    document.getElementById('completion').style.display = 'block';
+    for (let i = 0; i < sectionCount; i++) {
+      document.getElementById(`dot${i}`).className = 'nav-dot done';
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ===== Quiz =====
+  const quizAnswers = {
+    'sec0q1': 'Eden Space',
+    'sec1q1': 'Too many long-lived objects being promoted to Old Gen (likely a memory leak or over-caching)',
+    'sec2q1': 'Copying wastes 50% of memory, which is acceptable for the small Young Gen but prohibitive for the large Old Gen',
+    'sec3q1': 'Heap regions with the highest proportion of garbage are collected first — maximizing reclaimed memory per pause',
+    'sec4q1': 'MaxGCPauseMillis is a target, not a guarantee. G1 may still have longer pauses (e.g. a forced Full GC or large promotion). Investigate GC logs.'
+  };
+
+  const quizFeedback = {
+    'sec0q1': { good: 'Correct! All new objects start in Eden. Only after surviving Minor GC(s) do they move to Survivor or Old Gen.', bad: 'Not quite. Every new object starts in Eden. Metaspace is for class metadata, not object instances.' },
+    'sec1q1': { good: 'Exactly! Old Gen fills up when objects live longer than expected — classic signs of a memory leak, an oversized cache (like a HashMap that never evicts), or objects being held by static fields.', bad: 'Think about it differently: Full GC cleans the Old Gen. If it keeps refilling, the objects going into it are the problem.' },
+    'sec2q1': { good: 'Correct! Old Gen can be 2–4GB+. Reserving 50% of that as empty "To" space would be a massive waste. Young Gen is small (256MB–1GB), so the 50% waste is acceptable.', bad: 'The key constraint is memory, not speed. Copying requires one empty half — fine for small Young Gen, terrible for large Old Gen.' },
+    'sec3q1': { good: 'Yes! G1 measures garbage density per region. During Mixed GC, it picks the high-garbage Old regions first for maximum reclamation per unit of pause time.', bad: 'The name refers to region selection priority during collection — the regions with the most garbage are collected first, making the most of each pause.' },
+    'sec4q1': { good: 'Exactly right. MaxGCPauseMillis tells G1 how much to aim for, but a Full GC (triggered by promotion failure, for example) ignores this target entirely. Always look at GC logs (-XX:+PrintGCDetails) for root cause.', bad: 'The flag is a soft goal, not a hard cap. G1 can and will exceed it in certain scenarios. The answer is always: check the GC logs.' }
+  };
+
+  const quizDone = {};
+
+  function checkQuiz(btn, isCorrect, quizId) {
+    if (quizDone[quizId]) return;
+    quizDone[quizId] = true;
+    const container = btn.parentElement;
+    const opts = container.querySelectorAll('.quiz-opt');
+    opts.forEach(o => {
+      o.disabled = true;
+      const btnText = o.textContent.trim();
+      if (btnText === quizAnswers[quizId]) o.classList.add('reveal');
+    });
+    if (isCorrect) btn.classList.add('correct');
+    else { btn.classList.add('wrong'); }
+    const fb = document.getElementById(`fb-${quizId}`);
+    fb.className = 'quiz-feedback show ' + (isCorrect ? 'good' : 'bad');
+    fb.innerHTML = (isCorrect ? '✓ ' : '✗ ') + (isCorrect ? quizFeedback[quizId].good : quizFeedback[quizId].bad);
+  }
+
+  // ===== G1 Region Grid =====
+  const regions = [
+    'e','e','e','f','o','o','s','f',
+    'f','e','e','h','o','o','f','o',
+    'o','f','e','e','f','o','o','f',
+    's','s','f','e','o','f','o','o',
+    'f','o','o','f','e','e','s','f',
+    'o','o','f','f','e','e','f','o',
+    'f','o','o','h','f','e','e','f',
+    'o','f','o','o','f','f','e','s',
+  ];
+  const labels = { e:'E', s:'S', o:'O', h:'H', f:'_' };
+  const classes = { e:'g1-e', s:'g1-s', o:'g1-o', h:'g1-h', f:'g1-f' };
+  const tooltips = { e:'Eden Region', s:'Survivor Region', o:'Old Gen Region', h:'Humongous Region', f:'Free Region' };
+  const grid = document.getElementById('g1Grid');
+  regions.forEach(r => {
+    const el = document.createElement('div');
+    el.className = `g1-region ${classes[r]}`;
+    el.textContent = labels[r];
+    el.title = tooltips[r];
+    grid.appendChild(el);
+  });
+</script>
+</body>
+</html>

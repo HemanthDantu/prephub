@@ -1,0 +1,1327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spring Boot Interview Reference Sheet</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0e1a;
+      --surface: #111827;
+      --surface-2: #1a2235;
+      --surface-3: rgba(17, 24, 39, 0.86);
+      --line: rgba(255,255,255,0.08);
+      --line-strong: rgba(255,255,255,0.14);
+      --text: #e8edf9;
+      --muted: #9aa7c7;
+      --muted-2: #7d8aa8;
+      --cyan: #00d4ff;
+      --purple: #7c3aed;
+      --green: #10b981;
+      --amber: #f59e0b;
+      --red: #ef4444;
+      --sidebar: 290px;
+      --topbar: 92px;
+      --radius: 18px;
+      --shadow: 0 18px 50px rgba(0,0,0,0.35);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at top right, rgba(124,58,237,0.18), transparent 28%),
+        radial-gradient(circle at top left, rgba(0,212,255,0.15), transparent 24%),
+        var(--bg);
+      color: var(--text);
+      font-family: "Syne", system-ui, sans-serif;
+      line-height: 1.5;
+    }
+
+    body[data-mode="recall"] .qa-answer {
+      max-height: 0;
+      opacity: 0;
+      transform: translateY(-4px);
+      pointer-events: none;
+    }
+
+    body[data-mode="scan"] .qa-answer,
+    body[data-mode="recall"] .qa-item.open .qa-answer {
+      max-height: 1200px;
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .app {
+      min-height: 100vh;
+    }
+
+    .topbar {
+      position: fixed;
+      inset: 0 0 auto 0;
+      z-index: 30;
+      backdrop-filter: blur(14px);
+      background: rgba(10, 14, 26, 0.88);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .topbar-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px 24px 12px;
+    }
+
+    .title-wrap {
+      min-width: 0;
+    }
+
+    .eyebrow {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: 4px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.15rem, 1rem + 1vw, 1.85rem);
+      line-height: 1.1;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .timer {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(17,24,39,0.9);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      font-family: "JetBrains Mono", monospace;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      color: var(--green);
+      white-space: nowrap;
+    }
+
+    .timer.timer-warn { color: var(--amber); }
+    .timer.timer-danger { color: var(--red); }
+    .timer.pulse {
+      animation: pulse 0.95s infinite;
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(239,68,68,0.35); }
+      70% { box-shadow: 0 0 0 12px rgba(239,68,68,0); }
+      100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); }
+    }
+
+    .mode-toggle {
+      border: 1px solid rgba(0,212,255,0.34);
+      background: linear-gradient(180deg, rgba(26,34,53,0.92), rgba(17,24,39,0.98));
+      color: var(--text);
+      border-radius: 999px;
+      padding: 10px 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 13px;
+      cursor: pointer;
+      transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+    }
+
+    .mode-toggle:hover {
+      transform: translateY(-1px);
+      border-color: rgba(0,212,255,0.7);
+      box-shadow: 0 0 0 4px rgba(0,212,255,0.08);
+    }
+
+    .mode-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 88px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(0,212,255,0.14);
+      color: var(--cyan);
+      font-weight: 700;
+    }
+
+    .progress-shell {
+      padding: 0 24px 16px;
+    }
+
+    .progress-track {
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.06);
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .progress-bar {
+      width: 0%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--cyan), var(--purple));
+      transition: width 250ms linear, background 180ms ease;
+    }
+
+    .progress-bar.warn {
+      background: linear-gradient(90deg, var(--amber), #ffbf47);
+    }
+
+    .progress-bar.danger {
+      background: linear-gradient(90deg, var(--red), #f97316);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: var(--sidebar) minmax(0, 1fr);
+      gap: 26px;
+      padding: calc(var(--topbar) + 28px) 26px 34px;
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: calc(var(--topbar) + 18px);
+      align-self: start;
+      background: rgba(17,24,39,0.72);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+      padding: 18px;
+      max-height: calc(100vh - var(--topbar) - 40px);
+      overflow: auto;
+    }
+
+    .sidebar-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .sidebar h3 {
+      margin: 0;
+      font-size: 0.98rem;
+      letter-spacing: -0.01em;
+    }
+
+    .sidebar small {
+      color: var(--muted);
+      font-family: "JetBrains Mono", monospace;
+    }
+
+    .nav-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--text);
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid transparent;
+      background: rgba(26,34,53,0.74);
+      transition: border-color 150ms ease, transform 150ms ease, background 150ms ease;
+    }
+
+    .nav-link:hover {
+      border-color: rgba(0,212,255,0.35);
+      background: rgba(26,34,53,0.96);
+      transform: translateX(2px);
+    }
+
+    .nav-count {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 12px;
+      color: var(--cyan);
+      background: rgba(0,212,255,0.1);
+      padding: 3px 8px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    .content {
+      min-width: 0;
+    }
+
+    .hero-card {
+      background: linear-gradient(180deg, rgba(17,24,39,0.96), rgba(26,34,53,0.92));
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      padding: 22px 22px 18px;
+      margin-bottom: 24px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.25fr 1fr;
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .hero-card p {
+      margin: 10px 0 0;
+      color: var(--muted);
+      max-width: 70ch;
+    }
+
+    .meta-boxes {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .meta-box {
+      border-radius: 18px;
+      background: rgba(10,14,26,0.55);
+      border: 1px solid var(--line);
+      padding: 14px;
+    }
+
+    .meta-label {
+      display: block;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted-2);
+      margin-bottom: 10px;
+    }
+
+    .meta-value {
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .topic-section {
+      margin-bottom: 26px;
+      scroll-margin-top: calc(var(--topbar) + 18px);
+    }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      font-size: clamp(1.15rem, 1rem + 0.7vw, 1.45rem);
+      letter-spacing: -0.03em;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 6px 12px;
+      background: rgba(124,58,237,0.12);
+      border: 1px solid rgba(124,58,237,0.28);
+      color: #c4b5fd;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .qa-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .qa-item {
+      background: linear-gradient(180deg, rgba(17,24,39,0.95), rgba(26,34,53,0.92));
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    .qa-question {
+      width: 100%;
+      background: transparent;
+      color: var(--text);
+      border: 0;
+      margin: 0;
+      padding: 16px 18px;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 14px;
+      align-items: center;
+      text-align: left;
+      cursor: pointer;
+      font: inherit;
+      border-left: 3px solid rgba(0,212,255,0.45);
+    }
+
+    .question-index {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 12px;
+      color: var(--cyan);
+      background: rgba(0,212,255,0.08);
+      border: 1px solid rgba(0,212,255,0.16);
+      padding: 4px 8px;
+      border-radius: 999px;
+      white-space: nowrap;
+      align-self: start;
+    }
+
+    .question-text {
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      font-size: 1rem;
+    }
+
+    .chevron {
+      color: var(--muted);
+      transition: transform 180ms ease, color 180ms ease;
+      font-size: 14px;
+    }
+
+    .qa-item.open .chevron,
+    body[data-mode="scan"] .chevron {
+      transform: rotate(0deg);
+      color: var(--cyan);
+    }
+
+    body[data-mode="recall"] .qa-item:not(.open) .chevron {
+      transform: rotate(-90deg);
+    }
+
+    .qa-answer {
+      overflow: hidden;
+      transition: max-height 260ms ease, opacity 220ms ease, transform 220ms ease;
+      will-change: max-height, opacity, transform;
+    }
+
+    .answer-inner {
+      padding: 0 18px 18px 35px;
+      color: var(--muted);
+    }
+
+    .answer-inner p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    body[data-mode="recall"] .qa-item:not(.open) .qa-question::after {
+      content: "click to reveal";
+      grid-column: 2;
+      margin-top: 6px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: rgba(154,167,199,0.48);
+    }
+
+    .code-wrap {
+      margin-top: 14px;
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 16px;
+      overflow: hidden;
+      background: #050810;
+    }
+
+    .code-label {
+      display: inline-flex;
+      align-items: center;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      color: var(--cyan);
+      background: rgba(0,212,255,0.08);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      padding: 8px 12px;
+      width: 100%;
+    }
+
+    pre {
+      margin: 0;
+      padding: 14px 16px 16px;
+      overflow: auto;
+      color: #dbe8ff;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .tok-kw { color: #c4b5fd; }
+    .tok-type { color: #7dd3fc; }
+    .tok-ann { color: #f472b6; }
+    .tok-str { color: #86efac; }
+    .tok-com { color: #7c8aa8; font-style: italic; }
+    .tok-fn { color: #fbbf24; }
+    .tok-prop { color: #60a5fa; }
+    .tok-val { color: #e9d5ff; }
+
+    .footer-space {
+      height: 50px;
+    }
+
+    @media (max-width: 1120px) {
+      :root { --sidebar: 1fr; }
+      .layout {
+        grid-template-columns: 1fr;
+      }
+      .sidebar {
+        position: sticky;
+        top: calc(var(--topbar) + 10px);
+        max-height: none;
+        overflow: visible;
+      }
+      .nav-list {
+        grid-auto-flow: column;
+        grid-auto-columns: minmax(210px, 1fr);
+        overflow: auto;
+        padding-bottom: 4px;
+      }
+      .hero-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .topbar-inner {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .top-actions {
+        justify-content: space-between;
+      }
+      .progress-shell,
+      .topbar-inner {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+      .layout {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+      .meta-boxes {
+        grid-template-columns: 1fr;
+      }
+      .answer-inner {
+        padding-left: 18px;
+      }
+      .qa-question {
+        padding: 14px 14px;
+        grid-template-columns: auto 1fr auto;
+      }
+    }
+  </style>
+</head>
+<body data-mode="scan">
+  <div class="app">
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="title-wrap">
+          <div class="eyebrow">30-minute interview prep</div>
+          <h1>Spring Boot Interview Reference Sheet</h1>
+        </div>
+        <div class="top-actions">
+          <div class="timer" id="timer" aria-live="polite">
+            <span>TIME</span>
+            <span id="timerText">30:00</span>
+          </div>
+          <button class="mode-toggle" id="modeToggle" type="button" aria-pressed="false">
+            <span>Mode</span>
+            <span class="mode-pill" id="modePill">SCAN</span>
+          </button>
+        </div>
+      </div>
+      <div class="progress-shell">
+        <div class="progress-track" aria-hidden="true">
+          <div class="progress-bar" id="progressBar"></div>
+        </div>
+      </div>
+    </header>
+
+    <main class="layout">
+      <aside class="sidebar">
+        <div class="sidebar-head">
+          <h3>Topics</h3>
+          <small>Jump</small>
+        </div>
+        <nav class="nav-list"><a href="#spring-boot-fundamentals" class="nav-link"><span>Spring Boot Fundamentals</span><span class="nav-count">8</span></a><a href="#core-container-beans" class="nav-link"><span>Spring Core, IoC, and Beans</span><span class="nav-count">6</span></a><a href="#transactions-persistence" class="nav-link"><span>Transactions, Persistence, and Database Changes</span><span class="nav-count">5</span></a><a href="#security-auth" class="nav-link"><span>Security, Authentication, and Authorization</span><span class="nav-count">4</span></a><a href="#async-caching" class="nav-link"><span>Async Processing, Caching, and Concurrency</span><span class="nav-count">3</span></a><a href="#testing" class="nav-link"><span>Testing and Runtime Verification</span><span class="nav-count">1</span></a></nav>
+      </aside>
+
+      <section class="content">
+        <div class="hero-card">
+          <div class="hero-grid">
+            <div>
+              <div class="eyebrow">Built from this chat’s Spring Boot Q&A</div>
+              <h1 style="font-size: clamp(1.3rem, 1.05rem + 0.9vw, 1.9rem); margin: 0;">Fast scan. Zero filler. Interview-ready phrasing.</h1>
+              <p>Use Scan Mode to read straight through. Switch to Recall Mode to hide every answer, then click any question to reveal it. The timer and progress bar are tuned for a focused 30-minute pre-interview pass.</p>
+            </div>
+            <div class="meta-boxes">
+              <div class="meta-box">
+                <span class="meta-label">Topics</span>
+                <span class="meta-value">6</span>
+              </div>
+              <div class="meta-box">
+                <span class="meta-label">Questions</span>
+                <span class="meta-value">27</span>
+              </div>
+              <div class="meta-box">
+                <span class="meta-label">Default</span>
+                <span class="meta-value">Scan Mode</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        
+    <section class="topic-section" id="spring-boot-fundamentals">
+      <div class="section-head">
+        <h2>Spring Boot Fundamentals</h2>
+        <span class="badge">8 questions</span>
+      </div>
+      <div class="qa-list">
+        
+        <article class="qa-item" data-index="1">
+          <button class="qa-question" type="button" aria-expanded="true">
+            <span class="question-index">01</span>
+            <span class="question-text">What is Actuator in Spring?</span>
+            <span class="chevron" aria-hidden="true">▾</span>
+          </button>
+          <div class="qa-answer open">
+            <div class="answer-inner">
+              <p>Spring Boot Actuator exposes production-ready endpoints for monitoring and operations, such as health, metrics, env, loggers, thread dumps, and info. It is mainly used for observability, readiness/liveness probes, and faster production debugging.</p>
+              
+    <div class="code-wrap">
+      <div class="code-label">yaml</div>
+      <pre><code><span class="tok-prop">management:<span class="tok-val"></span></span>
+<span class="tok-prop">  endpoints:<span class="tok-val"></span></span>
+<span class="tok-prop">    web:<span class="tok-val"></span></span>
+<span class="tok-prop">      exposure:<span class="tok-val"></span></span>
+<span class="tok-prop">        include:<span class="tok-val"></span> health,info,metrics,prometheus</span>
+</code></pre>
+    </div>
+    
+            </div>
+          </div>
+        </article>
+        
+        <article class="qa-item" data-index="2">
+          <button class="qa-question" type="button" aria-expanded="true">
+            <span class="question-index">02</span>
+            <span class="question-text">How do you enable Actuator in a Spring Boot application?</span>
+            <span class="chevron" aria-hidden="true">▾</span>
+          </button>
+          <div class="qa-answer open">
+            <div class="answer-inner">
+              <p>Add the Actuator starter, then explicitly expose only the endpoints you need. In production, keep sensitive endpoints restricted behind security or internal network controls.</p>
+              
+    <div class="code-wrap">
+      <div class="code-label">xml</div>
+      <pre><code>&lt;<span class="tok-type">dependency</span>&gt;
+  &lt;<span class="tok-type">groupId</span>&gt;org.springframework.boot&lt;/<span class="tok-type">groupId</span>&gt;
+  &lt;<span class="tok-type">artifactId</span>&gt;spring-boot-starter-actuator&lt;/<span class="tok-type">artifactId</span>&gt;
+&lt;/<span class="tok-type">dependency</span>&gt;
+</code></pre>
+    </div>
+    
+            </div>
+          </div>
+        </article>
+        
+        <article class="qa-item" data-index="3">
+          <button class="qa-question" type="button" aria-expanded="true">
+            <span class="question-index">03</span>
+            <span class="question-text">How does Spring Boot simplify the configuration of Spring applications?</span>
+            <span class="chevron" aria-hidden="true">▾</span>
+          </button>
+          <div class="qa-answer open">
+            <div class="answer-inner">
+              <p>It reduces boilerplate through starter dependencies, opinionated defaults, embedded servers, auto-configuration, and centralized externalized configuration. You spend less time wiring infrastructure and more time on business logic.</p>
+              
+            </div>
+          </div>
+        </article>
+        
+        <article class="qa-item" data-index="4">
+          <button class="qa-question" type="button" aria-expanded="true">
+            <span class="question-index">04</span>
+            <span class="question-text">Describe Spring Boot auto-configuration. How does it work?</span>
+            <span class="chevron" aria-hidden="true">▾</span>
+          </button>
+          <div class="qa-answer open">
+            <div class="answer-inner">
+              <p>Auto-configuration creates beans based on what is on the classpath, what properties are defined, and whether the application already provides a custom bean. It relies on conditional annotations such as @ConditionalOnClass, @ConditionalOnMissingBean, and @ConditionalOnProperty.</p>
+              
+    <div class="code-wrap">
+      <div class="code-label">java</div>
+      <pre><code><span <span class="tok-kw">class</span>="tok-ann">@<span class="tok-type">SpringBootApplication</span></span>
+<span <span class="tok-kw">class</span>="tok-kw">public</span> <span class="tok-kw">class</span> App {
+  <span <span class="tok-kw">class</span>="tok-kw">public</span> <span <span class="tok-kw">class</span>="tok-kw">static</span> <span class="tok-kw">void</span> <span <span class="tok-kw">class</span>="tok-fn">main</span>(<span class="tok-type">String</span>[] args) {
+    SpringApplication.<span <span class="tok-kw">class</span>="tok-fn">run</span>(App.<span class="tok-kw">class</span>, args);
+  }
+}
+</code></pre>
+    </div>
+    
+            </div>
+          </div>
+        </article>
+        
+        <article class="qa-item" data-index="5">
+          <button class="qa-question" type="button" aria-expanded="true">
+            <span class="question-index">05</span>
+            <span class="question-text">How does Spring Boot handle externalized configuration, and what are common sources of configuration properties?</span>
+            <span class="chevron" aria-hidden="true">▾</span>
+          </button>
+          <div class="qa-answer open">
+            <div class="answer-inner">
+              <p>Spring Boot can read configuration from application.properties or application.yml, profile-specific files, environment variables, JVM system properties, command-line arguments, and config servers. This lets you keep the same codebase and change behavior per environment.</p>
+              
+    <div class="code-wrap">
+      <div class="code-label">yaml</div>
+      <pre><code><span class="tok-prop">app:<span class="tok-val"></span></span>
+<span class="tok-prop">  timeout-ms:<span class="tok-val"></span> 2000</span>
+<span class="tok-prop">  feature-x-enabled:<span class="tok-val"></span> true</span>
+</code></pre>
+    </div>
+    
+            </div>
+          </div>
+        </article>
+        
+        <article class="qa-item" data-index="6">
+          <button class="qa-question" type="button" aria-expanded="true">
+            <span class="question-index">06</span>
+            <span class="question-text">Explain the concept of Spring Boot profiles and their practical uses.</span>
+            <span class="chevron" aria-hidden="true">▾</span>
+          </button>
+          <div class="qa-answer open">
+            <div class="answer-inner">
+              <p>Profiles let you activate environment-specific configuration such as dev, test, and prod. They are commonly used for different database connections, logging levels, mock integrations, or feature behavior per environment.</p>
+              
+    <div class="code-wrap">
+      <div class="code-label">yaml</div>
+      <pre><code><span class="tok-prop">spring:<span class="tok-val"></span></span>
+<span class="tok-prop">  profiles:<span class="tok-val"></span></span>
+<span class="tok-prop">    active:<span class="tok-val"></span> dev</span>
+</code></pre>
+    </div>
+    
+            </div>
+          </div>
+        </article>
+        
+        <article class="qa-item" data-index="7">
+          <button class="qa-question" type="button" aria-expanded="true">
+            <span class="question-index">07</span>
+            <span class="question-text">Can we disable the default web server in a Spring application?</span>
+            <span class="chevron" aria-hidden="true">▾</span>
+          </button>
+          <div class="qa-answer open">
+            <div class="answer-inner">
+              <p>Yes. For non-web workloads such as batch jobs or workers, you can run the app without the embedded web server by setting the web application type to none or by excluding the web starter.</p>
+              
+    <div class="code-wrap">
+      <div class="code-label">properties</div>
+      <pre><code><span class="tok-prop">spring.main.web-application-type</span>=<span class="tok-val">none</span>
+</code></pre>
+    </div>
+    
+            </div>
+          </div>
+        </article>
+        
+        <article class="qa-item" data-index="8">
+          <button class="qa-question" type="button" aria-expanded="true">
+            <span class="question-index">08</span>
+            <span class="question-text">Describe the flow of an HTTP request through a Spring Boot application.</span>
+            <span class="chevron" aria-hidden="true">▾</span>
+          </button>
+          <div class="qa-answer open">
+            <div class="answer-inner">
+              <p>The request first reaches the embedded server such as Tomcat. It then passes through the filter chain, including Spring Security filters, into DispatcherServlet. DispatcherServlet resolves the handler, invokes the controller through HandlerAdapter, applies argument resolution and validation, and finally uses HttpMessageConverters to serialize the response back to the client.</p>
+              
+            </div>
+          </div>
+        </article>
+        
+      </div>
+    </section>
+    
+    <section class="topic-section" id="core-container-beans">
+      <div class="section-head">
+        <h2>Spring Core, IoC, and Beans</h2>
+        <span class="badge">6 questions</span>
+      </div>
+      <div class="qa-list">
+        
+        <article class="qa-item" data-index="1">
+          <button class="qa-question" type="button" aria-expanded="true">
+            <span class="question-index">01</span>
+            <span class="question-text">What are the different types of inversion of control in Spring?</span>
+            <span class="chevron" aria-hidden="true">▾</span>
+          </button>
+          <div class="qa-answer open">
+            <div class="answer-inner">
+              <p>In practice, Spring applies IoC through dependency injection. The main injection styles are constructor injection, setter injection, and field injection. Constructor injection is preferred because it makes dependencies explicit, supports immutability, and is easier to test.</p>
+              
+    <div class="code-wrap">
+      <div class="code-label">java</div>
+      <pre><code><span <span class="tok-kw">class</span>="tok-ann">@<span class="tok-type">Service</span></span>
+<span class="tok-kw">class</span> BillingService {
+  <span <span class="tok-kw">class</span>="tok-kw">private</span> final PaymentClient paymentClient;
+
+  <span <span class="tok-kw">class</span>="tok-fn">BillingService</span>(PaymentClient paymentClient) {
+    this.paymentClient = paymentClient;
+  }
+}
+</code></pre>
+    </div>
+    
+            </div>
+          </div>
+        </article>
+        
+        <article class="qa-item" data-index="2">
+          <button class="qa-question" type="button" aria-expanded="true">
+            <span class="question-index">02</span>
+            <span class="question-text">BeanFactory vs ApplicationContext</span>
+            <span class="chevron" aria-hidden="true">▾</span>
+          </button>
+          <div class="qa-answer open">
+            <div class="answer-inner">
+              <p>BeanFactory is the minimal IoC container focused on bean creation and lookup. ApplicationContext builds on it and adds enterprise features such as event publishing, AOP integration, message resolution, and resource loading. In Spring Boot applications, ApplicationContext is what you typically use.</p>
+              
+            </div>
+          </div>
+        </article>
+        
+        <article class="qa-item" data-index="3">
+          <button class="qa-question" type="button" aria-expanded="true">
+            <span class="question-index">03</span>
+            <span class="question-text">Explain the bean lifecycle in Spring.</span>
+            <span class="chevron" aria-hidden="true">▾</span>
+          </button>
+          <div class="qa-answer open">
+            <div class="answer-inner">
+              <p>Spring instantiates the bean, injects dependencies, runs aware callbacks, applies BeanPostProcessors, calls init methods such as @PostConstruct, then the bean is ready for use. During shutdown, destroy callbacks such as @PreDestroy are invoked.</p>
+              
+    <div class="code-wrap">
+      <div class="code-label">java</div>
+      <pre><code><span <span class="tok-kw">class</span>="tok-ann">@<span class="tok-type">Component</span></span>
+<span class="tok-kw">class</span> CacheWarmupService {
+  <span <span class="tok-kw">class</span>="tok-ann">@<span class="tok-type">PostConstruct</span></span>
+  <span class="tok-kw">void</span> <span <span class="tok-kw">class</span>="tok-fn">init</span>() { }
+
+  <span <span class="tok-kw">class</span>="tok-ann">@<span class="tok-type">PreDestroy</span></span>
+  <span class="tok-kw">void</span> <span <span class="tok-kw">class</span>="tok-fn">cleanup</span>() { }
+}
+</code></pre>
+    </div>
+    
+            </div>
+          </div>
+        </article>
+        
+        <article class="qa-item" data-index="4">
+          <button class="qa-question" type="button" aria-expanded="true">
+            <span class="question-index">04</span>
+            <span class="question-text">What are Java bean scopes in Spring?</span>
+            <span class="chevron" aria-hidden="true">▾</span>
+          </button>
+          <div class="qa-answer open">
+            <div class="answer-inner">
+              <p>The most common scope is singleton, which gives one bean instance per container. Prototype creates a new bean on each lookup. In web apps, request, session, and application scopes are also available when you need lifecycle tied to the HTTP context.</p>
+              
+    <div class="code-wrap">
+      <div class="code-label">java</div>
+      <pre><code><span <span class="tok-kw">class</span>="tok-ann">@<span class="tok-type">Scope</span></span>(&quot;prototype&quot;)
+<span <span class="tok-kw">class</span>="tok-ann">@<span class="tok-type">Component</span></span>
+<span class="tok-kw">class</span> PrototypeBean { }
+</code></pre>
+    </div>
+    
+            </div>
+          </div>
+        </article>
+        
+        <article class="qa-item" data-index="5">
+          <button class="qa-question" type="button" aria-expanded="true">
+            <span class="question-index">05</span>
+            <span class="question-text">What are the different types of auto-proxying in Spring?</span>
+            <span class="chevron" aria-hidden="true">▾</span>
+          </button>
+          <div class="qa-answer open">
+            <div class="answer-inner">
+              <p>Spring commonly creates proxies for cross-cutting concerns such as transactions, security, caching, and async execution. Under the hood, it uses JDK dynamic proxies when an interface is available and CGLIB proxies when class-based proxying is needed. A common trap is self-invocation, where calling a proxied method from the same class bypasses proxy advice.</p>
+              
+            </div>
+          </div>
+        </article>
+        
+        <article class="qa-item" data-index="6">
+          <button class="qa-question" type="button" aria-expanded="true">
+            <span class="question-index">06</span>
+            <span class="question-text">How does exception handling work in Spring?</span>
+            <span class="chevron" aria-hidden="true">▾</span>
+          </button>
+          <div class="qa-answer open">
+            <div class="answer-inner">
+              <p>You can handle exceptions locally with @ExceptionHandler inside a controller or centrally with @ControllerAdvice or @RestControllerAdvice. Global handling is preferred for consistent error payloads, logging, and cleaner controller code.</p>
+              
+    <div class="code-wrap">
+      <div class="code-label">java</div>
+      <pre><code><span <span class="tok-kw">class</span>="tok-ann">@<span class="tok-type">RestControllerAdvice</span></span>
+<span class="tok-kw">class</span> GlobalExceptionHandler {
+  <span <span class="tok-kw">class</span>="tok-ann">@<span class="tok-type">ExceptionHandler</span></span>(NotFoundException.<span class="tok-kw">class</span>)
+  <span class="tok-type">ResponseEntity</span>&lt;<span class="tok-type">Map</span>&lt;<span class="tok-type">String</span>, <span class="tok-type">String</span>&gt;&gt; <span <span class="tok-kw">class</span>="tok-fn">handle</span>(NotFoundException ex) {
+    <span <span class="tok-kw">class</span>="tok-kw">return</span> <span class="tok-type">ResponseEntity</span>.<span <span class="tok-kw">class</span>="tok-fn">status</span>(404)
+        .<span <span class="tok-kw">class</span>="tok-fn">body</span>(<span class="tok-type">Map</span>.<span <span class="tok-kw">class</span>="tok-fn">of</span>(&quot;error&quot;, ex.<span <span class="tok-kw">class</span>="tok-fn">getMessage</span>()));
+  }
+}
+</code></pre>
+    </div>
+    
+            </div>
+          </div>
+        </article>
+        
+      </div>
+    </section>
+    
+    <section class="topic-section" id="transactions-persistence">
+      <div class="section-head">
+        <h2>Transactions, Persistence, and Database Changes</h2>
+        <span class="badge">5 questions</span>
+      </div>
+      <div class="qa-list">
+        
+        <article class="qa-item" data-index="1">
+          <button class="qa-question" type="button" aria-expanded="true">
+            <span class="question-index">01</span>
+            <span class="question-text">How do you add new columns in Spring and Hibernate safely?</span>
+            <span class="chevron" aria-hidden="true">▾</span>
+          </button>
+          <div class="qa-answer open">
+            <div class="answer-inner">
+              <p>In production, use schema migration tools such as Flyway or Liquibase instead of relying on hibernate.ddl-auto. Add the migration script first, then update the entity mapping, and backfill data separately if the new column must be populated.</p>
+              
+    <div class="code-wrap">
+      <div class="code-label">java</div>
+      <pre><code><span <span class="tok-kw">class</span>="tok-ann">@<span class="tok-type">Entity</span></span>
+<span class="tok-kw">class</span> UserProfile {
+  <span <span class="tok-kw">class</span>="tok-ann">@Column</span>(name = &quot;middle_name&quot;)
+  <span <span class="tok-kw">class</span>="tok-kw">private</span> <span class="tok-type">String</span> middleName;
+}
+</code></pre>
+    </div>
+    
+            </div>
+          </div>
+        </article>
+        
+        <article class="qa-item" data-index="2">
+          <button class="qa-question" type="button" aria-expanded="true">
+            <span class="question-index">02</span>
+            <span class="question-text">How do you update multiple records or services in one transaction?</span>
+            <span class="chevron" aria-hidden="true">▾</span>
+          </button>
+          <div class="qa-answer open">
+            <div class="answer-inner">
+              <p>Place the orchestration in a service-layer method annotated with @Transactional so all related repository operations commit or roll back together. Keep the transaction focused on database work and as short as possible.</p>
+              
+    <div class="code-wrap">
+      <div class="code-label">java</div>
+      <pre><code><span <span class="tok-kw">class</span>="tok-ann">@<span class="tok-type">Service</span></span>
+<span class="tok-kw">class</span> OrderService {
+  <span <span class="tok-kw">class</span>="tok-ann">@<span class="tok-type">Transactional</span></span>
+  <span <span class="tok-kw">class</span>="tok-kw">public</span> <span class="tok-kw">void</span> <span <span class="tok-kw">class</span>="tok-fn">placeOrder</span>(<span class="tok-type">Order</span> order) {
+    orderRepository.<span <span class="tok-kw">class</span>="tok-fn">save</span>(order);
+    inventoryRepository.<span <span class="tok-kw">class</span>="tok-fn">decrement</span>(order.<span <span class="tok-kw">class</span>="tok-fn">getSku</span>(), order.<span <span class="tok-kw">class</span>="tok-fn">getQty</span>());
+    paymentRepository.<span <span class="tok-kw">class</span>="tok-fn">createPayment</span>(order.<span <span class="tok-kw">class</span>="tok-fn">getId</span>());
+  }
+}
+</code></pre>
+    </div>
+    
+            </div>
+          </div>
+        </article>
+        
+        <article class="qa-item" data-index="3">
+          <button class="qa-question" type="button" aria-expanded="true">
+            <span class="question-index">03</span>
+            <span class="question-text">How do you handle transaction failure?</span>
+            <span class="chevron" aria-hidden="true">▾</span>
+          </button>
+          <div class="qa-answer open">
+            <div class="answer-inner">
+              <p>By default, Spring rolls back the transaction on unchecked exceptions. For checked exceptions, configure rollback rules explicitly if needed. For transient failures such as deadlocks or timeouts, add retries. Avoid long transactions and avoid calling external systems while holding database locks.</p>
+              
+            </div>
+          </div>
+        </article>
+        
+        <article class="qa-item" data-index="4">
+          <button class="qa-question" type="button" aria-expanded="true">
+            <span class="question-index">04</span>
+            <span class="question-text">What is Hibernate optimistic locking?</span>
+            <span class="chevron" aria-hidden="true">▾</span>
+          </button>
+          <div class="qa-answer open">
+            <div class="answer-inner">
+              <p>Optimistic locking prevents lost updates by using a version column. When two transactions update the same row, Hibernate checks the version during update and fails one of them instead of silently overwriting data. It works well when conflicts are rare and you prefer retries over database locks.</p>
+              
+    <div class="code-wrap">
+      <div class="code-label">java</div>
+      <pre><code><span <span class="tok-kw">class</span>="tok-ann">@<span class="tok-type">Entity</span></span>
+<span class="tok-kw">class</span> Account {
+  <span <span class="tok-kw">class</span>="tok-ann">@<span class="tok-type">Id</span></span>
+  <span <span class="tok-kw">class</span>="tok-kw">private</span> <span class="tok-type">Long</span> id;
+
+  <span <span class="tok-kw">class</span>="tok-ann">@<span class="tok-type">Version</span></span>
+  <span <span class="tok-kw">class</span>="tok-kw">private</span> <span class="tok-type">Long</span> version;
+}
+</code></pre>
+    </div>
+    
+            </div>
+          </div>
+        </article>
+        
+        <article class="qa-item" data-index="5">
+          <button class="qa-question" type="button" aria-expanded="true">
+            <span class="question-index">05</span>
+            <span class="question-text">How would you handle database migrations in a Spring Boot application?</span>
+            <span class="chevron" aria-hidden="true">▾</span>
+          </button>
+          <div class="qa-answer open">
+            <div class="answer-inner">
+              <p>Use Flyway or Liquibase with versioned migration scripts stored in source control. Migrations should run consistently across environments and be designed for safe deployment, especially when dealing with large tables, backfills, or zero-downtime release steps.</p>
+              
+            </div>
+          </div>
+        </article>
+        
+      </div>
+    </section>
+    
+    <section class="topic-section" id="security-auth">
+      <div class="section-head">
+        <h2>Security, Authentication, and Authorization</h2>
+        <span class="badge">4 questions</span>
+      </div>
+      <div class="qa-list">
+        
+        <article class="qa-item" data-index="1">
+          <button class="qa-question" type="button" aria-expanded="true">
+            <span class="question-index">01</span>
+            <span class="question-text">How does Spring Security handle user authentication?</span>
+            <span class="chevron" aria-hidden="true">▾</span>
+          </button>
+          <div class="qa-answer open">
+            <div class="answer-inner">
+              <p>Spring Security authenticates requests through its filter chain. Depending on the setup, it can validate username/password credentials, sessions, OAuth2 logins, or bearer tokens such as JWTs. Once authenticated, it stores the principal and authorities in the security context for downstream authorization checks.</p>
+              
+            </div>
+          </div>
+        </article>
+        
+        <article class="qa-item" data-index="2">
+          <button class="qa-question" type="button" aria-expanded="true">
+            <span class="question-index">02</span>
+            <span class="question-text">How do you authenticate and authorize APIs?</span>
+            <span class="chevron" aria-hidden="true">▾</span>
+          </button>
+          <div class="qa-answer open">
+            <div class="answer-inner">
+              <p>Authentication verifies identity using mechanisms such as JWTs, sessions, OAuth2, or API keys. Authorization determines what the caller is allowed to do using roles, scopes, or permissions. In Spring, endpoint rules are typically defined in SecurityFilterChain and method rules with annotations such as @PreAuthorize.</p>
+              
+    <div class="code-wrap">
+      <div class="code-label">java</div>
+      <pre><code><span <span class="tok-kw">class</span>="tok-ann">@<span class="tok-type">Bean</span></span>
+SecurityFilterChain <span <span class="tok-kw">class</span>="tok-fn">security</span>(<span class="tok-type">HttpSecurity</span> http) <span <span class="tok-kw">class</span>="tok-kw">throws</span> Exception {
+  <span <span class="tok-kw">class</span>="tok-kw">return</span> http
+      .<span <span class="tok-kw">class</span>="tok-fn">authorizeHttpRequests</span>(auth -&gt; auth
+          .<span <span class="tok-kw">class</span>="tok-fn">requestMatchers</span>(&quot;/<span <span class="tok-kw">class</span>="tok-kw">public</span>/**&quot;).<span <span class="tok-kw">class</span>="tok-fn">permitAll</span>()
+          .<span <span class="tok-kw">class</span>="tok-fn">anyRequest</span>().<span <span class="tok-kw">class</span>="tok-fn">authenticated</span>()
+      )
+      .<span <span class="tok-kw">class</span>="tok-fn">httpBasic</span>(<span class="tok-type">Customizer</span>.<span <span class="tok-kw">class</span>="tok-fn">withDefaults</span>())
+      .<span <span class="tok-kw">class</span>="tok-fn">build</span>();
+}
+</code></pre>
+    </div>
+    
+            </div>
+          </div>
+        </article>
+        
+        <article class="qa-item" data-index="3">
+          <button class="qa-question" type="button" aria-expanded="true">
+            <span class="question-index">03</span>
+            <span class="question-text">What is CSRF?</span>
+            <span class="chevron" aria-hidden="true">▾</span>
+          </button>
+          <div class="qa-answer open">
+            <div class="answer-inner">
+              <p>CSRF is an attack where a browser is tricked into sending an unwanted authenticated request. It mainly matters for cookie-based session authentication in browser apps. For stateless REST APIs that use bearer tokens in headers, CSRF protection is often disabled because the browser is not automatically attaching those tokens the same way it does cookies.</p>
+              
+            </div>
+          </div>
+        </article>
+        
+        <article class="qa-item" data-index="4">
+          <button class="qa-question" type="button" aria-expanded="true">
+            <span class="question-index">04</span>
+            <span class="question-text">What is Spring Security, and how can you integrate it into a Spring Boot application for authentication and authorization?</span>
+            <span class="chevron" aria-hidden="true">▾</span>
+          </button>
+          <div class="qa-answer open">
+            <div class="answer-inner">
+              <p>Spring Security is the framework Spring uses for authentication, authorization, session management, CSRF protection, and request filtering. Integration usually means adding the security starter, configuring SecurityFilterChain, selecting an auth strategy such as form login or JWT, and restricting endpoints by role or scope.</p>
+              
+            </div>
+          </div>
+        </article>
+        
+      </div>
+    </section>
+    
+    <section class="topic-section" id="async-caching">
+      <div class="section-head">
+        <h2>Async Processing, Caching, and Concurrency</h2>
+        <span class="badge">3 questions</span>
+      </div>
+      <div class="qa-list">
+        
+        <article class="qa-item" data-index="1">
+          <button class="qa-question" type="button" aria-expanded="true">
+            <span class="question-index">01</span>
+            <span class="question-text">What is CompletableFuture, and when would you use it?</span>
+            <span class="chevron" aria-hidden="true">▾</span>
+          </button>
+          <div class="qa-answer open">
+            <div class="answer-inner">
+              <p>CompletableFuture is a Java concurrency API for running work asynchronously, composing stages, combining results, and handling failures. It is useful when multiple downstream calls are independent and can run in parallel to reduce total latency.</p>
+              
+    <div class="code-wrap">
+      <div class="code-label">java</div>
+      <pre><code><span class="tok-type">CompletableFuture</span>&lt;<span class="tok-type">User</span>&gt; userFuture =
+    <span class="tok-type">CompletableFuture</span>.<span <span class="tok-kw">class</span>="tok-fn">supplyAsync</span>(() -&gt; userClient.<span <span class="tok-kw">class</span>="tok-fn">get</span>(userId));
+
+<span class="tok-type">CompletableFuture</span>&lt;<span class="tok-type">List</span>&lt;<span class="tok-type">Order</span>&gt;&gt; ordersFuture =
+    <span class="tok-type">CompletableFuture</span>.<span <span class="tok-kw">class</span>="tok-fn">supplyAsync</span>(() -&gt; orderClient.<span <span class="tok-kw">class</span>="tok-fn">getByUser</span>(userId));
+
+<span class="tok-type">CompletableFuture</span>&lt;<span class="tok-type">ProfileView</span>&gt; result =
+    userFuture.<span <span class="tok-kw">class</span>="tok-fn">thenCombine</span>(ordersFuture, <span class="tok-type">ProfileView</span>::<span class="tok-kw">new</span>);
+</code></pre>
+    </div>
+    
+            </div>
+          </div>
+        </article>
+        
+        <article class="qa-item" data-index="2">
+          <button class="qa-question" type="button" aria-expanded="true">
+            <span class="question-index">02</span>
+            <span class="question-text">What is Spring Boot&#x27;s support for asynchronous processing, and how can you implement it?</span>
+            <span class="chevron" aria-hidden="true">▾</span>
+          </button>
+          <div class="qa-answer open">
+            <div class="answer-inner">
+              <p>Spring supports asynchronous method execution with @Async and a task executor. It is useful for background work or parallelizing independent tasks, but it should be applied carefully because async boundaries affect error handling, tracing, and transaction context.</p>
+              
+    <div class="code-wrap">
+      <div class="code-label">java</div>
+      <pre><code><span <span class="tok-kw">class</span>="tok-ann">@<span class="tok-type">EnableAsync</span></span>
+<span <span class="tok-kw">class</span>="tok-ann">@<span class="tok-type">Service</span></span>
+<span class="tok-kw">class</span> EmailService {
+  <span <span class="tok-kw">class</span>="tok-ann">@<span class="tok-type">Async</span></span>
+  <span <span class="tok-kw">class</span>="tok-kw">public</span> <span class="tok-kw">void</span> <span <span class="tok-kw">class</span>="tok-fn">sendWelcomeEmail</span>(<span class="tok-type">String</span> email) {
+    <span <span class="tok-kw">class</span>=<span <span class="tok-kw">class</span>="tok-str">"tok-com"</span>>// async work</span>
+  }
+}
+</code></pre>
+    </div>
+    
+            </div>
+          </div>
+        </article>
+        
+        <article class="qa-item" data-index="3">
+          <button class="qa-question" type="button" aria-expanded="true">
+            <span class="question-index">03</span>
+            <span class="question-text">Describe Spring Boot&#x27;s support for caching. What caching providers can you use?</span>
+            <span class="chevron" aria-hidden="true">▾</span>
+          </button>
+          <div class="qa-answer open">
+            <div class="answer-inner">
+              <p>Spring provides annotation-based caching with @Cacheable, @CachePut, and @CacheEvict. Common providers include the simple in-memory cache, Caffeine for local in-process caching, and Redis for distributed caching across multiple application instances.</p>
+              
+    <div class="code-wrap">
+      <div class="code-label">java</div>
+      <pre><code><span <span class="tok-kw">class</span>="tok-ann">@<span class="tok-type">Cacheable</span></span>(cacheNames = &quot;users&quot;, key = &quot;#id&quot;)
+<span <span class="tok-kw">class</span>="tok-kw">public</span> <span class="tok-type">User</span> <span <span class="tok-kw">class</span>="tok-fn">getUser</span>(<span class="tok-type">String</span> id) {
+  <span <span class="tok-kw">class</span>="tok-kw">return</span> userRepository.<span <span class="tok-kw">class</span>="tok-fn">findById</span>(id).<span <span class="tok-kw">class</span>="tok-fn">orElseThrow</span>();
+}
+</code></pre>
+    </div>
+    
+            </div>
+          </div>
+        </article>
+        
+      </div>
+    </section>
+    
+    <section class="topic-section" id="testing">
+      <div class="section-head">
+        <h2>Testing and Runtime Verification</h2>
+        <span class="badge">1 questions</span>
+      </div>
+      <div class="qa-list">
+        
+        <article class="qa-item" data-index="1">
+          <button class="qa-question" type="button" aria-expanded="true">
+            <span class="question-index">01</span>
+            <span class="question-text">How do you test a Spring Boot application without deploying it?</span>
+            <span class="chevron" aria-hidden="true">▾</span>
+          </button>
+          <div class="qa-answer open">
+            <div class="answer-inner">
+              <p>Use a layered strategy. Unit tests cover business logic with JUnit and mocks. Slice tests such as @WebMvcTest validate controller behavior. @DataJpaTest covers repository behavior. Full integration tests use @SpringBootTest, and Testcontainers is a strong choice when you want realistic databases or infrastructure dependencies.</p>
+              
+    <div class="code-wrap">
+      <div class="code-label">java</div>
+      <pre><code><span <span class="tok-kw">class</span>="tok-ann">@<span class="tok-type">WebMvcTest</span></span>(UserController.<span class="tok-kw">class</span>)
+<span class="tok-kw">class</span> UserControllerTest {
+  <span <span class="tok-kw">class</span>="tok-ann">@<span class="tok-type">Autowired</span></span>
+  <span <span class="tok-kw">class</span>="tok-kw">private</span> MockMvc mockMvc;
+}
+</code></pre>
+    </div>
+    
+            </div>
+          </div>
+        </article>
+        
+      </div>
+    </section>
+    
+        <div class="footer-space"></div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const body = document.body;
+    const modeToggle = document.getElementById('modeToggle');
+    const modePill = document.getElementById('modePill');
+    const qaItems = Array.from(document.querySelectorAll('.qa-item'));
+    const timer = document.getElementById('timer');
+    const timerText = document.getElementById('timerText');
+    const progressBar = document.getElementById('progressBar');
+
+    function setMode(mode) {
+      body.dataset.mode = mode;
+      const isRecall = mode === 'recall';
+      modeToggle.setAttribute('aria-pressed', String(isRecall));
+      modePill.textContent = isRecall ? 'RECALL' : 'SCAN';
+
+      if (isRecall) {
+        qaItems.forEach(item => {
+          item.classList.remove('open');
+          const btn = item.querySelector('.qa-question');
+          btn.setAttribute('aria-expanded', 'false');
+        });
+      } else {
+        qaItems.forEach(item => {
+          item.classList.add('open');
+          const btn = item.querySelector('.qa-question');
+          btn.setAttribute('aria-expanded', 'true');
+        });
+      }
+    }
+
+    modeToggle.addEventListener('click', () => {
+      const next = body.dataset.mode === 'scan' ? 'recall' : 'scan';
+      setMode(next);
+    });
+
+    qaItems.forEach(item => {
+      const btn = item.querySelector('.qa-question');
+      btn.addEventListener('click', () => {
+        if (body.dataset.mode !== 'recall') return;
+        item.classList.toggle('open');
+        btn.setAttribute('aria-expanded', String(item.classList.contains('open')));
+      });
+    });
+
+    const totalSeconds = 30 * 60;
+    const startedAt = Date.now();
+
+    function tick() {
+      const elapsed = Math.min(totalSeconds, Math.floor((Date.now() - startedAt) / 1000));
+      const remaining = Math.max(0, totalSeconds - elapsed);
+      const minutes = String(Math.floor(remaining / 60)).padStart(2, '0');
+      const seconds = String(remaining % 60).padStart(2, '0');
+      timerText.textContent = `${minutes}:${seconds}`;
+
+      const pct = (elapsed / totalSeconds) * 100;
+      progressBar.style.width = `${pct}%`;
+
+      timer.classList.remove('timer-warn', 'timer-danger', 'pulse');
+      progressBar.classList.remove('warn', 'danger');
+
+      if (remaining <= 60) {
+        timer.classList.add('timer-danger', 'pulse');
+        progressBar.classList.add('danger');
+      } else if (remaining <= 300) {
+        timer.classList.add('timer-warn');
+        progressBar.classList.add('warn');
+      }
+
+      if (remaining > 0) {
+        requestAnimationFrame(() => setTimeout(tick, 250));
+      }
+    }
+
+    setMode('scan');
+    tick();
+  </script>
+</body>
+</html>

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Interview Prep Hub — Software Engineering Study Portal</title>
+  <meta name="description" content="A focused study portal for software engineering interview preparation. Java, Spring Boot, SQL, System Design, JavaScript, React, Cloud, and Behavioral.">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- ── Navigation ──────────────────────────────────────── -->
+  <nav class="site-nav" role="navigation" aria-label="Main navigation">
+    <div class="nav-inner">
+      <a class="nav-logo" href="index.html" aria-label="Interview Prep Hub — Home">
+        <div class="nav-logo-icon">⚡</div>
+        <span class="nav-logo-text">Prep<span>Hub</span></span>
+      </a>
+
+      <div class="nav-links" role="list">
+        <a class="nav-link" href="java/index.html" role="listitem">Java</a>
+        <a class="nav-link" href="spring-boot/index.html" role="listitem">Spring</a>
+        <a class="nav-link" href="sql/index.html" role="listitem">SQL</a>
+        <a class="nav-link" href="system-design/index.html" role="listitem">System Design</a>
+        <a class="nav-link" href="javascript/index.html" role="listitem">JS</a>
+        <a class="nav-link" href="react/index.html" role="listitem">React</a>
+        <a class="nav-link" href="cloud/index.html" role="listitem">Cloud</a>
+        <a class="nav-link" href="behavioral/index.html" role="listitem">Behavioral</a>
+      </div>
+
+      <div class="nav-right">
+        <a class="nav-link" href="tracker.html" style="color:var(--green);font-weight:600">📊 Tracker</a>
+        <a class="nav-home-btn" href="index.html">← All Topics</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+
+    <!-- ── Hero ────────────────────────────────────────────── -->
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-glow" aria-hidden="true"></div>
+      <div class="container">
+        <div class="hero-eyebrow" aria-hidden="true">Software Engineering</div>
+        <h1 class="hero-title" id="hero-title">Interview Prep Hub</h1>
+        <p class="hero-subtitle">
+          A focused, self-hosted study system for software engineering interviews.
+          Covering Java, Spring, SQL, System Design, JavaScript, React, Cloud, and Behavioral.
+        </p>
+
+        <div class="stats-bar" role="list">
+          <div class="stat-item" role="listitem">
+            <div class="stat-number" id="stat-topics">—</div>
+            <div class="stat-label">Topics</div>
+          </div>
+          <div class="stat-item" role="listitem">
+            <div class="stat-number" id="stat-concepts">—</div>
+            <div class="stat-label">Concepts</div>
+          </div>
+          <div class="stat-item" role="listitem">
+            <div class="stat-number" id="stat-hours">—</div>
+            <div class="stat-label">Study Hours</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Featured & Recently Added ──────────────────────── -->
+    <section class="section-gap-sm" aria-labelledby="featured-heading">
+      <div class="container">
+
+        <!-- Continue Studying (populated from localStorage) -->
+        <div id="continue-section" class="continue-section" style="margin-bottom:40px">
+          <div class="section-header">
+            <div>
+              <div class="section-eyebrow">Pick up where you left off</div>
+              <h2 class="section-title" id="continue-heading">Continue Studying</h2>
+            </div>
+          </div>
+          <div class="section-divider"></div>
+          <div id="continue-list" class="recent-grid stagger"></div>
+        </div>
+
+        <!-- Featured -->
+        <div class="section-header">
+          <div>
+            <div class="section-eyebrow">Pinned</div>
+            <h2 class="section-title" id="featured-heading">Featured Modules</h2>
+          </div>
+        </div>
+        <div class="section-divider"></div>
+        <div id="featured-cards" class="featured-grid stagger"></div>
+
+      </div>
+    </section>
+
+    <!-- ── Recently Added ──────────────────────────────────── -->
+    <section class="section-gap-sm" aria-labelledby="recent-heading">
+      <div class="container">
+        <div class="section-header">
+          <div>
+            <div class="section-eyebrow">What's new</div>
+            <h2 class="section-title" id="recent-heading">Recently Added</h2>
+          </div>
+        </div>
+        <div class="section-divider"></div>
+        <div id="recently-added" class="recent-grid stagger"></div>
+      </div>
+    </section>
+
+    <!-- ── Search & Filter ─────────────────────────────────── -->
+    <section class="section-gap" aria-label="Search and filter topics">
+      <div class="container">
+
+        <div class="section-header">
+          <div>
+            <div class="section-eyebrow">Study Topics</div>
+            <h2 class="section-title" id="topics-heading">All Topics</h2>
+          </div>
+        </div>
+        <div class="section-divider"></div>
+
+        <div class="search-filter-bar" role="search">
+          <div class="search-row">
+            <span class="search-icon" aria-hidden="true">🔍</span>
+            <input
+              id="search-input"
+              class="search-input"
+              type="search"
+              placeholder="Search topics, concepts, tags…"
+              aria-label="Search topics and concepts"
+              autocomplete="off"
+            />
+          </div>
+          <div class="filter-row" role="group" aria-label="Filter by category or difficulty">
+            <span class="filter-label">Filter:</span>
+            <button class="chip active" data-filter="all">All</button>
+            <button class="chip" data-filter="backend">Backend</button>
+            <button class="chip" data-filter="frontend">Frontend</button>
+            <button class="chip" data-filter="devops">DevOps</button>
+            <button class="chip" data-filter="soft-skills">Behavioral</button>
+            <button class="chip" data-filter="beginner">Beginner</button>
+            <button class="chip" data-filter="intermediate">Intermediate</button>
+            <button class="chip" data-filter="advanced">Advanced</button>
+          </div>
+        </div>
+
+        <!-- Topic Cards Grid -->
+        <div id="topics-grid" class="topics-grid" role="list" aria-labelledby="topics-heading"></div>
+
+        <!-- No results state -->
+        <div id="no-results" class="no-results" aria-live="polite">
+          <div class="no-results-icon">🔍</div>
+          <div class="no-results-text">No topics match your search.</div>
+          <div class="no-results-hint">Try a different keyword or clear the filter.</div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ── Footer ──────────────────────────────────────────── -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="footer-inner">
+      <div class="footer-logo">Prep<span>Hub</span> — Personal Study Portal</div>
+      <div class="footer-meta">
+        Hosted on GitHub Pages · Static HTML/CSS/JS<br>
+        Add your study files to the topic folders to enable links.
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts: data first, then renderer -->
+  <script src="data.js"></script>
+  <script src="home.js"></script>
+
+</body>
+</html>

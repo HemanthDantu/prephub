@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Spring MVC — Interactive Learning Module</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#0a0e1a;--surf1:#111827;--surf2:#1a2235;--surf3:#1e2d45;--cyan:#00d4ff;--purple:#7c3aed;--green:#10b981;--amber:#f59e0b;--red:#ef4444;--text:#e2e8f0;--muted:#64748b;--border:#1e2d45;--font-body:'Syne',sans-serif;--font-mono:'JetBrains Mono',monospace}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:15px;line-height:1.7;min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:.4}
+#topbar{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(10,14,26,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 24px}
+#topbar-inner{max-width:900px;margin:0 auto;display:flex;align-items:center;gap:16px;height:56px}
+#course-label{font-family:var(--font-mono);font-size:11px;color:var(--cyan);letter-spacing:.1em;text-transform:uppercase;white-space:nowrap}
+#nav-dots{display:flex;gap:8px;align-items:center;flex:1;overflow-x:auto;scrollbar-width:none}
+#nav-dots::-webkit-scrollbar{display:none}
+.dot{width:28px;height:28px;border-radius:50%;border:2px solid var(--muted);background:transparent;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:10px;color:var(--muted);cursor:pointer;transition:all .2s;flex-shrink:0}
+.dot:hover{border-color:var(--cyan);color:var(--cyan)}
+.dot.active{background:var(--cyan);border-color:var(--cyan);color:#000;font-weight:700}
+.dot.done{border-color:var(--green);color:var(--green)}
+#timer{font-family:var(--font-mono);font-size:15px;font-weight:700;color:var(--cyan);transition:color .3s;flex-shrink:0}
+#timer.warn{color:var(--amber)}
+#timer.danger{color:var(--red);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+#prog-wrap{position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--surf2)}
+#prog-bar{height:2px;background:linear-gradient(90deg,var(--cyan),var(--green));width:0;transition:width .5s}
+#app{max-width:900px;margin:0 auto;padding:80px 24px 40px}
+.section{display:none;animation:fadeIn .4s ease}
+.section.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.section-meta{font-family:var(--font-mono);font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px}
+.section-title{font-size:28px;font-weight:800;background:linear-gradient(135deg,var(--cyan),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px;line-height:1.2}
+.pomodoro-badge{display:inline-flex;align-items:center;gap:6px;background:var(--surf2);border:1px solid var(--border);border-radius:20px;padding:4px 12px;font-family:var(--font-mono);font-size:11px;color:var(--cyan);margin-bottom:28px}
+.card{background:var(--surf1);border-radius:12px;padding:20px 24px;margin-bottom:20px;border-left:4px solid;position:relative}
+.card-eli5{border-left-color:var(--amber)}
+.card-analogy{border-left-color:var(--green)}
+.card-tech{border-left-color:var(--cyan)}
+.card-warn{border-left-color:var(--red)}
+.card-label{font-family:var(--font-mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px;font-weight:700}
+.card-eli5 .card-label{color:var(--amber)}
+.card-analogy .card-label{color:var(--green)}
+.card-tech .card-label{color:var(--cyan)}
+.card-warn .card-label{color:var(--red)}
+.card p+p{margin-top:10px}
+pre{background:#050810;border:1px solid var(--border);border-radius:8px;padding:16px 20px;overflow-x:auto;font-family:var(--font-mono);font-size:13px;line-height:1.6;margin:14px 0}
+.kw{color:#c792ea}.an{color:var(--amber)}.cls{color:#82aaff}.str{color:var(--green)}.cmt{color:#546e7a;font-style:italic}.fn{color:var(--cyan)}.num{color:#f78c6c}
+.table-wrap{overflow-x:auto;margin:16px 0}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:var(--surf2);font-family:var(--font-mono);font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);padding:10px 14px;text-align:left;border-bottom:1px solid var(--border)}
+td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:top}
+tr:hover td{background:rgba(255,255,255,.02)}
+.badge{display:inline-block;padding:2px 10px;border-radius:12px;font-family:var(--font-mono);font-size:11px;font-weight:700}
+.badge-green{background:rgba(16,185,129,.15);color:var(--green)}
+.badge-amber{background:rgba(245,158,11,.15);color:var(--amber)}
+.badge-red{background:rgba(239,68,68,.15);color:var(--red)}
+.badge-cyan{background:rgba(0,212,255,.12);color:var(--cyan)}
+.badge-purple{background:rgba(124,58,237,.15);color:#c4b5fd}
+/* Pipeline diagram */
+.pipeline{display:flex;flex-direction:column;gap:0;margin:20px 0}
+.pipe-row{display:flex;align-items:stretch;gap:0}
+.pipe-node{
+  background:var(--surf2);border:1px solid var(--border);
+  border-radius:8px;padding:10px 14px;flex:1;
+  font-size:12px;font-family:var(--font-mono);
+  display:flex;flex-direction:column;gap:4px;
+}
+.pipe-node.active-node{border-color:var(--cyan);background:rgba(0,212,255,.07)}
+.pipe-node.warn-node{border-color:var(--amber);background:rgba(245,158,11,.07)}
+.pipe-node.exit-node{border-color:var(--green);background:rgba(16,185,129,.07)}
+.pipe-node .node-title{font-weight:700;color:var(--text)}
+.pipe-node .node-title.c{color:var(--cyan)}
+.pipe-node .node-title.a{color:var(--amber)}
+.pipe-node .node-title.g{color:var(--green)}
+.pipe-node .node-sub{color:var(--muted);font-size:11px}
+.pipe-arrow{display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:18px;padding:3px 0;font-family:var(--font-mono)}
+.quiz-box{background:var(--surf1);border:2px solid var(--purple);border-radius:12px;padding:24px;margin-top:28px}
+.quiz-label{font-family:var(--font-mono);font-size:11px;color:var(--purple);letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px}
+.quiz-q{font-size:16px;font-weight:600;margin-bottom:18px;line-height:1.5}
+.quiz-opts{display:flex;flex-direction:column;gap:10px}
+.quiz-opt{background:var(--surf2);border:1px solid var(--border);border-radius:8px;padding:12px 16px;cursor:pointer;text-align:left;font-family:var(--font-body);font-size:14px;color:var(--text);transition:all .2s}
+.quiz-opt:hover:not(:disabled){border-color:var(--purple);background:rgba(124,58,237,.1)}
+.quiz-opt.correct{border-color:var(--green)!important;background:rgba(16,185,129,.15)!important;color:var(--green)}
+.quiz-opt.wrong{border-color:var(--red)!important;background:rgba(239,68,68,.12)!important;color:var(--red)}
+.quiz-opt:disabled{cursor:default}
+.quiz-explain{margin-top:16px;padding:14px;background:rgba(124,58,237,.1);border-left:3px solid var(--purple);border-radius:0 8px 8px 0;font-size:13px;color:#c4b5fd;display:none}
+.quiz-explain.show{display:block}
+.nav-row{display:flex;justify-content:space-between;align-items:center;margin-top:36px;padding-top:24px;border-top:1px solid var(--border)}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 22px;border-radius:8px;font-family:var(--font-body);font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;border:none}
+.btn-ghost{background:var(--surf2);color:var(--muted);border:1px solid var(--border)}
+.btn-ghost:hover{border-color:var(--cyan);color:var(--cyan)}
+.btn-primary{background:linear-gradient(135deg,var(--cyan),var(--green));color:#000;font-weight:700}
+.btn-primary:hover{opacity:.88;transform:translateY(-1px)}
+#completion{display:none;text-align:center;padding:60px 20px}
+#completion.show{display:block;animation:fadeIn .5s ease}
+.completion-emoji{font-size:72px;margin-bottom:20px}
+.completion-title{font-size:32px;font-weight:800;margin-bottom:8px;background:linear-gradient(135deg,var(--cyan),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.completion-sub{color:var(--muted);margin-bottom:36px}
+.cheatsheet{background:var(--surf1);border:1px solid var(--border);border-radius:12px;padding:28px;text-align:left;max-width:720px;margin:0 auto}
+.cs-section{margin-bottom:20px}
+.cs-section-title{font-family:var(--font-mono);font-size:11px;color:var(--cyan);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px}
+.cs-item{display:flex;gap:10px;font-size:13px;margin-bottom:6px;align-items:baseline}
+.cs-item::before{content:'→';color:var(--green);flex-shrink:0}
+.btn-restart{margin-top:28px;background:var(--surf2);border:1px solid var(--border);color:var(--text);padding:12px 28px;border-radius:8px;font-family:var(--font-body);font-size:14px;cursor:pointer}
+.btn-restart:hover{border-color:var(--cyan);color:var(--cyan)}
+h3{font-size:16px;font-weight:700;color:var(--cyan);margin:18px 0 8px}
+h4{font-size:14px;font-weight:700;color:var(--amber);margin:14px 0 6px}
+ul,ol{padding-left:20px;margin:10px 0}
+li{margin-bottom:5px}
+strong{color:#f8fafc}
+.interview-box{background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.3);border-radius:8px;padding:14px 18px;margin:14px 0}
+.interview-box .lbl{font-family:var(--font-mono);font-size:10px;color:var(--purple);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+/* Comparison grid */
+.comp-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0}
+.comp-card{background:var(--surf2);border-radius:8px;padding:14px;border-top:3px solid}
+.comp-a{border-top-color:var(--cyan)}
+.comp-b{border-top-color:var(--purple)}
+.comp-card h4{margin:0 0 8px;font-size:13px}
+.comp-card ul{padding-left:16px;font-size:12px}
+.comp-card li{color:var(--muted);margin-bottom:4px}
+@media(max-width:600px){.section-title{font-size:22px}.dot{width:24px;height:24px;font-size:9px}#app{padding:72px 16px 32px}.comp-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="topbar">
+  <div id="topbar-inner">
+    <div id="course-label">🌐 Spring MVC</div>
+    <div id="nav-dots"></div>
+    <div id="timer">2:10:00</div>
+  </div>
+  <div id="prog-wrap"><div id="prog-bar"></div></div>
+</div>
+
+<div id="app">
+
+<!-- ══════════════════════════════════════════════════
+     SECTION 1 — DispatcherServlet
+═══════════════════════════════════════════════════ -->
+<div class="section active" id="sec-0">
+  <div class="section-meta">Section 1 of 5 · Spring MVC</div>
+  <div class="section-title">DispatcherServlet — The Front Controller</div>
+  <div class="pomodoro-badge">🍅 Pomodoro · 25 min</div>
+
+  <div class="card card-eli5">
+    <div class="card-label">🧒 ELI5 — The Hotel Concierge</div>
+    <p>Imagine a large hotel. Every single guest walks in through <strong>one main entrance</strong> — the front desk. The concierge (DispatcherServlet) greets every single person. They look at the request ("I need room service" / "I need a taxi") and route it to the right department (restaurant, transport). The departments don't deal with guests directly — all communication goes through the concierge.</p>
+    <p>This is the <strong>Front Controller pattern</strong>: one entry point, centralized routing.</p>
+  </div>
+
+  <div class="card card-tech">
+    <div class="card-label">⚙️ The 5 Components of DispatcherServlet</div>
+
+    <div class="pipeline">
+      <div class="pipe-row"><div class="pipe-node active-node">
+        <div class="node-title c">1. DispatcherServlet</div>
+        <div class="node-sub">Receives ALL HTTP requests. Registered at "/" by default in Spring Boot.</div>
+      </div></div>
+      <div class="pipe-arrow">↓</div>
+      <div class="pipe-row"><div class="pipe-node">
+        <div class="node-title c">2. HandlerMapping</div>
+        <div class="node-sub">Finds which @Controller method handles this URL. Built from @RequestMapping at startup.</div>
+      </div></div>
+      <div class="pipe-arrow">↓</div>
+      <div class="pipe-row"><div class="pipe-node">
+        <div class="node-title c">3. HandlerAdapter</div>
+        <div class="node-sub">Invokes the found method. Resolves method args (@PathVariable, @RequestBody, etc.).</div>
+      </div></div>
+      <div class="pipe-arrow">↓</div>
+      <div class="pipe-row"><div class="pipe-node">
+        <div class="node-title a">4. MessageConverter</div>
+        <div class="node-sub">Serializes return value to JSON/XML. Jackson's MappingJackson2HttpMessageConverter handles JSON.</div>
+      </div></div>
+      <div class="pipe-arrow">↓</div>
+      <div class="pipe-row"><div class="pipe-node exit-node">
+        <div class="node-title g">5. HTTP Response</div>
+        <div class="node-sub">Written back to client with body, status, and headers.</div>
+      </div></div>
+    </div>
+
+    <h3>HandlerMapping — How URLs Get Mapped at Startup</h3>
+    <p><code>RequestMappingHandlerMapping</code> scans all <code>@Controller</code> / <code>@RestController</code> beans at startup and builds a lookup map: <code>URL + HTTP method → HandlerMethod</code>. This is why adding a new <code>@GetMapping</code> requires a restart — the map is built once at startup.</p>
+    <pre><span class="cmt">// Conceptually what gets built:</span>
+<span class="cls">Map</span>&lt;<span class="cls">RequestMappingInfo</span>, <span class="cls">HandlerMethod</span>&gt; mappings = {
+    GET <span class="str">"/accounts/{id}"</span> → AccountController.<span class="fn">getAccount</span>(),
+    POST <span class="str">"/accounts"</span>    → AccountController.<span class="fn">createAccount</span>(),
+    DELETE <span class="str">"/accounts/{id}"</span> → AccountController.<span class="fn">deleteAccount</span>()
+};</pre>
+
+    <h3>HttpMessageConverter — How @ResponseBody Works</h3>
+    <p>When a method is annotated with <code>@ResponseBody</code> (or the class with <code>@RestController</code>), the HandlerAdapter asks the registered <code>HttpMessageConverter</code> list: "can you convert this object to JSON?" <code>MappingJackson2HttpMessageConverter</code> says yes for any object when Jackson is on the classpath.</p>
+    <pre><span class="cmt">// Spring has a list of converters — first matching one wins:</span>
+List&lt;HttpMessageConverter&lt;?&gt;&gt; converters = [
+    StringHttpMessageConverter,       <span class="cmt">// String → text/plain</span>
+    MappingJackson2HttpMessageConverter, <span class="cmt">// Object → application/json</span>
+    Jaxb2RootElementHttpMessageConverter <span class="cmt">// Object → application/xml</span>
+    ...
+]</pre>
+
+    <h3>Content Negotiation</h3>
+    <p>When a client sends <code>Accept: application/xml</code>, Spring uses <strong>Content Negotiation</strong> to pick the right converter. The <code>ContentNegotiationManager</code> inspects:</p>
+    <ol>
+      <li>The <code>Accept</code> header (highest priority)</li>
+      <li>URL extension (<code>/accounts/1.json</code>) — deprecated</li>
+      <li>Request parameter (<code>?format=json</code>)</li>
+    </ol>
+    <pre><span class="an">@GetMapping</span>(value = <span class="str">"/accounts/{id}"</span>,
+            produces = {<span class="str">"application/json"</span>, <span class="str">"application/xml"</span>})
+<span class="kw">public</span> <span class="cls">Account</span> <span class="fn">getAccount</span>(<span class="an">@PathVariable</span> <span class="kw">long</span> id) { ... }
+<span class="cmt">// produces= restricts which types this endpoint can return</span></pre>
+
+    <div class="interview-box">
+      <div class="lbl">💬 Interview Answer</div>
+      <p>"DispatcherServlet is a Front Controller — all requests enter through it. It delegates to HandlerMapping (which URL maps to which method), then HandlerAdapter (which invokes the method and resolves arguments), then HttpMessageConverter (which serializes the return value to JSON/XML based on the Accept header via ContentNegotiation). RequestMappingHandlerMapping builds the URL-to-method map at startup by scanning @RequestMapping annotations."</p>
+    </div>
+  </div>
+
+  <div class="quiz-box">
+    <div class="quiz-label">🧠 Quiz — Section 1</div>
+    <div class="quiz-q">At what point does RequestMappingHandlerMapping build the URL → method map?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" onclick="answer(this,false,0)">A. On the first request — lazily to keep startup fast</button>
+      <button class="quiz-opt" onclick="answer(this,true,0)">B. At application startup, during ApplicationContext refresh, by scanning @RequestMapping annotations</button>
+      <button class="quiz-opt" onclick="answer(this,false,0)">C. Every request — the map is rebuilt to support hot reload</button>
+      <button class="quiz-opt" onclick="answer(this,false,0)">D. At class loading time before Spring context starts</button>
+    </div>
+    <div class="quiz-explain" id="explain-0">
+      ✅ RequestMappingHandlerMapping implements <code>InitializingBean</code>, so its <code>afterPropertiesSet()</code> runs during ApplicationContext startup. It scans all beans for @RequestMapping annotations and builds the complete routing table at that moment. This is why changes to mappings require a restart.
+    </div>
+  </div>
+
+  <div class="nav-row">
+    <button class="btn btn-ghost" disabled>← Back</button>
+    <button class="btn btn-primary" onclick="goTo(1)">Next: Request Lifecycle →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SECTION 2 — Request Lifecycle Full Trace
+═══════════════════════════════════════════════════ -->
+<div class="section" id="sec-1">
+  <div class="section-meta">Section 2 of 5 · Spring MVC</div>
+  <div class="section-title">Request Lifecycle — Full Trace</div>
+  <div class="pomodoro-badge">🍅 Pomodoro · 30 min</div>
+
+  <div class="card card-eli5">
+    <div class="card-label">🧒 ELI5 — A Letter Through the Post Office</div>
+    <p>Imagine mailing a letter. It goes through: <strong>security scan</strong> (Filter chain — check the envelope), <strong>sorting center</strong> (DispatcherServlet — who handles this?), <strong>department routing</strong> (HandlerMapping), <strong>pre-checks</strong> (HandlerInterceptor.preHandle — is the sender authorized?), <strong>actual delivery</strong> (your Controller method), <strong>quality check on the reply</strong> (HandlerInterceptor.postHandle), <strong>package the reply</strong> (MessageConverter), then <strong>send it back</strong> (Response). Filters touch the raw envelope. Interceptors see the sorted, decoded letter.</p>
+  </div>
+
+  <div class="card card-tech">
+    <div class="card-label">⚙️ The Complete Pipeline</div>
+    <div class="pipeline">
+      <div class="pipe-row"><div class="pipe-node warn-node">
+        <div class="node-title a">HTTP Request arrives</div>
+        <div class="node-sub">Raw bytes from the network</div>
+      </div></div>
+      <div class="pipe-arrow">↓</div>
+      <div class="pipe-row"><div class="pipe-node">
+        <div class="node-title">Filter Chain (Servlet Filters)</div>
+        <div class="node-sub">Runs BEFORE DispatcherServlet. Sees raw HttpServletRequest/Response. Auth, CORS, logging, compression.</div>
+      </div></div>
+      <div class="pipe-arrow">↓</div>
+      <div class="pipe-row"><div class="pipe-node active-node">
+        <div class="node-title c">DispatcherServlet</div>
+        <div class="node-sub">Receives the request. Delegates to HandlerMapping to find the handler.</div>
+      </div></div>
+      <div class="pipe-arrow">↓</div>
+      <div class="pipe-row"><div class="pipe-node">
+        <div class="node-title">HandlerMapping</div>
+        <div class="node-sub">Returns a HandlerExecutionChain (handler + list of interceptors)</div>
+      </div></div>
+      <div class="pipe-arrow">↓</div>
+      <div class="pipe-row"><div class="pipe-node">
+        <div class="node-title">HandlerInterceptor.preHandle()</div>
+        <div class="node-sub">Runs before the controller. Return false to abort the request. Auth checks, rate limiting.</div>
+      </div></div>
+      <div class="pipe-arrow">↓</div>
+      <div class="pipe-row"><div class="pipe-node active-node">
+        <div class="node-title c">Controller Method Executes</div>
+        <div class="node-sub">Your @RestController method runs. Arguments resolved by HandlerMethodArgumentResolver.</div>
+      </div></div>
+      <div class="pipe-arrow">↓</div>
+      <div class="pipe-row"><div class="pipe-node">
+        <div class="node-title">HandlerInterceptor.postHandle()</div>
+        <div class="node-sub">Runs AFTER controller, BEFORE response is written. Can modify ModelAndView. Only called if preHandle returned true.</div>
+      </div></div>
+      <div class="pipe-arrow">↓</div>
+      <div class="pipe-row"><div class="pipe-node">
+        <div class="node-title">MessageConverter → Response body written</div>
+        <div class="node-sub">Jackson serializes the return value to JSON based on Accept header.</div>
+      </div></div>
+      <div class="pipe-arrow">↓</div>
+      <div class="pipe-row"><div class="pipe-node">
+        <div class="node-title">HandlerInterceptor.afterCompletion()</div>
+        <div class="node-sub">Always called (even on exception). Cleanup, logging, metrics. Exception object available.</div>
+      </div></div>
+      <div class="pipe-arrow">↓</div>
+      <div class="pipe-row"><div class="pipe-node exit-node">
+        <div class="node-title g">HTTP Response sent to client</div>
+        <div class="node-sub">Status + headers + JSON body</div>
+      </div></div>
+    </div>
+
+    <h3>How @RequestBody Works — Jackson Deserialization</h3>
+    <pre><span class="an">@PostMapping</span>(<span class="str">"/accounts"</span>)
+<span class="kw">public</span> <span class="cls">Account</span> <span class="fn">create</span>(<span class="an">@RequestBody</span> <span class="cls">CreateAccountRequest</span> req) { ... }
+<span class="cmt">// 1. Client sends: Content-Type: application/json + JSON body
+// 2. MappingJackson2HttpMessageConverter is selected
+// 3. Jackson reads the JSON stream
+// 4. Calls CreateAccountRequest() constructor or setters
+// 5. Your method receives the populated Java object</span></pre>
+    <p>Internally, <code>HandlerMethodArgumentResolver</code> is what Spring calls to figure out how to populate each parameter. <code>RequestResponseBodyMethodProcessor</code> handles <code>@RequestBody</code> specifically — it reads the request stream and delegates to the selected <code>HttpMessageConverter</code>.</p>
+  </div>
+
+  <div class="card card-tech">
+    <div class="card-label">⚙️ HandlerMethodArgumentResolver — Custom Parameter Binding</div>
+    <p>Spring uses a chain of <code>HandlerMethodArgumentResolver</code> implementations to populate each controller method parameter. Built-ins handle <code>@PathVariable</code>, <code>@RequestParam</code>, <code>@RequestBody</code>, <code>HttpServletRequest</code>, etc. You can register custom ones:</p>
+    <pre><span class="kw">public class</span> <span class="cls">CurrentUserResolver</span> <span class="kw">implements</span> <span class="cls">HandlerMethodArgumentResolver</span> {
+
+    <span class="an">@Override</span>
+    <span class="kw">public boolean</span> <span class="fn">supportsParameter</span>(<span class="cls">MethodParameter</span> param) {
+        <span class="kw">return</span> param.<span class="fn">hasParameterAnnotation</span>(<span class="cls">CurrentUser</span>.class);
+    }
+
+    <span class="an">@Override</span>
+    <span class="kw">public</span> <span class="cls">Object</span> <span class="fn">resolveArgument</span>(<span class="cls">MethodParameter</span> param, ..., <span class="cls">NativeWebRequest</span> request) {
+        <span class="cmt">// Extract user from JWT token in request header</span>
+        <span class="cls">String</span> token = request.<span class="fn">getHeader</span>(<span class="str">"Authorization"</span>);
+        <span class="kw">return</span> jwtService.<span class="fn">extractUser</span>(token);
+    }
+}
+
+<span class="cmt">// Register it:</span>
+<span class="an">@Configuration</span>
+<span class="kw">public class</span> <span class="cls">WebConfig</span> <span class="kw">implements</span> <span class="cls">WebMvcConfigurer</span> {
+    <span class="an">@Override</span>
+    <span class="kw">public void</span> <span class="fn">addArgumentResolvers</span>(<span class="cls">List</span>&lt;<span class="cls">HandlerMethodArgumentResolver</span>&gt; resolvers) {
+        resolvers.<span class="fn">add</span>(<span class="kw">new</span> <span class="cls">CurrentUserResolver</span>(jwtService));
+    }
+}
+
+<span class="cmt">// Then in your controller:</span>
+<span class="an">@GetMapping</span>(<span class="str">"/me"</span>)
+<span class="kw">public</span> <span class="cls">Profile</span> <span class="fn">getProfile</span>(<span class="an">@CurrentUser</span> <span class="cls">User</span> user) {
+    <span class="kw">return</span> profileService.<span class="fn">getProfile</span>(user.<span class="fn">getId</span>());
+}</pre>
+
+    <div class="interview-box">
+      <div class="lbl">💬 Interview Answer</div>
+      <p>"The full request lifecycle: Filter chain runs first (before DispatcherServlet — sees raw request/response), then DispatcherServlet delegates to HandlerMapping (returns handler + interceptors), then HandlerInterceptor.preHandle (can abort the request), then the controller method executes with arguments resolved by HandlerMethodArgumentResolver, then postHandle, then MessageConverter writes the response, then afterCompletion (always called, even on exception — good for cleanup). Filters are Servlet-level; Interceptors are Spring MVC-level."</p>
+    </div>
+  </div>
+
+  <div class="quiz-box">
+    <div class="quiz-label">🧠 Quiz — Section 2</div>
+    <div class="quiz-q">You want to log every request's execution time including cleanup. Which lifecycle hook do you use?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" onclick="answer(this,false,1)">A. HandlerInterceptor.preHandle() — it runs before the controller</button>
+      <button class="quiz-opt" onclick="answer(this,false,1)">B. HandlerInterceptor.postHandle() — it runs after the controller</button>
+      <button class="quiz-opt" onclick="answer(this,true,1)">C. HandlerInterceptor.afterCompletion() — it always runs, even on exception, so it captures the complete request lifecycle</button>
+      <button class="quiz-opt" onclick="answer(this,false,1)">D. A Servlet Filter — it's the only hook that always runs</button>
+    </div>
+    <div class="quiz-explain" id="explain-1">
+      ✅ <code>afterCompletion()</code> is the right choice because it's <strong>always called</strong> — even if the controller throws an exception, even if postHandle was skipped. It also receives the exception object. This makes it ideal for metrics, logging, and resource cleanup. <code>postHandle()</code> is NOT called when the controller throws an exception.
+    </div>
+  </div>
+
+  <div class="nav-row">
+    <button class="btn btn-ghost" onclick="goTo(0)">← Back</button>
+    <button class="btn btn-primary" onclick="goTo(2)">Next: Parameter Binding →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SECTION 3 — Parameter Binding
+═══════════════════════════════════════════════════ -->
+<div class="section" id="sec-2">
+  <div class="section-meta">Section 3 of 5 · Spring MVC</div>
+  <div class="section-title">Parameter Binding — @PathVariable, @RequestParam, @RequestBody</div>
+  <div class="pomodoro-badge">🍅 Pomodoro · 25 min</div>
+
+  <div class="card card-eli5">
+    <div class="card-label">🧒 ELI5 — Three Ways to Pass a Note</div>
+    <ul>
+      <li><strong>@PathVariable</strong> — the info is written in the <em>address on the envelope</em>: <code>/users/42</code>. It identifies the resource.</li>
+      <li><strong>@RequestParam</strong> — the info is on a <em>sticky note attached to the outside</em>: <code>?sort=asc&page=2</code>. It modifies or filters.</li>
+      <li><strong>@RequestBody</strong> — the info is <em>inside the envelope as a full letter</em>. The body contains rich structured data (JSON). Used for creates/updates.</li>
+    </ul>
+  </div>
+
+  <div class="card card-tech">
+    <div class="card-label">⚙️ @PathVariable — Resource Identifier in the URL</div>
+    <pre><span class="cmt">// URL: GET /accounts/42/transactions/99</span>
+<span class="an">@GetMapping</span>(<span class="str">"/accounts/{accountId}/transactions/{txId}"</span>)
+<span class="kw">public</span> <span class="cls">Transaction</span> <span class="fn">getTransaction</span>(
+        <span class="an">@PathVariable</span> <span class="kw">long</span> accountId,
+        <span class="an">@PathVariable</span> <span class="kw">long</span> txId) {
+    <span class="kw">return</span> service.<span class="fn">find</span>(accountId, txId);
+}
+
+<span class="cmt">// Optional path variable (path must also be optional):</span>
+<span class="an">@GetMapping</span>({<span class="str">"/accounts/{id}"</span>, <span class="str">"/accounts"</span>})
+<span class="kw">public</span> <span class="cls">List</span>&lt;<span class="cls">Account</span>&gt; <span class="fn">get</span>(<span class="an">@PathVariable</span>(required = <span class="kw">false</span>) <span class="cls">Long</span> id) { ... }
+
+<span class="cmt">// Name mismatch (variable name ≠ path placeholder):</span>
+<span class="an">@GetMapping</span>(<span class="str">"/accounts/{account-id}"</span>)
+<span class="kw">public</span> <span class="cls">Account</span> <span class="fn">get</span>(<span class="an">@PathVariable</span>(<span class="str">"account-id"</span>) <span class="kw">long</span> id) { ... }</pre>
+  </div>
+
+  <div class="card card-tech">
+    <div class="card-label">⚙️ @RequestParam — Query String Parameters</div>
+    <pre><span class="cmt">// URL: GET /accounts?page=0&size=10&sort=createdAt&active=true</span>
+<span class="an">@GetMapping</span>(<span class="str">"/accounts"</span>)
+<span class="kw">public</span> <span class="cls">Page</span>&lt;<span class="cls">Account</span>&gt; <span class="fn">list</span>(
+        <span class="an">@RequestParam</span>(defaultValue = <span class="str">"0"</span>) <span class="kw">int</span> page,
+        <span class="an">@RequestParam</span>(defaultValue = <span class="str">"10"</span>) <span class="kw">int</span> size,
+        <span class="an">@RequestParam</span>(required = <span class="kw">false</span>) <span class="cls">String</span> sort,
+        <span class="an">@RequestParam</span>(defaultValue = <span class="str">"true"</span>) <span class="kw">boolean</span> active) {
+    <span class="kw">return</span> service.<span class="fn">findAll</span>(page, size, sort, active);
+}
+
+<span class="cmt">// Get all params as a map:</span>
+<span class="an">@GetMapping</span>(<span class="str">"/search"</span>)
+<span class="kw">public</span> <span class="cls">List</span>&lt;<span class="cls">Account</span>&gt; <span class="fn">search</span>(<span class="an">@RequestParam</span> <span class="cls">Map</span>&lt;<span class="cls">String</span>,<span class="cls">String</span>&gt; params) { ... }
+
+<span class="cmt">// Multi-value param: ?tags=java&tags=spring</span>
+<span class="an">@GetMapping</span>(<span class="str">"/accounts"</span>)
+<span class="kw">public</span> <span class="cls">List</span>&lt;<span class="cls">Account</span>&gt; <span class="fn">filter</span>(<span class="an">@RequestParam</span> <span class="cls">List</span>&lt;<span class="cls">String</span>&gt; tags) { ... }</pre>
+  </div>
+
+  <div class="card card-tech">
+    <div class="card-label">⚙️ @RequestBody — Rich JSON Payload</div>
+    <pre><span class="cmt">// POST /accounts with body: {"name":"John","balance":1000.00}</span>
+<span class="an">@PostMapping</span>(<span class="str">"/accounts"</span>)
+<span class="an">@ResponseStatus</span>(<span class="cls">HttpStatus</span>.CREATED)
+<span class="kw">public</span> <span class="cls">Account</span> <span class="fn">create</span>(<span class="an">@RequestBody</span> <span class="cls">CreateAccountRequest</span> req) {
+    <span class="kw">return</span> service.<span class="fn">create</span>(req);
+}
+
+<span class="cmt">// With validation (see Section 4):</span>
+<span class="an">@PostMapping</span>(<span class="str">"/accounts"</span>)
+<span class="kw">public</span> <span class="cls">Account</span> <span class="fn">create</span>(<span class="an">@Valid</span> <span class="an">@RequestBody</span> <span class="cls">CreateAccountRequest</span> req) { ... }</pre>
+
+    <h3>Comparison: When to Use What</h3>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Annotation</th><th>Location in Request</th><th>HTTP Methods</th><th>Use For</th></tr>
+        <tr>
+          <td><code>@PathVariable</code></td>
+          <td>URL path segment</td>
+          <td>All</td>
+          <td>Resource ID — "which resource?"</td>
+        </tr>
+        <tr>
+          <td><code>@RequestParam</code></td>
+          <td>Query string</td>
+          <td>Mostly GET</td>
+          <td>Filtering, pagination, sorting — "how to query?"</td>
+        </tr>
+        <tr>
+          <td><code>@RequestBody</code></td>
+          <td>Request body (JSON)</td>
+          <td>POST/PUT/PATCH</td>
+          <td>Create or update — structured data</td>
+        </tr>
+        <tr>
+          <td><code>@RequestHeader</code></td>
+          <td>HTTP headers</td>
+          <td>All</td>
+          <td>Authorization, correlation IDs, custom metadata</td>
+        </tr>
+        <tr>
+          <td><code>@CookieValue</code></td>
+          <td>Cookie</td>
+          <td>All</td>
+          <td>Session tokens, preferences</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="interview-box">
+      <div class="lbl">💬 Interview Answer</div>
+      <p>"@PathVariable extracts from the URL path — used for resource identity. @RequestParam extracts from query string — used for filtering and pagination. @RequestBody deserializes the JSON request body via Jackson — used for POST/PUT with structured data. At the framework level, HandlerMethodArgumentResolver implementations handle each of these — RequestResponseBodyMethodProcessor for @RequestBody, PathVariableMethodArgumentResolver for @PathVariable, etc."</p>
+    </div>
+  </div>
+
+  <div class="quiz-box">
+    <div class="quiz-label">🧠 Quiz — Section 3</div>
+    <div class="quiz-q">For the endpoint GET /accounts?status=active&page=2, how should the parameters be bound?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" onclick="answer(this,false,2)">A. @PathVariable for both — they come from the URL</button>
+      <button class="quiz-opt" onclick="answer(this,false,2)">B. @RequestBody — the query string is part of the request body</button>
+      <button class="quiz-opt" onclick="answer(this,true,2)">C. @RequestParam for both — they're query string parameters used for filtering and pagination</button>
+      <button class="quiz-opt" onclick="answer(this,false,2)">D. @RequestHeader — the query string is treated as a custom header</button>
+    </div>
+    <div class="quiz-explain" id="explain-2">
+      ✅ Query string parameters (<code>?key=value</code>) are bound with <code>@RequestParam</code>. @PathVariable is for path segments like <code>/accounts/{id}</code>. @RequestBody reads the HTTP body (JSON) — GET requests typically have no body. For this endpoint: <code>@RequestParam String status, @RequestParam int page</code>.
+    </div>
+  </div>
+
+  <div class="nav-row">
+    <button class="btn btn-ghost" onclick="goTo(1)">← Back</button>
+    <button class="btn btn-primary" onclick="goTo(3)">Next: @Valid + Validation →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SECTION 4 — @Valid + BindingResult + Validation Pipeline
+═══════════════════════════════════════════════════ -->
+<div class="section" id="sec-3">
+  <div class="section-meta">Section 4 of 5 · Spring MVC</div>
+  <div class="section-title">@Valid + BindingResult — Validation Pipeline</div>
+  <div class="pomodoro-badge">🍅 Pomodoro · 25 min</div>
+
+  <div class="card card-eli5">
+    <div class="card-label">🧒 ELI5 — The Bouncer at the Door</div>
+    <p>Imagine a club. A bouncer (<code>@Valid</code>) checks every person at the door before they're let in to the party (your controller method). The bouncer has a checklist: "Must be 21+, must have ID, shoes required." If someone fails any check, the bouncer turns them away with a specific reason — they never enter the club.</p>
+    <p><code>BindingResult</code> is like the bouncer's clipboard — it records every rejection reason so you can inspect them and send a nice error message back.</p>
+  </div>
+
+  <div class="card card-tech">
+    <div class="card-label">⚙️ Where Validation Fits in the Pipeline</div>
+    <div class="flow" style="flex-wrap:wrap">
+      <div class="flow-step">Request arrives</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">@RequestBody deserialized</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step" style="border-color:var(--amber);color:var(--amber)">@Valid triggers validation</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step" style="border-color:var(--red);color:var(--red)">Fails → MethodArgumentNotValidException</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step" style="border-color:var(--green);color:var(--green)">Passes → Controller runs</div>
+    </div>
+    <p>Validation runs in the <strong>HandlerAdapter</strong> phase, after deserialization and before the controller method body executes. It's part of argument resolution.</p>
+
+    <h3>Setting Up Bean Validation</h3>
+    <pre><span class="cmt">// DTO with constraints:</span>
+<span class="kw">public class</span> <span class="cls">CreateAccountRequest</span> {
+
+    <span class="an">@NotBlank</span>(message = <span class="str">"Name is required"</span>)
+    <span class="an">@Size</span>(min = <span class="num">2</span>, max = <span class="num">100</span>)
+    <span class="kw">private</span> <span class="cls">String</span> name;
+
+    <span class="an">@NotNull</span>
+    <span class="an">@DecimalMin</span>(value = <span class="str">"0.0"</span>, inclusive = <span class="kw">false</span>)
+    <span class="kw">private</span> <span class="cls">BigDecimal</span> initialBalance;
+
+    <span class="an">@Email</span>
+    <span class="kw">private</span> <span class="cls">String</span> email;
+
+    <span class="an">@Pattern</span>(regexp = <span class="str">"^[A-Z]{3}$"</span>, message = <span class="str">"Must be 3-letter currency code"</span>)
+    <span class="kw">private</span> <span class="cls">String</span> currency;
+}</pre>
+
+    <h3>Style 1: Let Spring Auto-Throw (Recommended)</h3>
+    <pre><span class="cmt">// Validation failure → Spring throws MethodArgumentNotValidException automatically</span>
+<span class="cmt">// Catch it in @RestControllerAdvice (see Bridge module Section 2)</span>
+<span class="an">@PostMapping</span>(<span class="str">"/accounts"</span>)
+<span class="kw">public</span> <span class="cls">Account</span> <span class="fn">create</span>(<span class="an">@Valid</span> <span class="an">@RequestBody</span> <span class="cls">CreateAccountRequest</span> req) {
+    <span class="cmt">// Only reaches here if ALL validations pass ✓</span>
+    <span class="kw">return</span> service.<span class="fn">create</span>(req);
+}</pre>
+
+    <h3>Style 2: Manual Check with BindingResult</h3>
+    <pre><span class="cmt">// BindingResult MUST immediately follow the validated parameter</span>
+<span class="an">@PostMapping</span>(<span class="str">"/accounts"</span>)
+<span class="kw">public</span> <span class="cls">ResponseEntity</span>&lt;?&gt; <span class="fn">create</span>(
+        <span class="an">@Valid</span> <span class="an">@RequestBody</span> <span class="cls">CreateAccountRequest</span> req,
+        <span class="cls">BindingResult</span> result) {
+
+    <span class="kw">if</span> (result.<span class="fn">hasErrors</span>()) {
+        <span class="cls">Map</span>&lt;<span class="cls">String</span>, <span class="cls">String</span>&gt; errors = result.<span class="fn">getFieldErrors</span>().<span class="fn">stream</span>()
+            .<span class="fn">collect</span>(<span class="cls">Collectors</span>.<span class="fn">toMap</span>(
+                <span class="cls">FieldError</span>::<span class="fn">getField</span>,
+                <span class="cls">FieldError</span>::<span class="fn">getDefaultMessage</span>
+            ));
+        <span class="kw">return</span> <span class="cls">ResponseEntity</span>.<span class="fn">badRequest</span>().<span class="fn">body</span>(errors);
+    }
+
+    <span class="kw">return</span> <span class="cls">ResponseEntity</span>.<span class="fn">status</span>(<span class="num">201</span>).<span class="fn">body</span>(service.<span class="fn">create</span>(req));
+}</pre>
+    <p>When <code>BindingResult</code> follows the validated parameter, Spring does NOT throw automatically — it populates the result object and lets you decide what to do.</p>
+
+    <h3>Common Validation Annotations</h3>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Annotation</th><th>What it checks</th><th>Null behavior</th></tr>
+        <tr><td><code>@NotNull</code></td><td>Field ≠ null</td><td>Fails if null</td></tr>
+        <tr><td><code>@NotBlank</code></td><td>String ≠ null, not empty, not whitespace</td><td>Fails if null</td></tr>
+        <tr><td><code>@NotEmpty</code></td><td>String/Collection ≠ null, not empty</td><td>Fails if null</td></tr>
+        <tr><td><code>@Size</code></td><td>String/Collection length bounds</td><td>Passes if null</td></tr>
+        <tr><td><code>@Min/@Max</code></td><td>Number bounds (integer)</td><td>Passes if null</td></tr>
+        <tr><td><code>@DecimalMin/@DecimalMax</code></td><td>Decimal bounds (BigDecimal)</td><td>Passes if null</td></tr>
+        <tr><td><code>@Email</code></td><td>Email format</td><td>Passes if null</td></tr>
+        <tr><td><code>@Pattern</code></td><td>Regex match</td><td>Passes if null</td></tr>
+        <tr><td><code>@Positive</code></td><td>> 0</td><td>Passes if null</td></tr>
+        <tr><td><code>@Past/@Future</code></td><td>Date comparison</td><td>Passes if null</td></tr>
+      </table>
+    </div>
+
+    <h3>@Validated vs @Valid</h3>
+    <pre><span class="cmt">// @Valid = standard JSR-380 annotation (javax.validation)</span>
+<span class="cmt">// @Validated = Spring's annotation — adds group validation support</span>
+
+<span class="kw">public interface</span> <span class="cls">OnCreate</span> {}
+<span class="kw">public interface</span> <span class="cls">OnUpdate</span> {}
+
+<span class="kw">public class</span> <span class="cls">AccountRequest</span> {
+    <span class="an">@NotNull</span>(groups = <span class="cls">OnCreate</span>.class) <span class="cmt">// only validated on create</span>
+    <span class="kw">private</span> <span class="cls">String</span> name;
+
+    <span class="an">@NotNull</span>(groups = <span class="cls">OnUpdate</span>.class) <span class="cmt">// only on update</span>
+    <span class="kw">private</span> <span class="cls">Long</span> id;
+}
+
+<span class="an">@PostMapping</span>
+<span class="kw">public</span> <span class="cls">Account</span> <span class="fn">create</span>(<span class="an">@Validated</span>(<span class="cls">OnCreate</span>.class) <span class="an">@RequestBody</span> <span class="cls">AccountRequest</span> req) { ... }
+
+<span class="an">@PutMapping</span>
+<span class="kw">public</span> <span class="cls">Account</span> <span class="fn">update</span>(<span class="an">@Validated</span>(<span class="cls">OnUpdate</span>.class) <span class="an">@RequestBody</span> <span class="cls">AccountRequest</span> req) { ... }</span></pre>
+
+    <div class="interview-box">
+      <div class="lbl">💬 Interview Answer</div>
+      <p>"@Valid triggers Bean Validation (JSR-380) during argument resolution in the HandlerAdapter phase — after JSON deserialization, before the controller method runs. Failure throws MethodArgumentNotValidException, which a @RestControllerAdvice can catch globally. If BindingResult immediately follows the validated parameter, Spring suppresses the exception and you get manual control. @Validated (Spring's version) adds validation group support — useful for different rules on create vs update endpoints."</p>
+    </div>
+  </div>
+
+  <div class="quiz-box">
+    <div class="quiz-label">🧠 Quiz — Section 4</div>
+    <div class="quiz-q">You annotate a String field with @Size(min=2, max=50). The client sends a null value. What happens?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" onclick="answer(this,false,3)">A. Validation fails — @Size rejects null values</button>
+      <button class="quiz-opt" onclick="answer(this,true,3)">B. Validation passes — @Size only validates non-null values; use @NotNull or @NotBlank to reject null</button>
+      <button class="quiz-opt" onclick="answer(this,false,3)">C. Spring throws a NullPointerException before validation runs</button>
+      <button class="quiz-opt" onclick="answer(this,false,3)">D. The behavior is undefined by the JSR-380 spec</button>
+    </div>
+    <div class="quiz-explain" id="explain-3">
+      ✅ Most Bean Validation constraints (including @Size, @Min, @Max, @Email, @Pattern) treat null as valid and skip the check. This follows the principle that null and "absent" should be handled by @NotNull or @NotBlank separately from format/range checks. To require a non-empty string, you typically combine: <code>@NotBlank @Size(max=50)</code>.
+    </div>
+  </div>
+
+  <div class="nav-row">
+    <button class="btn btn-ghost" onclick="goTo(2)">← Back</button>
+    <button class="btn btn-primary" onclick="goTo(4)">Next: Filters vs Interceptors →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SECTION 5 — Filters vs Interceptors
+═══════════════════════════════════════════════════ -->
+<div class="section" id="sec-4">
+  <div class="section-meta">Section 5 of 5 · Spring MVC</div>
+  <div class="section-title">Filters vs Interceptors</div>
+  <div class="pomodoro-badge">🍅 Pomodoro · 25 min</div>
+
+  <div class="card card-eli5">
+    <div class="card-label">🧒 ELI5 — Airport vs Hotel</div>
+    <p><strong>Filters</strong> are like airport security — they check every single person entering the country, regardless of which hotel they're going to. They work at the border (Servlet container level) and don't know anything about your destination.</p>
+    <p><strong>Interceptors</strong> are like the hotel's own staff — they only engage with guests who are specifically staying at that hotel (Spring MVC), and they know which room (controller method) the guest is going to.</p>
+  </div>
+
+  <div class="comp-grid">
+    <div class="comp-card comp-a">
+      <h4 style="color:var(--cyan)">🔵 Servlet Filter</h4>
+      <ul>
+        <li>Javax/Jakarta Servlet API</li>
+        <li>Runs BEFORE DispatcherServlet</li>
+        <li>Sees raw HttpServletRequest / Response</li>
+        <li>Can intercept ANY request (static files, actuator, etc.)</li>
+        <li>No access to Spring beans directly (unless you grab from context)</li>
+        <li>Can modify request body / headers</li>
+        <li>Use for: CORS, auth tokens, compression, logging at network level</li>
+      </ul>
+    </div>
+    <div class="comp-card comp-b">
+      <h4 style="color:#c4b5fd">🟣 HandlerInterceptor</h4>
+      <ul>
+        <li>Spring MVC specific</li>
+        <li>Runs INSIDE DispatcherServlet</li>
+        <li>Has access to HandlerMethod (knows which controller runs)</li>
+        <li>Only intercepts Spring MVC requests</li>
+        <li>Full Spring bean injection</li>
+        <li>preHandle / postHandle / afterCompletion hooks</li>
+        <li>Use for: auth, audit logging, rate limiting at controller level</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card card-tech">
+    <div class="card-label">⚙️ Implementing a Filter</div>
+    <pre><span class="an">@Component</span>
+<span class="kw">public class</span> <span class="cls">RequestLoggingFilter</span> <span class="kw">implements</span> <span class="cls">Filter</span> {
+
+    <span class="an">@Override</span>
+    <span class="kw">public void</span> <span class="fn">doFilter</span>(<span class="cls">ServletRequest</span> req, <span class="cls">ServletResponse</span> res, <span class="cls">FilterChain</span> chain)
+            <span class="kw">throws</span> <span class="cls">IOException</span>, <span class="cls">ServletException</span> {
+
+        <span class="cls">HttpServletRequest</span> request = (<span class="cls">HttpServletRequest</span>) req;
+        <span class="kw">long</span> start = <span class="cls">System</span>.<span class="fn">currentTimeMillis</span>();
+
+        <span class="cmt">// Pre-processing (before DispatcherServlet)</span>
+        log.<span class="fn">info</span>(<span class="str">"→ {} {}"</span>, request.<span class="fn">getMethod</span>(), request.<span class="fn">getRequestURI</span>());
+
+        chain.<span class="fn">doFilter</span>(req, res); <span class="cmt">// pass to next filter / DispatcherServlet</span>
+
+        <span class="cmt">// Post-processing (after full response)</span>
+        log.<span class="fn">info</span>(<span class="str">"← {} ms"</span>, <span class="cls">System</span>.<span class="fn">currentTimeMillis</span>() - start);
+    }
+}
+
+<span class="cmt">// Or with ordering + URL pattern:</span>
+<span class="an">@Bean</span>
+<span class="kw">public</span> <span class="cls">FilterRegistrationBean</span>&lt;<span class="cls">RequestLoggingFilter</span>&gt; <span class="fn">loggingFilter</span>() {
+    <span class="kw">var</span> reg = <span class="kw">new</span> <span class="cls">FilterRegistrationBean</span>&lt;&gt;(<span class="kw">new</span> <span class="cls">RequestLoggingFilter</span>());
+    reg.<span class="fn">addUrlPatterns</span>(<span class="str">"/api/*"</span>);
+    reg.<span class="fn">setOrder</span>(<span class="num">1</span>); <span class="cmt">// lower = runs first</span>
+    <span class="kw">return</span> reg;
+}</pre>
+  </div>
+
+  <div class="card card-tech">
+    <div class="card-label">⚙️ Implementing a HandlerInterceptor</div>
+    <pre><span class="an">@Component</span>
+<span class="kw">public class</span> <span class="cls">AuthInterceptor</span> <span class="kw">implements</span> <span class="cls">HandlerInterceptor</span> {
+
+    <span class="an">@Autowired</span>
+    <span class="kw">private</span> <span class="cls">JwtService</span> jwtService; <span class="cmt">// Spring beans available here</span>
+
+    <span class="an">@Override</span>
+    <span class="kw">public boolean</span> <span class="fn">preHandle</span>(<span class="cls">HttpServletRequest</span> req, <span class="cls">HttpServletResponse</span> res,
+                               <span class="cls">Object</span> handler) {
+        <span class="kw">if</span> (handler <span class="kw">instanceof</span> <span class="cls">HandlerMethod</span> hm) {
+            <span class="cmt">// Can inspect the target controller method</span>
+            <span class="kw">if</span> (hm.<span class="fn">hasMethodAnnotation</span>(<span class="cls">RequiresAuth</span>.class)) {
+                <span class="cls">String</span> token = req.<span class="fn">getHeader</span>(<span class="str">"Authorization"</span>);
+                <span class="kw">if</span> (!jwtService.<span class="fn">isValid</span>(token)) {
+                    res.<span class="fn">setStatus</span>(<span class="num">401</span>);
+                    <span class="kw">return false</span>; <span class="cmt">// abort — controller never runs</span>
+                }
+            }
+        }
+        <span class="kw">return true</span>; <span class="cmt">// continue</span>
+    }
+
+    <span class="an">@Override</span>
+    <span class="kw">public void</span> <span class="fn">afterCompletion</span>(<span class="cls">HttpServletRequest</span> req, <span class="cls">HttpServletResponse</span> res,
+                                  <span class="cls">Object</span> handler, <span class="cls">Exception</span> ex) {
+        <span class="cmt">// Cleanup — always runs</span>
+    }
+}
+
+<span class="cmt">// Register it:</span>
+<span class="an">@Configuration</span>
+<span class="kw">public class</span> <span class="cls">WebConfig</span> <span class="kw">implements</span> <span class="cls">WebMvcConfigurer</span> {
+    <span class="an">@Autowired</span> <span class="cls">AuthInterceptor</span> authInterceptor;
+
+    <span class="an">@Override</span>
+    <span class="kw">public void</span> <span class="fn">addInterceptors</span>(<span class="cls">InterceptorRegistry</span> registry) {
+        registry.<span class="fn">addInterceptor</span>(authInterceptor)
+                .<span class="fn">addPathPatterns</span>(<span class="str">"/api/**"</span>)
+                .<span class="fn">excludePathPatterns</span>(<span class="str">"/api/health"</span>, <span class="str">"/api/auth/login"</span>);
+    }
+}</pre>
+
+    <div class="table-wrap">
+      <table>
+        <tr><th>Decision</th><th>Use Filter</th><th>Use Interceptor</th></tr>
+        <tr><td>You need to intercept static resources</td><td><span class="badge badge-green">✓ Filter</span></td><td><span class="badge badge-red">✗</span></td></tr>
+        <tr><td>You need Spring beans injected</td><td><span class="badge badge-amber">Workaround needed</span></td><td><span class="badge badge-green">✓ Interceptor</span></td></tr>
+        <tr><td>You need to know which controller runs</td><td><span class="badge badge-red">✗</span></td><td><span class="badge badge-green">✓ HandlerMethod</span></td></tr>
+        <tr><td>Modify raw request/response body</td><td><span class="badge badge-green">✓ Filter</span></td><td><span class="badge badge-red">✗</span></td></tr>
+        <tr><td>Auth based on controller annotations</td><td><span class="badge badge-red">✗</span></td><td><span class="badge badge-green">✓ Interceptor</span></td></tr>
+        <tr><td>CORS, content encoding, gzip</td><td><span class="badge badge-green">✓ Filter</span></td><td><span class="badge badge-amber">Possible</span></td></tr>
+      </table>
+    </div>
+
+    <div class="interview-box">
+      <div class="lbl">💬 Interview Answer</div>
+      <p>"Filters are Servlet-level — they run before DispatcherServlet, see raw HttpServletRequest/Response, and intercept everything including static files. They can't easily access Spring beans. Interceptors are Spring MVC-level — they run inside DispatcherServlet, have access to the HandlerMethod (so they know which controller and method), and support full Spring injection. Use Filters for cross-cutting network concerns (CORS, compression, request decoding); use Interceptors when you need Spring context or controller-level awareness (auth based on annotations, audit logging per endpoint)."</p>
+    </div>
+  </div>
+
+  <div class="quiz-box">
+    <div class="quiz-label">🧠 Quiz — Section 5</div>
+    <div class="quiz-q">You need to implement JWT auth that skips endpoints annotated with @Public. Which mechanism do you choose and why?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" onclick="answer(this,false,4)">A. Servlet Filter — it runs first and is always executed</button>
+      <button class="quiz-opt" onclick="answer(this,true,4)">B. HandlerInterceptor — it has access to HandlerMethod so you can check for the @Public annotation on the controller method</button>
+      <button class="quiz-opt" onclick="answer(this,false,4)">C. Either works equally well for annotation inspection</button>
+      <button class="quiz-opt" onclick="answer(this,false,4)">D. Neither — use @Aspect with a pointcut targeting non-@Public methods</button>
+    </div>
+    <div class="quiz-explain" id="explain-4">
+      ✅ HandlerInterceptor is the right choice here. In <code>preHandle()</code>, you receive the <code>handler</code> as a <code>HandlerMethod</code> object, which lets you call <code>hm.hasMethodAnnotation(Public.class)</code> or check class-level annotations. A Servlet Filter doesn't have access to controller metadata — it only sees the raw URL and headers, not Spring annotations on methods.
+    </div>
+  </div>
+
+  <div class="nav-row">
+    <button class="btn btn-ghost" onclick="goTo(3)">← Back</button>
+    <button class="btn btn-primary" onclick="finish()">🎉 Complete Module</button>
+  </div>
+</div>
+
+<!-- COMPLETION -->
+<div id="completion">
+  <div class="completion-emoji">🌐🚀✅</div>
+  <div class="completion-title">Spring MVC — Complete!</div>
+  <div class="completion-sub">You now understand the full request pipeline from TCP to JSON response.</div>
+  <div class="cheatsheet">
+    <div class="cs-section">
+      <div class="cs-section-title">DispatcherServlet</div>
+      <div class="cs-item">Front Controller — every request goes through one entry point</div>
+      <div class="cs-item">HandlerMapping → finds the controller method for this URL</div>
+      <div class="cs-item">HandlerAdapter → invokes the method, resolves arguments</div>
+      <div class="cs-item">MessageConverter → serializes return value to JSON (Jackson)</div>
+      <div class="cs-item">RequestMappingHandlerMapping builds URL map at startup</div>
+      <div class="cs-item">Content negotiation: Accept header determines JSON vs XML</div>
+    </div>
+    <div class="cs-section">
+      <div class="cs-section-title">Request Lifecycle</div>
+      <div class="cs-item">Filter chain → DispatcherServlet → HandlerMapping → Interceptor.preHandle → Controller → Interceptor.postHandle → MessageConverter → Interceptor.afterCompletion</div>
+      <div class="cs-item">afterCompletion always runs (even on exception) — use for metrics/cleanup</div>
+      <div class="cs-item">postHandle NOT called if controller throws</div>
+      <div class="cs-item">HandlerMethodArgumentResolver populates each method parameter</div>
+    </div>
+    <div class="cs-section">
+      <div class="cs-section-title">Parameter Binding</div>
+      <div class="cs-item">@PathVariable = URL path segment — resource identity</div>
+      <div class="cs-item">@RequestParam = query string — filtering, pagination</div>
+      <div class="cs-item">@RequestBody = JSON body — POST/PUT structured data</div>
+      <div class="cs-item">@RequestHeader, @CookieValue for other input sources</div>
+    </div>
+    <div class="cs-section">
+      <div class="cs-section-title">Validation</div>
+      <div class="cs-item">@Valid triggers Bean Validation during argument resolution</div>
+      <div class="cs-item">Failure → MethodArgumentNotValidException (catch in @RestControllerAdvice)</div>
+      <div class="cs-item">BindingResult after validated param = manual error handling, no auto-throw</div>
+      <div class="cs-item">Most constraints pass null — add @NotNull/@NotBlank explicitly</div>
+      <div class="cs-item">@Validated (Spring) adds validation group support vs @Valid</div>
+    </div>
+    <div class="cs-section">
+      <div class="cs-section-title">Filters vs Interceptors</div>
+      <div class="cs-item">Filter = Servlet-level, before DispatcherServlet, sees raw request</div>
+      <div class="cs-item">Interceptor = Spring MVC-level, knows HandlerMethod, full Spring injection</div>
+      <div class="cs-item">Use Filter for: CORS, gzip, request modification</div>
+      <div class="cs-item">Use Interceptor for: auth with annotation checking, audit logging per endpoint</div>
+    </div>
+  </div>
+  <button class="btn-restart" onclick="restart()">↩ Restart Module</button>
+</div>
+
+</div>
+
+<script>
+const SECTIONS=5,TOTAL=130*60;
+let current=0,done=new Set(),answered=new Array(SECTIONS).fill(false),elapsed=0;
+const timerEl=document.getElementById('timer'),progBar=document.getElementById('prog-bar'),navDots=document.getElementById('nav-dots');
+const names=['DispServlet','Req Lifecycle','Param Binding','Validation','Filters/Interceptors'];
+function buildDots(){navDots.innerHTML='';for(let i=0;i<SECTIONS;i++){const d=document.createElement('button');d.className='dot'+(i===current?' active':'')+(done.has(i)&&i!==current?' done':'');d.textContent=i+1;d.title=names[i];d.onclick=()=>goTo(i);navDots.appendChild(d)}}
+function goTo(idx){if(idx<0||idx>=SECTIONS)return;document.getElementById('sec-'+current).classList.remove('active');done.add(current);current=idx;document.getElementById('sec-'+current).classList.add('active');document.getElementById('completion').classList.remove('show');document.getElementById('completion').style.display='none';buildDots();window.scrollTo({top:0,behavior:'smooth'})}
+function finish(){document.getElementById('sec-'+current).classList.remove('active');done.add(current);const c=document.getElementById('completion');c.style.display='block';c.classList.add('show');buildDots();window.scrollTo({top:0,behavior:'smooth'})}
+function restart(){current=0;done.clear();elapsed=0;answered.fill(false);const c=document.getElementById('completion');c.classList.remove('show');c.style.display='none';document.getElementById('sec-0').classList.add('active');document.querySelectorAll('.quiz-opt').forEach(b=>{b.disabled=false;b.classList.remove('correct','wrong')});document.querySelectorAll('.quiz-explain').forEach(e=>e.classList.remove('show'));buildDots();updateTimer()}
+function answer(btn,correct,section){if(answered[section])return;answered[section]=true;const box=btn.closest('.quiz-box');box.querySelectorAll('.quiz-opt').forEach(b=>{b.disabled=true;if(b===btn)b.classList.add(correct?'correct':'wrong')});if(!correct)box.querySelectorAll('.quiz-opt').forEach(b=>{if(b.getAttribute('onclick')&&b.getAttribute('onclick').includes('true'))b.classList.add('correct')});const ex=document.getElementById('explain-'+section);if(ex)ex.classList.add('show')}
+function fmt(s){const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),ss=s%60;if(h>0)return`${h}:${String(m).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;return`${String(m).padStart(2,'0')}:${String(ss).padStart(2,'0')}`}
+function updateTimer(){const r=Math.max(0,TOTAL-elapsed);timerEl.textContent=fmt(r);progBar.style.width=Math.min(100,(elapsed/TOTAL)*100)+'%';timerEl.classList.remove('warn','danger');if(r<=60)timerEl.classList.add('danger');else if(r<=300)timerEl.classList.add('warn')}
+setInterval(()=>{elapsed++;updateTimer()},1000);
+buildDots();updateTimer();
+</script>
+</body>
+</html>

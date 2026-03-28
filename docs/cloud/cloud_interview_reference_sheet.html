@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cloud Interview Reference Sheet</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0e1a;
+      --surface: #111827;
+      --surface-2: #1a2235;
+      --text: #e5eefb;
+      --muted: #9fb1cc;
+      --dim: #7f92b2;
+      --cyan: #00d4ff;
+      --purple: #7c3aed;
+      --green: #10b981;
+      --amber: #f59e0b;
+      --red: #ef4444;
+      --line: rgba(255,255,255,0.08);
+      --shadow: 0 10px 30px rgba(0,0,0,0.35);
+      --radius: 16px;
+      --topbar-h: 78px;
+      --sidebar-w: 260px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: radial-gradient(circle at top right, rgba(124,58,237,0.12), transparent 24%), var(--bg);
+      color: var(--text);
+      font-family: "Syne", system-ui, sans-serif;
+      line-height: 1.45;
+    }
+
+    .topbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: var(--topbar-h);
+      background: rgba(10,14,26,0.88);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--line);
+      z-index: 1000;
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 16px;
+      align-items: center;
+      padding: 14px 22px;
+    }
+
+    .title-wrap { min-width: 0; }
+    .title {
+      font-size: 1.2rem;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      margin: 0;
+    }
+    .subtitle {
+      color: var(--muted);
+      font-size: 0.84rem;
+      margin-top: 4px;
+    }
+
+    .timer-box {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 8px;
+      min-width: 220px;
+    }
+
+    .timer-label-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .mode-btn {
+      border: 1px solid rgba(0,212,255,0.25);
+      background: linear-gradient(180deg, rgba(0,212,255,0.16), rgba(124,58,237,0.12));
+      color: var(--text);
+      border-radius: 999px;
+      padding: 11px 16px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+      white-space: nowrap;
+    }
+
+    .mode-btn:hover { transform: translateY(-1px); border-color: rgba(0,212,255,0.5); }
+
+    .timer {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--green);
+      letter-spacing: 0.06em;
+    }
+    .timer.warning { color: var(--amber); }
+    .timer.danger {
+      color: var(--red);
+      animation: pulse 1s infinite;
+    }
+    @keyframes pulse {
+      0% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.75; transform: scale(1.03); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    .progress {
+      width: 220px;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.07);
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .progress > span {
+      display: block;
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--cyan), var(--purple));
+      transition: width 1s linear, background 0.2s ease;
+    }
+
+    .app {
+      display: grid;
+      grid-template-columns: var(--sidebar-w) minmax(0, 1fr);
+      gap: 28px;
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: calc(var(--topbar-h) + 24px) 22px 32px;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: calc(var(--topbar-h) + 18px);
+      align-self: start;
+      max-height: calc(100vh - var(--topbar-h) - 36px);
+      overflow: auto;
+      background: linear-gradient(180deg, rgba(17,24,39,0.92), rgba(26,34,53,0.92));
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .sidebar h2 {
+      margin: 0 0 14px;
+      font-size: 0.9rem;
+      color: var(--cyan);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-family: "JetBrains Mono", monospace;
+    }
+
+    .nav-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .nav-link {
+      text-decoration: none;
+      color: var(--text);
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.05);
+      padding: 12px 13px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+    }
+
+    .nav-link:hover {
+      background: rgba(0,212,255,0.06);
+      border-color: rgba(0,212,255,0.22);
+      transform: translateX(2px);
+    }
+
+    .nav-count {
+      font-family: "JetBrains Mono", monospace;
+      color: var(--cyan);
+      font-size: 0.78rem;
+      opacity: 0.85;
+    }
+
+    .content {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .topic {
+      background: linear-gradient(180deg, rgba(17,24,39,0.88), rgba(26,34,53,0.88));
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      padding: 24px;
+      scroll-margin-top: calc(var(--topbar-h) + 16px);
+    }
+
+    .topic-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .topic-title {
+      margin: 0;
+      font-size: 1.4rem;
+      font-weight: 800;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.78rem;
+      background: rgba(124,58,237,0.16);
+      border: 1px solid rgba(124,58,237,0.28);
+      color: #d9ccff;
+    }
+
+    .qa-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .qa {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .question {
+      width: 100%;
+      text-align: left;
+      background: transparent;
+      color: var(--text);
+      border: none;
+      border-left: 4px solid var(--cyan);
+      padding: 16px 18px;
+      font: inherit;
+      font-weight: 800;
+      font-size: 1rem;
+      cursor: pointer;
+      position: relative;
+      transition: background 0.18s ease, border-left-color 0.18s ease;
+    }
+
+    .question:hover {
+      background: rgba(0,212,255,0.04);
+      border-left-color: #6be8ff;
+    }
+
+    .question .hint {
+      display: none;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.74rem;
+      color: var(--dim);
+      font-weight: 600;
+      margin-left: 10px;
+    }
+
+    .recall-mode .question .hint { display: inline; }
+    .scan-mode .question { cursor: default; }
+
+    .answer-wrap {
+      display: grid;
+      grid-template-rows: 1fr;
+      transition: grid-template-rows 0.28s ease;
+    }
+    .answer-inner {
+      overflow: hidden;
+    }
+
+    .recall-mode .qa.collapsed .answer-wrap {
+      grid-template-rows: 0fr;
+    }
+
+    .answer {
+      padding: 0 18px 18px 26px;
+      color: var(--muted);
+    }
+
+    .answer p {
+      margin: 10px 0;
+    }
+
+    .answer strong {
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    .answer ul {
+      margin: 8px 0 10px 18px;
+      padding: 0;
+    }
+
+    .answer li { margin: 5px 0; }
+
+    pre {
+      margin: 14px 0 2px;
+      padding: 16px;
+      border-radius: 14px;
+      background: #050810;
+      border: 1px solid rgba(255,255,255,0.06);
+      overflow: auto;
+      color: #dbeafe;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.85rem;
+      line-height: 1.55;
+    }
+
+    .token-keyword { color: #c084fc; }
+    .token-type { color: #67e8f9; }
+    .token-string { color: #86efac; }
+    .token-number { color: #f9a8d4; }
+    .token-comment { color: #7c8aa5; }
+    .token-fn { color: #fbbf24; }
+    .token-anno { color: #60a5fa; }
+
+    .footer-note {
+      color: var(--dim);
+      font-size: 0.88rem;
+      text-align: center;
+      padding: 8px 0 0;
+    }
+
+    @media (max-width: 1080px) {
+      .app {
+        grid-template-columns: 1fr;
+      }
+      .sidebar {
+        position: static;
+        max-height: none;
+      }
+      .nav-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      }
+    }
+
+    @media (max-width: 800px) {
+      .topbar {
+        grid-template-columns: 1fr;
+        height: auto;
+        padding: 14px 16px;
+      }
+      .timer-box {
+        align-items: flex-start;
+        min-width: 0;
+      }
+      .progress { width: 100%; }
+      .app {
+        padding: 166px 14px 24px;
+        gap: 18px;
+      }
+      .topic { padding: 18px; }
+      .question { font-size: 0.96rem; }
+    }
+  </style>
+</head>
+<body class="scan-mode">
+  <header class="topbar">
+    <div class="title-wrap">
+      <h1 class="title">Cloud Interview Reference Sheet</h1>
+      <div class="subtitle">30-minute fast scan • concise, interview-ready answers only</div>
+    </div>
+
+    <button class="mode-btn" id="modeToggle" aria-pressed="false">Switch to RECALL MODE</button>
+
+    <div class="timer-box">
+      <div class="timer-label-row">
+        <div class="timer" id="timer">30:00</div>
+      </div>
+      <div class="progress" aria-label="30 minute countdown progress">
+        <span id="progressFill"></span>
+      </div>
+    </div>
+  </header>
+
+  <main class="app">
+    <aside class="sidebar">
+      <h2>Topics</h2>
+      <nav class="nav-list">
+        <a class="nav-link" href="#aws-availability"><span>AWS Availability & Regions</span><span class="nav-count">2</span></a>
+        <a class="nav-link" href="#messaging-eventing"><span>Messaging & Eventing</span><span class="nav-count">3</span></a>
+        <a class="nav-link" href="#storage-data"><span>Storage, Encryption & Archiving</span><span class="nav-count">6</span></a>
+        <a class="nav-link" href="#lambda-serverless"><span>Lambda & Serverless</span><span class="nav-count">9</span></a>
+        <a class="nav-link" href="#aws-networking"><span>AWS Networking & Service Communication</span><span class="nav-count">7</span></a>
+        <a class="nav-link" href="#cloud-basics"><span>Cloud Fundamentals</span><span class="nav-count">4</span></a>
+        <a class="nav-link" href="#gcp"><span>GCP Basics</span><span class="nav-count">4</span></a>
+        <a class="nav-link" href="#containers-devops"><span>Containers & DevOps</span><span class="nav-count">3</span></a>
+        <a class="nav-link" href="#security-reliability"><span>Security & Reliability</span><span class="nav-count">3</span></a>
+      </nav>
+    </aside>
+
+    <section class="content">
+      <article class="topic" id="aws-availability">
+        <div class="topic-header">
+          <h2 class="topic-title">AWS Availability & Regions</h2>
+          <span class="badge">2 questions</span>
+        </div>
+        <div class="qa-list">
+          <div class="qa">
+            <button class="question">Availability Zones in AWS <span class="hint">click to reveal</span></button>
+            <div class="answer-wrap"><div class="answer-inner"><div class="answer">
+              <p><strong>Answer:</strong> An Availability Zone is a physically separate data center inside an AWS Region. Each AZ has independent power, cooling, and networking, but low-latency connectivity to other AZs in the same region.</p>
+              <p><strong>Why it matters:</strong> It improves fault tolerance and high availability by reducing the risk of a single data center failure taking down the whole application.</p>
+              <p><strong>Advantage:</strong> Services can be deployed across multiple AZs to avoid single points of failure.</p>
+            </div></div></div>
+          </div>
+
+          <div class="qa">
+            <button class="question">Availability Zone vs Region <span class="hint">click to reveal</span></button>
+            <div class="answer-wrap"><div class="answer-inner"><div class="answer">
+              <p><strong>Answer:</strong> A Region is a geographic area such as <code>us-east-1</code>. An Availability Zone is an isolated data center within that region such as <code>us-east-1a</code>.</p>
+              <p><strong>Why it matters:</strong> Regions help with latency, geography, and data residency. AZs help with high availability inside a region.</p>
+              <p><strong>Advantage:</strong> You can choose a region close to users and still deploy redundantly across multiple AZs within that region.</p>
+            </div></div></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="topic" id="messaging-eventing">
+        <div class="topic-header">
+          <h2 class="topic-title">Messaging & Eventing</h2>
+          <span class="badge">3 questions</span>
+        </div>
+        <div class="qa-list">
+          <div class="qa">
+            <button class="question">How to route messages through SQS by criteria <span class="hint">click to reveal</span></button>
+            <div class="answer-wrap"><div class="answer-inner"><div class="answer">
+              <p><strong>Answer:</strong> SQS itself does not do message filtering. Common patterns are:</p>
+              <ul>
+                <li>Attach message attributes and let consumers decide whether to process or ignore them.</li>
+                <li>Use SNS in front of SQS and apply SNS filter policies to route events to different queues.</li>
+                <li>Create separate queues for different message types.</li>
+              </ul>
+              <p><strong>Why it matters:</strong> It keeps producers and consumers decoupled and makes routing explicit.</p>
+              <p><strong>Advantage:</strong> Cleaner service ownership, easier scaling, and better separation of workloads.</p>
+            </div></div></div>
+          </div>
+
+          <div class="qa">
+            <button class="question">Difference between SQS, SNS, and EventBridge <span class="hint">click to reveal</span></button>
+            <div class="answer-wrap"><div class="answer-inner"><div class="answer">
+              <p><strong>SQS:</strong> Queue-based async messaging. One consumer processes a given message.</p>
+              <p><strong>SNS:</strong> Pub/sub fan-out. One message can be delivered to many subscribers.</p>
+              <p><strong>EventBridge:</strong> Event bus for routing events across AWS services and custom apps using rules.</p>
+              <p><strong>Why it matters:</strong> They solve different async communication patterns.</p>
+              <p><strong>Advantage:</strong> Decoupled services, better scalability, and more resilient integrations.</p>
+            </div></div></div>
+          </div>
+
+          <div class="qa">
+            <button class="question">Cloud Pub/Sub vs Kafka <span class="hint">click to reveal</span></button>
+            <div class="answer-wrap"><div class="answer-inner"><div class="answer">
+              <p><strong>Answer:</strong> Both are messaging systems. Google Cloud Pub/Sub is fully managed and simpler to operate. Kafka gives more control over partitions, retention, ordering, and stream processing, but requires more operational ownership unless using a managed Kafka service.</p>
+              <p><strong>Why it matters:</strong> The choice depends on whether you want ease of use or deeper control.</p>
+              <p><strong>Advantage:</strong> Pub/Sub reduces ops overhead. Kafka supports richer streaming use cases and ecosystem tooling.</p>
+            </div></div></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="topic" id="storage-data">
+        <div class="topic-header">
+          <h2 class="topic-title">Storage, Encryption & Archiving</h2>
+          <span class="badge">6 questions</span>
+        </div>
+        <div class="qa-list">
+          <div class="qa">
+            <button class="question">AWS S3 data encryption <span class="hint">click to reveal</span></button>
+            <div class="answer-wrap"><div class="answer-inner"><div class="answer">
+              <p><strong>Answer:</strong> S3 supports encryption at rest and in transit. At rest, the common options are SSE-S3 and SSE-KMS. You can also encrypt client-side before upload. In transit, HTTPS protects data moving over the network.</p>
+              <p><strong>Why it matters:</strong> It protects sensitive data and helps meet compliance requirements.</p>
+              <p><strong>Advantage:</strong> Strong security with minimal application changes.</p>
+            </div></div></div>
+          </div>
+
+          <div class="qa">
+            <button class="question">Data archiving in AWS <span class="hint">click to reveal</span></button>
+            <div class="answer-wrap"><div class="answer-inner"><div class="answer">
+              <p><strong>Answer:</strong> Use S3 lifecycle rules to move infrequently accessed data into lower-cost classes such as Glacier or Deep Archive.</p>
+              <p><strong>Why it matters:</strong> Archive data is rarely accessed but often must be retained for compliance or historical use.</p>
+              <p><strong>Advantage:</strong> Major storage cost savings with automated lifecycle management.</p>
+            </div></div></div>
+          </div>
+
+          <div class="qa">
+            <button class="question">What is Google Cloud Storage (GCS)? <span class="hint">click to reveal</span></button>
+            <div class="answer-wrap"><div class="answer-inner"><div class="answer">
+              <p><strong>Answer:</strong> GCS is Google Cloud’s object storage service for files such as images, logs, backups, and documents.</p>
+              <p><strong>Why it matters:</strong> It provides durable, scalable storage for unstructured data.</p>
+              <p><strong>Advantage:</strong> High durability, lifecycle management, encryption, and easy integration with other GCP services.</p>
+            </div></div></div>
+          </div>
+
+          <div class="qa">
+            <button class="question">AWS: EC2 vs S3 vs Load Balancer — what problem each solves <span class="hint">click to reveal</span></button>
+            <div class="answer-wrap"><div class="answer-inner"><div class="answer">
+              <p><strong>EC2:</strong> Virtual compute that runs backend services and applications. It solves the compute problem.</p>
+              <p><strong>S3:</strong> Object storage for files, backups, logs, and static assets. It solves the storage problem.</p>
+              <p><strong>Load Balancer:</strong> Distributes incoming traffic across multiple instances. It solves the scalability and availability problem.</p>
+              <p><strong>How they work together:</strong> User traffic hits the Load Balancer, requests are routed to EC2 instances, and application files or assets are stored in S3.</p>
+            </div></div></div>
+          </div>
+
+          <div class="qa">
+            <button class="question">What is S3? When do you use it? <span class="hint">click to reveal</span></button>
+            <div class="answer-wrap"><div class="answer-inner"><div class="answer">
+              <p><strong>Answer:</strong> S3 is AWS object storage. It stores files as objects in buckets and scales automatically.</p>
+              <p><strong>Use cases:</strong> Static assets, user uploads, logs, backups, and data archiving.</p>
+              <p><strong>Advantage:</strong> Extremely durable, low maintenance, cost-effective, and integrates well with other AWS services.</p>
+            </div></div></div>
+          </div>
+
+          <div class="qa">
+            <button class="question">BigQuery — what is it and why use it? <span class="hint">click to reveal</span></button>
+            <div class="answer-wrap"><div class="answer-inner"><div class="answer">
+              <p><strong>Answer:</strong> BigQuery is Google Cloud’s serverless data warehouse for large-scale analytics using SQL.</p>
+              <p><strong>Why it matters:</strong> It is built for high-volume analytical queries without managing infrastructure.</p>
+              <p><strong>Advantage:</strong> Fast analytical queries, no server management, and pay-per-query pricing.</p>
+            </div></div></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="topic" id="lambda-serverless">
+        <div class="topic-header">
+          <h2 class="topic-title">Lambda & Serverless</h2>
+          <span class="badge">9 questions</span>
+        </div>
+        <div class="qa-list">
+          <div class="qa">
+            <button class="question">How will we create Lambda functions on AWS? <span class="hint">click to reveal</span></button>
+            <div class="answer-wrap"><div class="answer-inner"><div class="answer">
+              <p><strong>Answer:</strong> Write the function code, choose a runtime, configure handler, memory, timeout, and permissions, then deploy using the AWS Console, AWS CLI, or infrastructure as code such as Terraform.</p>
+              <p><strong>Why it matters:</strong> Lambda is event-driven compute without server management.</p>
+              <p><strong>Advantage:</strong> Auto-scaling, pay-per-use, and reduced ops overhead.</p>
+            </div></div></div>
+          </div>
+
+          <div class="qa">
+            <button class="question">Providing access from Lambda to S3 <span class="hint">click to reveal</span></button>
+            <div class="answer-wrap"><div class="answer-inner"><div class="answer">
+              <p><strong>Answer:</strong> Create an IAM role with the required S3 permissions and attach that role to the Lambda function.</p>
+              <p><strong>Why it matters:</strong> Lambda should access AWS resources securely without hard-coded credentials.</p>
+              <p><strong>Advantage:</strong> Safer access control and support for least-privilege design.</p>
+            </div></div></div>
+          </div>
+
+          <div class="qa">
+            <button class="question">How to write a Lambda function in a Maven project <span class="hint">click to reveal</span></button>
+            <div class="answer-wrap"><div class="answer-inner"><div class="answer">
+              <p><strong>Answer:</strong> In Java, create a Maven project, add the AWS Lambda dependencies, implement a handler such as <code>RequestHandler</code>, and package the project as a JAR with Maven.</p>
+<pre><code><span class="token-keyword">public class</span> <span class="token-type">Handler</span> <span class="token-keyword">implements</span> <span class="token-type">RequestHandler</span>&lt;<span class="token-type">Map</span>&lt;<span class="token-type">String</span>, <span class="token-type">String</span>&gt;, <span class="token-type">String</span>&gt; {
+    <span class="token-keyword">public</span> <span class="token-type">String</span> <span class="token-fn">handleRequest</span>(<span class="token-type">Map</span>&lt;<span class="token-type">String</span>, <span class="token-type">String</span>&gt; input, <span class="token-type">Context</span> context) {
+        <span class="token-keyword">return</span> <span class="token-string">"Hello Lambda"</span>;
+    }
+}</code></pre>
+              <p><strong>Why it matters:</strong> Maven gives dependency management and a repeatable build process for Java Lambdas.</p>
+              <p><strong>Advantage:</strong> Clean packaging and easy CI/CD integration.</p>
+            </div></div></div>
+          </div>
+
+          <div class="qa">
+            <button class="question">How to upload AWS Lambda configuration through Terraform <span class="hint">click to reveal</span></button>
+            <div class="answer-wrap"><div class="answer-inner"><div class="answer">
+              <p><strong>Answer:</strong> Define the Lambda function, execution role, handler, runtime, memory, timeout, environment variables, and code source in Terraform. Then run <code>terraform apply</code> to create or update it.</p>
+              <p><strong>Why it matters:</strong> It keeps infrastructure versioned and repeatable.</p>
+              <p><strong>Advantage:</strong> Consistent deployments, reviewable changes, and easier environment management.</p>
+            </div></div></div>
+          </div>
+
+          <div class="qa">
+            <button class="question">How to upload Lambda function code through AWS CLI <span class="hint">click to reveal</span></button>
+            <div class="answer-wrap"><div class="answer-inner"><div class="answer">
+              <p><strong>Answer:</strong> Package the code as a zip or JAR and update the function using the AWS CLI.</p>
+<pre><code>aws lambda update-function-code \
+  --function-name my-fn \
+  --zip-file fileb://function.zip</code></pre>
+              <p><strong>Why it matters:</strong> It enables fast scripted deployments.</p>
+              <p><strong>Advantage:</strong> Easy automation in CI/CD pipelines.</p>
+            </div></div></div>
+          </div>
+
+          <div class="qa">
+            <button class="question">How to set environment variables in Lambda functions <span class="hint">click to reveal</span></button>
+            <div class="answer-wrap"><div class="answer-inner"><div class="answer">
+              <p><strong>Answer:</strong> Set them through the AWS Console, AWS CLI, or Terraform. Use them for config like API URLs, feature flags, and environment-specific settings. Sensitive values should be stored in Secrets Manager or Parameter Store instead of plain environment variables where possible.</p>
+              <p><strong>Why it matters:</strong> It separates configuration from code.</p>
+              <p><strong>Advantage:</strong> Easier deployments across environments without code changes.</p>
+            </div></div></div>
+          </div>
+
+          <div class="qa">
+            <button class="question">How to connect external APIs to AWS Lambda <span class="hint">click to reveal</span></button>
+            <div class="answer-wrap"><div class="answer-inner"><div class="answer">
+              <p><strong>Answer:</strong> Use an HTTP client inside the Lambda function to call the external API, handle authentication, timeouts, and retries, and trigger the Lambda through API Gateway, events, or schedules depending on the use case.</p>
+              <p><strong>Why it matters:</strong> Many serverless workflows depend on integrating with third-party services.</p>
+              <p><strong>Advantage:</strong> Fast integration without managing servers.</p>
+            </div></div></div>
+          </div>
+
+          <div class="qa">
+            <button class="question">Difference between EC2 and Lambda <span class="hint">click to reveal</span></button>
+            <div class="answer-wrap"><div class="answer-inner"><div class="answer">
+              <p><strong>EC2:</strong> Virtual machines with full OS-level control. Best for long-running services or custom environments.</p>
+              <p><strong>Lambda:</strong> Serverless compute that runs code in response to events. Best for event-driven workloads and lighter operational overhead.</p>
+              <p><strong>Why it matters:</strong> It is a control vs convenience tradeoff.</p>
+              <p><strong>Advantage:</strong> Lambda reduces ops effort; EC2 provides flexibility and control.</p>
+            </div></div></div>
+          </div>
+
+          <div class="qa">
+            <button class="question">Difference between Kubernetes and Serverless <span class="hint">click to reveal</span></button>
+            <div class="answer-wrap"><div class="answer-inner"><div class="answer">
+              <p><strong>Answer:</strong> Kubernetes manages containerized applications and gives deep control over deployment, scaling, and networking. Serverless abstracts infrastructure and focuses on event-driven function execution.</p>
+              <p><strong>Why it matters:</strong> The decision depends on how much control, portability, and operational ownership you need.</p>
+              <p><strong>Advantage:</strong> Kubernetes offers flexibility. Serverless offers simplicity and lower ops overhead.</p>
+            </div></div></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="topic" id="aws-networking">
+        <div class="topic-header">
+          <h2 class="topic-title">AWS Networking & Service Communication</h2>
+          <span class="badge">7 questions</span>
+        </div>
+        <div class="qa-list">
+          <div class="qa">
+            <button class="question">How are multiple services communicating on AWS? <span class="hint">click to reveal</span></button>
+            <div class="answer-wrap"><div class="answer-inner"><div class="answer">
+              <p><strong>Answer:</strong> Services typically communicate through synchronous REST APIs or asynchronous messaging systems such as SQS, SNS, EventBridge, or streaming platforms like Kafka/MSK.</p>
+              <p><strong>Why it matters:</strong> The communication pattern affects coupling, latency, reliability, and scaling.</p>
+              <p><strong>Advantage:</strong> Async messaging improves resilience and decoupling. APIs provide immediate responses when needed.</p>
+            </div></div></div>
+          </div>
+
+          <div class="qa">
+            <button class="question">What is API Gateway? <span class="hint">click to reveal</span></button>
+            <div class="answer-wrap"><div class="answer-inner"><div class="answer">
+              <p><strong>Answer:</strong> API Gateway is a managed service that exposes HTTP or REST APIs and routes requests to backends such as Lambda, EC2, or other services.</p>
+              <p><strong>Why it matters:</strong> It acts as the controlled entry point to backend systems.</p>
+              <p><strong>Advantage:</strong> Built-in auth, throttling, monitoring, and scaling.</p>
+            </div></div></div>
+          </div>
+
+          <div class="qa">
+            <button class="question">What is IAM? <span class="hint">click to reveal</span></button>
+            <div class="answer-wrap"><div class="answer-inner"><div class="answer">
+              <p><strong>Answer:</strong> IAM is AWS Identity and Access Management. It defines who can access which AWS resources and what actions they can perform, using users, roles, and policies.</p>
+              <p><strong>Why it matters:</strong> Every AWS architecture needs secure access control.</p>
+              <p><strong>Advantage:</strong> Fine-grained permissions and least-privilege security.</p>
+            </div></div></div>
+          </div>
+
+          <div class="qa">
+            <button class="question">What is VPC? <span class="hint">click to reveal</span></button>
+            <div class="answer-wrap"><div class="answer-inner"><div class="answer">
+              <p><strong>Answer:</strong> A VPC is a logically isolated private network in AWS where you define IP ranges, subnets, routing, and security boundaries for your resources.</p>
+              <p><strong>Why it matters:</strong> It provides controlled networking for cloud systems.</p>
+              <p><strong>Advantage:</strong> Better isolation, security, and network design flexibility.</p>
+            </div></div></div>
+          </div>
+
+          <div class="qa">
+            <button class="question">What is a Load Balancer? <span class="hint">click to reveal</span></button>
+            <div class="answer-wrap"><div class="answer-inner"><div class="answer">
+              <p><strong>Answer:</strong> A Load Balancer distributes incoming traffic across multiple backend instances and performs health checks so traffic avoids unhealthy targets.</p>
+              <p><strong>Why it matters:</strong> It prevents one instance from becoming a bottleneck and supports high availability.</p>
+              <p><strong>Advantage:</strong> Better scalability, fault tolerance, and traffic management.</p>
+            </div></div></div>
+          </div>
+
+          <div class="qa">
+            <button class="question">Compute Engine vs App Engine (GCP) <span class="hint">click to reveal</span></button>
+            <div class="answer-wrap"><div class="answer-inner"><div class="answer">
+              <p><strong>Compute Engine:</strong> Virtual machines where you manage the environment yourself.</p>
+              <p><strong>App Engine:</strong> Platform as a service where Google manages more of the infrastructure for you.</p>
+              <p><strong>Why it matters:</strong> It is the same control vs convenience decision seen in other cloud platforms.</p>
+              <p><strong>Advantage:</strong> App Engine speeds up delivery. Compute Engine gives more customization.</p>
+            </div></div></div>
+          </div>
+
+          <div class="qa">
+            <button class="question">ALB vs NLB <span class="hint">click to reveal</span></button>
+            <div class="answer-wrap"><div class="answer-inner"><div class="answer">
+              <p><strong>ALB:</strong> Application Load Balancer works at Layer 7, understands HTTP/HTTPS, and supports host-based and path-based routing.</p>
+              <p><strong>NLB:</strong> Network Load Balancer works at Layer 4, handles TCP/UDP, and is used when you need very high performance or non-HTTP traffic.</p>
+              <p><strong>Why it matters:</strong> The protocol and routing needs determine which load balancer fits.</p>
+              <p><strong>Advantage:</strong> ALB is ideal for web apps and microservices. NLB is ideal for lower-level network traffic and very high throughput.</p>
+            </div></div></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="topic" id="cloud-basics">
+        <div class="topic-header">
+          <h2 class="topic-title">Cloud Fundamentals</h2>
+          <span class="badge">4 questions</span>
+        </div>
+        <div class="qa-list">
+          <div class="qa">
+            <button class="question">What is cloud computing? <span class="hint">click to reveal</span></button>
+            <div class="answer-wrap"><div class="answer-inner"><div class="answer">
+              <p><strong>Answer:</strong> Cloud computing is the on-demand delivery of compute, storage, and networking over the internet with pay-as-you-go pricing.</p>
+              <p><strong>Why it matters:</strong> Teams do not need to buy and manage physical hardware upfront.</p>
+              <p><strong>Advantage:</strong> Faster provisioning, elasticity, and reduced infrastructure management.</p>
+            </div></div></div>
+          </div>
+
+          <div class="qa">
+            <button class="question">IaaS vs PaaS vs SaaS <span class="hint">click to reveal</span></button>
+            <div class="answer-wrap"><div class="answer-inner"><div class="answer">
+              <p><strong>IaaS:</strong> Infrastructure as a service. You manage the app and much of the runtime environment. Example: EC2 or Compute Engine.</p>
+              <p><strong>PaaS:</strong> Platform as a service. The provider manages more of the platform. Example: App Engine or Elastic Beanstalk.</p>
+              <p><strong>SaaS:</strong> Software as a service. You consume the software directly. Example: Gmail or Salesforce.</p>
+              <p><strong>Why it matters:</strong> It defines how much operational responsibility your team takes on.</p>
+              <p><strong>Advantage:</strong> Lets teams balance flexibility with simplicity.</p>
+            </div></div></div>
+          </div>
+
+          <div class="qa">
+            <button class="question">What is auto scaling? <span class="hint">click to reveal</span></button>
+            <div class="answer-wrap"><div class="answer-inner"><div class="answer">
+              <p><strong>Answer:</strong> Auto scaling automatically adds or removes compute capacity based on demand or metrics such as CPU or request volume.</p>
+              <p><strong>Why it matters:</strong> Traffic changes over time and systems should adapt automatically.</p>
+              <p><strong>Advantage:</strong> Better availability during spikes and lower cost during low traffic periods.</p>
+            </div></div></div>
+          </div>
+
+          <div class="qa">
+            <button class="question">Horizontal vs Vertical scaling <span class="hint">click to reveal</span></button>
+            <div class="answer-wrap"><div class="answer-inner"><div class="answer">
+              <p><strong>Vertical scaling:</strong> Add more CPU or memory to a single machine.</p>
+              <p><strong>Horizontal scaling:</strong> Add more machines and distribute traffic across them.</p>
+              <p><strong>Why it matters:</strong> Cloud-native systems usually favor horizontal scaling because it supports resilience and growth better.</p>
+              <p><strong>Advantage:</strong> Horizontal scaling improves fault tolerance and avoids single-machine limits.</p>
+            </div></div></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="topic" id="gcp">
+        <div class="topic-header">
+          <h2 class="topic-title">GCP Basics</h2>
+          <span class="badge">4 questions</span>
+        </div>
+        <div class="qa-list">
+          <div class="qa">
+            <button class="question">What is Google Cloud Storage (GCS)? <span class="hint">click to reveal</span></button>
+            <div class="answer-wrap"><div class="answer-inner"><div class="answer">
+              <p><strong>Answer:</strong> GCS is Google’s object storage service for durable, scalable file storage.</p>
+              <p><strong>Use cases:</strong> Static files, backups, logs, and archived data.</p>
+              <p><strong>Advantage:</strong> High durability and easy lifecycle management.</p>
+            </div></div></div>
+          </div>
+
+          <div class="qa">
+            <button class="question">BigQuery — what is it and why use it? <span class="hint">click to reveal</span></button>
+            <div class="answer-wrap"><div class="answer-inner"><div class="answer">
+              <p><strong>Answer:</strong> BigQuery is a serverless analytics data warehouse that runs large-scale SQL queries over huge datasets.</p>
+              <p><strong>Why it matters:</strong> It is designed for analytical workloads, not transactional application traffic.</p>
+              <p><strong>Advantage:</strong> Fast analytics without managing database infrastructure.</p>
+            </div></div></div>
+          </div>
+
+          <div class="qa">
+            <button class="question">Cloud Pub/Sub vs Kafka <span class="hint">click to reveal</span></button>
+            <div class="answer-wrap"><div class="answer-inner"><div class="answer">
+              <p><strong>Answer:</strong> Pub/Sub is a fully managed messaging system. Kafka gives stronger control over streaming semantics and operational tuning.</p>
+              <p><strong>Why it matters:</strong> It changes how much infrastructure and stream-management work your team owns.</p>
+              <p><strong>Advantage:</strong> Pub/Sub simplifies operations; Kafka supports richer custom streaming architectures.</p>
+            </div></div></div>
+          </div>
+
+          <div class="qa">
+            <button class="question">Compute Engine vs App Engine <span class="hint">click to reveal</span></button>
+            <div class="answer-wrap"><div class="answer-inner"><div class="answer">
+              <p><strong>Compute Engine:</strong> VM-based compute with more control.</p>
+              <p><strong>App Engine:</strong> Managed platform where Google handles more infrastructure details.</p>
+              <p><strong>Advantage:</strong> Choose Compute Engine for flexibility and App Engine for developer speed.</p>
+            </div></div></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="topic" id="containers-devops">
+        <div class="topic-header">
+          <h2 class="topic-title">Containers & DevOps</h2>
+          <span class="badge">3 questions</span>
+        </div>
+        <div class="qa-list">
+          <div class="qa">
+            <button class="question">What is Docker? <span class="hint">click to reveal</span></button>
+            <div class="answer-wrap"><div class="answer-inner"><div class="answer">
+              <p><strong>Answer:</strong> Docker packages an application and its dependencies into a container so it runs consistently across environments.</p>
+              <p><strong>Why it matters:</strong> It reduces environment drift between local, test, and production systems.</p>
+              <p><strong>Advantage:</strong> Consistency, portability, and faster deployment workflows.</p>
+            </div></div></div>
+          </div>
+
+          <div class="qa">
+            <button class="question">What problem does Kubernetes solve? <span class="hint">click to reveal</span></button>
+            <div class="answer-wrap"><div class="answer-inner"><div class="answer">
+              <p><strong>Answer:</strong> Kubernetes orchestrates containers. It manages scheduling, scaling, service discovery, rolling deployments, and health checks.</p>
+              <p><strong>Why it matters:</strong> Running many containers manually becomes difficult at scale.</p>
+              <p><strong>Advantage:</strong> Auto-healing, easier scaling, and standardized deployment patterns.</p>
+            </div></div></div>
+          </div>
+
+          <div class="qa">
+            <button class="question">Difference between Kubernetes and Serverless <span class="hint">click to reveal</span></button>
+            <div class="answer-wrap"><div class="answer-inner"><div class="answer">
+              <p><strong>Answer:</strong> Kubernetes is for managing containerized applications with more operational control. Serverless abstracts infrastructure and is ideal for event-driven functions with minimal ops.</p>
+              <p><strong>Advantage:</strong> Kubernetes for control and portability; serverless for speed and simplicity.</p>
+            </div></div></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="topic" id="security-reliability">
+        <div class="topic-header">
+          <h2 class="topic-title">Security & Reliability</h2>
+          <span class="badge">3 questions</span>
+        </div>
+        <div class="qa-list">
+          <div class="qa">
+            <button class="question">What is high availability? <span class="hint">click to reveal</span></button>
+            <div class="answer-wrap"><div class="answer-inner"><div class="answer">
+              <p><strong>Answer:</strong> High availability means the system continues serving traffic even when one component fails, typically by using redundancy across instances and Availability Zones.</p>
+              <p><strong>Why it matters:</strong> Modern systems need to minimize downtime.</p>
+              <p><strong>Advantage:</strong> Better uptime and more resilient user experience.</p>
+            </div></div></div>
+          </div>
+
+          <div class="qa">
+            <button class="question">Disaster recovery strategies <span class="hint">click to reveal</span></button>
+            <div class="answer-wrap"><div class="answer-inner"><div class="answer">
+              <p><strong>Answer:</strong> Common strategies include backup and restore, pilot light, warm standby, and active-active depending on recovery time and cost requirements.</p>
+              <p><strong>Why it matters:</strong> Different systems need different tradeoffs between recovery speed and expense.</p>
+              <p><strong>Advantage:</strong> Better business continuity planning and reduced outage impact.</p>
+            </div></div></div>
+          </div>
+
+          <div class="qa">
+            <button class="question">What is a CDN? <span class="hint">click to reveal</span></button>
+            <div class="answer-wrap"><div class="answer-inner"><div class="answer">
+              <p><strong>Answer:</strong> A CDN caches static assets closer to users at edge locations so content is delivered faster.</p>
+              <p><strong>Why it matters:</strong> It reduces latency and offloads origin infrastructure.</p>
+              <p><strong>Advantage:</strong> Faster performance and lower backend load.</p>
+            </div></div></div>
+          </div>
+        </div>
+      </article>
+
+      <div class="footer-note">Built from the Cloud Interview Questions chat content only.</div>
+    </section>
+  </main>
+
+  <script>
+    const body = document.body;
+    const modeToggle = document.getElementById('modeToggle');
+    const qas = Array.from(document.querySelectorAll('.qa'));
+    let recallMode = false;
+
+    function applyMode() {
+      body.classList.toggle('recall-mode', recallMode);
+      body.classList.toggle('scan-mode', !recallMode);
+      modeToggle.textContent = recallMode ? 'Switch to SCAN MODE' : 'Switch to RECALL MODE';
+      modeToggle.setAttribute('aria-pressed', String(recallMode));
+      qas.forEach(qa => {
+        qa.classList.toggle('collapsed', recallMode);
+      });
+    }
+
+    modeToggle.addEventListener('click', () => {
+      recallMode = !recallMode;
+      applyMode();
+    });
+
+    qas.forEach(qa => {
+      const question = qa.querySelector('.question');
+      question.addEventListener('click', () => {
+        if (!recallMode) return;
+        qa.classList.toggle('collapsed');
+      });
+    });
+
+    applyMode();
+
+    const totalSeconds = 30 * 60;
+    let remaining = totalSeconds;
+    const timerEl = document.getElementById('timer');
+    const progressFill = document.getElementById('progressFill');
+
+    function renderTimer() {
+      const mins = Math.floor(remaining / 60).toString().padStart(2, '0');
+      const secs = (remaining % 60).toString().padStart(2, '0');
+      timerEl.textContent = `${mins}:${secs}`;
+
+      timerEl.classList.remove('warning', 'danger');
+      if (remaining <= 60) timerEl.classList.add('danger');
+      else if (remaining <= 300) timerEl.classList.add('warning');
+
+      const elapsed = totalSeconds - remaining;
+      const percent = Math.min(100, Math.max(0, (elapsed / totalSeconds) * 100));
+      progressFill.style.width = percent + '%';
+      progressFill.style.background = remaining <= 60
+        ? 'linear-gradient(90deg, var(--red), #f97316)'
+        : remaining <= 300
+          ? 'linear-gradient(90deg, var(--amber), #fb7185)'
+          : 'linear-gradient(90deg, var(--cyan), var(--purple))';
+    }
+
+    renderTimer();
+    setInterval(() => {
+      if (remaining > 0) {
+        remaining -= 1;
+        renderTimer();
+      }
+    }, 1000);
+  </script>
+</body>
+</html>

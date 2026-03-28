@@ -1,0 +1,1386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ACID Transactions Learning Module</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0a0e1a;
+      --surface:#111827;
+      --surface-2:#1a2235;
+      --text:#e5eefc;
+      --muted:#93a4c7;
+      --cyan:#00d4ff;
+      --purple:#7c3aed;
+      --green:#10b981;
+      --amber:#f59e0b;
+      --red:#ef4444;
+      --line:rgba(255,255,255,0.08);
+      --mono:"JetBrains Mono", monospace;
+      --display:"Syne", system-ui, sans-serif;
+      --shadow:0 18px 60px rgba(0,0,0,.35);
+      --radius:18px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:radial-gradient(circle at top, rgba(124,58,237,.16), transparent 28%), linear-gradient(180deg, #0a0e1a 0%, #09101d 100%); color:var(--text); font-family:var(--display);}
+    body{min-height:100vh;}
+    a{color:inherit}
+
+    .app{
+      max-width:1200px;
+      margin:0 auto;
+      padding:20px;
+    }
+
+    .topbar{
+      position:sticky;
+      top:0;
+      z-index:50;
+      backdrop-filter: blur(12px);
+      background:rgba(10,14,26,.88);
+      border:1px solid var(--line);
+      border-radius:22px;
+      padding:16px 18px 14px;
+      box-shadow:var(--shadow);
+      margin-bottom:20px;
+    }
+
+    .topbar-row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      flex-wrap:wrap;
+    }
+
+    .brand h1{
+      margin:0;
+      font-size:clamp(1.35rem, 2vw, 2rem);
+      line-height:1;
+      letter-spacing:.02em;
+    }
+
+    .brand p{
+      margin:6px 0 0;
+      color:var(--muted);
+      font-size:.95rem;
+    }
+
+    .timer-wrap{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      margin-left:auto;
+    }
+
+    .timer-chip, .mode-chip{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      border:1px solid rgba(0,212,255,.24);
+      background:rgba(0,212,255,.08);
+      color:#d8f8ff;
+      border-radius:999px;
+      padding:10px 14px;
+      font-family:var(--mono);
+      font-size:.92rem;
+      white-space:nowrap;
+    }
+
+    .timer-chip.warning-5{
+      border-color:rgba(245,158,11,.35);
+      background:rgba(245,158,11,.11);
+      color:#ffda9a;
+    }
+
+    .timer-chip.warning-1{
+      border-color:rgba(239,68,68,.45);
+      background:rgba(239,68,68,.11);
+      color:#ffc3c3;
+      animation:pulse 1s infinite;
+    }
+
+    @keyframes pulse{
+      0%{transform:scale(1); box-shadow:0 0 0 0 rgba(239,68,68,.35)}
+      70%{transform:scale(1.02); box-shadow:0 0 0 14px rgba(239,68,68,0)}
+      100%{transform:scale(1); box-shadow:0 0 0 0 rgba(239,68,68,0)}
+    }
+
+    .progress-shell{
+      margin-top:14px;
+      background:rgba(255,255,255,.06);
+      border-radius:999px;
+      overflow:hidden;
+      height:10px;
+      border:1px solid rgba(255,255,255,.05);
+    }
+
+    .progress-fill{
+      width:0%;
+      height:100%;
+      background:linear-gradient(90deg, var(--cyan), var(--purple));
+      transition:width .8s linear;
+      box-shadow:0 0 24px rgba(0,212,255,.28);
+    }
+
+    .nav-dots{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:14px;
+    }
+
+    .dot{
+      width:40px;
+      height:40px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.03);
+      color:var(--muted);
+      font-family:var(--mono);
+      font-weight:700;
+      cursor:pointer;
+      transition:all .22s ease;
+    }
+
+    .dot:hover{transform:translateY(-1px); border-color:rgba(0,212,255,.35); color:var(--text)}
+    .dot.active{
+      background:rgba(0,212,255,.16);
+      border-color:var(--cyan);
+      color:#e9fbff;
+      box-shadow:0 0 0 3px rgba(0,212,255,.12);
+    }
+    .dot.done{
+      background:transparent;
+      border:2px solid rgba(16,185,129,.68);
+      color:#b7ffe1;
+    }
+
+    .screen{
+      display:none;
+      background:linear-gradient(180deg, rgba(17,24,39,.96), rgba(26,34,53,.96));
+      border:1px solid var(--line);
+      border-radius:24px;
+      padding:28px;
+      box-shadow:var(--shadow);
+    }
+
+    .screen.active{display:block}
+
+    .section-kicker{
+      color:var(--cyan);
+      text-transform:uppercase;
+      letter-spacing:.18em;
+      font-size:.78rem;
+      margin-bottom:12px;
+      font-family:var(--mono);
+    }
+
+    h2{
+      margin:0 0 12px;
+      font-size:clamp(1.9rem, 3vw, 2.8rem);
+      line-height:1.05;
+    }
+
+    .lede{
+      margin:0 0 24px;
+      color:#bfd0ef;
+      max-width:900px;
+      font-size:1rem;
+      line-height:1.7;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(12, 1fr);
+      gap:16px;
+    }
+
+    .col-12{grid-column:span 12}
+    .col-7{grid-column:span 7}
+    .col-6{grid-column:span 6}
+    .col-5{grid-column:span 5}
+    .col-4{grid-column:span 4}
+
+    .card{
+      background:rgba(8,12,22,.58);
+      border:1px solid rgba(255,255,255,.07);
+      border-left:5px solid transparent;
+      border-radius:18px;
+      padding:18px 18px 16px;
+      min-height:100%;
+    }
+
+    .card h3{
+      margin:0 0 12px;
+      font-size:1.1rem;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      letter-spacing:.02em;
+    }
+
+    .card p, .card li{
+      color:#dbe7ff;
+      line-height:1.75;
+      margin:0 0 10px;
+    }
+
+    .card ul{
+      margin:12px 0 0 20px;
+      padding:0;
+    }
+
+    .eli5{border-left-color:var(--amber)}
+    .analogy{border-left-color:var(--green)}
+    .technical{border-left-color:var(--cyan)}
+    .warning{border-left-color:var(--red)}
+    .highlight{border-left-color:var(--purple)}
+
+    .flow{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      align-items:center;
+      margin-top:12px;
+    }
+
+    .flow-step{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      background:rgba(255,255,255,.03);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:999px;
+      padding:10px 14px;
+      font-size:.92rem;
+      color:#e4efff;
+      white-space:nowrap;
+    }
+
+    .arrow{
+      color:var(--muted);
+      font-family:var(--mono);
+      font-size:1rem;
+    }
+
+    .mini-label{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 10px;
+      border-radius:999px;
+      background:rgba(124,58,237,.12);
+      color:#e8dbff;
+      font-family:var(--mono);
+      font-size:.78rem;
+      margin-bottom:12px;
+      border:1px solid rgba(124,58,237,.3);
+    }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      margin-top:12px;
+      overflow:hidden;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.08);
+      background:rgba(255,255,255,.02);
+    }
+
+    th, td{
+      padding:12px 10px;
+      text-align:left;
+      vertical-align:top;
+      border-bottom:1px solid rgba(255,255,255,.06);
+      font-size:.95rem;
+      line-height:1.6;
+    }
+
+    th{
+      color:#f0f6ff;
+      background:rgba(255,255,255,.03);
+      font-size:.82rem;
+      text-transform:uppercase;
+      letter-spacing:.12em;
+      font-family:var(--mono);
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:4px 10px;
+      border-radius:999px;
+      font-size:.76rem;
+      font-weight:700;
+      font-family:var(--mono);
+      letter-spacing:.02em;
+      min-width:74px;
+    }
+
+    .pill.good{background:rgba(16,185,129,.14); color:#b9ffe3; border:1px solid rgba(16,185,129,.35)}
+    .pill.mid{background:rgba(245,158,11,.14); color:#ffe2a8; border:1px solid rgba(245,158,11,.35)}
+    .pill.bad{background:rgba(239,68,68,.14); color:#ffc9c9; border:1px solid rgba(239,68,68,.35)}
+    .pill.neutral{background:rgba(0,212,255,.12); color:#d7f8ff; border:1px solid rgba(0,212,255,.3)}
+
+    pre{
+      margin:0;
+      background:#050810;
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:16px;
+      padding:16px;
+      overflow:auto;
+      font-family:var(--mono);
+      font-size:.88rem;
+      line-height:1.7;
+      color:#eaf2ff;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.02);
+    }
+
+    .code-caption{
+      font-family:var(--mono);
+      color:var(--muted);
+      font-size:.78rem;
+      margin:0 0 10px;
+      text-transform:uppercase;
+      letter-spacing:.14em;
+    }
+
+    .kw{color:#77e2ff}
+    .type{color:#d7b7ff}
+    .anno{color:#ffcf77}
+    .str{color:#9df3b8}
+    .num{color:#ff9d9d}
+    .cm{color:#7f8ba8}
+    .method{color:#9ec0ff}
+    .field{color:#ffdfa1}
+
+    .timeline{
+      display:grid;
+      gap:12px;
+      margin-top:10px;
+    }
+
+    .timeline-row{
+      display:grid;
+      grid-template-columns:120px 1fr;
+      gap:12px;
+      align-items:center;
+    }
+
+    .timeline-label{
+      font-family:var(--mono);
+      color:#d8e6ff;
+      background:rgba(255,255,255,.04);
+      border-radius:12px;
+      padding:10px 12px;
+      border:1px solid rgba(255,255,255,.08);
+    }
+
+    .timeline-track{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      min-height:44px;
+      padding:10px 12px;
+      border-radius:12px;
+      background:rgba(255,255,255,.03);
+      border:1px solid rgba(255,255,255,.06);
+    }
+
+    .event{
+      padding:8px 12px;
+      border-radius:999px;
+      font-size:.86rem;
+      border:1px solid rgba(255,255,255,.08);
+      background:rgba(255,255,255,.04);
+    }
+
+    .event.cyan{border-color:rgba(0,212,255,.35); color:#d5f8ff}
+    .event.green{border-color:rgba(16,185,129,.4); color:#bcffe2}
+    .event.amber{border-color:rgba(245,158,11,.35); color:#ffe0a1}
+    .event.red{border-color:rgba(239,68,68,.35); color:#ffcaca}
+    .event.purple{border-color:rgba(124,58,237,.35); color:#e7d8ff}
+
+    .quiz{
+      margin-top:18px;
+      border:1px solid rgba(124,58,237,.44);
+      background:linear-gradient(180deg, rgba(124,58,237,.12), rgba(124,58,237,.05));
+      border-radius:20px;
+      padding:18px;
+    }
+
+    .quiz h3{
+      margin:0 0 8px;
+      font-size:1.08rem;
+    }
+
+    .quiz p{
+      margin:0 0 14px;
+      color:#ddd8f6;
+      line-height:1.7;
+    }
+
+    .options{
+      display:grid;
+      gap:10px;
+    }
+
+    .option{
+      text-align:left;
+      width:100%;
+      border:1px solid rgba(255,255,255,.09);
+      background:rgba(255,255,255,.04);
+      border-radius:14px;
+      padding:12px 14px;
+      color:var(--text);
+      cursor:pointer;
+      transition:all .18s ease;
+      font-family:var(--display);
+      font-size:.96rem;
+    }
+
+    .option:hover{transform:translateY(-1px); border-color:rgba(124,58,237,.45)}
+    .option.correct{
+      background:rgba(16,185,129,.18);
+      border-color:rgba(16,185,129,.54);
+      color:#d9fff0;
+    }
+    .option.wrong{
+      background:rgba(239,68,68,.16);
+      border-color:rgba(239,68,68,.5);
+      color:#ffe3e3;
+    }
+    .option.disabled{
+      cursor:not-allowed;
+      opacity:.94;
+    }
+
+    .quiz-feedback{
+      margin-top:14px;
+      padding:12px 14px;
+      border-radius:14px;
+      background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.08);
+      color:#e8f0ff;
+      display:none;
+      line-height:1.7;
+    }
+
+    .quiz-feedback.show{display:block}
+
+    .footer-nav{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      margin-top:24px;
+      flex-wrap:wrap;
+    }
+
+    .btn{
+      border:none;
+      border-radius:14px;
+      padding:13px 18px;
+      font-family:var(--display);
+      font-weight:700;
+      font-size:.95rem;
+      cursor:pointer;
+      transition:transform .18s ease, box-shadow .18s ease, opacity .18s ease;
+    }
+
+    .btn:hover{transform:translateY(-1px)}
+    .btn.primary{
+      background:linear-gradient(90deg, var(--cyan), #32b8ff);
+      color:#03131b;
+      box-shadow:0 12px 30px rgba(0,212,255,.18);
+    }
+    .btn.secondary{
+      background:rgba(255,255,255,.06);
+      color:#e8f1ff;
+      border:1px solid rgba(255,255,255,.08);
+    }
+    .btn.success{
+      background:linear-gradient(90deg, var(--green), #55d7ac);
+      color:#041610;
+      box-shadow:0 12px 30px rgba(16,185,129,.18);
+    }
+
+    .cheatsheet{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0, 1fr));
+      gap:14px;
+      margin-top:24px;
+    }
+
+    .cheat{
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.08);
+      border-left:4px solid var(--cyan);
+      border-radius:16px;
+      padding:16px;
+    }
+
+    .cheat h4{
+      margin:0 0 8px;
+      font-size:1rem;
+    }
+
+    .cheat ul{
+      margin:0;
+      padding-left:18px;
+    }
+
+    .cheat li{
+      color:#dbe7ff;
+      line-height:1.75;
+      margin-bottom:6px;
+    }
+
+    .celebrate{
+      font-size:3rem;
+      margin-bottom:10px;
+    }
+
+    .caption{
+      color:var(--muted);
+      font-size:.88rem;
+      line-height:1.6;
+      margin-top:12px;
+    }
+
+    .big-takeaways{
+      margin-top:20px;
+      padding:18px;
+      background:rgba(255,255,255,.03);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:18px;
+    }
+
+    .big-takeaways ul{
+      margin:8px 0 0 18px;
+      padding:0;
+    }
+
+    .big-takeaways li{
+      line-height:1.85;
+      color:#dfe8fa;
+      margin-bottom:8px;
+    }
+
+    .emphasis{color:#fff; font-weight:700}
+    .subtle{color:var(--muted)}
+
+    @media (max-width: 980px){
+      .col-7,.col-6,.col-5,.col-4{grid-column:span 12}
+      .timeline-row{grid-template-columns:1fr}
+      .timer-wrap{margin-left:0}
+      .cheatsheet{grid-template-columns:1fr}
+      .screen{padding:22px}
+    }
+
+    @media (max-width: 640px){
+      .app{padding:14px}
+      .topbar{padding:14px}
+      .screen{padding:18px}
+      h2{font-size:1.7rem}
+      .dot{width:36px;height:36px}
+      .btn{width:100%}
+      .footer-nav{flex-direction:column}
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="topbar">
+      <div class="topbar-row">
+        <div class="brand">
+          <h1>ACID Transactions</h1>
+          <p>Interactive 30-minute module for engineers who want interview-ready depth without textbook overload.</p>
+        </div>
+        <div class="timer-wrap">
+          <div class="mode-chip">Topic · ACID + PostgreSQL WAL</div>
+          <div id="timerChip" class="timer-chip">⏳ <span id="timerText">30:00</span></div>
+        </div>
+      </div>
+      <div class="progress-shell" aria-label="Time elapsed progress">
+        <div id="progressFill" class="progress-fill"></div>
+      </div>
+      <div id="navDots" class="nav-dots" aria-label="Section navigation"></div>
+    </div>
+
+    <main>
+      <section class="screen active" data-screen="0">
+        <div class="section-kicker">Section 1 of 5 · ~6 mins</div>
+        <h2>Atomicity — all or nothing</h2>
+        <p class="lede">Atomicity means a transaction should feel indivisible: either every change in the unit of work becomes real, or none of it does. This is the property behind safe money transfers, inventory updates, and multi-step business operations.</p>
+
+        <div class="grid">
+          <div class="col-6">
+            <div class="card eli5">
+              <h3>🧒 ELI5</h3>
+              <p>Imagine moving a Lego bridge from one table to another. You cannot leave half the bridge on one table and half on the other and call the move “done.” Either the whole bridge gets moved, or you put it back exactly where it started.</p>
+              <p>That is atomicity. A database transaction is saying: <span class="emphasis">treat all these little changes like one single move.</span></p>
+            </div>
+          </div>
+
+          <div class="col-6">
+            <div class="card analogy">
+              <h3>🔗 ANALOGY</h3>
+              <p>Think of online flight booking. One “booking” may involve:</p>
+              <ul>
+                <li>reserve a seat</li>
+                <li>charge a card</li>
+                <li>create a ticket record</li>
+              </ul>
+              <p>If the card charge fails, you do not want the seat reservation to remain stuck forever. The system should cancel the whole thing.</p>
+            </div>
+          </div>
+
+          <div class="col-12">
+            <div class="card technical">
+              <div class="mini-label">Atomicity at the engine level</div>
+              <h3>What rollback means inside the database</h3>
+              <p>The interview answer: <span class="emphasis">Atomicity guarantees that a transaction’s changes are committed as a unit. On failure, the database rolls them back so partial effects do not remain.</span></p>
+              <p>Conceptually, databases keep enough information to <span class="emphasis">undo</span> or discard incomplete work. In traditional engine explanations, that is described as an <span class="emphasis">undo log / rollback log</span>. In MVCC systems, old row versions and transaction metadata also play a big role in making aborted work invisible and restoring a clean state.</p>
+              <div class="flow" aria-label="Atomicity flow">
+                <div class="flow-step">BEGIN</div>
+                <div class="arrow">→</div>
+                <div class="flow-step">Update A</div>
+                <div class="arrow">→</div>
+                <div class="flow-step">Update B</div>
+                <div class="arrow">→</div>
+                <div class="flow-step">Error happens</div>
+                <div class="arrow">→</div>
+                <div class="flow-step">ROLLBACK</div>
+                <div class="arrow">→</div>
+                <div class="flow-step">Original state preserved</div>
+              </div>
+              <p class="caption">Mental model: the database must never leave your business object halfway updated after a transaction aborts.</p>
+            </div>
+          </div>
+
+          <div class="col-7">
+            <div class="card technical">
+              <p class="code-caption">Java example · Spring transaction rollback</p>
+<pre><span class="anno">@Transactional</span>
+<span class="kw">public</span> <span class="type">void</span> <span class="method">transfer</span>(<span class="type">Long</span> fromId, <span class="type">Long</span> toId, <span class="type">BigDecimal</span> amount) {
+    accountRepository.<span class="method">debit</span>(fromId, amount);
+    accountRepository.<span class="method">credit</span>(toId, amount);
+
+    <span class="cm">// Simulate a failure after one step</span>
+    <span class="kw">if</span> (amount.<span class="method">compareTo</span>(<span class="kw">new</span> <span class="type">BigDecimal</span>(<span class="str">"10000"</span>)) &gt; <span class="num">0</span>) {
+        <span class="kw">throw</span> <span class="kw">new</span> <span class="type">IllegalStateException</span>(<span class="str">"Risk check failed"</span>);
+    }
+}</pre>
+              <p class="caption">Because the method is transactional, the debit does not remain committed by itself when the exception is thrown.</p>
+            </div>
+          </div>
+
+          <div class="col-5">
+            <div class="card warning">
+              <h3>⚠️ Warning</h3>
+              <p>Atomicity only covers <span class="emphasis">transactional database work</span>. External side effects such as sending an email, calling another service, or publishing to a queue are <span class="emphasis">not automatically rolled back</span> unless you design for that explicitly.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="quiz" data-correct="1">
+          <h3>Quiz — what is the strongest atomicity statement here?</h3>
+          <p>A transaction updates 3 tables and crashes after 2 updates. Which statement best matches atomicity?</p>
+          <div class="options">
+            <button class="option">A. The first 2 updates stay because they already happened in memory</button>
+            <button class="option">B. Either all 3 updates become permanent or the transaction is rolled back as one unit</button>
+            <button class="option">C. The DB keeps partial updates but marks them as warnings</button>
+            <button class="option">D. Atomicity only matters for reads, not writes</button>
+          </div>
+          <div class="quiz-feedback">Correct answer: <strong>B</strong>. Atomicity is the all-or-nothing guarantee. The database must not leave business state partially applied after transaction failure.</div>
+        </div>
+
+        <div class="footer-nav">
+          <button class="btn secondary" disabled>← Back</button>
+          <button class="btn primary next-btn">Next →</button>
+        </div>
+      </section>
+
+      <section class="screen" data-screen="1">
+        <div class="section-kicker">Section 2 of 5 · ~6 mins</div>
+        <h2>Consistency — rules stay true before and after</h2>
+        <p class="lede">Consistency means every committed transaction must move the database from one valid state to another valid state. If a change would break declared rules, the database rejects it.</p>
+
+        <div class="grid">
+          <div class="col-6">
+            <div class="card eli5">
+              <h3>🧒 ELI5</h3>
+              <p>Think of a playground with rules: no one can go down the slide backward, and only kids wearing socks can enter the trampoline area. A game can be fun and busy, but those rules still have to hold.</p>
+              <p>In a database, those playground rules are things like <span class="emphasis">NOT NULL</span>, <span class="emphasis">FOREIGN KEY</span>, <span class="emphasis">UNIQUE</span>, and <span class="emphasis">CHECK</span>.</p>
+            </div>
+          </div>
+
+          <div class="col-6">
+            <div class="card analogy">
+              <h3>🔗 ANALOGY</h3>
+              <p>Imagine airport security. A boarding pass must match the passenger, the gate must exist, and the flight must still be open. If any rule fails, you do not “sort of” board the flight. You are stopped before the final step.</p>
+            </div>
+          </div>
+
+          <div class="col-12">
+            <div class="card technical">
+              <div class="mini-label">Consistency is constraint enforcement</div>
+              <h3>Where the rules fire</h3>
+              <p>Interview answer: <span class="emphasis">Consistency means the database enforces integrity rules so committed data cannot violate defined constraints.</span></p>
+              <div class="flow">
+                <div class="flow-step">App sends INSERT / UPDATE</div>
+                <div class="arrow">→</div>
+                <div class="flow-step">NOT NULL check</div>
+                <div class="arrow">→</div>
+                <div class="flow-step">UNIQUE / PK check</div>
+                <div class="arrow">→</div>
+                <div class="flow-step">FK validation</div>
+                <div class="arrow">→</div>
+                <div class="flow-step">CHECK expressions</div>
+                <div class="arrow">→</div>
+                <div class="flow-step">Commit only if valid</div>
+              </div>
+
+              <table>
+                <thead>
+                  <tr>
+                    <th>Constraint</th>
+                    <th>What it prevents</th>
+                    <th>Example</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="pill good">NOT NULL</span></td>
+                    <td>Missing required values</td>
+                    <td><code>email</code> cannot be empty for a user</td>
+                  </tr>
+                  <tr>
+                    <td><span class="pill good">FOREIGN KEY</span></td>
+                    <td>Dangling references</td>
+                    <td>An order cannot point to a customer that does not exist</td>
+                  </tr>
+                  <tr>
+                    <td><span class="pill good">CHECK</span></td>
+                    <td>Invalid domain values</td>
+                    <td><code>balance &gt;= 0</code></td>
+                  </tr>
+                  <tr>
+                    <td><span class="pill good">UNIQUE</span></td>
+                    <td>Duplicate business identifiers</td>
+                    <td>Only one row per email address</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="col-7">
+            <div class="card technical">
+              <p class="code-caption">Java example · letting the DB enforce consistency</p>
+<pre><span class="kw">public</span> <span class="type">void</span> <span class="method">createOrder</span>(<span class="type">Long</span> customerId, <span class="type">BigDecimal</span> total) {
+    jdbcTemplate.<span class="method">update</span>(
+        <span class="str">"insert into orders(customer_id, total_amount) values (?, ?)"</span>,
+        customerId,
+        total
+    );
+}</pre>
+              <p class="caption">If <code>customer_id</code> has a foreign key to <code>customers(id)</code> and that customer does not exist, the insert fails. The database stops invalid state from being committed.</p>
+            </div>
+          </div>
+
+          <div class="col-5">
+            <div class="card warning">
+              <h3>⚠️ Warning</h3>
+              <p>Consistency does <span class="emphasis">not</span> mean “your business logic is perfect.” It means the database protects the rules you declared. If a rule matters, encode it in constraints or transaction logic.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="quiz" data-correct="2">
+          <h3>Quiz — which scenario is really about consistency?</h3>
+          <p>Which example best shows the database enforcing consistency?</p>
+          <div class="options">
+            <button class="option">A. Two users read the same row at different times</button>
+            <button class="option">B. A committed row survives a server crash</button>
+            <button class="option">C. An order insert fails because the referenced customer row does not exist</button>
+            <button class="option">D. A transaction rolls back after an exception</button>
+          </div>
+          <div class="quiz-feedback">Correct answer: <strong>C</strong>. That is a classic foreign-key consistency check. The other options map to isolation, durability, and atomicity.</div>
+        </div>
+
+        <div class="footer-nav">
+          <button class="btn secondary back-btn">← Back</button>
+          <button class="btn primary next-btn">Next →</button>
+        </div>
+      </section>
+
+      <section class="screen" data-screen="2">
+        <div class="section-kicker">Section 3 of 5 · ~6 mins</div>
+        <h2>Isolation — concurrent work should not see chaos</h2>
+        <p class="lede">Isolation is the tricky one. It controls what one transaction can observe while other transactions are still running. The goal is to avoid nonsense results caused by overlapping reads and writes.</p>
+
+        <div class="grid">
+          <div class="col-6">
+            <div class="card eli5">
+              <h3>🧒 ELI5</h3>
+              <p>Imagine two kids editing the same sticker chart. If one child is still moving stickers around, the other child should not peek in the middle and think the half-finished chart is the real final version.</p>
+              <p>Isolation decides <span class="emphasis">when other people are allowed to see your changes.</span></p>
+            </div>
+          </div>
+
+          <div class="col-6">
+            <div class="card analogy">
+              <h3>🔗 ANALOGY</h3>
+              <p>Think of a Google Doc with revision history. A weak isolation world is like reading a sentence while someone is halfway through deleting it. A stronger isolation world is like getting a stable snapshot of the document for your whole review.</p>
+            </div>
+          </div>
+
+          <div class="col-12">
+            <div class="card technical">
+              <div class="mini-label">The anomalies isolation tries to block</div>
+              <h3>Three core things interviewers expect you to name</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Anomaly</th>
+                    <th>Meaning</th>
+                    <th>Why it is bad</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="pill bad">Dirty read</span></td>
+                    <td>Transaction A reads uncommitted data from transaction B</td>
+                    <td>A might act on data B later rolls back</td>
+                  </tr>
+                  <tr>
+                    <td><span class="pill mid">Nonrepeatable read</span></td>
+                    <td>A reads the same row twice and sees different committed values</td>
+                    <td>Your logic may depend on a value staying stable during the transaction</td>
+                  </tr>
+                  <tr>
+                    <td><span class="pill mid">Phantom read</span></td>
+                    <td>A reruns a predicate query and sees new or missing rows</td>
+                    <td>Set-based decisions can break</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="col-12">
+            <div class="card technical">
+              <h3>Concurrent timeline</h3>
+              <div class="timeline">
+                <div class="timeline-row">
+                  <div class="timeline-label">Tx A</div>
+                  <div class="timeline-track">
+                    <span class="event cyan">SELECT balance = 100</span>
+                    <span class="event purple">...still running...</span>
+                    <span class="event cyan">SELECT balance again</span>
+                  </div>
+                </div>
+                <div class="timeline-row">
+                  <div class="timeline-label">Tx B</div>
+                  <div class="timeline-track">
+                    <span class="event amber">UPDATE balance = 70</span>
+                    <span class="event green">COMMIT</span>
+                  </div>
+                </div>
+                <div class="timeline-row">
+                  <div class="timeline-label">Result</div>
+                  <div class="timeline-track">
+                    <span class="event red">If Tx A now sees 70, that is a nonrepeatable read</span>
+                  </div>
+                </div>
+              </div>
+              <p class="caption">This is why isolation levels exist: they define how stable a transaction’s view should be while other transactions are committing changes around it.</p>
+            </div>
+          </div>
+
+          <div class="col-7">
+            <div class="card technical">
+              <p class="code-caption">Java example · choosing an isolation level</p>
+<pre><span class="anno">@Transactional</span>(isolation = <span class="type">Isolation</span>.READ_COMMITTED)
+<span class="kw">public</span> <span class="type">OrderSummary</span> <span class="method">loadOrderSummary</span>(<span class="type">Long</span> orderId) {
+    <span class="type">Order</span> order = orderRepository.<span class="method">findById</span>(orderId).<span class="method">orElseThrow</span>();
+    <span class="type">List</span>&lt;<span class="type">LineItem</span>&gt; lines = lineItemRepository.<span class="method">findByOrderId</span>(orderId);
+    <span class="kw">return</span> <span class="kw">new</span> <span class="type">OrderSummary</span>(order, lines);
+}</pre>
+              <p class="caption">At <code>READ_COMMITTED</code>, each statement sees committed data as of that statement’s start. Two SELECTs inside one transaction can still see different values if another transaction commits in between.</p>
+            </div>
+          </div>
+
+          <div class="col-5">
+            <div class="card warning">
+              <h3>⚠️ Warning</h3>
+              <p>Isolation is not “the database being slow.” It is about <span class="emphasis">visibility and correctness under concurrency</span>. Stronger isolation can mean more waiting or retries, but the reason is correctness.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="quiz" data-correct="0">
+          <h3>Quiz — identify the anomaly</h3>
+          <p>Transaction A reads a row. Transaction B commits an update to that same row. Transaction A reads the same row again and gets a different value. What is that called?</p>
+          <div class="options">
+            <button class="option">A. Nonrepeatable read</button>
+            <button class="option">B. Durability loss</button>
+            <button class="option">C. Dirty read</button>
+            <button class="option">D. Rollback anomaly</button>
+          </div>
+          <div class="quiz-feedback">Correct answer: <strong>A</strong>. A dirty read is reading uncommitted data. Here the second value came from another transaction that already committed, so this is a nonrepeatable read.</div>
+        </div>
+
+        <div class="footer-nav">
+          <button class="btn secondary back-btn">← Back</button>
+          <button class="btn primary next-btn">Next →</button>
+        </div>
+      </section>
+
+      <section class="screen" data-screen="3">
+        <div class="section-kicker">Section 4 of 5 · ~6 mins</div>
+        <h2>Isolation levels in practice — what PostgreSQL gives you</h2>
+        <p class="lede">Once you know the anomalies, the next interview step is mapping them to isolation levels. PostgreSQL is especially important because it uses MVCC snapshots, so some guarantees are stronger than what people casually assume.</p>
+
+        <div class="grid">
+          <div class="col-12">
+            <div class="card technical">
+              <div class="mini-label">Interview-ready comparison</div>
+              <h3>PostgreSQL isolation levels, simplified</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Level</th>
+                    <th>Dirty reads</th>
+                    <th>Nonrepeatable reads</th>
+                    <th>Phantoms</th>
+                    <th>Good mental model</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Read Committed</td>
+                    <td><span class="pill good">Blocked</span></td>
+                    <td><span class="pill bad">Possible</span></td>
+                    <td><span class="pill bad">Possible</span></td>
+                    <td>Fresh snapshot per statement</td>
+                  </tr>
+                  <tr>
+                    <td>Repeatable Read</td>
+                    <td><span class="pill good">Blocked</span></td>
+                    <td><span class="pill good">Blocked</span></td>
+                    <td><span class="pill good">Blocked in PG</span></td>
+                    <td>Stable snapshot for the transaction</td>
+                  </tr>
+                  <tr>
+                    <td>Serializable</td>
+                    <td><span class="pill good">Blocked</span></td>
+                    <td><span class="pill good">Blocked</span></td>
+                    <td><span class="pill good">Blocked</span></td>
+                    <td>Behave as if transactions ran one-by-one</td>
+                  </tr>
+                </tbody>
+              </table>
+              <p class="caption">Important PostgreSQL detail: asking for <code>READ UNCOMMITTED</code> behaves like <code>READ COMMITTED</code>, because PostgreSQL’s MVCC model does not expose dirty reads.</p>
+            </div>
+          </div>
+
+          <div class="col-6">
+            <div class="card analogy">
+              <h3>🔗 ANALOGY</h3>
+              <p><span class="emphasis">Read Committed</span> is like taking a new photo every time you look.</p>
+              <p><span class="emphasis">Repeatable Read</span> is like keeping one frozen photo for the whole meeting.</p>
+              <p><span class="emphasis">Serializable</span> is like having a referee ensure the final result matches some one-at-a-time order, even if that means asking one player to retry.</p>
+            </div>
+          </div>
+
+          <div class="col-6">
+            <div class="card technical">
+              <h3>Row locks still matter</h3>
+              <p>MVCC helps readers and writers coexist, but it does <span class="emphasis">not</span> eliminate locking. Commands such as <code>SELECT ... FOR UPDATE</code> take row locks so concurrent writers do not modify the same row at the same time.</p>
+              <div class="flow">
+                <div class="flow-step">SELECT ... FOR UPDATE</div>
+                <div class="arrow">→</div>
+                <div class="flow-step">Row lock acquired</div>
+                <div class="arrow">→</div>
+                <div class="flow-step">Other writer waits</div>
+                <div class="arrow">→</div>
+                <div class="flow-step">Commit / rollback releases lock</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-7">
+            <div class="card technical">
+              <p class="code-caption">Java example · strong isolation plus retry</p>
+<pre><span class="kw">public</span> <span class="type">void</span> <span class="method">reserveInventoryWithRetry</span>(<span class="type">Long</span> skuId, <span class="type">int</span> qty) {
+    <span class="kw">for</span> (<span class="type">int</span> attempt = <span class="num">1</span>; attempt &lt;= <span class="num">3</span>; attempt++) {
+        <span class="kw">try</span> {
+            inventoryService.<span class="method">reserveSerializable</span>(skuId, qty);
+            <span class="kw">return</span>;
+        } <span class="kw">catch</span> (<span class="type">CannotSerializeTransactionException</span> ex) {
+            <span class="cm">// retry whole transaction</span>
+        }
+    }
+    <span class="kw">throw</span> <span class="kw">new</span> <span class="type">IllegalStateException</span>(<span class="str">"Could not reserve inventory safely"</span>);
+}
+
+<span class="anno">@Transactional</span>(isolation = <span class="type">Isolation</span>.SERIALIZABLE)
+<span class="kw">public</span> <span class="type">void</span> <span class="method">reserveSerializable</span>(<span class="type">Long</span> skuId, <span class="type">int</span> qty) {
+    <span class="cm">// read current stock, validate, update</span>
+}</pre>
+              <p class="caption">Serializable gives the strongest correctness story, but your app must be ready to retry transactions that fail due to serialization conflicts.</p>
+            </div>
+          </div>
+
+          <div class="col-5">
+            <div class="card warning">
+              <h3>⚠️ Warning</h3>
+              <p><span class="emphasis">Higher isolation is not always “better.”</span> It can reduce concurrency or produce retry errors. Pick the weakest level that still protects your business invariant.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="quiz" data-correct="3">
+          <h3>Quiz — best PostgreSQL mental model</h3>
+          <p>Which statement is correct for PostgreSQL?</p>
+          <div class="options">
+            <button class="option">A. Read Uncommitted exposes dirty reads as in every database</button>
+            <button class="option">B. Repeatable Read always allows phantoms in PostgreSQL</button>
+            <button class="option">C. Serializable means no transaction ever retries</button>
+            <button class="option">D. PostgreSQL maps Read Uncommitted to Read Committed, and Serializable may require retries</button>
+          </div>
+          <div class="quiz-feedback">Correct answer: <strong>D</strong>. PostgreSQL does not implement a distinct dirty-read mode, and Serializable can reject some transactions so the application can retry safely.</div>
+        </div>
+
+        <div class="footer-nav">
+          <button class="btn secondary back-btn">← Back</button>
+          <button class="btn primary next-btn">Next →</button>
+        </div>
+      </section>
+
+      <section class="screen" data-screen="4">
+        <div class="section-kicker">Section 5 of 5 · ~6 mins</div>
+        <h2>Durability — committed means it survives a crash</h2>
+        <p class="lede">Durability answers the scary question: after the database says “commit successful,” what if power dies immediately? In PostgreSQL, the answer is built around WAL — Write-Ahead Logging.</p>
+
+        <div class="grid">
+          <div class="col-6">
+            <div class="card eli5">
+              <h3>🧒 ELI5</h3>
+              <p>Imagine you are cleaning your room, but before moving each toy you first write the move into a notebook. If the lights go out halfway, you can reopen the notebook and replay the moves you promised were done.</p>
+              <p>That notebook is the basic idea of <span class="emphasis">WAL</span>.</p>
+            </div>
+          </div>
+
+          <div class="col-6">
+            <div class="card analogy">
+              <h3>🔗 ANALOGY</h3>
+              <p>A theater crew keeps the official script in a binder backstage. The set pieces on stage can be rearranged later, but the script is the source of truth. If something crashes mid-performance, the crew uses the binder to rebuild the right scene.</p>
+            </div>
+          </div>
+
+          <div class="col-12">
+            <div class="card technical">
+              <div class="mini-label">PostgreSQL durability model</div>
+              <h3>How WAL guarantees durability</h3>
+              <p>Interview answer: <span class="emphasis">PostgreSQL guarantees durability by writing change records to the WAL and flushing those WAL records to durable storage before reporting commit success. After a crash, it replays WAL from the last checkpoint to recover committed work.</span></p>
+              <div class="flow" aria-label="WAL flow">
+                <div class="flow-step">Transaction changes buffers</div>
+                <div class="arrow">→</div>
+                <div class="flow-step">WAL record generated</div>
+                <div class="arrow">→</div>
+                <div class="flow-step">WAL flushed to disk</div>
+                <div class="arrow">→</div>
+                <div class="flow-step">COMMIT success returned</div>
+                <div class="arrow">→</div>
+                <div class="flow-step">Data pages can flush later</div>
+              </div>
+
+              <div class="timeline">
+                <div class="timeline-row">
+                  <div class="timeline-label">Normal path</div>
+                  <div class="timeline-track">
+                    <span class="event cyan">Write WAL</span>
+                    <span class="event green">fsync WAL</span>
+                    <span class="event purple">reply COMMIT OK</span>
+                  </div>
+                </div>
+                <div class="timeline-row">
+                  <div class="timeline-label">Crash later</div>
+                  <div class="timeline-track">
+                    <span class="event amber">Read last checkpoint</span>
+                    <span class="event cyan">Replay WAL forward</span>
+                    <span class="event green">Restore committed state</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-7">
+            <div class="card technical">
+              <p class="code-caption">Java example · commit boundary</p>
+<pre><span class="type">Connection</span> con = dataSource.<span class="method">getConnection</span>();
+con.<span class="method">setAutoCommit</span>(<span class="kw">false</span>);
+
+<span class="kw">try</span> {
+    <span class="cm">// multiple SQL statements</span>
+    con.<span class="method">commit</span>();   <span class="cm">// success returned only after DB commit rules are satisfied</span>
+} <span class="kw">catch</span> (<span class="type">Exception</span> ex) {
+    con.<span class="method">rollback</span>();
+    <span class="kw">throw</span> ex;
+}</pre>
+              <p class="caption">Application code does not manually manage WAL. The engine does it under the hood so that a successful commit survives a crash.</p>
+            </div>
+          </div>
+
+          <div class="col-5">
+            <div class="card warning">
+              <h3>⚠️ Warning</h3>
+              <p>If PostgreSQL is configured for <span class="emphasis">asynchronous commit</span>, the server can return success before the latest WAL is fully flushed. That improves latency, but the newest transactions can be lost in a crash.</p>
+            </div>
+          </div>
+
+          <div class="col-12">
+            <div class="card highlight">
+              <h3>💡 Extra detail worth saying in interviews</h3>
+              <ul>
+                <li>WAL is stored in PostgreSQL’s <code>pg_wal</code> area.</li>
+                <li>Crash recovery replays WAL entries from the latest checkpoint forward.</li>
+                <li>PostgreSQL also uses full-page writes to protect against torn page writes during crashes.</li>
+                <li>Durability is about surviving crashes after <span class="emphasis">commit acknowledgement</span>, not merely after the SQL statement ran in memory.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="quiz" data-correct="2">
+          <h3>Quiz — what does WAL really buy you?</h3>
+          <p>Which option best explains PostgreSQL durability?</p>
+          <div class="options">
+            <button class="option">A. PostgreSQL flushes every changed table page before every statement</button>
+            <button class="option">B. Durability means readers never block writers</button>
+            <button class="option">C. PostgreSQL flushes WAL records before reporting commit success, then replays WAL after a crash</button>
+            <button class="option">D. WAL is only used for analytics and backups</button>
+          </div>
+          <div class="quiz-feedback">Correct answer: <strong>C</strong>. WAL is the crash-recovery backbone. The log is forced out first, and recovery replays it to rebuild committed state after failure.</div>
+        </div>
+
+        <div class="footer-nav">
+          <button class="btn secondary back-btn">← Back</button>
+          <button class="btn success" id="finishBtn">Finish Module 🎉</button>
+        </div>
+      </section>
+
+      <section class="screen" data-screen="5">
+        <div class="celebrate">🎉</div>
+        <div class="section-kicker">Module Complete · ACID cheat sheet</div>
+        <h2>You now have the interview version of ACID in your head</h2>
+        <p class="lede">Use this page as your 2-minute review right before an interview or system design round.</p>
+
+        <div class="big-takeaways">
+          <div class="mini-label">Fast recap</div>
+          <ul>
+            <li><span class="emphasis">Atomicity</span> = all-or-nothing transaction unit. On failure, partial work is rolled back.</li>
+            <li><span class="emphasis">Consistency</span> = the database enforces rules like NOT NULL, FK, UNIQUE, and CHECK so only valid states are committed.</li>
+            <li><span class="emphasis">Isolation</span> = controls what concurrent transactions can see, preventing anomalies like dirty reads, nonrepeatable reads, and phantoms.</li>
+            <li><span class="emphasis">Durability</span> = once commit succeeds, data survives crashes.</li>
+          </ul>
+        </div>
+
+        <div class="cheatsheet">
+          <div class="cheat">
+            <h4>Atomicity</h4>
+            <ul>
+              <li>Business unit must not split into partial commits.</li>
+              <li>Rollback cancels the whole transaction.</li>
+              <li>Classic explanation: undo / rollback log.</li>
+            </ul>
+          </div>
+          <div class="cheat">
+            <h4>Consistency</h4>
+            <ul>
+              <li>Moves DB from one valid state to another.</li>
+              <li>Constraints are the key mechanism.</li>
+              <li>Consistency is not the same thing as “bug-free app logic.”</li>
+            </ul>
+          </div>
+          <div class="cheat">
+            <h4>Isolation</h4>
+            <ul>
+              <li>Read Committed = fresh snapshot per statement.</li>
+              <li>Repeatable Read = stable snapshot for transaction.</li>
+              <li>Serializable = strongest guarantee, may require retries.</li>
+            </ul>
+          </div>
+          <div class="cheat">
+            <h4>Durability + WAL</h4>
+            <ul>
+              <li>Write-ahead means log first, data page later.</li>
+              <li>Commit success normally waits for WAL flush.</li>
+              <li>Crash recovery replays WAL from the last checkpoint.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="big-takeaways">
+          <div class="mini-label">One clean interview answer</div>
+          <p class="lede" style="margin:0;">“ACID is the set of transaction guarantees that make database operations reliable. Atomicity gives all-or-nothing execution, Consistency enforces integrity rules, Isolation controls what concurrent transactions can observe, and Durability ensures a committed transaction survives crashes. In PostgreSQL, durability is provided through write-ahead logging, where WAL records are flushed before commit is acknowledged and replayed during crash recovery.”</p>
+        </div>
+
+        <div class="footer-nav">
+          <button class="btn secondary" id="reviewBtn">Review sections</button>
+          <button class="btn primary" id="restartBtn">Restart timer</button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const totalSeconds = 30 * 60;
+    let remainingSeconds = totalSeconds;
+    let currentScreen = 0;
+    let timerInterval = null;
+    const visited = new Set([0]);
+
+    const screens = Array.from(document.querySelectorAll('.screen'));
+    const navDots = document.getElementById('navDots');
+    const timerText = document.getElementById('timerText');
+    const timerChip = document.getElementById('timerChip');
+    const progressFill = document.getElementById('progressFill');
+
+    function buildDots(){
+      navDots.innerHTML = '';
+      for(let i = 0; i < 5; i++){
+        const btn = document.createElement('button');
+        btn.className = 'dot';
+        btn.type = 'button';
+        btn.textContent = i + 1;
+        btn.setAttribute('aria-label', 'Go to section ' + (i + 1));
+        btn.addEventListener('click', () => showScreen(i));
+        navDots.appendChild(btn);
+      }
+      updateDots();
+    }
+
+    function updateDots(){
+      const dots = Array.from(document.querySelectorAll('.dot'));
+      dots.forEach((dot, index) => {
+        dot.classList.remove('active', 'done');
+        if(index === currentScreen && currentScreen < 5){
+          dot.classList.add('active');
+        } else if(visited.has(index) || currentScreen === 5){
+          dot.classList.add('done');
+        }
+      });
+    }
+
+    function showScreen(index){
+      currentScreen = index;
+      if(index < 5){ visited.add(index); }
+      screens.forEach((screen, idx) => {
+        screen.classList.toggle('active', idx === index);
+      });
+      updateDots();
+      window.scrollTo({top: 0, behavior: 'smooth'});
+    }
+
+    document.querySelectorAll('.next-btn').forEach(btn => {
+      btn.addEventListener('click', () => showScreen(Math.min(currentScreen + 1, 5)));
+    });
+
+    document.querySelectorAll('.back-btn').forEach(btn => {
+      btn.addEventListener('click', () => showScreen(Math.max(currentScreen - 1, 0)));
+    });
+
+    document.getElementById('finishBtn').addEventListener('click', () => showScreen(5));
+    document.getElementById('reviewBtn').addEventListener('click', () => showScreen(0));
+    function resetQuizState(){
+      document.querySelectorAll('.quiz').forEach(quiz => {
+        quiz.querySelectorAll('.option').forEach(option => {
+          option.classList.remove('correct', 'wrong', 'disabled');
+        });
+        quiz.querySelector('.quiz-feedback').classList.remove('show');
+      });
+    }
+
+    document.getElementById('restartBtn').addEventListener('click', () => {
+      remainingSeconds = totalSeconds;
+      visited.clear();
+      visited.add(0);
+      resetQuizState();
+      updateTimerUI();
+      showScreen(0);
+    });
+
+    function formatTime(seconds){
+      const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
+      const secs = (seconds % 60).toString().padStart(2, '0');
+      return `${mins}:${secs}`;
+    }
+
+    function updateTimerUI(){
+      timerText.textContent = formatTime(remainingSeconds);
+      const elapsed = totalSeconds - remainingSeconds;
+      const percent = Math.min((elapsed / totalSeconds) * 100, 100);
+      progressFill.style.width = percent + '%';
+      timerChip.classList.remove('warning-5', 'warning-1');
+      if(remainingSeconds <= 60){
+        timerChip.classList.add('warning-1');
+      } else if(remainingSeconds <= 300){
+        timerChip.classList.add('warning-5');
+      }
+    }
+
+    function startTimer(){
+      if(timerInterval) clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        if(remainingSeconds > 0){
+          remainingSeconds--;
+          updateTimerUI();
+        } else {
+          clearInterval(timerInterval);
+        }
+      }, 1000);
+    }
+
+    document.querySelectorAll('.quiz').forEach(quiz => {
+      const correctIndex = Number(quiz.dataset.correct);
+      const options = Array.from(quiz.querySelectorAll('.option'));
+      const feedback = quiz.querySelector('.quiz-feedback');
+
+      options.forEach((option, index) => {
+        option.addEventListener('click', () => {
+          if(options.some(btn => btn.classList.contains('disabled'))) return;
+
+          options.forEach((btn, i) => {
+            btn.classList.add('disabled');
+            if(i === correctIndex){
+              btn.classList.add('correct');
+            }
+          });
+
+          if(index !== correctIndex){
+            option.classList.add('wrong');
+          }
+          feedback.classList.add('show');
+        });
+      });
+    });
+
+    buildDots();
+    updateTimerUI();
+    startTimer();
+  </script>
+</body>
+</html>

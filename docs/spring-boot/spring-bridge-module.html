@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Spring Bridge Topics — Interactive Learning Module</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#0a0e1a;--surf1:#111827;--surf2:#1a2235;--surf3:#1e2d45;--cyan:#00d4ff;--purple:#7c3aed;--green:#10b981;--amber:#f59e0b;--red:#ef4444;--text:#e2e8f0;--muted:#64748b;--border:#1e2d45;--font-body:'Syne',sans-serif;--font-mono:'JetBrains Mono',monospace}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:15px;line-height:1.7;min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:.4}
+#topbar{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(10,14,26,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 24px}
+#topbar-inner{max-width:900px;margin:0 auto;display:flex;align-items:center;gap:16px;height:56px}
+#course-label{font-family:var(--font-mono);font-size:11px;color:var(--amber);letter-spacing:.1em;text-transform:uppercase;white-space:nowrap}
+#nav-dots{display:flex;gap:8px;align-items:center;flex:1;overflow-x:auto;scrollbar-width:none}
+#nav-dots::-webkit-scrollbar{display:none}
+.dot{width:28px;height:28px;border-radius:50%;border:2px solid var(--muted);background:transparent;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:10px;color:var(--muted);cursor:pointer;transition:all .2s;flex-shrink:0}
+.dot:hover{border-color:var(--amber);color:var(--amber)}
+.dot.active{background:var(--amber);border-color:var(--amber);color:#000;font-weight:700}
+.dot.done{border-color:var(--green);color:var(--green)}
+#timer{font-family:var(--font-mono);font-size:15px;font-weight:700;color:var(--amber);transition:color .3s;flex-shrink:0}
+#timer.warn{color:var(--amber)}
+#timer.danger{color:var(--red);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+#prog-wrap{position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--surf2)}
+#prog-bar{height:2px;background:linear-gradient(90deg,var(--amber),var(--red));width:0;transition:width .5s}
+#app{max-width:900px;margin:0 auto;padding:80px 24px 40px}
+.section{display:none;animation:fadeIn .4s ease}
+.section.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.section-meta{font-family:var(--font-mono);font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px}
+.section-title{font-size:28px;font-weight:800;background:linear-gradient(135deg,var(--amber),var(--red));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px;line-height:1.2}
+.pomodoro-badge{display:inline-flex;align-items:center;gap:6px;background:var(--surf2);border:1px solid var(--border);border-radius:20px;padding:4px 12px;font-family:var(--font-mono);font-size:11px;color:var(--amber);margin-bottom:28px}
+.card{background:var(--surf1);border-radius:12px;padding:20px 24px;margin-bottom:20px;border-left:4px solid;position:relative}
+.card-eli5{border-left-color:var(--amber)}
+.card-analogy{border-left-color:var(--green)}
+.card-tech{border-left-color:var(--cyan)}
+.card-warn{border-left-color:var(--red)}
+.card-label{font-family:var(--font-mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px;font-weight:700}
+.card-eli5 .card-label{color:var(--amber)}
+.card-analogy .card-label{color:var(--green)}
+.card-tech .card-label{color:var(--cyan)}
+.card-warn .card-label{color:var(--red)}
+.card p+p{margin-top:10px}
+pre{background:#050810;border:1px solid var(--border);border-radius:8px;padding:16px 20px;overflow-x:auto;font-family:var(--font-mono);font-size:13px;line-height:1.6;margin:14px 0}
+.kw{color:#c792ea}.an{color:var(--amber)}.cls{color:#82aaff}.str{color:var(--green)}.cmt{color:#546e7a;font-style:italic}.fn{color:var(--cyan)}.num{color:#f78c6c}
+.table-wrap{overflow-x:auto;margin:16px 0}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:var(--surf2);font-family:var(--font-mono);font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);padding:10px 14px;text-align:left;border-bottom:1px solid var(--border)}
+td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:top}
+tr:hover td{background:rgba(255,255,255,.02)}
+.badge{display:inline-block;padding:2px 10px;border-radius:12px;font-family:var(--font-mono);font-size:11px;font-weight:700}
+.badge-green{background:rgba(16,185,129,.15);color:var(--green)}
+.badge-amber{background:rgba(245,158,11,.15);color:var(--amber)}
+.badge-red{background:rgba(239,68,68,.15);color:var(--red)}
+.badge-cyan{background:rgba(0,212,255,.12);color:var(--cyan)}
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:16px 0}
+.flow-step{background:var(--surf2);border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-size:12px;font-family:var(--font-mono);color:var(--text);white-space:nowrap}
+.flow-step.h{border-color:var(--cyan);color:var(--cyan)}
+.flow-step.w{border-color:var(--amber);color:var(--amber)}
+.flow-step.s{border-color:var(--green);color:var(--green)}
+.flow-step.r{border-color:var(--red);color:var(--red)}
+.flow-arrow{color:var(--muted);font-size:16px}
+.quiz-box{background:var(--surf1);border:2px solid var(--purple);border-radius:12px;padding:24px;margin-top:28px}
+.quiz-label{font-family:var(--font-mono);font-size:11px;color:var(--purple);letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px}
+.quiz-q{font-size:16px;font-weight:600;margin-bottom:18px;line-height:1.5}
+.quiz-opts{display:flex;flex-direction:column;gap:10px}
+.quiz-opt{background:var(--surf2);border:1px solid var(--border);border-radius:8px;padding:12px 16px;cursor:pointer;text-align:left;font-family:var(--font-body);font-size:14px;color:var(--text);transition:all .2s}
+.quiz-opt:hover:not(:disabled){border-color:var(--purple);background:rgba(124,58,237,.1)}
+.quiz-opt.correct{border-color:var(--green)!important;background:rgba(16,185,129,.15)!important;color:var(--green)}
+.quiz-opt.wrong{border-color:var(--red)!important;background:rgba(239,68,68,.12)!important;color:var(--red)}
+.quiz-opt:disabled{cursor:default}
+.quiz-explain{margin-top:16px;padding:14px;background:rgba(124,58,237,.1);border-left:3px solid var(--purple);border-radius:0 8px 8px 0;font-size:13px;color:#c4b5fd;display:none}
+.quiz-explain.show{display:block}
+.nav-row{display:flex;justify-content:space-between;align-items:center;margin-top:36px;padding-top:24px;border-top:1px solid var(--border)}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 22px;border-radius:8px;font-family:var(--font-body);font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;border:none}
+.btn-ghost{background:var(--surf2);color:var(--muted);border:1px solid var(--border)}
+.btn-ghost:hover{border-color:var(--amber);color:var(--amber)}
+.btn-primary{background:linear-gradient(135deg,var(--amber),var(--red));color:#fff}
+.btn-primary:hover{opacity:.88;transform:translateY(-1px)}
+#completion{display:none;text-align:center;padding:60px 20px}
+#completion.show{display:block;animation:fadeIn .5s ease}
+.completion-emoji{font-size:72px;margin-bottom:20px}
+.completion-title{font-size:32px;font-weight:800;margin-bottom:8px;background:linear-gradient(135deg,var(--amber),var(--red));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.completion-sub{color:var(--muted);margin-bottom:36px}
+.cheatsheet{background:var(--surf1);border:1px solid var(--border);border-radius:12px;padding:28px;text-align:left;max-width:720px;margin:0 auto}
+.cs-section{margin-bottom:20px}
+.cs-section-title{font-family:var(--font-mono);font-size:11px;color:var(--amber);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px}
+.cs-item{display:flex;gap:10px;font-size:13px;margin-bottom:6px;align-items:baseline}
+.cs-item::before{content:'→';color:var(--red);flex-shrink:0}
+.btn-restart{margin-top:28px;background:var(--surf2);border:1px solid var(--border);color:var(--text);padding:12px 28px;border-radius:8px;font-family:var(--font-body);font-size:14px;cursor:pointer}
+.btn-restart:hover{border-color:var(--amber);color:var(--amber)}
+h3{font-size:16px;font-weight:700;color:var(--amber);margin:18px 0 8px}
+h4{font-size:14px;font-weight:700;color:var(--cyan);margin:14px 0 6px}
+ul,ol{padding-left:20px;margin:10px 0}
+li{margin-bottom:5px}
+strong{color:#f8fafc}
+.interview-box{background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.3);border-radius:8px;padding:14px 18px;margin:14px 0}
+.interview-box .lbl{font-family:var(--font-mono);font-size:10px;color:var(--purple);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+.prop-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:14px 0}
+.prop-card{background:var(--surf2);border-radius:8px;padding:14px;border-top:3px solid var(--cyan)}
+.prop-card h4{margin:0 0 6px;font-size:13px;color:var(--cyan)}
+.prop-card p{font-size:12px;color:var(--muted)}
+@media(max-width:600px){.section-title{font-size:22px}.dot{width:24px;height:24px;font-size:9px}#app{padding:72px 16px 32px}}
+</style>
+</head>
+<body>
+<div id="topbar">
+  <div id="topbar-inner">
+    <div id="course-label">🌉 Spring Bridge</div>
+    <div id="nav-dots"></div>
+    <div id="timer">1:15:00</div>
+  </div>
+  <div id="prog-wrap"><div id="prog-bar"></div></div>
+</div>
+
+<div id="app">
+
+<!-- ══════════════════════════════════════════════════
+     SECTION 1 — @Transactional Deep Dive
+═══════════════════════════════════════════════════ -->
+<div class="section active" id="sec-0">
+  <div class="section-meta">Section 1 of 3 · Spring Bridge</div>
+  <div class="section-title">@Transactional — Deep Dive</div>
+  <div class="pomodoro-badge">🍅 Pomodoro · 30 min</div>
+
+  <div class="card card-eli5">
+    <div class="card-label">🧒 ELI5 — The ATM Transaction</div>
+    <p>You're at an ATM transferring $100 from checking to savings. Two things happen: (1) subtract $100 from checking, (2) add $100 to savings. If the machine crashes between step 1 and 2 — your money is gone. <strong>A transaction says: either BOTH steps happen, or NEITHER does.</strong> If anything goes wrong, we undo everything back to the starting state. That "undo" is called a <strong>rollback</strong>.</p>
+    <p><code>@Transactional</code> is the annotation that tells Spring: "wrap this method in that ATM guarantee."</p>
+  </div>
+
+  <div class="card card-tech">
+    <div class="card-label">⚙️ How It Works Under the Hood</div>
+    <p>When Spring sees <code>@Transactional</code> on a bean, it creates an <strong>AOP proxy</strong> (via CGLIB or JDK proxy) that wraps the method. Before your code runs, the proxy opens a DB transaction. After your code, it commits. If an exception escapes, it rolls back.</p>
+    <pre><span class="cmt">// What Spring does at runtime (conceptually):</span>
+<span class="kw">try</span> {
+    txManager.<span class="fn">beginTransaction</span>();
+    yourService.<span class="fn">actualMethod</span>(); <span class="cmt">// your real code</span>
+    txManager.<span class="fn">commit</span>();
+} <span class="kw">catch</span> (<span class="cls">RuntimeException</span> e) {
+    txManager.<span class="fn">rollback</span>();
+    <span class="kw">throw</span> e;
+}</pre>
+
+    <h3>Propagation — The 2 You Must Know Cold</h3>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Propagation</th><th>Behavior</th><th>Use Case</th></tr>
+        <tr>
+          <td><code>REQUIRED</code> (default)</td>
+          <td>Join existing tx if one exists; create new one if not</td>
+          <td>99% of your service methods</td>
+        </tr>
+        <tr>
+          <td><code>REQUIRES_NEW</code></td>
+          <td>Always create a new tx; suspend the current one</td>
+          <td>Audit logging — must persist even if outer tx rolls back</td>
+        </tr>
+        <tr>
+          <td><code>SUPPORTS</code></td>
+          <td>Join if exists; run non-transactionally if not</td>
+          <td>Read-only methods that can work either way</td>
+        </tr>
+        <tr>
+          <td><code>NOT_SUPPORTED</code></td>
+          <td>Suspend existing tx; run non-transactionally</td>
+          <td>Batch ops that shouldn't hold a tx open</td>
+        </tr>
+        <tr>
+          <td><code>NEVER</code></td>
+          <td>Throw if a tx exists</td>
+          <td>Methods that must never run in a transaction</td>
+        </tr>
+        <tr>
+          <td><code>MANDATORY</code></td>
+          <td>Throw if no tx exists</td>
+          <td>Methods that require a caller-managed tx</td>
+        </tr>
+      </table>
+    </div>
+
+    <pre><span class="an">@Service</span>
+<span class="kw">public class</span> <span class="cls">TransferService</span> {
+
+    <span class="an">@Transactional</span> <span class="cmt">// REQUIRED — joins outer tx or creates one</span>
+    <span class="kw">public void</span> <span class="fn">transfer</span>(<span class="kw">long</span> fromId, <span class="kw">long</span> toId, <span class="cls">BigDecimal</span> amount) {
+        accountRepo.<span class="fn">debit</span>(fromId, amount);
+        auditService.<span class="fn">log</span>(fromId, toId, amount); <span class="cmt">// see below</span>
+        accountRepo.<span class="fn">credit</span>(toId, amount);
+    }
+}
+
+<span class="an">@Service</span>
+<span class="kw">public class</span> <span class="cls">AuditService</span> {
+
+    <span class="an">@Transactional</span>(propagation = <span class="cls">Propagation</span>.REQUIRES_NEW)
+    <span class="kw">public void</span> <span class="fn">log</span>(<span class="kw">long</span> fromId, <span class="kw">long</span> toId, <span class="cls">BigDecimal</span> amount) {
+        <span class="cmt">// Runs in its OWN transaction</span>
+        <span class="cmt">// Even if transfer() rolls back, this audit row is saved</span>
+        auditRepo.<span class="fn">save</span>(<span class="kw">new</span> <span class="cls">AuditLog</span>(fromId, toId, amount));
+    }
+}</pre>
+
+    <h3>Rollback Rules</h3>
+    <p>By default, Spring only rolls back on <strong>unchecked exceptions</strong> (<code>RuntimeException</code> and its subclasses) and <strong>Errors</strong>. Checked exceptions do NOT trigger rollback unless you configure it.</p>
+    <pre><span class="cmt">// Default: rollback on RuntimeException only</span>
+<span class="an">@Transactional</span>
+<span class="kw">public void</span> <span class="fn">doWork</span>() <span class="kw">throws</span> <span class="cls">IOException</span> {
+    <span class="cmt">// IOException is CHECKED — NO rollback by default!</span>
+}
+
+<span class="cmt">// Explicit rollback for checked exception:</span>
+<span class="an">@Transactional</span>(rollbackFor = <span class="cls">IOException</span>.class)
+<span class="kw">public void</span> <span class="fn">doWork</span>() <span class="kw">throws</span> <span class="cls">IOException</span> { ... }
+
+<span class="cmt">// Prevent rollback even for RuntimeException:</span>
+<span class="an">@Transactional</span>(noRollbackFor = <span class="cls">OptimisticLockException</span>.class)
+<span class="kw">public void</span> <span class="fn">doWork</span>() { ... }</pre>
+  </div>
+
+  <div class="card card-warn">
+    <div class="card-label">⚠️ The Self-Invocation Trap — Most Common @Transactional Bug</div>
+    <p>If you call a <code>@Transactional</code> method from within the <strong>same class</strong>, the proxy is bypassed — no transaction is started.</p>
+    <pre><span class="an">@Service</span>
+<span class="kw">public class</span> <span class="cls">OrderService</span> {
+
+    <span class="kw">public void</span> <span class="fn">placeOrder</span>(<span class="cls">Order</span> o) {
+        <span class="cmt">// Calls saveOrder() on 'this' — bypasses the proxy!</span>
+        <span class="fn">saveOrder</span>(o); <span class="cmt">// ← NO transaction!</span>
+    }
+
+    <span class="an">@Transactional</span>
+    <span class="kw">public void</span> <span class="fn">saveOrder</span>(<span class="cls">Order</span> o) { ... }
+}</pre>
+    <p><strong>Fix:</strong> Either merge the methods, or inject <code>self</code> and call through the proxy:</p>
+    <pre><span class="an">@Service</span>
+<span class="kw">public class</span> <span class="cls">OrderService</span> {
+
+    <span class="an">@Autowired</span>
+    <span class="kw">private</span> <span class="cls">OrderService</span> self; <span class="cmt">// inject proxy of self</span>
+
+    <span class="kw">public void</span> <span class="fn">placeOrder</span>(<span class="cls">Order</span> o) {
+        self.<span class="fn">saveOrder</span>(o); <span class="cmt">// goes through proxy ✓</span>
+    }
+
+    <span class="an">@Transactional</span>
+    <span class="kw">public void</span> <span class="fn">saveOrder</span>(<span class="cls">Order</span> o) { ... }
+}</pre>
+  </div>
+
+  <div class="card card-tech">
+    <div class="card-label">⚙️ readOnly=true — Performance Hint</div>
+    <pre><span class="an">@Transactional</span>(readOnly = <span class="kw">true</span>)
+<span class="kw">public</span> <span class="cls">List</span>&lt;<span class="cls">Account</span>&gt; <span class="fn">findAll</span>() {
+    <span class="kw">return</span> accountRepo.<span class="fn">findAll</span>();
+}</pre>
+    <p>With <code>readOnly=true</code>, Spring hints to the DB driver and Hibernate that no writes will happen. Hibernate can skip dirty-checking on all loaded entities — measurable speedup for large result sets.</p>
+
+    <div class="interview-box">
+      <div class="lbl">💬 Interview Answer</div>
+      <p>"@Transactional works via an AOP proxy — Spring wraps the bean in a proxy that opens a DB transaction before the method and commits on success, rolls back on unchecked exceptions. Key gotchas: self-invocation bypasses the proxy so no transaction starts; checked exceptions don't trigger rollback by default — you need rollbackFor; and REQUIRES_NEW creates an independent transaction useful for audit logs that must persist even if the outer transaction rolls back."</p>
+    </div>
+  </div>
+
+  <div class="quiz-box">
+    <div class="quiz-label">🧠 Quiz — Section 1</div>
+    <div class="quiz-q">A @Service method with @Transactional throws a checked IOException. What happens to the transaction by default?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" onclick="answer(this,false,0)">A. Spring rolls back — any exception triggers rollback</button>
+      <button class="quiz-opt" onclick="answer(this,true,0)">B. Spring commits — checked exceptions do NOT trigger rollback unless rollbackFor is specified</button>
+      <button class="quiz-opt" onclick="answer(this,false,0)">C. Spring throws a TransactionSystemException before the IOException propagates</button>
+      <button class="quiz-opt" onclick="answer(this,false,0)">D. The behavior is undefined — checked exceptions in @Transactional are not supported</button>
+    </div>
+    <div class="quiz-explain" id="explain-0">
+      ✅ Spring's default rollback policy is: roll back on <strong>RuntimeException and Error only</strong>. Checked exceptions (like IOException, SQLException) are committed unless you explicitly configure <code>rollbackFor = IOException.class</code>. This trips up many developers who expect "any exception = rollback."
+    </div>
+  </div>
+
+  <div class="nav-row">
+    <button class="btn btn-ghost" disabled>← Back</button>
+    <button class="btn btn-primary" onclick="goTo(1)">Next: Exception Handling →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SECTION 2 — @ExceptionHandler + @RestControllerAdvice
+═══════════════════════════════════════════════════ -->
+<div class="section" id="sec-1">
+  <div class="section-meta">Section 2 of 3 · Spring Bridge</div>
+  <div class="section-title">@ExceptionHandler + @RestControllerAdvice</div>
+  <div class="pomodoro-badge">🍅 Pomodoro · 25 min</div>
+
+  <div class="card card-eli5">
+    <div class="card-label">🧒 ELI5 — The Customer Service Desk</div>
+    <p>Imagine every department in a store just throws their problems into the hallway when something goes wrong. Chaos. Instead, you have a <strong>central customer service desk</strong> at the entrance — all complaints go there, get sorted by type, and receive a professional response.</p>
+    <p><code>@RestControllerAdvice</code> is that central desk. <code>@ExceptionHandler</code> is the staff member trained for a specific type of complaint. No matter which controller throws the exception, it lands at that desk.</p>
+  </div>
+
+  <div class="card card-tech">
+    <div class="card-label">⚙️ Without Global Handling — The Problem</div>
+    <pre><span class="an">@RestController</span>
+<span class="kw">public class</span> <span class="cls">AccountController</span> {
+
+    <span class="an">@GetMapping</span>(<span class="str">"/accounts/{id}"</span>)
+    <span class="kw">public</span> <span class="cls">Account</span> <span class="fn">getAccount</span>(<span class="an">@PathVariable</span> <span class="kw">long</span> id) {
+        <span class="kw">return</span> service.<span class="fn">findById</span>(id); <span class="cmt">// throws AccountNotFoundException</span>
+        <span class="cmt">// Without handling: Spring returns ugly 500 white-label page</span>
+    }
+}</pre>
+    <p>Without error handling, Spring returns a generic 500 response. Every controller would need its own try-catch — tons of duplication.</p>
+  </div>
+
+  <div class="card card-tech">
+    <div class="card-label">⚙️ The Solution: Global Exception Handler</div>
+    <pre><span class="cmt">// 1. Custom exception</span>
+<span class="kw">public class</span> <span class="cls">AccountNotFoundException</span> <span class="kw">extends</span> <span class="cls">RuntimeException</span> {
+    <span class="kw">public</span> <span class="fn">AccountNotFoundException</span>(<span class="kw">long</span> id) {
+        <span class="kw">super</span>(<span class="str">"Account not found: "</span> + id);
+    }
+}
+
+<span class="cmt">// 2. Standard error response body</span>
+<span class="kw">public record</span> <span class="cls">ErrorResponse</span>(<span class="cls">String</span> error, <span class="cls">String</span> message, <span class="kw">int</span> status) {}
+
+<span class="cmt">// 3. Global handler — applies to ALL @RestControllers</span>
+<span class="an">@RestControllerAdvice</span>
+<span class="kw">public class</span> <span class="cls">GlobalExceptionHandler</span> {
+
+    <span class="an">@ExceptionHandler</span>(<span class="cls">AccountNotFoundException</span>.class)
+    <span class="an">@ResponseStatus</span>(<span class="cls">HttpStatus</span>.NOT_FOUND)
+    <span class="kw">public</span> <span class="cls">ErrorResponse</span> <span class="fn">handleNotFound</span>(<span class="cls">AccountNotFoundException</span> ex) {
+        <span class="kw">return new</span> <span class="cls">ErrorResponse</span>(<span class="str">"NOT_FOUND"</span>, ex.<span class="fn">getMessage</span>(), <span class="num">404</span>);
+    }
+
+    <span class="an">@ExceptionHandler</span>(<span class="cls">MethodArgumentNotValidException</span>.class)
+    <span class="an">@ResponseStatus</span>(<span class="cls">HttpStatus</span>.BAD_REQUEST)
+    <span class="kw">public</span> <span class="cls">ErrorResponse</span> <span class="fn">handleValidation</span>(<span class="cls">MethodArgumentNotValidException</span> ex) {
+        <span class="cls">String</span> msg = ex.<span class="fn">getBindingResult</span>().<span class="fn">getFieldErrors</span>().<span class="fn">stream</span>()
+            .<span class="fn">map</span>(f -> f.<span class="fn">getField</span>() + <span class="str">": "</span> + f.<span class="fn">getDefaultMessage</span>())
+            .<span class="fn">collect</span>(<span class="cls">Collectors</span>.<span class="fn">joining</span>(<span class="str">", "</span>));
+        <span class="kw">return new</span> <span class="cls">ErrorResponse</span>(<span class="str">"VALIDATION_FAILED"</span>, msg, <span class="num">400</span>);
+    }
+
+    <span class="an">@ExceptionHandler</span>(<span class="cls">Exception</span>.class) <span class="cmt">// catch-all fallback</span>
+    <span class="an">@ResponseStatus</span>(<span class="cls">HttpStatus</span>.INTERNAL_SERVER_ERROR)
+    <span class="kw">public</span> <span class="cls">ErrorResponse</span> <span class="fn">handleAll</span>(<span class="cls">Exception</span> ex) {
+        <span class="kw">return new</span> <span class="cls">ErrorResponse</span>(<span class="str">"INTERNAL_ERROR"</span>, <span class="str">"Unexpected error"</span>, <span class="num">500</span>);
+    }
+}</pre>
+
+    <h3>Using ResponseEntity for Full Control</h3>
+    <pre><span class="an">@ExceptionHandler</span>(<span class="cls">AccountNotFoundException</span>.class)
+<span class="kw">public</span> <span class="cls">ResponseEntity</span>&lt;<span class="cls">ErrorResponse</span>&gt; <span class="fn">handleNotFound</span>(<span class="cls">AccountNotFoundException</span> ex) {
+    <span class="kw">var</span> body = <span class="kw">new</span> <span class="cls">ErrorResponse</span>(<span class="str">"NOT_FOUND"</span>, ex.<span class="fn">getMessage</span>(), <span class="num">404</span>);
+    <span class="kw">return</span> <span class="cls">ResponseEntity</span>
+        .<span class="fn">status</span>(<span class="cls">HttpStatus</span>.NOT_FOUND)
+        .<span class="fn">header</span>(<span class="str">"X-Error-Code"</span>, <span class="str">"ACC-001"</span>)
+        .<span class="fn">body</span>(body);
+}</pre>
+    <p>Use <code>ResponseEntity</code> when you need to control response headers, not just body and status.</p>
+
+    <h3>@RestControllerAdvice vs @ControllerAdvice</h3>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Annotation</th><th>Equivalent To</th><th>Response Type</th></tr>
+        <tr>
+          <td><code>@ControllerAdvice</code></td>
+          <td>Base annotation</td>
+          <td>Returns view names by default</td>
+        </tr>
+        <tr>
+          <td><code>@RestControllerAdvice</code></td>
+          <td><code>@ControllerAdvice + @ResponseBody</code></td>
+          <td>Serializes return value to JSON/XML directly</td>
+        </tr>
+      </table>
+    </div>
+
+    <h3>Scope Control — Limit to Specific Packages</h3>
+    <pre><span class="cmt">// Only handle exceptions from these controllers:</span>
+<span class="an">@RestControllerAdvice</span>(basePackages = <span class="str">"com.myapp.api"</span>)
+<span class="kw">public class</span> <span class="cls">ApiExceptionHandler</span> { ... }
+
+<span class="cmt">// Or specific controller classes:</span>
+<span class="an">@RestControllerAdvice</span>(assignableTypes = {<span class="cls">AccountController</span>.class})
+<span class="kw">public class</span> <span class="cls">AccountExceptionHandler</span> { ... }</pre>
+
+    <div class="interview-box">
+      <div class="lbl">💬 Interview Answer</div>
+      <p>"@RestControllerAdvice is a global exception interceptor — it's @ControllerAdvice + @ResponseBody, applied across all @RestControllers. @ExceptionHandler methods inside it map specific exception types to HTTP responses. This eliminates try-catch duplication across controllers and gives you a single place to define error contracts. For full response control including headers, return ResponseEntity instead of using @ResponseStatus."</p>
+    </div>
+  </div>
+
+  <div class="card card-warn">
+    <div class="card-label">⚠️ Exception Handler Priority</div>
+    <p>When multiple handlers match an exception, Spring picks the <strong>most specific type</strong>. If you have handlers for both <code>RuntimeException</code> and <code>AccountNotFoundException extends RuntimeException</code>, the <code>AccountNotFoundException</code> handler wins.</p>
+    <p>The catch-all <code>@ExceptionHandler(Exception.class)</code> should always be last-resort — it catches everything including Spring internals you might not want to intercept.</p>
+  </div>
+
+  <div class="quiz-box">
+    <div class="quiz-label">🧠 Quiz — Section 2</div>
+    <div class="quiz-q">Your @RestControllerAdvice has handlers for both RuntimeException and IllegalArgumentException (which extends RuntimeException). A controller throws IllegalArgumentException. Which handler runs?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" onclick="answer(this,false,1)">A. RuntimeException handler — it's higher in the inheritance chain</button>
+      <button class="quiz-opt" onclick="answer(this,true,1)">B. IllegalArgumentException handler — Spring picks the most specific matching type</button>
+      <button class="quiz-opt" onclick="answer(this,false,1)">C. Both handlers run in sequence</button>
+      <button class="quiz-opt" onclick="answer(this,false,1)">D. Spring throws an AmbiguousHandlerException</button>
+    </div>
+    <div class="quiz-explain" id="explain-1">
+      ✅ Spring resolves exception handlers by specificity — the most specific matching type wins. <code>IllegalArgumentException</code> is a more specific match than <code>RuntimeException</code>, so that handler is chosen. This lets you have fine-grained control per exception type with a broader fallback.
+    </div>
+  </div>
+
+  <div class="nav-row">
+    <button class="btn btn-ghost" onclick="goTo(0)">← Back</button>
+    <button class="btn btn-primary" onclick="goTo(2)">Next: @Value & Config Properties →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SECTION 3 — @Value, @ConfigurationProperties, Profiles
+═══════════════════════════════════════════════════ -->
+<div class="section" id="sec-2">
+  <div class="section-meta">Section 3 of 3 · Spring Bridge</div>
+  <div class="section-title">@Value, @ConfigurationProperties & Profiles</div>
+  <div class="pomodoro-badge">🍅 Pomodoro · 20 min</div>
+
+  <div class="card card-eli5">
+    <div class="card-label">🧒 ELI5 — The Settings File</div>
+    <p>Think of a game with a <code>settings.cfg</code> file — resolution, sound volume, difficulty. Your game code doesn't hard-code those values; it reads from the file. That way you can change behavior without recompiling. Spring's property system does the same: <code>application.properties</code> is your settings file, <code>@Value</code> is how you read one setting, and <code>@ConfigurationProperties</code> is how you read a whole group of related settings at once.</p>
+    <p><strong>Profiles</strong> are like having separate settings files per environment: <code>settings-dev.cfg</code>, <code>settings-prod.cfg</code>.</p>
+  </div>
+
+  <div class="card card-tech">
+    <div class="card-label">⚙️ @Value — Single Property Injection</div>
+    <pre><span class="cmt"># application.properties</span>
+app.max-retries=3
+app.api-key=abc-123
+app.timeout-ms=5000</pre>
+    <pre><span class="an">@Service</span>
+<span class="kw">public class</span> <span class="cls">PaymentService</span> {
+
+    <span class="an">@Value</span>(<span class="str">"${app.max-retries}"</span>)
+    <span class="kw">private int</span> maxRetries;
+
+    <span class="an">@Value</span>(<span class="str">"${app.api-key}"</span>)
+    <span class="kw">private</span> <span class="cls">String</span> apiKey;
+
+    <span class="cmt">// Default value if property not found:</span>
+    <span class="an">@Value</span>(<span class="str">"${app.timeout-ms:3000}"</span>)
+    <span class="kw">private int</span> timeoutMs; <span class="cmt">// 3000 if not in properties</span>
+
+    <span class="cmt">// SpEL expression:</span>
+    <span class="an">@Value</span>(<span class="str">"#{${app.max-retries} * 2}"</span>)
+    <span class="kw">private int</span> doubleRetries;
+}</pre>
+    <p><strong>Note:</strong> <code>@Value</code> uses <code>${...}</code> for property placeholders and <code>#{...}</code> for SpEL (Spring Expression Language). Don't mix them up in interviews.</p>
+  </div>
+
+  <div class="card card-tech">
+    <div class="card-label">⚙️ @ConfigurationProperties — The Better Way for Groups</div>
+    <p>For more than 2-3 related properties, <code>@ConfigurationProperties</code> is strongly preferred over multiple <code>@Value</code> annotations. It's type-safe, validates, and is IDE-friendly.</p>
+    <pre><span class="cmt"># application.properties</span>
+payment.gateway.url=https://api.stripe.com
+payment.gateway.api-key=sk_live_xxx
+payment.gateway.timeout-ms=5000
+payment.gateway.max-retries=3</pre>
+    <pre><span class="an">@ConfigurationProperties</span>(prefix = <span class="str">"payment.gateway"</span>)
+<span class="an">@Component</span> <span class="cmt">// or use @EnableConfigurationProperties in config class</span>
+<span class="kw">public class</span> <span class="cls">PaymentGatewayProperties</span> {
+
+    <span class="kw">private</span> <span class="cls">String</span> url;
+    <span class="kw">private</span> <span class="cls">String</span> apiKey;
+    <span class="kw">private int</span> timeoutMs;
+    <span class="kw">private int</span> maxRetries;
+
+    <span class="cmt">// getters + setters (or use record / @ConstructorBinding)</span>
+}
+
+<span class="cmt">// Usage:</span>
+<span class="an">@Service</span>
+<span class="kw">public class</span> <span class="cls">PaymentService</span> {
+
+    <span class="kw">private final</span> <span class="cls">PaymentGatewayProperties</span> props;
+
+    <span class="kw">public</span> <span class="fn">PaymentService</span>(<span class="cls">PaymentGatewayProperties</span> props) {
+        <span class="kw">this</span>.props = props;
+    }
+}</pre>
+
+    <h3>Adding Validation to Properties</h3>
+    <pre><span class="an">@ConfigurationProperties</span>(prefix = <span class="str">"payment.gateway"</span>)
+<span class="an">@Validated</span>
+<span class="kw">public class</span> <span class="cls">PaymentGatewayProperties</span> {
+
+    <span class="an">@NotNull</span>
+    <span class="kw">private</span> <span class="cls">String</span> url;
+
+    <span class="an">@Min</span>(<span class="num">1</span>) <span class="an">@Max</span>(<span class="num">10</span>)
+    <span class="kw">private int</span> maxRetries;
+    <span class="cmt">// App fails at startup if constraints violated — fail fast!</span>
+}</pre>
+
+    <div class="table-wrap">
+      <table>
+        <tr><th></th><th>@Value</th><th>@ConfigurationProperties</th></tr>
+        <tr><td>Best for</td><td>1–2 standalone properties</td><td>Groups of related properties</td></tr>
+        <tr><td>Type safety</td><td><span class="badge badge-amber">Limited (String conversion)</span></td><td><span class="badge badge-green">✓ Full type binding</span></td></tr>
+        <tr><td>Validation</td><td><span class="badge badge-red">✗</span></td><td><span class="badge badge-green">✓ @Validated support</span></td></tr>
+        <tr><td>IDE support</td><td><span class="badge badge-amber">Partial</span></td><td><span class="badge badge-green">✓ Auto-complete in IDE</span></td></tr>
+        <tr><td>Relaxed binding</td><td><span class="badge badge-red">✗</span></td><td><span class="badge badge-green">✓ (camelCase/kebab-case)</span></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="card card-tech">
+    <div class="card-label">⚙️ Profiles — Environment-Specific Config</div>
+    <pre><span class="cmt"># application.properties (base config)</span>
+spring.application.name=bank-service
+
+<span class="cmt"># application-dev.properties (overrides for dev)</span>
+spring.datasource.url=jdbc:h2:mem:devdb
+app.debug-mode=true
+
+<span class="cmt"># application-prod.properties (overrides for prod)</span>
+spring.datasource.url=jdbc:postgresql://prod-host:5432/bank
+app.debug-mode=false</pre>
+    <pre><span class="cmt">// Activate profile:</span>
+<span class="cmt">// 1. In application.properties:</span>
+spring.profiles.active=dev
+
+<span class="cmt">// 2. JVM arg:</span>
+<span class="cmt">// -Dspring.profiles.active=prod</span>
+
+<span class="cmt">// 3. Environment variable:</span>
+<span class="cmt">// SPRING_PROFILES_ACTIVE=prod</span></pre>
+
+    <h3>@Profile on Beans</h3>
+    <pre><span class="an">@Configuration</span>
+<span class="kw">public class</span> <span class="cls">DataSourceConfig</span> {
+
+    <span class="an">@Bean</span>
+    <span class="an">@Profile</span>(<span class="str">"dev"</span>)
+    <span class="kw">public</span> <span class="cls">DataSource</span> <span class="fn">h2DataSource</span>() {
+        <span class="kw">return new</span> <span class="cls">EmbeddedDatabaseBuilder</span>().<span class="fn">setType</span>(H2).<span class="fn">build</span>();
+    }
+
+    <span class="an">@Bean</span>
+    <span class="an">@Profile</span>(<span class="str">"prod"</span>)
+    <span class="kw">public</span> <span class="cls">DataSource</span> <span class="fn">postgresDataSource</span>() {
+        <span class="kw">return new</span> <span class="cls">HikariDataSource</span>(...);
+    }
+
+    <span class="an">@Bean</span>
+    <span class="an">@Profile</span>(<span class="str">"!test"</span>) <span class="cmt">// negation: active when NOT test</span>
+    <span class="kw">public</span> <span class="cls">SchedulerService</span> <span class="fn">scheduler</span>() { ... }
+}</pre>
+
+    <div class="interview-box">
+      <div class="lbl">💬 Interview Answer</div>
+      <p>"@Value injects individual properties using ${placeholder} syntax and supports SpEL with #{expression}. For groups of related properties, @ConfigurationProperties is preferred — it's type-safe, supports validation with @Validated, and IDE autocomplete. Profiles allow environment-specific configuration: application-dev.properties overrides base properties when the dev profile is active. Beans can be conditionally registered with @Profile, enabling different implementations per environment."</p>
+    </div>
+  </div>
+
+  <div class="quiz-box">
+    <div class="quiz-label">🧠 Quiz — Section 3</div>
+    <div class="quiz-q">You have 8 related payment config properties. Which approach is best and why?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" onclick="answer(this,false,2)">A. 8 separate @Value annotations — most explicit and easy to trace</button>
+      <button class="quiz-opt" onclick="answer(this,false,2)">B. One @Value with a comma-separated string, parsed manually</button>
+      <button class="quiz-opt" onclick="answer(this,true,2)">C. @ConfigurationProperties — type-safe binding, @Validated support, IDE autocomplete, and one place to manage all 8</button>
+      <button class="quiz-opt" onclick="answer(this,false,2)">D. Hard-code them — application.properties is for infrastructure, not business config</button>
+    </div>
+    <div class="quiz-explain" id="explain-2">
+      ✅ @ConfigurationProperties wins for groups of related properties. It binds all matching prefixed properties to a typed POJO, supports @Validated constraints (failing fast at startup if invalid), offers IDE autocomplete via spring-boot-configuration-processor, and handles relaxed binding — <code>payment.gateway.api-key</code> maps to <code>apiKey</code> automatically.
+    </div>
+  </div>
+
+  <div class="nav-row">
+    <button class="btn btn-ghost" onclick="goTo(1)">← Back</button>
+    <button class="btn btn-primary" onclick="finish()">🎉 Complete Module</button>
+  </div>
+</div>
+
+<!-- COMPLETION -->
+<div id="completion">
+  <div class="completion-emoji">🌉✅🔥</div>
+  <div class="completion-title">Bridge Topics — Complete!</div>
+  <div class="completion-sub">You're ready to build Spring MVC REST APIs properly.</div>
+  <div class="cheatsheet">
+    <div class="cs-section">
+      <div class="cs-section-title">@Transactional</div>
+      <div class="cs-item">AOP proxy wraps method: begin → run → commit | rollback</div>
+      <div class="cs-item">Default rollback: unchecked exceptions only — add rollbackFor for checked</div>
+      <div class="cs-item">REQUIRED = join or create; REQUIRES_NEW = always new (audit logs)</div>
+      <div class="cs-item">Self-invocation = bypasses proxy = no transaction! Inject self to fix</div>
+      <div class="cs-item">readOnly=true = Hibernate skips dirty-check — faster reads</div>
+    </div>
+    <div class="cs-section">
+      <div class="cs-section-title">@RestControllerAdvice</div>
+      <div class="cs-item">= @ControllerAdvice + @ResponseBody — global handler for all @RestControllers</div>
+      <div class="cs-item">@ExceptionHandler maps exception type to HTTP response</div>
+      <div class="cs-item">Most specific exception type wins when multiple handlers match</div>
+      <div class="cs-item">ResponseEntity gives control over body + status + headers</div>
+    </div>
+    <div class="cs-section">
+      <div class="cs-section-title">@Value & @ConfigurationProperties</div>
+      <div class="cs-item">@Value("${key}") = single property; @Value("${key:default}") = with fallback</div>
+      <div class="cs-item">#{...} = SpEL expression, ${...} = property placeholder — don't mix</div>
+      <div class="cs-item">@ConfigurationProperties(prefix=) = typed group binding — use for 3+ props</div>
+      <div class="cs-item">Add @Validated to fail fast at startup if properties violate constraints</div>
+      <div class="cs-item">Profiles: application-dev.properties overrides base; activate via spring.profiles.active</div>
+    </div>
+  </div>
+  <button class="btn-restart" onclick="restart()">↩ Restart Module</button>
+</div>
+
+</div>
+
+<script>
+const SECTIONS=3,TOTAL=75*60;
+let current=0,done=new Set(),answered=new Array(SECTIONS).fill(false),elapsed=0;
+const timerEl=document.getElementById('timer'),progBar=document.getElementById('prog-bar'),navDots=document.getElementById('nav-dots');
+function buildDots(){navDots.innerHTML='';for(let i=0;i<SECTIONS;i++){const d=document.createElement('button');d.className='dot'+(i===current?' active':'')+(done.has(i)&&i!==current?' done':'');d.textContent=i+1;d.title=['@Transactional','ExceptionHandler','@Value'][i];d.onclick=()=>goTo(i);navDots.appendChild(d)}}
+function goTo(idx){if(idx<0||idx>=SECTIONS)return;document.getElementById('sec-'+current).classList.remove('active');done.add(current);current=idx;document.getElementById('sec-'+current).classList.add('active');document.getElementById('completion').classList.remove('show');document.getElementById('completion').style.display='none';buildDots();window.scrollTo({top:0,behavior:'smooth'})}
+function finish(){document.getElementById('sec-'+current).classList.remove('active');done.add(current);const c=document.getElementById('completion');c.style.display='block';c.classList.add('show');buildDots();window.scrollTo({top:0,behavior:'smooth'})}
+function restart(){current=0;done.clear();elapsed=0;answered.fill(false);const c=document.getElementById('completion');c.classList.remove('show');c.style.display='none';document.getElementById('sec-0').classList.add('active');document.querySelectorAll('.quiz-opt').forEach(b=>{b.disabled=false;b.classList.remove('correct','wrong')});document.querySelectorAll('.quiz-explain').forEach(e=>e.classList.remove('show'));buildDots();updateTimer()}
+function answer(btn,correct,section){if(answered[section])return;answered[section]=true;const box=btn.closest('.quiz-box');box.querySelectorAll('.quiz-opt').forEach(b=>{b.disabled=true;if(b===btn)b.classList.add(correct?'correct':'wrong')});if(!correct)box.querySelectorAll('.quiz-opt').forEach(b=>{if(b.getAttribute('onclick')&&b.getAttribute('onclick').includes('true'))b.classList.add('correct')});const ex=document.getElementById('explain-'+section);if(ex)ex.classList.add('show')}
+function fmt(s){const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),ss=s%60;if(h>0)return`${h}:${String(m).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;return`${String(m).padStart(2,'0')}:${String(ss).padStart(2,'0')}`}
+function updateTimer(){const r=Math.max(0,TOTAL-elapsed);timerEl.textContent=fmt(r);progBar.style.width=Math.min(100,(elapsed/TOTAL)*100)+'%';timerEl.classList.remove('warn','danger');if(r<=60)timerEl.classList.add('danger');else if(r<=300)timerEl.classList.add('warn')}
+setInterval(()=>{elapsed++;updateTimer()},1000);
+buildDots();updateTimer();
+</script>
+</body>
+</html>

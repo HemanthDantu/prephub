@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ArrayList vs LinkedList Learning Module</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+:root {
+  --bg: #0a0e1a;
+  --surface-1: #111827;
+  --surface-2: #1a2235;
+  --surface-3: #0f1726;
+  --border: rgba(255,255,255,0.08);
+  --text: #e5eefc;
+  --muted: #98a6c3;
+  --muted-2: #6f7b93;
+  --cyan: #00d4ff;
+  --purple: #7c3aed;
+  --green: #10b981;
+  --amber: #f59e0b;
+  --red: #ef4444;
+  --shadow: 0 20px 60px rgba(0,0,0,0.35);
+  --radius-xl: 22px;
+  --radius-lg: 16px;
+  --radius-md: 12px;
+  --max: 1180px;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: radial-gradient(circle at top, #101834 0%, var(--bg) 45%, #070b14 100%); color: var(--text); font-family: 'Syne', system-ui, sans-serif; }
+body { min-height: 100vh; }
+a { color: inherit; text-decoration: none; }
+.app { min-height: 100vh; display: flex; flex-direction: column; }
+.topbar { position: sticky; top: 0; z-index: 30; backdrop-filter: blur(14px); background: rgba(10, 14, 26, 0.86); border-bottom: 1px solid rgba(255,255,255,0.06); }
+.topbar-inner { max-width: var(--max); margin: 0 auto; padding: 16px 20px 14px; display: grid; gap: 12px; }
+.topbar-row { display: flex; align-items: center; justify-content: space-between; gap: 18px; flex-wrap: wrap; }
+.brand { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.brand h1 { margin: 0; font-size: clamp(1.2rem, 1rem + 1.2vw, 2rem); letter-spacing: -0.03em; }
+.brand p { margin: 0; color: var(--muted); font-size: 0.95rem; }
+.meta { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.timer-wrap { display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 999px; }
+.timer-label, .timer-value, .section-label, .card-label, .nav-dot, .pill, .tiny, .footer-note { font-family: 'JetBrains Mono', monospace; }
+.timer-label { color: var(--muted); font-size: 0.86rem; }
+.timer-value { font-size: 1rem; font-weight: 700; color: var(--cyan); transition: color 0.25s ease, transform 0.25s ease; }
+.timer-value.warning { color: var(--amber); }
+.timer-value.critical { color: var(--red); animation: pulse 1s infinite; }
+@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.07); } 100% { transform: scale(1); } }
+.progress-shell { width: 100%; height: 10px; border-radius: 999px; background: rgba(255,255,255,0.08); overflow: hidden; }
+.progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, var(--cyan), var(--purple)); transition: width 1s linear; }
+.nav-dots { display: flex; gap: 10px; flex-wrap: wrap; }
+.nav-dot { width: 34px; height: 34px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.18); background: transparent; color: var(--muted); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.25s ease; }
+.nav-dot:hover { border-color: var(--cyan); color: var(--cyan); transform: translateY(-1px); }
+.nav-dot.active { background: rgba(0,212,255,0.15); border-color: var(--cyan); color: var(--cyan); box-shadow: 0 0 0 4px rgba(0,212,255,0.08); }
+.nav-dot.done { border-color: rgba(16,185,129,0.8); color: var(--green); background: rgba(16,185,129,0.08); }
+.main { flex: 1; }
+.section { display: none; max-width: var(--max); margin: 0 auto; padding: 32px 20px 110px; }
+.section.active { display: block; animation: fadeIn 0.35s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(12px);} to { opacity: 1; transform: translateY(0);} }
+.section-inner { display: grid; gap: 22px; }
+.hero { display: grid; gap: 10px; padding: 28px; background: linear-gradient(135deg, rgba(17,24,39,0.96), rgba(26,34,53,0.94)); border: 1px solid var(--border); border-radius: var(--radius-xl); box-shadow: var(--shadow); }
+.section-label { color: var(--cyan); font-size: 0.84rem; text-transform: uppercase; letter-spacing: 0.06em; }
+.hero h2 { margin: 0; font-size: clamp(2rem, 1.2rem + 2vw, 3rem); letter-spacing: -0.04em; }
+.hero p { margin: 0; color: var(--muted); max-width: 860px; line-height: 1.7; font-size: 1.02rem; }
+.card-grid { display: grid; grid-template-columns: repeat(12, minmax(0,1fr)); gap: 18px; }
+.card { grid-column: span 12; background: linear-gradient(180deg, rgba(17,24,39,0.96), rgba(12,18,30,0.98)); border: 1px solid var(--border); border-left-width: 5px; border-radius: var(--radius-lg); padding: 22px; box-shadow: var(--shadow); }
+.card h3 { margin: 0 0 10px; font-size: 1.2rem; letter-spacing: -0.02em; }
+.card p { margin: 0; color: var(--muted); line-height: 1.7; }
+.card .card-label { margin-bottom: 10px; font-size: 0.76rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted-2); }
+.card.eli5 { border-left-color: var(--amber); }
+.card.analogy { border-left-color: var(--green); }
+.card.technical { border-left-color: var(--cyan); }
+.card.warning { border-left-color: var(--red); }
+.card.quiz-card { border-left-color: var(--purple); }
+.card.visual-card { border-left-color: var(--green); }
+.card.takeaway-card { border-left-color: var(--cyan); }
+@media (min-width: 900px) {
+  .card.eli5, .card.analogy { grid-column: span 6; }
+  .card.technical, .card.visual-card, .card.quiz-card { grid-column: span 12; }
+  .card.warning, .card.takeaway-card { grid-column: span 6; }
+}
+.two-col { display: grid; gap: 18px; }
+@media (min-width: 860px) { .two-col { grid-template-columns: 1.1fr 0.9fr; } }
+.mini-grid { display: grid; gap: 12px; margin-top: 16px; }
+@media (min-width: 760px) { .mini-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.mini-panel { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 14px; padding: 14px; }
+.mini-panel h4 { margin: 0 0 10px; font-size: 0.95rem; }
+.mini-panel ul, .takeaway-list, .cheat-list { margin: 0; padding-left: 18px; color: var(--muted); line-height: 1.7; }
+.badge-row { margin-top: 16px; display: grid; gap: 10px; }
+.pill { display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; width: fit-content; border-radius: 999px; border: 1px solid transparent; font-size: 0.8rem; letter-spacing: 0.03em; }
+.pill.good { background: rgba(16,185,129,0.12); color: var(--green); border-color: rgba(16,185,129,0.3); }
+.pill.warn { background: rgba(245,158,11,0.12); color: var(--amber); border-color: rgba(245,158,11,0.3); }
+.pill.bad { background: rgba(239,68,68,0.12); color: var(--red); border-color: rgba(239,68,68,0.3); }
+.inline-text { margin: 0; }
+.code-block { margin: 12px 0 0; background: #050810; border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 16px; overflow-x: auto; color: #dce7ff; font-family: 'JetBrains Mono', monospace; font-size: 0.86rem; line-height: 1.65; }
+.code-note { margin-top: 12px !important; }
+.kw { color: #7dd3fc; }
+.type { color: #c084fc; }
+.cm { color: #6b7280; font-style: italic; }
+.str { color: #34d399; }
+.num { color: #f59e0b; }
+.anno { color: #f472b6; }
+.diagram, .table-wrap, .flow-wrap, .decision-wrap { margin-top: 12px; border: 1px solid var(--border); border-radius: 18px; padding: 18px; background: rgba(255,255,255,0.025); }
+.array-strip, .node-chain, .bucket-list, .lifecycle-flow, .hb-flow, .chain-flow { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.box, .node, .bucket, .life, .chain-item, .gauge-box { min-height: 52px; display: inline-flex; align-items: center; justify-content: center; padding: 10px 14px; border-radius: 14px; border: 1px solid var(--border); background: rgba(255,255,255,0.03); font-family: 'JetBrains Mono', monospace; }
+.box.cyan, .life.active { border-color: rgba(0,212,255,0.5); box-shadow: inset 0 0 0 1px rgba(0,212,255,0.18); }
+.box.green, .node { border-color: rgba(16,185,129,0.5); box-shadow: inset 0 0 0 1px rgba(16,185,129,0.15); }
+.box.purple, .bucket.tree { border-color: rgba(124,58,237,0.5); box-shadow: inset 0 0 0 1px rgba(124,58,237,0.15); }
+.box.amber, .life.waiting { border-color: rgba(245,158,11,0.5); box-shadow: inset 0 0 0 1px rgba(245,158,11,0.15); }
+.box.red, .life.blocked { border-color: rgba(239,68,68,0.5); box-shadow: inset 0 0 0 1px rgba(239,68,68,0.15); }
+.arrow { color: var(--muted-2); font-family: 'JetBrains Mono', monospace; }
+.table-wrap table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+.table-wrap th, .table-wrap td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.08); text-align: left; vertical-align: top; }
+.table-wrap th { color: var(--text); font-size: 0.86rem; text-transform: uppercase; letter-spacing: 0.06em; font-family: 'JetBrains Mono', monospace; }
+.badge { display: inline-flex; align-items: center; border-radius: 999px; padding: 6px 10px; font-size: 0.76rem; font-family: 'JetBrains Mono', monospace; }
+.badge.good { background: rgba(16,185,129,0.12); color: var(--green); }
+.badge.warn { background: rgba(245,158,11,0.12); color: var(--amber); }
+.badge.bad { background: rgba(239,68,68,0.12); color: var(--red); }
+.quiz-options { display: grid; gap: 12px; margin-top: 16px; }
+.quiz-option { width: 100%; text-align: left; padding: 14px 16px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03); color: var(--text); cursor: pointer; transition: 0.2s ease; font: inherit; }
+.quiz-option:hover { transform: translateY(-1px); border-color: rgba(124,58,237,0.5); }
+.quiz-option:disabled { cursor: default; opacity: 1; }
+.quiz-option.correct { background: rgba(16,185,129,0.13); border-color: rgba(16,185,129,0.5); color: #d8ffef; }
+.quiz-option.wrong { background: rgba(239,68,68,0.13); border-color: rgba(239,68,68,0.5); color: #ffe3e3; }
+.quiz-result { display: none; margin-top: 14px; color: var(--muted); line-height: 1.7; }
+.quiz-result.show { display: block; }
+.footer-nav { position: fixed; inset: auto 0 0 0; background: rgba(8,12,22,0.92); border-top: 1px solid rgba(255,255,255,0.07); backdrop-filter: blur(14px); }
+.footer-inner { max-width: var(--max); margin: 0 auto; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+.nav-actions { display: flex; gap: 12px; }
+.btn { border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.03); color: var(--text); border-radius: 14px; padding: 12px 16px; font: inherit; cursor: pointer; transition: 0.2s ease; }
+.btn:hover { transform: translateY(-1px); border-color: rgba(0,212,255,0.4); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.btn.primary { background: linear-gradient(90deg, rgba(0,212,255,0.14), rgba(124,58,237,0.16)); border-color: rgba(0,212,255,0.3); }
+.footer-note { color: var(--muted); font-size: 0.82rem; }
+.completion-wrap { display: grid; gap: 20px; text-align: left; }
+.completion-grid { display: grid; gap: 18px; }
+@media (min-width: 960px) { .completion-grid { grid-template-columns: repeat(3, minmax(0,1fr)); } }
+.celebrate { font-size: 3rem; }
+.cheat-list li { margin-bottom: 12px; }
+.small-answer { margin-top: 6px; color: var(--text); }
+.confusion-grid { display: grid; gap: 14px; }
+.confusion-item { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 14px; padding: 14px; }
+.confusion-item h4 { margin: 0 0 8px; }
+.confusion-item p { margin: 0; }
+.callout { margin-top: 14px; display: grid; gap: 10px; }
+.callout-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.split-layout { display: grid; gap: 18px; }
+@media (min-width: 820px) { .split-layout { grid-template-columns: 1fr 1fr; } }
+.stack-col { display: grid; gap: 12px; }
+.legend { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+.legend span { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); font-size: 0.88rem; }
+.legend b { width: 12px; height: 12px; border-radius: 999px; display: inline-block; }
+b.c1 { background: var(--cyan); } b.c2 { background: var(--green);} b.c3 { background: var(--amber);} b.c4 { background: var(--purple);} b.c5 { background: var(--red);}
+@media (max-width: 720px) {
+  .topbar-inner { padding: 14px 14px 12px; }
+  .section { padding: 22px 14px 110px; }
+  .hero { padding: 22px; }
+  .card { padding: 18px; }
+}
+</style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="topbar-row">
+          <div class="brand">
+            <h1>ArrayList vs LinkedList</h1>
+            <p>Internal implementation, trade-offs, and when to use each</p>
+          </div>
+          <div class="meta">
+            <div class="timer-wrap">
+              <span class="timer-label">Time left</span>
+              <span id="timer" class="timer-value">00:00</span>
+            </div>
+          </div>
+        </div>
+        <div class="topbar-row">
+          <div class="nav-dots"><button class="nav-dot active" aria-label="Go to section 1">1</button><button class="nav-dot " aria-label="Go to section 2">2</button><button class="nav-dot " aria-label="Go to section 3">3</button><button class="nav-dot " aria-label="Go to section 4">4</button></div>
+          <div class="footer-note">20 minute module · click dots to jump</div>
+        </div>
+        <div class="progress-shell"><div id="progressBar" class="progress-bar"></div></div>
+      </div>
+    </header>
+
+    <main class="main">
+      
+    <section class="section active" data-section="0">
+      <div class="section-inner">
+        <div class="hero">
+          <div class="section-label">Section 1 of 3 · ~7 mins</div>
+          <h2>Internal implementation</h2>
+          <p>Before memorizing big-O, first understand the shape of the data structure. The storage model explains almost every trade-off.</p>
+        </div>
+        <div class="card-grid">
+          
+    <article class="card eli5">
+      <div class="card-label">🧒 ELI5</div>
+      <h3>Shelf slots vs paper clips</h3>
+      <p>An ArrayList is like a shelf with numbered slots. You can jump straight to slot 8 because every slot has an address. A LinkedList is like a chain of paper clips. To reach the 8th clip, you have to follow the chain one by one.</p>
+    </article>
+    
+          
+    <article class="card analogy">
+      <div class="card-label">🔗 ANALOGY</div>
+      <h3>Contiguous memory vs scattered nodes</h3>
+      <p>ArrayList wants items packed tightly together so the CPU can read them quickly. LinkedList stores each node separately with pointers. That makes inserts flexible, but walking the list is like taking a detour through many tiny houses instead of one apartment building.</p>
+    </article>
+    
+          <article class="card technical">
+            <div class="card-label">Technical</div>
+            <div class="two-col">
+              <div>
+                <h3>Why the storage layout matters</h3>
+                <p><strong>ArrayList</strong> is backed by a resizable array. <strong>LinkedList</strong> is a doubly linked list where each node stores the value plus links to previous and next nodes.</p>
+                <div class="mini-grid"><div class="mini-panel"><h4>What this means</h4><ul><li>ArrayList gives O(1) random access with get(index)</li><li>LinkedList pays pointer-chasing cost to reach position n</li><li>ArrayList is cache-friendly because elements are near each other</li></ul></div><div class="mini-panel"><h4>Smells to notice</h4><ul><li>Using LinkedList because inserts are 'O(1)' without considering lookup cost</li><li>Doing many get(i) calls on LinkedList in a loop</li><li>Choosing LinkedList for 'large data' without measuring memory overhead</li></ul></div></div>
+                <div class="badge-row">
+                  <span class="pill good">Interview answer</span>
+                  <p class="inline-text">ArrayList stores elements in a dynamic array, so index-based reads are fast. LinkedList stores nodes connected by pointers, so inserts near a known node are cheap, but traversal is slower and memory overhead is higher.</p>
+                </div>
+              </div>
+              <div>
+                <h3>Java example</h3>
+                <pre class="code-block"><code><span class="kw">List</span>&lt;<span class="type">String</span>&gt; names = <span class="kw">new</span> <span class="type">ArrayList</span>&lt;&gt;();
+names.add(<span class="str">"Ana"</span>);
+names.add(<span class="str">"Ben"</span>);
+names.add(<span class="str">"Chris"</span>);
+
+<span class="type">String</span> second = names.get(<span class="num">1</span>); <span class="cm">// jump directly to index 1</span>
+
+<span class="kw">List</span>&lt;<span class="type">String</span>&gt; queue = <span class="kw">new</span> <span class="type">LinkedList</span>&lt;&gt;();
+queue.add(<span class="str">"A"</span>);
+queue.add(<span class="str">"B"</span>);
+queue.add(<span class="str">"C"</span>);
+
+<span class="cm">// LinkedList still supports get(1),</span>
+<span class="cm">// but it walks through nodes to reach that position.</span></code></pre>
+                <p class="code-note">Same List API, very different internals. That is why operations with the same method name can behave differently.</p>
+              </div>
+            </div>
+          </article>
+          
+    <article class="card warning">
+      <div class="card-label">Warning</div>
+      <h3>API similarity can hide performance differences</h3>
+      <p>Because both implement List, developers sometimes assume they are interchangeable. They are not. The interface is the same, but the cost model is very different.</p>
+    </article>
+    
+          <article class="card visual-card">
+            <div class="card-label">Visual</div>
+            <h3>Storage model side by side</h3>
+            
+            <div class="split-layout">
+              <div class="diagram">
+                <h4>ArrayList: contiguous slots</h4>
+                <div class="array-strip">
+                  <div class="box cyan">[0] A</div><div class="box cyan">[1] B</div><div class="box cyan">[2] C</div><div class="box cyan">[3] D</div><div class="box cyan">[4] E</div>
+                </div>
+                <p>Fast jump to an index because the runtime can compute the address.</p>
+              </div>
+              <div class="diagram">
+                <h4>LinkedList: nodes + pointers</h4>
+                <div class="node-chain">
+                  <div class="node">A</div><div class="arrow">⇄</div><div class="node">B</div><div class="arrow">⇄</div><div class="node">C</div><div class="arrow">⇄</div><div class="node">D</div>
+                </div>
+                <p>To reach C, you follow links node by node.</p>
+              </div>
+            </div>
+            
+          </article>
+          
+    <article class="card quiz-card">
+      <div class="card-label">Quiz</div>
+      <h3>Why is ArrayList usually faster for repeated get(index) calls?</h3>
+      <div class="quiz-options" data-answer="1">
+        <button class="quiz-option">Because it stores nodes with prev/next pointers</button><button class="quiz-option">Because it keeps elements in a resizable contiguous array</button><button class="quiz-option">Because it automatically sorts elements</button><button class="quiz-option">Because it never resizes</button>
+      </div>
+      <div class="quiz-result">
+        <strong>Why:</strong> ArrayList can compute the offset of an index in the backing array. LinkedList must traverse nodes, which adds pointer chasing and poor cache locality.
+      </div>
+    </article>
+    
+          <article class="card takeaway-card">
+            <div class="card-label">Mini takeaway</div>
+            <h3>What to remember</h3>
+            <ul class="takeaway-list"><li>ArrayList = dynamic array.</li><li>LinkedList = nodes connected by links.</li><li>Storage layout drives access speed, memory overhead, and cache behavior.</li></ul>
+          </article>
+        </div>
+      </div>
+    </section>
+    
+    <section class="section " data-section="1">
+      <div class="section-inner">
+        <div class="hero">
+          <div class="section-label">Section 2 of 3 · ~7 mins</div>
+          <h2>Time complexity trade-offs</h2>
+          <p>Big-O tables are useful, but they only help if you connect them to the actual work the data structure performs.</p>
+        </div>
+        <div class="card-grid">
+          
+    <article class="card eli5">
+      <div class="card-label">🧒 ELI5</div>
+      <h3>Moving books on a shelf</h3>
+      <p>If you insert a new book in the middle of a shelf, you may need to slide many books to make space. That is ArrayList. If books were hanging in a chain, you could reconnect links more easily. That is LinkedList.</p>
+    </article>
+    
+          
+    <article class="card analogy">
+      <div class="card-label">🔗 ANALOGY</div>
+      <h3>The hidden cost of finding the insert point</h3>
+      <p>LinkedList gets praised for O(1) insertion, but that assumes you already have the node. In real business code, you often first search for the position, which is O(n), so the total operation is not magically free.</p>
+    </article>
+    
+          <article class="card technical">
+            <div class="card-label">Technical</div>
+            <div class="two-col">
+              <div>
+                <h3>Read the table with caution</h3>
+                <p>ArrayList is strong at read-heavy workloads. LinkedList only shines in narrow cases like deque-style head/tail operations or when you already have an iterator positioned at the target node.</p>
+                <div class="mini-grid"><div class="mini-panel"><h4>ArrayList</h4><ul><li>get(index): O(1)</li><li>append amortized: O(1)</li><li>insert/delete middle: O(n) due to shifting</li><li>better iteration due to locality</li></ul></div><div class="mini-panel"><h4>LinkedList</h4><ul><li>get(index): O(n)</li><li>add/remove at ends: O(1)</li><li>insert/delete via known node/iterator: O(1)</li><li>extra memory for node objects and pointers</li></ul></div></div>
+                <div class="badge-row">
+                  <span class="pill good">Interview answer</span>
+                  <p class="inline-text">The big trade-off is access versus structural edits. ArrayList is excellent for indexed reads and iteration. LinkedList only wins when you frequently add or remove near the ends, or already hold a reference to the node position.</p>
+                </div>
+              </div>
+              <div>
+                <h3>Java example</h3>
+                <pre class="code-block"><code><span class="cm">// Slow pattern on LinkedList:</span>
+<span class="kw">List</span>&lt;<span class="type">Integer</span>&gt; list = <span class="kw">new</span> <span class="type">LinkedList</span>&lt;&gt;();
+<span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; <span class="num">10000</span>; i++) {
+    list.add(i);
+}
+
+<span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; list.size(); i++) {
+    process(list.get(i)); <span class="cm">// repeated traversal, effectively painful</span>
+}
+
+<span class="cm">// Better for LinkedList:</span>
+<span class="kw">for</span> (<span class="type">Integer</span> value : list) {
+    process(value);
+}</code></pre>
+                <p class="code-note">The loop with get(i) is fine on ArrayList. On LinkedList, it repeatedly walks the chain. That is a classic interview gotcha.</p>
+              </div>
+            </div>
+          </article>
+          
+          <article class="card visual-card">
+            <div class="card-label">Visual</div>
+            <h3>Operations table</h3>
+            
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>Operation</th><th>ArrayList</th><th>LinkedList</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>get(index)</td><td><span class="badge good">O(1)</span></td><td><span class="badge bad">O(n)</span></td></tr>
+                  <tr><td>append</td><td><span class="badge good">Amortized O(1)</span></td><td><span class="badge good">O(1)</span></td></tr>
+                  <tr><td>insert/delete middle</td><td><span class="badge warn">O(n) shift</span></td><td><span class="badge warn">O(n) to find, O(1) to relink</span></td></tr>
+                  <tr><td>memory overhead</td><td><span class="badge good">Lower</span></td><td><span class="badge bad">Higher</span></td></tr>
+                  <tr><td>iteration performance</td><td><span class="badge good">Usually better</span></td><td><span class="badge warn">Often worse</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+            
+          </article>
+          
+    <article class="card quiz-card">
+      <div class="card-label">Quiz</div>
+      <h3>When someone says &#x27;LinkedList insert is O(1),&#x27; what assumption are they often making?</h3>
+      <div class="quiz-options" data-answer="1">
+        <button class="quiz-option">That the list is sorted</button><button class="quiz-option">That you already have the node or iterator position</button><button class="quiz-option">That the JVM optimizes pointer chasing</button><button class="quiz-option">That LinkedList uses arrays internally</button>
+      </div>
+      <div class="quiz-result">
+        <strong>Why:</strong> Relinking nodes is O(1), but locating the insertion point is usually O(n). Interviewers love this nuance.
+      </div>
+    </article>
+    
+          <article class="card takeaway-card">
+            <div class="card-label">Mini takeaway</div>
+            <h3>What to remember</h3>
+            <ul class="takeaway-list"><li>Do not memorize O(1) insertion for LinkedList without the lookup caveat.</li><li>Iteration and indexed access are usually ArrayList territory.</li><li>Real workloads matter more than isolated operation tables.</li></ul>
+          </article>
+        </div>
+      </div>
+    </section>
+    
+    <section class="section " data-section="2">
+      <div class="section-inner">
+        <div class="hero">
+          <div class="section-label">Section 3 of 3 · ~6 mins</div>
+          <h2>When to use each</h2>
+          <p>Most production code should default to ArrayList unless there is a specific reason not to. The key is knowing those reasons.</p>
+        </div>
+        <div class="card-grid">
+          
+    <article class="card eli5">
+      <div class="card-label">🧒 ELI5</div>
+      <h3>Pick the box you open most</h3>
+      <p>If you keep opening and reading items by number, use the box with neat labeled slots. If you mostly add and remove from the front or back like a train line, the chain structure can help.</p>
+    </article>
+    
+          
+    <article class="card analogy">
+      <div class="card-label">🔗 ANALOGY</div>
+      <h3>Default vs specialized choice</h3>
+      <p>ArrayList is the everyday sedan. LinkedList is the specialized utility vehicle. If you do not have a concrete workload that benefits from it, the specialized vehicle usually just costs more.</p>
+    </article>
+    
+          <article class="card technical">
+            <div class="card-label">Technical</div>
+            <div class="two-col">
+              <div>
+                <h3>Practical selection rules</h3>
+                <p>Choose based on access pattern, not theory alone. For most application code, <strong>ArrayList</strong> is the safer default. Use <strong>LinkedList</strong> mainly for deque-style operations or when APIs genuinely benefit from frequent structural edits at known positions.</p>
+                <div class="mini-grid"><div class="mini-panel"><h4>Use ArrayList when</h4><ul><li>You need fast indexed reads</li><li>You iterate frequently</li><li>Memory overhead matters</li><li>You want the general-purpose default</li></ul></div><div class="mini-panel"><h4>Use LinkedList when</h4><ul><li>You need frequent add/remove at head or tail</li><li>You are using it as a deque or queue-like structure</li><li>You already have an iterator/node position</li><li>Benchmarks show it helps your exact workload</li></ul></div></div>
+                <div class="badge-row">
+                  <span class="pill good">Interview answer</span>
+                  <p class="inline-text">My default is ArrayList because it gives better locality, fast random access, and lower overhead. I would consider LinkedList mostly for frequent head/tail modifications or iterator-based structural edits where traversal cost is not dominant.</p>
+                </div>
+              </div>
+              <div>
+                <h3>Java example</h3>
+                <pre class="code-block"><code><span class="cm">// Good defaults</span>
+<span class="kw">List</span>&lt;<span class="type">Order</span>&gt; orders = <span class="kw">new</span> <span class="type">ArrayList</span>&lt;&gt;();     <span class="cm">// read + iterate</span>
+<span class="type">Deque</span>&lt;<span class="type">Task</span>&gt; tasks = <span class="kw">new</span> <span class="type">LinkedList</span>&lt;&gt;();   <span class="cm">// add/remove at both ends</span>
+
+tasks.addFirst(<span class="kw">new</span> <span class="type">Task</span>());
+tasks.addLast(<span class="kw">new</span> <span class="type">Task</span>());
+tasks.removeFirst();</code></pre>
+                <p class="code-note">If your use case is really queue/deque behavior, prefer the interface that communicates that intent.</p>
+              </div>
+            </div>
+          </article>
+          
+    <article class="card warning">
+      <div class="card-label">Warning</div>
+      <h3>Do not choose by interview folklore</h3>
+      <p>A lot of developers say 'LinkedList is better for insert/delete' as a blanket rule. In real JVM applications, ArrayList often still wins unless the workload is very specific.</p>
+    </article>
+    
+          <article class="card visual-card">
+            <div class="card-label">Visual</div>
+            <h3>Decision flow</h3>
+            
+            <div class="decision-wrap">
+              <div class="chain-flow">
+                <div class="chain-item box cyan">Need fast get(index)?</div>
+                <div class="arrow">→</div>
+                <div class="chain-item box green">Yes → ArrayList</div>
+              </div>
+              <div class="chain-flow" style="margin-top:12px;">
+                <div class="chain-item box amber">Mostly add/remove at ends?</div>
+                <div class="arrow">→</div>
+                <div class="chain-item box purple">Yes → consider LinkedList / Deque</div>
+              </div>
+              <div class="chain-flow" style="margin-top:12px;">
+                <div class="chain-item box red">No clear reason?</div>
+                <div class="arrow">→</div>
+                <div class="chain-item box cyan">Default → ArrayList</div>
+              </div>
+            </div>
+            
+          </article>
+          
+    <article class="card quiz-card">
+      <div class="card-label">Quiz</div>
+      <h3>What is the best default choice for most read-heavy business application lists?</h3>
+      <div class="quiz-options" data-answer="1">
+        <button class="quiz-option">LinkedList, because inserts are O(1)</button><button class="quiz-option">ArrayList, because reads and iteration are usually better</button><button class="quiz-option">LinkedList, because it uses less memory</button><button class="quiz-option">They are identical in practice</button>
+      </div>
+      <div class="quiz-result">
+        <strong>Why:</strong> For most code, ArrayList wins on indexed access, iteration, locality, and memory overhead. LinkedList is more niche than many people assume.
+      </div>
+    </article>
+    
+          <article class="card takeaway-card">
+            <div class="card-label">Mini takeaway</div>
+            <h3>What to remember</h3>
+            <ul class="takeaway-list"><li>Default to ArrayList unless the workload says otherwise.</li><li>Use LinkedList mostly for end-operations or iterator-positioned edits.</li><li>Always connect your answer to access pattern and locality.</li></ul>
+          </article>
+        </div>
+      </div>
+    </section>
+    
+    <section class="section" data-section="3">
+      <div class="section-inner">
+        <div class="completion-wrap">
+          <div class="celebrate">🎉</div>
+          <div class="section-label">Completion screen</div>
+          <h2>ArrayList vs LinkedList Cheat Sheet</h2>
+          <p>You now have the mental model interviewers want: how each list stores data, why the big-O differences exist, and how to choose one without cargo-culting.</p>
+
+          <div class="completion-grid">
+            <article class="card technical">
+              <div class="card-label">Cheat sheet</div>
+              <h3>Fast scan summary</h3>
+              <ul class="cheat-list"><li><strong>Internal implementation:</strong> ArrayList is a dynamic array; LinkedList is a doubly linked chain of nodes.<div class="small-answer">ArrayList stores elements contiguously, so random access is fast. LinkedList stores nodes with pointers, so traversal is slower.</div></li><li><strong>Trade-offs:</strong> ArrayList wins for reads and iteration; LinkedList only wins in narrow structural-edit cases.<div class="small-answer">The real cost of LinkedList insertion often includes O(n) traversal to find the spot.</div></li><li><strong>When to use:</strong> ArrayList is the default. LinkedList is a specialized choice.<div class="small-answer">Pick based on actual access patterns, not the folklore that linked lists are always better for inserts.</div></li></ul>
+            </article>
+
+            <article class="card analogy">
+              <div class="card-label">Common confusion</div>
+              <h3>Separate the look-alikes</h3>
+              <div class="confusion-grid"><div class="confusion-item"><h4>LinkedList insertion vs total operation</h4><p>Relinking nodes is O(1), but finding the node is often O(n). Interviewers want both parts of the story.</p></div><div class="confusion-item"><h4>List API vs runtime behavior</h4><p>Same interface does not mean same performance. get(i) is the classic trap.</p></div><div class="confusion-item"><h4>Queue use case</h4><p>If you really need head/tail operations, talk about Deque semantics, not just List semantics.</p></div></div>
+            </article>
+
+            <article class="card eli5">
+              <div class="card-label">Next step</div>
+              <h3>How to use this before interviews</h3>
+              <ul class="takeaway-list">
+                <li>Read the cheat sheet once in scan mode.</li>
+                <li>Go back and answer each quiz without looking.</li>
+                <li>Practice the one-line interview answers out loud.</li>
+                <li>Use the diagrams to explain the internals on a whiteboard.</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    </main>
+
+    <footer class="footer-nav">
+      <div class="footer-inner">
+        <div class="footer-note">Built for fast interview prep and active recall.</div>
+        <div class="nav-actions">
+          <button id="prevBtn" class="btn">← Back</button>
+          <button id="nextBtn" class="btn primary">Next →</button>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    const MODULE_MINUTES = 20;
+    
+const sections = Array.from(document.querySelectorAll('.section'));
+const dots = Array.from(document.querySelectorAll('.nav-dot'));
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const timerEl = document.getElementById('timer');
+const progressBar = document.getElementById('progressBar');
+
+let currentIndex = 0;
+let visitedMax = 0;
+const totalSeconds = MODULE_MINUTES * 60;
+let remainingSeconds = totalSeconds;
+
+function showSection(index) {
+  currentIndex = Math.max(0, Math.min(index, sections.length - 1));
+  visitedMax = Math.max(visitedMax, currentIndex);
+
+  sections.forEach((section, i) => {
+    section.classList.toggle('active', i === currentIndex);
+  });
+
+  dots.forEach((dot, i) => {
+    dot.classList.remove('active', 'done');
+    if (i === currentIndex) {
+      dot.classList.add('active');
+    } else if (i < visitedMax) {
+      dot.classList.add('done');
+    }
+  });
+
+  prevBtn.disabled = currentIndex === 0;
+  nextBtn.textContent = currentIndex === sections.length - 1
+    ? 'Review Again ↺'
+    : (currentIndex === sections.length - 2 ? 'Finish / View Cheat Sheet →' : 'Next →');
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+dots.forEach((dot, index) => dot.addEventListener('click', () => showSection(index)));
+
+prevBtn.addEventListener('click', () => showSection(currentIndex - 1));
+nextBtn.addEventListener('click', () => {
+  if (currentIndex === sections.length - 1) {
+    showSection(0);
+  } else {
+    showSection(currentIndex + 1);
+  }
+});
+
+function formatTime(seconds) {
+  const mins = String(Math.floor(seconds / 60)).padStart(2, '0');
+  const secs = String(seconds % 60).padStart(2, '0');
+  return `${mins}:${secs}`;
+}
+
+function updateTimer() {
+  timerEl.textContent = formatTime(remainingSeconds);
+  timerEl.classList.remove('warning', 'critical');
+
+  if (remainingSeconds <= 60) {
+    timerEl.classList.add('critical');
+  } else if (remainingSeconds <= 300) {
+    timerEl.classList.add('warning');
+  }
+
+  const elapsed = totalSeconds - remainingSeconds;
+  progressBar.style.width = `${(elapsed / totalSeconds) * 100}%`;
+
+  if (remainingSeconds > 0) {
+    remainingSeconds -= 1;
+  }
+}
+updateTimer();
+setInterval(updateTimer, 1000);
+
+document.querySelectorAll('.quiz-options').forEach(group => {
+  const correctIndex = Number(group.dataset.answer);
+  const options = Array.from(group.querySelectorAll('.quiz-option'));
+  const result = group.nextElementSibling;
+
+  options.forEach((btn, index) => {
+    btn.addEventListener('click', () => {
+      if (group.dataset.locked === 'true') return;
+      group.dataset.locked = 'true';
+
+      options.forEach((option, i) => {
+        option.disabled = true;
+        if (i === correctIndex) option.classList.add('correct');
+      });
+
+      if (index !== correctIndex) {
+        btn.classList.add('wrong');
+      }
+
+      result.classList.add('show');
+    });
+  });
+});
+
+showSection(0);
+
+  </script>
+</body>
+</html>

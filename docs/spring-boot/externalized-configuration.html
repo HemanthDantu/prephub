@@ -1,0 +1,1348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Externalized Configuration Learning Module</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+:root {
+      --bg: #0a0e1a;
+      --surface-1: #111827;
+      --surface-2: #1a2235;
+      --surface-3: #0f1726;
+      --border: rgba(255,255,255,0.08);
+      --text: #e5eefc;
+      --muted: #98a6c3;
+      --muted-2: #6f7b93;
+      --cyan: #00d4ff;
+      --purple: #7c3aed;
+      --green: #10b981;
+      --amber: #f59e0b;
+      --red: #ef4444;
+      --shadow: 0 20px 60px rgba(0,0,0,0.35);
+      --radius-xl: 22px;
+      --radius-lg: 16px;
+      --radius-md: 12px;
+      --max: 1180px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; background: radial-gradient(circle at top, #101834 0%, var(--bg) 45%, #070b14 100%); color: var(--text); font-family: 'Syne', system-ui, sans-serif; }
+    body { min-height: 100vh; }
+
+    a { color: inherit; }
+
+    .back-link {
+      display: inline-flex;
+      margin-top: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--muted);
+      text-decoration: none;
+    }
+
+    .back-link:hover { color: var(--cyan); }
+
+    .app {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      backdrop-filter: blur(14px);
+      background: rgba(10, 14, 26, 0.86);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .topbar-inner {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 16px 20px 14px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .topbar-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: clamp(1.05rem, 1rem + 1vw, 1.7rem);
+      letter-spacing: 0.02em;
+      font-weight: 800;
+    }
+
+    .brand small {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--muted);
+      font-size: 0.78rem;
+    }
+
+    .timer-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+      box-shadow: var(--shadow);
+    }
+
+    .timer-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .timer {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--cyan);
+      letter-spacing: 0.08em;
+    }
+
+    .timer.warning { color: var(--amber); }
+    .timer.critical {
+      color: var(--red);
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); text-shadow: 0 0 0 rgba(239,68,68,0.1); }
+      50% { transform: scale(1.06); text-shadow: 0 0 18px rgba(239,68,68,0.35); }
+    }
+
+    .nav-dots {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .nav-dot {
+      width: 38px;
+      height: 38px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.16);
+      background: rgba(255,255,255,0.03);
+      color: var(--muted);
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+    }
+
+    .nav-dot:hover,
+    .nav-dot:focus-visible {
+      transform: translateY(-1px);
+      border-color: rgba(0, 212, 255, 0.65);
+      outline: none;
+    }
+
+    .nav-dot.active {
+      background: rgba(0, 212, 255, 0.14);
+      border-color: rgba(0, 212, 255, 0.9);
+      color: var(--cyan);
+      box-shadow: 0 0 0 4px rgba(0, 212, 255, 0.08);
+    }
+
+    .nav-dot.done {
+      border-color: rgba(16, 185, 129, 0.8);
+      color: var(--green);
+      background: rgba(16, 185, 129, 0.06);
+    }
+
+    .progress-shell {
+      height: 10px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--cyan), var(--purple));
+      transition: width 1s linear;
+    }
+
+    main {
+      flex: 1;
+      width: 100%;
+    }
+
+    .section {
+      display: none;
+      padding: 34px 20px 130px;
+      animation: fade 0.35s ease;
+    }
+
+    .section.active { display: block; }
+
+    @keyframes fade {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .section-inner {
+      max-width: var(--max);
+      margin: 0 auto;
+    }
+
+    .hero {
+      padding: 26px 28px;
+      border-radius: var(--radius-xl);
+      background: linear-gradient(135deg, rgba(17,24,39,0.96), rgba(26,34,53,0.96));
+      border: 1px solid rgba(255,255,255,0.07);
+      box-shadow: var(--shadow);
+      margin-bottom: 24px;
+    }
+
+    .section-label {
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-size: 0.76rem;
+      margin-bottom: 12px;
+    }
+
+    .hero h2 {
+      margin: 0 0 12px;
+      font-size: clamp(1.8rem, 1.2rem + 2vw, 3rem);
+      line-height: 1.05;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 880px;
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.7;
+    }
+
+    .card-grid {
+      display: grid;
+      gap: 18px;
+    }
+
+    .card {
+      background: linear-gradient(180deg, rgba(17,24,39,0.98), rgba(17,24,39,0.88));
+      border: 1px solid var(--border);
+      border-left-width: 5px;
+      border-radius: var(--radius-lg);
+      padding: 20px 22px;
+      box-shadow: var(--shadow);
+    }
+
+    .card.eli5 { border-left-color: var(--amber); }
+    .card.analogy { border-left-color: var(--green); }
+    .card.technical { border-left-color: var(--cyan); }
+    .card.warning { border-left-color: var(--red); }
+    .card.quiz-card { border-left-color: var(--purple); }
+
+    .card-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    .card h3 {
+      margin: 0 0 10px;
+      font-size: clamp(1.1rem, 1rem + 0.8vw, 1.45rem);
+    }
+
+    .card p,
+    .card li {
+      color: #d3def4;
+      line-height: 1.75;
+      font-size: 0.98rem;
+    }
+
+    .card p:last-child { margin-bottom: 0; }
+    .card ul { margin: 8px 0 0 20px; padding: 0; }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1.2fr 0.95fr;
+      gap: 18px;
+    }
+
+    .mini-grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      margin-top: 16px;
+    }
+
+    .mini-panel {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 14px;
+      padding: 14px;
+    }
+
+    .mini-panel h4 {
+      margin: 0 0 8px;
+      font-size: 0.95rem;
+      color: var(--text);
+    }
+
+    .mini-panel p,
+    .mini-panel li { font-size: 0.92rem; color: var(--muted); }
+
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 0.8rem;
+      font-family: 'JetBrains Mono', monospace;
+      border: 1px solid transparent;
+    }
+
+    .pill.good { color: var(--green); border-color: rgba(16,185,129,0.25); background: rgba(16,185,129,0.08); }
+    .pill.caution { color: var(--amber); border-color: rgba(245,158,11,0.25); background: rgba(245,158,11,0.08); }
+    .pill.bad { color: var(--red); border-color: rgba(239,68,68,0.25); background: rgba(239,68,68,0.08); }
+    .pill.info { color: var(--cyan); border-color: rgba(0,212,255,0.25); background: rgba(0,212,255,0.08); }
+
+    .flow {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    .flow-step {
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: var(--text);
+      font-size: 0.88rem;
+    }
+
+    .flow-arrow {
+      color: var(--muted-2);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.05rem;
+    }
+
+    .diagram {
+      margin-top: 16px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.015));
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 18px;
+      padding: 18px;
+      overflow: hidden;
+    }
+
+    .diagram-title {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--muted);
+      font-size: 0.76rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    .responsibility-split {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .box {
+      background: var(--surface-2);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 16px;
+      padding: 16px;
+      min-height: 100px;
+      position: relative;
+    }
+
+    .box h4 {
+      margin: 0 0 8px;
+      font-size: 1rem;
+    }
+
+    .box p,
+    .box li { margin: 0; color: var(--muted); font-size: 0.9rem; line-height: 1.6; }
+    .box ul { margin: 0; padding-left: 18px; }
+
+    .box.center-highlight {
+      box-shadow: inset 0 0 0 1px rgba(0,212,255,0.18), 0 10px 30px rgba(0, 212, 255, 0.08);
+    }
+
+    .extensibility-rail,
+    .substitution-rail,
+    .dependency-stack,
+    .interface-split {
+      display: grid;
+      gap: 14px;
+    }
+
+    .rail-row,
+    .split-row,
+    .stack-row {
+      display: flex;
+      gap: 12px;
+      align-items: stretch;
+      flex-wrap: wrap;
+    }
+
+    .rail-box,
+    .stack-box,
+    .split-box {
+      flex: 1 1 180px;
+      padding: 14px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.07);
+      background: rgba(255,255,255,0.03);
+    }
+
+    .rail-box h4,
+    .stack-box h4,
+    .split-box h4 { margin: 0 0 8px; font-size: 0.96rem; }
+    .rail-box p,
+    .stack-box p,
+    .split-box p { margin: 0; color: var(--muted); font-size: 0.88rem; line-height: 1.6; }
+
+    .arrow-down,
+    .arrow-right {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted-2);
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      min-width: 24px;
+    }
+
+    pre {
+      margin: 0;
+      background: #050810;
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 16px;
+      padding: 18px;
+      overflow: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.86rem;
+      line-height: 1.7;
+      color: #dbeafe;
+    }
+
+    .code-blocks {
+      display: grid;
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .code-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.76rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 0 0 8px;
+    }
+
+    .token-key { color: #7dd3fc; }
+    .token-type { color: #c4b5fd; }
+    .token-method { color: #34d399; }
+    .token-string { color: #fbbf24; }
+    .token-comment { color: #6b7280; }
+    .token-annotation { color: #f472b6; }
+    .token-number { color: #f472b6; }
+    .token-bad { color: #f87171; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 14px;
+      overflow: hidden;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.07);
+    }
+
+    th, td {
+      text-align: left;
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      vertical-align: top;
+    }
+
+    th {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      background: rgba(255,255,255,0.03);
+    }
+
+    td { color: #d6e1f7; font-size: 0.94rem; }
+    tr:last-child td { border-bottom: none; }
+
+    .quiz-options {
+      display: grid;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .quiz-option {
+      width: 100%;
+      text-align: left;
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.03);
+      color: var(--text);
+      border: 1px solid rgba(255,255,255,0.09);
+      cursor: pointer;
+      transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+      font: inherit;
+    }
+
+    .quiz-option:hover,
+    .quiz-option:focus-visible {
+      transform: translateY(-1px);
+      border-color: rgba(124, 58, 237, 0.85);
+      outline: none;
+    }
+
+    .quiz-option[disabled] {
+      cursor: default;
+      opacity: 0.96;
+    }
+
+    .quiz-option.correct {
+      border-color: rgba(16,185,129,0.85);
+      background: rgba(16,185,129,0.12);
+      color: #eafff7;
+    }
+
+    .quiz-option.wrong {
+      border-color: rgba(239,68,68,0.85);
+      background: rgba(239,68,68,0.12);
+      color: #fff5f5;
+    }
+
+    .quiz-result {
+      margin-top: 14px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      display: none;
+    }
+
+    .quiz-result.show { display: block; }
+    .quiz-result strong { display: block; margin-bottom: 6px; }
+
+    .takeaways {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .footer-nav {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 25;
+      background: rgba(10,14,26,0.9);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .footer-nav-inner {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .btn {
+      padding: 13px 18px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+      font: inherit;
+      cursor: pointer;
+      transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+      min-width: 140px;
+    }
+
+    .btn:hover,
+    .btn:focus-visible {
+      transform: translateY(-1px);
+      outline: none;
+      border-color: rgba(0,212,255,0.55);
+      background: rgba(255,255,255,0.07);
+    }
+
+    .btn.primary {
+      background: linear-gradient(90deg, rgba(0,212,255,0.14), rgba(124,58,237,0.18));
+      border-color: rgba(0,212,255,0.35);
+    }
+
+    .btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .completion-grid {
+      display: grid;
+      gap: 18px;
+      grid-template-columns: 1.1fr 0.95fr;
+    }
+
+    .celebrate {
+      font-size: 2.6rem;
+      margin-bottom: 12px;
+    }
+
+    .cheat-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .cheat-item {
+      padding: 14px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+    }
+
+    .cheat-item h4 {
+      margin: 0 0 6px;
+      font-size: 0.98rem;
+    }
+
+    .cheat-item p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.93rem;
+      line-height: 1.6;
+    }
+
+    .confusion-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .confusion-item {
+      padding: 14px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .confusion-item strong { color: var(--text); }
+    .confusion-item p { margin: 8px 0 0; color: var(--muted); }
+
+    @media (max-width: 960px) {
+      .two-col,
+      .completion-grid { grid-template-columns: 1fr; }
+      .responsibility-split { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 680px) {
+      .section { padding-top: 24px; }
+      .hero { padding: 22px 18px; }
+      .card { padding: 18px 16px; }
+      .topbar-inner, .footer-nav-inner { padding-left: 14px; padding-right: 14px; }
+      .nav-dot { width: 34px; height: 34px; font-size: 0.85rem; }
+      .btn { min-width: 0; flex: 1; }
+      .mini-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="topbar-row">
+          <div class="brand">
+            <h1>Externalized Configuration</h1>
+            <small>Interactive 28-minute learning module</small>
+          </div>
+          <div class="timer-wrap" aria-live="polite">
+            <span class="timer-label">Time Left</span>
+            <span class="timer" id="timer">28:00</span>
+          </div>
+        </div>
+        <div class="topbar-row">
+          <nav class="nav-dots" aria-label="Section navigation"><button class="nav-dot active" data-index="0" aria-label="Go to section 1">1</button><button class="nav-dot" data-index="1" aria-label="Go to section 2">2</button><button class="nav-dot" data-index="2" aria-label="Go to section 3">3</button><button class="nav-dot" data-index="3" aria-label="Go to section 4">4</button><button class="nav-dot" data-index="4" aria-label="Go to completion screen">5</button></nav>
+        </div>
+        <div class="progress-shell" aria-hidden="true">
+          <div class="progress-bar" id="progressBar"></div>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      
+      <section class="section active" data-section="0">
+        <div class="section-inner">
+          <div class="hero">
+            <div class="section-label">Section 1 of 4 · ~7 mins</div>
+            <h2>Property Sources and Precedence</h2>
+            <p>Spring Boot merges multiple property sources, with higher precedence sources overriding lower ones.</p>
+            <a class="back-link" href="index.html">← Back to Spring Boot</a>
+          </div>
+
+          <div class="card-grid">
+            <article class="card eli5">
+              <div class="card-label">🧒 ELI5</div>
+              <h3>The last instruction wins</h3>
+              <p>If your parent says bedtime is 8, but later says 9, you go with the latest rule.</p>
+            </article>
+
+            <article class="card analogy">
+              <div class="card-label">🔗 ANALOGY</div>
+              <h3>Manager overrides the checklist</h3>
+              <p>The checklist sets defaults, but a manager can override them for a special case.</p>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Technical</div>
+              <div class="two-col">
+                <div>
+                  <h3>What it means in real code</h3>
+                  <p><strong>Definition:</strong> Boot resolves properties from many sources and applies a strict precedence order for overrides.</p>
+                  <div class="mini-grid">
+                    <div class="mini-panel">
+                      <h4>Why it matters</h4>
+                      <ul>
+                        <li>Environment-specific overrides</li><li>Secure secrets via env vars</li><li>Simple defaults in code</li>
+                      </ul>
+                    </div>
+                    <div class="mini-panel">
+                      <h4>Common pitfall</h4>
+                      <ul>
+                        <li>Assuming one config file</li><li>Hidden overrides in env</li><li>Unclear deployment flags</li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div class="badge-row"><span class="pill good">Command-line</span><span class="pill info">Environment</span><span class="pill caution">application.yml</span></div>
+                  
+                  <div class="flow"><span class="flow-step">Defaults</span><span class="flow-arrow">→</span><span class="flow-step">application.yml</span><span class="flow-arrow">→</span><span class="flow-step">Profile file</span><span class="flow-arrow">→</span><span class="flow-step">Env vars</span><span class="flow-arrow">→</span><span class="flow-step">Command-line</span></div>
+                </div>
+                <div>
+                  <h3>Interview answer</h3>
+                  <p>“Boot loads multiple property sources and applies a fixed precedence, so higher priority sources override lower ones.”</p>
+                  
+                  <table>
+                    <thead><tr><th>Source</th><th>Priority</th></tr></thead>
+                    <tbody><tr><td>Command-line args</td><td><span class="pill good">Highest</span></td></tr><tr><td>Environment variables</td><td><span class="pill info">High</span></td></tr><tr><td>application.yml</td><td><span class="pill caution">Baseline</span></td></tr></tbody>
+                  </table>
+                </div>
+              </div>
+              
+    <div class="code-blocks">
+    <div>
+      <div class="code-title">Simple YAML config</div>
+      <pre>server:
+  port: 8080
+logging:
+  level:
+    root: INFO</pre>
+    </div>
+    </div>
+              
+            </article>
+
+            <article class="card warning">
+              <div class="card-label">Warning</div>
+              <h3>Hidden overrides</h3>
+              <p>Production environment variables can override config silently. Always document expected sources.</p>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Mini takeaway</div>
+              <ul class="takeaways">
+                <li>Know property precedence.</li><li>Use env vars for deploy-time overrides.</li><li>Keep defaults in YAML.</li>
+              </ul>
+            </article>
+
+            <article class="card quiz-card">
+              <div class="card-label">Quiz</div>
+              <h3>Which source usually has highest precedence in Boot?</h3>
+              <div class="quiz-options" data-answer="2">
+                <button class="quiz-option">A. application.yml</button><button class="quiz-option">B. Environment variables</button><button class="quiz-option">C. Command-line args</button><button class="quiz-option">D. @ConfigurationProperties</button>
+              </div>
+              <div class="quiz-result">
+                <strong>Correct answer: C</strong>
+                <span>Command-line arguments override most other sources by default.</span>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" data-section="1">
+        <div class="section-inner">
+          <div class="hero">
+            <div class="section-label">Section 2 of 4 · ~7 mins</div>
+            <h2>Typed Binding with @ConfigurationProperties</h2>
+            <p>Use @ConfigurationProperties to map config into a typed object that is validated and easy to test.</p>
+            
+          </div>
+
+          <div class="card-grid">
+            <article class="card eli5">
+              <div class="card-label">🧒 ELI5</div>
+              <h3>Label your drawers</h3>
+              <p>You label each drawer so you always know where socks and shirts go.</p>
+            </article>
+
+            <article class="card analogy">
+              <div class="card-label">🔗 ANALOGY</div>
+              <h3>A labeled toolbox</h3>
+              <p>Instead of loose tools, everything is in a labeled slot and easy to find.</p>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Technical</div>
+              <div class="two-col">
+                <div>
+                  <h3>What it means in real code</h3>
+                  <p><strong>Definition:</strong> @ConfigurationProperties binds structured config into POJOs and can be validated with JSR-303.</p>
+                  <div class="mini-grid">
+                    <div class="mini-panel">
+                      <h4>Why it matters</h4>
+                      <ul>
+                        <li>Type safety</li><li>Validation at startup</li><li>Clear ownership of config</li>
+                      </ul>
+                    </div>
+                    <div class="mini-panel">
+                      <h4>Common pitfall</h4>
+                      <ul>
+                        <li>Scattered @Value usage</li><li>Magic strings everywhere</li><li>No validation</li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div class="badge-row"><span class="pill good">Type-safe</span><span class="pill info">Validated</span><span class="pill caution">Structured</span></div>
+                  
+                  <div class="flow"><span class="flow-step">Load properties</span><span class="flow-arrow">→</span><span class="flow-step">Bind to POJO</span><span class="flow-arrow">→</span><span class="flow-step">Validate</span><span class="flow-arrow">→</span><span class="flow-step">Inject into beans</span></div>
+                </div>
+                <div>
+                  <h3>Interview answer</h3>
+                  <p>“I prefer @ConfigurationProperties over @Value because it is typed, validated, and testable.”</p>
+                  
+                  <table>
+                    <thead><tr><th>Approach</th><th>Trade-off</th></tr></thead>
+                    <tbody><tr><td>@Value</td><td><span class="pill bad">Scattered strings</span></td></tr><tr><td>@ConfigurationProperties</td><td><span class="pill good">Typed binding</span></td></tr><tr><td>Constructor injection</td><td><span class="pill info">Testable config</span></td></tr></tbody>
+                  </table>
+                </div>
+              </div>
+              
+    <div class="code-blocks">
+    <div>
+      <div class="code-title">Typed config class</div>
+      <pre>@ConfigurationProperties(prefix = "payments")
+@Validated
+public record PaymentProps(
+  @NotNull String provider,
+  @Min(100) int timeoutMs
+) {}</pre>
+    </div>
+    </div>
+              
+            </article>
+
+            <article class="card warning">
+              <div class="card-label">Warning</div>
+              <h3>Missing property binding</h3>
+              <p>If you forget to enable configuration properties scanning, the class will not bind.</p>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Mini takeaway</div>
+              <ul class="takeaways">
+                <li>Prefer typed config binding.</li><li>Validate at startup.</li><li>Group related settings together.</li>
+              </ul>
+            </article>
+
+            <article class="card quiz-card">
+              <div class="card-label">Quiz</div>
+              <h3>Why is @ConfigurationProperties preferred over many @Value annotations?</h3>
+              <div class="quiz-options" data-answer="2">
+                <button class="quiz-option">A. It disables profiles</button><button class="quiz-option">B. It removes dependency injection</button><button class="quiz-option">C. It provides type-safe, validated binding</button><button class="quiz-option">D. It forces YAML only</button>
+              </div>
+              <div class="quiz-result">
+                <strong>Correct answer: C</strong>
+                <span>Typed binding avoids stringly-typed config and enables validation.</span>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" data-section="2">
+        <div class="section-inner">
+          <div class="hero">
+            <div class="section-label">Section 3 of 4 · ~7 mins</div>
+            <h2>Profiles and Environment Overrides</h2>
+            <p>Profiles let you swap config or beans depending on the environment without changing code.</p>
+            
+          </div>
+
+          <div class="card-grid">
+            <article class="card eli5">
+              <div class="card-label">🧒 ELI5</div>
+              <h3>Different outfits</h3>
+              <p>You wear a raincoat on rainy days and a t-shirt on sunny days.</p>
+            </article>
+
+            <article class="card analogy">
+              <div class="card-label">🔗 ANALOGY</div>
+              <h3>Stage lighting presets</h3>
+              <p>The same stage uses different lighting presets for rehearsal vs show night.</p>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Technical</div>
+              <div class="two-col">
+                <div>
+                  <h3>What it means in real code</h3>
+                  <p><strong>Definition:</strong> Profiles activate different configuration files and beans using spring.profiles.active or activation rules.</p>
+                  <div class="mini-grid">
+                    <div class="mini-panel">
+                      <h4>Why it matters</h4>
+                      <ul>
+                        <li>Clean dev/test/prod separation</li><li>Swap implementations safely</li><li>Less manual toggling</li>
+                      </ul>
+                    </div>
+                    <div class="mini-panel">
+                      <h4>Common pitfall</h4>
+                      <ul>
+                        <li>If-else based on env vars</li><li>Manual bean switches</li><li>Config sprawl</li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div class="badge-row"><span class="pill good">Profiles</span><span class="pill info">Activation</span><span class="pill caution">Overrides</span></div>
+                  
+                  <div class="flow"><span class="flow-step">Pick profile</span><span class="flow-arrow">→</span><span class="flow-step">Load profile file</span><span class="flow-arrow">→</span><span class="flow-step">Activate beans</span><span class="flow-arrow">→</span><span class="flow-step">Override defaults</span></div>
+                </div>
+                <div>
+                  <h3>Interview answer</h3>
+                  <p>“Profiles let me activate different properties or beans per environment with clear separation.”</p>
+                  
+                  <table>
+                    <thead><tr><th>Profile</th><th>Typical use</th></tr></thead>
+                    <tbody><tr><td>dev</td><td><span class="pill info">Local debugging</span></td></tr><tr><td>test</td><td><span class="pill good">CI pipelines</span></td></tr><tr><td>prod</td><td><span class="pill caution">Locked-down config</span></td></tr></tbody>
+                  </table>
+                </div>
+              </div>
+              
+    <div class="code-blocks">
+    <div>
+      <div class="code-title">Profile-specific YAML</div>
+      <pre>spring:
+  config:
+    activate:
+      on-profile: prod
+logging:
+  level:
+    root: WARN</pre>
+    </div>
+    </div>
+              
+            </article>
+
+            <article class="card warning">
+              <div class="card-label">Warning</div>
+              <h3>Profile drift</h3>
+              <p>If configs diverge too much, prod behavior can surprise you. Keep the differences minimal and documented.</p>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Mini takeaway</div>
+              <ul class="takeaways">
+                <li>Use profiles for environment differences.</li><li>Keep profile deltas small.</li><li>Document profile behavior.</li>
+              </ul>
+            </article>
+
+            <article class="card quiz-card">
+              <div class="card-label">Quiz</div>
+              <h3>How do you activate profile-specific properties in Boot 3?</h3>
+              <div class="quiz-options" data-answer="1">
+                <button class="quiz-option">A. @EnableProfile</button><button class="quiz-option">B. spring.config.activate.on-profile</button><button class="quiz-option">C. @Profiled</button><button class="quiz-option">D. profiles.active=false</button>
+              </div>
+              <div class="quiz-result">
+                <strong>Correct answer: B</strong>
+                <span>spring.config.activate.on-profile enables a section when a profile is active.</span>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" data-section="3">
+        <div class="section-inner">
+          <div class="hero">
+            <div class="section-label">Section 4 of 4 · ~7 mins</div>
+            <h2>Secrets and Safe Overrides</h2>
+            <p>Externalized config keeps secrets out of repos and makes deployments safer and repeatable.</p>
+            
+          </div>
+
+          <div class="card-grid">
+            <article class="card eli5">
+              <div class="card-label">🧒 ELI5</div>
+              <h3>A lockbox for keys</h3>
+              <p>You keep the house key in a lockbox, not taped to the front door.</p>
+            </article>
+
+            <article class="card analogy">
+              <div class="card-label">🔗 ANALOGY</div>
+              <h3>Bank vault</h3>
+              <p>The vault stores the real valuables, and the teller only grabs what is needed.</p>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Technical</div>
+              <div class="two-col">
+                <div>
+                  <h3>What it means in real code</h3>
+                  <p><strong>Definition:</strong> Sensitive values should come from secure sources like environment variables, vaults, or secret managers.</p>
+                  <div class="mini-grid">
+                    <div class="mini-panel">
+                      <h4>Why it matters</h4>
+                      <ul>
+                        <li>Avoids leaking secrets</li><li>Supports rotation</li><li>Keeps repos clean</li>
+                      </ul>
+                    </div>
+                    <div class="mini-panel">
+                      <h4>Common pitfall</h4>
+                      <ul>
+                        <li>Passwords in Git</li><li>Plaintext secrets in YAML</li><li>No rotation strategy</li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div class="badge-row"><span class="pill good">Env vars</span><span class="pill info">Vault</span><span class="pill caution">Rotation</span></div>
+                  
+                  <div class="flow"><span class="flow-step">Secret store</span><span class="flow-arrow">→</span><span class="flow-step">Inject into env</span><span class="flow-arrow">→</span><span class="flow-step">Boot binds</span><span class="flow-arrow">→</span><span class="flow-step">App uses securely</span></div>
+                </div>
+                <div>
+                  <h3>Interview answer</h3>
+                  <p>“I keep secrets out of code by using env vars or a vault and let Boot bind them like any other property.”</p>
+                  
+                  <table>
+                    <thead><tr><th>Source</th><th>When to use</th></tr></thead>
+                    <tbody><tr><td>Env vars</td><td><span class="pill info">Simple deployments</span></td></tr><tr><td>Vault/SM</td><td><span class="pill good">Regulated systems</span></td></tr><tr><td>Config files</td><td><span class="pill bad">Avoid for secrets</span></td></tr></tbody>
+                  </table>
+                </div>
+              </div>
+              
+    <div class="code-blocks">
+    <div>
+      <div class="code-title">Use a placeholder</div>
+      <pre>spring:
+  datasource:
+    url: ${DB_URL}
+    password: ${DB_PASSWORD}</pre>
+    </div>
+    </div>
+              
+            </article>
+
+            <article class="card warning">
+              <div class="card-label">Warning</div>
+              <h3>Secrets in logs</h3>
+              <p>Do not log config objects or stack traces that reveal secrets. Mask sensitive values.</p>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Mini takeaway</div>
+              <ul class="takeaways">
+                <li>Keep secrets out of Git.</li><li>Use secure stores.</li><li>Support rotation and masking.</li>
+              </ul>
+            </article>
+
+            <article class="card quiz-card">
+              <div class="card-label">Quiz</div>
+              <h3>What is the safest way to supply a database password?</h3>
+              <div class="quiz-options" data-answer="1">
+                <button class="quiz-option">A. Commit it to application.yml</button><button class="quiz-option">B. Load from environment or vault</button><button class="quiz-option">C. Hard-code in code</button><button class="quiz-option">D. Put it in test resources</button>
+              </div>
+              <div class="quiz-result">
+                <strong>Correct answer: B</strong>
+                <span>Use environment variables or secret managers, not committed files.</span>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+      
+      <section class="section" data-section="4">
+        <div class="section-inner">
+          <div class="hero">
+            <div class="section-label">Completion screen · Review mode</div>
+            <h2>🎉 Externalized Configuration Cheat Sheet</h2>
+            <p>Use this to remember config precedence, binding, and profile overrides.</p>
+          </div>
+
+          <div class="completion-grid">
+            <div class="card technical">
+              <div class="card-label">Cheat sheet</div>
+              <div class="celebrate">🚀</div>
+              <h3>1-line interview answers</h3>
+              <div class="cheat-list">
+    <div class="cheat-item">
+      <h4>Precedence</h4>
+      <p>Command-line and env override application.yml and defaults.</p>
+    </div>
+    <div class="cheat-item">
+      <h4>Binding</h4>
+      <p>@ConfigurationProperties maps config into typed objects.</p>
+    </div>
+    <div class="cheat-item">
+      <h4>Profiles</h4>
+      <p>Profile-specific files swap config per environment.</p>
+    </div>
+    <div class="cheat-item">
+      <h4>Secrets</h4>
+      <p>Use env vars or vaults, not repo files.</p>
+    </div>
+              </div>
+            </div>
+
+            <div class="card analogy">
+              <div class="card-label">What to remember</div>
+              <h3>Fast mental model</h3>
+              <ul class="takeaways">
+                <li><strong>Property order:</strong> command-line > env > application.yml.</li><li><strong>Typed config:</strong> @ConfigurationProperties with validation.</li><li><strong>Profiles:</strong> activate per environment.</li><li><strong>Overrides:</strong> keep secrets outside the repo.</li>
+              </ul>
+              <h3 style="margin-top:22px;">Common traps</h3>
+              <div class="badge-row">
+                <span class="pill bad">Hard-coded secrets</span><span class="pill bad">Unknown property sources</span><span class="pill bad">Profile drift</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer-nav">
+      <div class="footer-nav-inner">
+        <button class="btn" id="prevBtn">← Back</button>
+        <button class="btn primary" id="nextBtn">Next →</button>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+const sections = Array.from(document.querySelectorAll('.section'));
+    const dots = Array.from(document.querySelectorAll('.nav-dot'));
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const timerEl = document.getElementById('timer');
+    const progressBar = document.getElementById('progressBar');
+
+function escapeHtml(str) {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+function highlightJava(code) {
+  const keywords = new Set([
+    'abstract','assert','boolean','break','byte','case','catch','char','class','const','continue','default',
+    'do','double','else','enum','extends','final','finally','float','for','goto','if','implements','import',
+    'instanceof','int','interface','long','native','new','package','private','protected','public','return','short',
+    'static','strictfp','super','switch','synchronized','this','throw','throws','transient','try','void','volatile',
+    'while','var','record','sealed','permits','non-sealed','yield'
+  ]);
+  const types = new Set([
+    'String','List','Map','Set','HashMap','ArrayList','LinkedList','Optional','Stream','CompletableFuture',
+    'ExecutorService','Runnable','Callable','Future','Thread','Duration','LocalDateTime','Object','Integer','Long',
+    'Boolean','Double','Float','UUID','Predicate','Function','Consumer','Supplier','Collectors','Path','ResponseEntity',
+    'HttpStatus','Authentication','SecurityFilterChain','EntityManager','Session','Pageable','JpaRepository','Optional',
+    'Component','Service','Repository','Controller','RestController','Autowired','Transactional','Bean','Configuration',
+    'BeanFactory','ApplicationContext','MockBean','SpringBootTest','WebMvcTest','MockMvc'
+  ]);
+  const tokenRegex = /(\/\*[\s\S]*?\*\/|\/\/[^\n]*|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|@[A-Za-z_][\w.]*|\b\d+(?:_\d+)*(?:\.\d+)?\b|\b[A-Za-z_][\w]*\b)/g;
+  let result = '';
+  let lastIndex = 0;
+  for (const match of code.matchAll(tokenRegex)) {
+    const value = match[0];
+    const index = match.index;
+    result += escapeHtml(code.slice(lastIndex, index));
+    let cls = '';
+    if (value.startsWith('//') || value.startsWith('/*')) {
+      cls = 'token-comment';
+    } else if (value.startsWith("\"") || value.startsWith("'")) {
+      cls = 'token-string';
+    } else if (value.startsWith('@')) {
+      cls = 'token-annotation';
+    } else if (/^\d/.test(value)) {
+      cls = 'token-number';
+    } else if (keywords.has(value)) {
+      cls = 'token-key';
+    } else if (types.has(value)) {
+      cls = 'token-type';
+    }
+    if (cls) {
+      result += "<span class=\"" + cls + "\">" + escapeHtml(value) + "</span>";
+    } else {
+      result += escapeHtml(value);
+    }
+    lastIndex = index + value.length;
+  }
+  result += escapeHtml(code.slice(lastIndex));
+  return result;
+}
+
+function applySyntaxHighlighting() {
+  document.querySelectorAll('pre').forEach(pre => {
+    const raw = pre.textContent;
+    pre.innerHTML = highlightJava(raw);
+  });
+}
+
+    let currentIndex = 0;
+    let visitedMax = 0;
+
+    function showSection(index) {
+      currentIndex = Math.max(0, Math.min(index, sections.length - 1));
+      visitedMax = Math.max(visitedMax, currentIndex);
+
+      sections.forEach((section, i) => {
+        section.classList.toggle('active', i === currentIndex);
+      });
+
+      dots.forEach((dot, i) => {
+        dot.classList.remove('active', 'done');
+        if (i === currentIndex) {
+          dot.classList.add('active');
+        } else if (i < visitedMax) {
+          dot.classList.add('done');
+        }
+      });
+
+      prevBtn.disabled = currentIndex === 0;
+      nextBtn.textContent = currentIndex === sections.length - 1 ? 'Review Again ↺' : (currentIndex === sections.length - 2 ? 'Finish / View Cheat Sheet →' : 'Next →');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    prevBtn.addEventListener('click', () => showSection(currentIndex - 1));
+    nextBtn.addEventListener('click', () => {
+      if (currentIndex === sections.length - 1) {
+        showSection(0);
+      } else {
+        showSection(currentIndex + 1);
+      }
+    });
+
+    dots.forEach(dot => {
+      dot.addEventListener('click', () => showSection(Number(dot.dataset.index)));
+    });
+
+    const totalSeconds = 28 * 60;
+    let remainingSeconds = totalSeconds;
+
+    function formatTime(seconds) {
+      const mins = String(Math.floor(seconds / 60)).padStart(2, '0');
+      const secs = String(seconds % 60).padStart(2, '0');
+      return `${mins}:${secs}`;
+    }
+
+    function updateTimer() {
+      timerEl.textContent = formatTime(remainingSeconds);
+      timerEl.classList.remove('warning', 'critical');
+
+      if (remainingSeconds <= 60) {
+        timerEl.classList.add('critical');
+      } else if (remainingSeconds <= 300) {
+        timerEl.classList.add('warning');
+      }
+
+      const elapsed = totalSeconds - remainingSeconds;
+      progressBar.style.width = `${(elapsed / totalSeconds) * 100}%`;
+
+      if (remainingSeconds > 0) {
+        remainingSeconds -= 1;
+      }
+    }
+
+    updateTimer();
+    setInterval(updateTimer, 1000);
+
+    document.querySelectorAll('.quiz-options').forEach(group => {
+      const correctIndex = Number(group.dataset.answer);
+      const options = Array.from(group.querySelectorAll('.quiz-option'));
+      const result = group.nextElementSibling;
+
+      options.forEach((btn, index) => {
+        btn.addEventListener('click', () => {
+          if (group.dataset.answered === 'true') return;
+          group.dataset.answered = 'true';
+
+          options.forEach((option, i) => {
+            option.disabled = true;
+            if (i === correctIndex) option.classList.add('correct');
+          });
+
+          if (index !== correctIndex) {
+            btn.classList.add('wrong');
+          }
+
+          result.classList.add('show');
+        });
+      });
+    });
+    applySyntaxHighlighting();
+
+    showSection(0);
+  </script>
+</body>
+</html>

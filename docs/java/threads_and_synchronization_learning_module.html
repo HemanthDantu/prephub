@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Threads & Synchronization Learning Module</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+:root {
+  --bg: #0a0e1a;
+  --surface-1: #111827;
+  --surface-2: #1a2235;
+  --surface-3: #0f1726;
+  --border: rgba(255,255,255,0.08);
+  --text: #e5eefc;
+  --muted: #98a6c3;
+  --muted-2: #6f7b93;
+  --cyan: #00d4ff;
+  --purple: #7c3aed;
+  --green: #10b981;
+  --amber: #f59e0b;
+  --red: #ef4444;
+  --shadow: 0 20px 60px rgba(0,0,0,0.35);
+  --radius-xl: 22px;
+  --radius-lg: 16px;
+  --radius-md: 12px;
+  --max: 1180px;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: radial-gradient(circle at top, #101834 0%, var(--bg) 45%, #070b14 100%); color: var(--text); font-family: 'Syne', system-ui, sans-serif; }
+body { min-height: 100vh; }
+a { color: inherit; text-decoration: none; }
+.app { min-height: 100vh; display: flex; flex-direction: column; }
+.topbar { position: sticky; top: 0; z-index: 30; backdrop-filter: blur(14px); background: rgba(10, 14, 26, 0.86); border-bottom: 1px solid rgba(255,255,255,0.06); }
+.topbar-inner { max-width: var(--max); margin: 0 auto; padding: 16px 20px 14px; display: grid; gap: 12px; }
+.topbar-row { display: flex; align-items: center; justify-content: space-between; gap: 18px; flex-wrap: wrap; }
+.brand { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.brand h1 { margin: 0; font-size: clamp(1.2rem, 1rem + 1.2vw, 2rem); letter-spacing: -0.03em; }
+.brand p { margin: 0; color: var(--muted); font-size: 0.95rem; }
+.meta { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.timer-wrap { display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 999px; }
+.timer-label, .timer-value, .section-label, .card-label, .nav-dot, .pill, .tiny, .footer-note { font-family: 'JetBrains Mono', monospace; }
+.timer-label { color: var(--muted); font-size: 0.86rem; }
+.timer-value { font-size: 1rem; font-weight: 700; color: var(--cyan); transition: color 0.25s ease, transform 0.25s ease; }
+.timer-value.warning { color: var(--amber); }
+.timer-value.critical { color: var(--red); animation: pulse 1s infinite; }
+@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.07); } 100% { transform: scale(1); } }
+.progress-shell { width: 100%; height: 10px; border-radius: 999px; background: rgba(255,255,255,0.08); overflow: hidden; }
+.progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, var(--cyan), var(--purple)); transition: width 1s linear; }
+.nav-dots { display: flex; gap: 10px; flex-wrap: wrap; }
+.nav-dot { width: 34px; height: 34px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.18); background: transparent; color: var(--muted); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.25s ease; }
+.nav-dot:hover { border-color: var(--cyan); color: var(--cyan); transform: translateY(-1px); }
+.nav-dot.active { background: rgba(0,212,255,0.15); border-color: var(--cyan); color: var(--cyan); box-shadow: 0 0 0 4px rgba(0,212,255,0.08); }
+.nav-dot.done { border-color: rgba(16,185,129,0.8); color: var(--green); background: rgba(16,185,129,0.08); }
+.main { flex: 1; }
+.section { display: none; max-width: var(--max); margin: 0 auto; padding: 32px 20px 110px; }
+.section.active { display: block; animation: fadeIn 0.35s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(12px);} to { opacity: 1; transform: translateY(0);} }
+.section-inner { display: grid; gap: 22px; }
+.hero { display: grid; gap: 10px; padding: 28px; background: linear-gradient(135deg, rgba(17,24,39,0.96), rgba(26,34,53,0.94)); border: 1px solid var(--border); border-radius: var(--radius-xl); box-shadow: var(--shadow); }
+.section-label { color: var(--cyan); font-size: 0.84rem; text-transform: uppercase; letter-spacing: 0.06em; }
+.hero h2 { margin: 0; font-size: clamp(2rem, 1.2rem + 2vw, 3rem); letter-spacing: -0.04em; }
+.hero p { margin: 0; color: var(--muted); max-width: 860px; line-height: 1.7; font-size: 1.02rem; }
+.card-grid { display: grid; grid-template-columns: repeat(12, minmax(0,1fr)); gap: 18px; }
+.card { grid-column: span 12; background: linear-gradient(180deg, rgba(17,24,39,0.96), rgba(12,18,30,0.98)); border: 1px solid var(--border); border-left-width: 5px; border-radius: var(--radius-lg); padding: 22px; box-shadow: var(--shadow); }
+.card h3 { margin: 0 0 10px; font-size: 1.2rem; letter-spacing: -0.02em; }
+.card p { margin: 0; color: var(--muted); line-height: 1.7; }
+.card .card-label { margin-bottom: 10px; font-size: 0.76rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted-2); }
+.card.eli5 { border-left-color: var(--amber); }
+.card.analogy { border-left-color: var(--green); }
+.card.technical { border-left-color: var(--cyan); }
+.card.warning { border-left-color: var(--red); }
+.card.quiz-card { border-left-color: var(--purple); }
+.card.visual-card { border-left-color: var(--green); }
+.card.takeaway-card { border-left-color: var(--cyan); }
+@media (min-width: 900px) {
+  .card.eli5, .card.analogy { grid-column: span 6; }
+  .card.technical, .card.visual-card, .card.quiz-card { grid-column: span 12; }
+  .card.warning, .card.takeaway-card { grid-column: span 6; }
+}
+.two-col { display: grid; gap: 18px; }
+@media (min-width: 860px) { .two-col { grid-template-columns: 1.1fr 0.9fr; } }
+.mini-grid { display: grid; gap: 12px; margin-top: 16px; }
+@media (min-width: 760px) { .mini-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.mini-panel { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 14px; padding: 14px; }
+.mini-panel h4 { margin: 0 0 10px; font-size: 0.95rem; }
+.mini-panel ul, .takeaway-list, .cheat-list { margin: 0; padding-left: 18px; color: var(--muted); line-height: 1.7; }
+.badge-row { margin-top: 16px; display: grid; gap: 10px; }
+.pill { display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; width: fit-content; border-radius: 999px; border: 1px solid transparent; font-size: 0.8rem; letter-spacing: 0.03em; }
+.pill.good { background: rgba(16,185,129,0.12); color: var(--green); border-color: rgba(16,185,129,0.3); }
+.pill.warn { background: rgba(245,158,11,0.12); color: var(--amber); border-color: rgba(245,158,11,0.3); }
+.pill.bad { background: rgba(239,68,68,0.12); color: var(--red); border-color: rgba(239,68,68,0.3); }
+.inline-text { margin: 0; }
+.code-block { margin: 12px 0 0; background: #050810; border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 16px; overflow-x: auto; color: #dce7ff; font-family: 'JetBrains Mono', monospace; font-size: 0.86rem; line-height: 1.65; }
+.code-note { margin-top: 12px !important; }
+.kw { color: #7dd3fc; }
+.type { color: #c084fc; }
+.cm { color: #6b7280; font-style: italic; }
+.str { color: #34d399; }
+.num { color: #f59e0b; }
+.anno { color: #f472b6; }
+.diagram, .table-wrap, .flow-wrap, .decision-wrap { margin-top: 12px; border: 1px solid var(--border); border-radius: 18px; padding: 18px; background: rgba(255,255,255,0.025); }
+.array-strip, .node-chain, .bucket-list, .lifecycle-flow, .hb-flow, .chain-flow { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.box, .node, .bucket, .life, .chain-item, .gauge-box { min-height: 52px; display: inline-flex; align-items: center; justify-content: center; padding: 10px 14px; border-radius: 14px; border: 1px solid var(--border); background: rgba(255,255,255,0.03); font-family: 'JetBrains Mono', monospace; }
+.box.cyan, .life.active { border-color: rgba(0,212,255,0.5); box-shadow: inset 0 0 0 1px rgba(0,212,255,0.18); }
+.box.green, .node { border-color: rgba(16,185,129,0.5); box-shadow: inset 0 0 0 1px rgba(16,185,129,0.15); }
+.box.purple, .bucket.tree { border-color: rgba(124,58,237,0.5); box-shadow: inset 0 0 0 1px rgba(124,58,237,0.15); }
+.box.amber, .life.waiting { border-color: rgba(245,158,11,0.5); box-shadow: inset 0 0 0 1px rgba(245,158,11,0.15); }
+.box.red, .life.blocked { border-color: rgba(239,68,68,0.5); box-shadow: inset 0 0 0 1px rgba(239,68,68,0.15); }
+.arrow { color: var(--muted-2); font-family: 'JetBrains Mono', monospace; }
+.table-wrap table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+.table-wrap th, .table-wrap td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.08); text-align: left; vertical-align: top; }
+.table-wrap th { color: var(--text); font-size: 0.86rem; text-transform: uppercase; letter-spacing: 0.06em; font-family: 'JetBrains Mono', monospace; }
+.badge { display: inline-flex; align-items: center; border-radius: 999px; padding: 6px 10px; font-size: 0.76rem; font-family: 'JetBrains Mono', monospace; }
+.badge.good { background: rgba(16,185,129,0.12); color: var(--green); }
+.badge.warn { background: rgba(245,158,11,0.12); color: var(--amber); }
+.badge.bad { background: rgba(239,68,68,0.12); color: var(--red); }
+.quiz-options { display: grid; gap: 12px; margin-top: 16px; }
+.quiz-option { width: 100%; text-align: left; padding: 14px 16px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03); color: var(--text); cursor: pointer; transition: 0.2s ease; font: inherit; }
+.quiz-option:hover { transform: translateY(-1px); border-color: rgba(124,58,237,0.5); }
+.quiz-option:disabled { cursor: default; opacity: 1; }
+.quiz-option.correct { background: rgba(16,185,129,0.13); border-color: rgba(16,185,129,0.5); color: #d8ffef; }
+.quiz-option.wrong { background: rgba(239,68,68,0.13); border-color: rgba(239,68,68,0.5); color: #ffe3e3; }
+.quiz-result { display: none; margin-top: 14px; color: var(--muted); line-height: 1.7; }
+.quiz-result.show { display: block; }
+.footer-nav { position: fixed; inset: auto 0 0 0; background: rgba(8,12,22,0.92); border-top: 1px solid rgba(255,255,255,0.07); backdrop-filter: blur(14px); }
+.footer-inner { max-width: var(--max); margin: 0 auto; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+.nav-actions { display: flex; gap: 12px; }
+.btn { border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.03); color: var(--text); border-radius: 14px; padding: 12px 16px; font: inherit; cursor: pointer; transition: 0.2s ease; }
+.btn:hover { transform: translateY(-1px); border-color: rgba(0,212,255,0.4); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.btn.primary { background: linear-gradient(90deg, rgba(0,212,255,0.14), rgba(124,58,237,0.16)); border-color: rgba(0,212,255,0.3); }
+.footer-note { color: var(--muted); font-size: 0.82rem; }
+.completion-wrap { display: grid; gap: 20px; text-align: left; }
+.completion-grid { display: grid; gap: 18px; }
+@media (min-width: 960px) { .completion-grid { grid-template-columns: repeat(3, minmax(0,1fr)); } }
+.celebrate { font-size: 3rem; }
+.cheat-list li { margin-bottom: 12px; }
+.small-answer { margin-top: 6px; color: var(--text); }
+.confusion-grid { display: grid; gap: 14px; }
+.confusion-item { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 14px; padding: 14px; }
+.confusion-item h4 { margin: 0 0 8px; }
+.confusion-item p { margin: 0; }
+.callout { margin-top: 14px; display: grid; gap: 10px; }
+.callout-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.split-layout { display: grid; gap: 18px; }
+@media (min-width: 820px) { .split-layout { grid-template-columns: 1fr 1fr; } }
+.stack-col { display: grid; gap: 12px; }
+.legend { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+.legend span { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); font-size: 0.88rem; }
+.legend b { width: 12px; height: 12px; border-radius: 999px; display: inline-block; }
+b.c1 { background: var(--cyan); } b.c2 { background: var(--green);} b.c3 { background: var(--amber);} b.c4 { background: var(--purple);} b.c5 { background: var(--red);}
+@media (max-width: 720px) {
+  .topbar-inner { padding: 14px 14px 12px; }
+  .section { padding: 22px 14px 110px; }
+  .hero { padding: 22px; }
+  .card { padding: 18px; }
+}
+</style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="topbar-row">
+          <div class="brand">
+            <h1>Threads & Synchronization</h1>
+            <p>Lifecycle, synchronized, volatile, deadlocks, and happens-before</p>
+          </div>
+          <div class="meta">
+            <div class="timer-wrap">
+              <span class="timer-label">Time left</span>
+              <span id="timer" class="timer-value">00:00</span>
+            </div>
+          </div>
+        </div>
+        <div class="topbar-row">
+          <div class="nav-dots"><button class="nav-dot active" aria-label="Go to section 1">1</button><button class="nav-dot " aria-label="Go to section 2">2</button><button class="nav-dot " aria-label="Go to section 3">3</button><button class="nav-dot " aria-label="Go to section 4">4</button><button class="nav-dot " aria-label="Go to section 5">5</button><button class="nav-dot " aria-label="Go to section 6">6</button></div>
+          <div class="footer-note">45 minute module · click dots to jump</div>
+        </div>
+        <div class="progress-shell"><div id="progressBar" class="progress-bar"></div></div>
+      </div>
+    </header>
+
+    <main class="main">
+      
+    <section class="section active" data-section="0">
+      <div class="section-inner">
+        <div class="hero">
+          <div class="section-label">Section 1 of 5 · ~8 mins</div>
+          <h2>Thread lifecycle</h2>
+          <p>Before coordination primitives make sense, you need to know what a thread is doing at different moments of its life.</p>
+        </div>
+        <div class="card-grid">
+          
+    <article class="card eli5">
+      <div class="card-label">🧒 ELI5</div>
+      <h3>A worker changing states</h3>
+      <p>A worker can be ready to start, actively working, waiting for a door to open, taking a nap until a timer rings, or finished for the day. Threads move through similar states.</p>
+    </article>
+    
+          
+    <article class="card analogy">
+      <div class="card-label">🔗 ANALOGY</div>
+      <h3>A train moving through stations</h3>
+      <p>A thread does not just go from start to finish in one uninterrupted line. It can be scheduled, paused, blocked, resumed, and finally terminated.</p>
+    </article>
+    
+          <article class="card technical">
+            <div class="card-label">Technical</div>
+            <div class="two-col">
+              <div>
+                <h3>Lifecycle states give debugging clues</h3>
+                <p>A Java thread moves through states such as NEW, RUNNABLE, BLOCKED, WAITING, TIMED_WAITING, and TERMINATED. These states help explain why a program is progressing, stalling, or hanging.</p>
+                <div class="mini-grid"><div class="mini-panel"><h4>Key states</h4><ul><li>NEW: created but not started</li><li>RUNNABLE: eligible to run / may be running</li><li>BLOCKED: waiting for a monitor lock</li><li>WAITING or TIMED_WAITING: waiting for another event</li><li>TERMINATED: finished execution</li></ul></div><div class="mini-panel"><h4>Why this matters</h4><ul><li>Useful in thread dumps</li><li>Helps separate lock contention from waiting logic</li><li>Common first step in diagnosing hangs</li></ul></div></div>
+                <div class="badge-row">
+                  <span class="pill good">Interview answer</span>
+                  <p class="inline-text">A Java thread typically starts in NEW, becomes RUNNABLE when started, may move into BLOCKED or WAITING states depending on locks or coordination, and ends in TERMINATED when run finishes.</p>
+                </div>
+              </div>
+              <div>
+                <h3>Java example</h3>
+                <pre class="code-block"><code><span class="type">Thread</span> t = <span class="kw">new</span> <span class="type">Thread</span>(() -&gt; doWork());
+
+System.out.println(t.getState()); <span class="cm">// NEW</span>
+
+t.start();
+System.out.println(t.getState()); <span class="cm">// often RUNNABLE</span>
+
+t.join();
+System.out.println(t.getState()); <span class="cm">// TERMINATED</span></code></pre>
+                <p class="code-note">Thread state snapshots are timing-dependent, but the lifecycle vocabulary matters a lot in interviews and debugging.</p>
+              </div>
+            </div>
+          </article>
+          
+          <article class="card visual-card">
+            <div class="card-label">Visual</div>
+            <h3>Lifecycle flow</h3>
+            
+            <div class="diagram">
+              <div class="lifecycle-flow">
+                <div class="life box cyan">NEW</div>
+                <div class="arrow">→</div>
+                <div class="life box green active">RUNNABLE</div>
+                <div class="arrow">→</div>
+                <div class="life box red blocked">BLOCKED</div>
+                <div class="arrow">↔</div>
+                <div class="life box amber waiting">WAITING / TIMED_WAITING</div>
+                <div class="arrow">→</div>
+                <div class="life box purple">TERMINATED</div>
+              </div>
+            </div>
+            
+          </article>
+          
+    <article class="card quiz-card">
+      <div class="card-label">Quiz</div>
+      <h3>Which thread state specifically means waiting to acquire a monitor lock?</h3>
+      <div class="quiz-options" data-answer="1">
+        <button class="quiz-option">RUNNABLE</button><button class="quiz-option">BLOCKED</button><button class="quiz-option">TIMED_WAITING</button><button class="quiz-option">TERMINATED</button>
+      </div>
+      <div class="quiz-result">
+        <strong>Why:</strong> BLOCKED is the state for a thread waiting to acquire a monitor lock, such as entering a synchronized block already held by another thread.
+      </div>
+    </article>
+    
+          <article class="card takeaway-card">
+            <div class="card-label">Mini takeaway</div>
+            <h3>What to remember</h3>
+            <ul class="takeaway-list"><li>Know the lifecycle vocabulary cold.</li><li>BLOCKED usually points to lock contention.</li><li>WAITING and TIMED_WAITING usually point to coordination logic or sleep/join/wait.</li></ul>
+          </article>
+        </div>
+      </div>
+    </section>
+    
+    <section class="section " data-section="1">
+      <div class="section-inner">
+        <div class="hero">
+          <div class="section-label">Section 2 of 5 · ~9 mins</div>
+          <h2>The synchronized keyword</h2>
+          <p>synchronized is the classic Java tool for mutual exclusion and visibility around shared mutable state.</p>
+        </div>
+        <div class="card-grid">
+          
+    <article class="card eli5">
+      <div class="card-label">🧒 ELI5</div>
+      <h3>One person in the room at a time</h3>
+      <p>If two people try to write on the same whiteboard at once, the result gets messy. So the room gets one key. Only one person can enter and use the board at a time.</p>
+    </article>
+    
+          
+    <article class="card analogy">
+      <div class="card-label">🔗 ANALOGY</div>
+      <h3>A lock around a shared notebook</h3>
+      <p>The notebook is shared state. synchronized is the key that ensures only one thread edits it at a time, and that the next reader sees a consistent version after the lock is released.</p>
+    </article>
+    
+          <article class="card technical">
+            <div class="card-label">Technical</div>
+            <div class="two-col">
+              <div>
+                <h3>Mutual exclusion plus memory visibility</h3>
+                <p>synchronized uses an intrinsic monitor lock. It guarantees mutual exclusion for the protected block and also establishes visibility guarantees when a thread exits and another thread later acquires the same monitor.</p>
+                <div class="mini-grid"><div class="mini-panel"><h4>What it gives you</h4><ul><li>Only one thread executes the critical section at a time</li><li>Prevents race conditions on shared mutable state</li><li>Provides visibility via monitor enter/exit semantics</li></ul></div><div class="mini-panel"><h4>Common traps</h4><ul><li>Locking too much code hurts throughput</li><li>Locking on the wrong object gives fake safety</li><li>Mixing synchronized and unsynchronized access can reintroduce bugs</li></ul></div></div>
+                <div class="badge-row">
+                  <span class="pill good">Interview answer</span>
+                  <p class="inline-text">synchronized is used to protect shared mutable state. It gives mutual exclusion and also visibility, because writes before releasing the monitor become visible to a thread that later acquires the same monitor.</p>
+                </div>
+              </div>
+              <div>
+                <h3>Java example</h3>
+                <pre class="code-block"><code><span class="kw">class</span> <span class="type">Counter</span> {
+    <span class="kw">private</span> <span class="type">int</span> count = <span class="num">0</span>;
+
+    <span class="kw">public</span> <span class="kw">synchronized</span> <span class="type">void</span> increment() {
+        count++;
+    }
+
+    <span class="kw">public</span> <span class="kw">synchronized</span> <span class="type">int</span> getCount() {
+        <span class="kw">return</span> count;
+    }
+}</code></pre>
+                <p class="code-note">Without synchronization, two threads could interleave increment logic and lose updates.</p>
+              </div>
+            </div>
+          </article>
+          
+    <article class="card warning">
+      <div class="card-label">Warning</div>
+      <h3>synchronized is not just about blocking</h3>
+      <p>A lot of people only say 'one thread at a time.' A stronger answer also mentions visibility and ordering guarantees associated with monitor acquisition and release.</p>
+    </article>
+    
+          <article class="card visual-card">
+            <div class="card-label">Visual</div>
+            <h3>Monitor lock around shared state</h3>
+            
+            <div class="split-layout">
+              <div class="diagram">
+                <h4>Critical section</h4>
+                <div class="chain-flow">
+                  <div class="box amber">Thread A acquires lock</div>
+                  <div class="arrow">→</div>
+                  <div class="box green">updates count</div>
+                  <div class="arrow">→</div>
+                  <div class="box cyan">releases lock</div>
+                </div>
+              </div>
+              <div class="diagram">
+                <h4>Blocked contender</h4>
+                <div class="chain-flow">
+                  <div class="box red">Thread B wants same lock</div>
+                  <div class="arrow">→</div>
+                  <div class="box red">BLOCKED</div>
+                  <div class="arrow">→</div>
+                  <div class="box green">enters after release</div>
+                </div>
+              </div>
+            </div>
+            
+          </article>
+          
+    <article class="card quiz-card">
+      <div class="card-label">Quiz</div>
+      <h3>What does synchronized guarantee?</h3>
+      <div class="quiz-options" data-answer="1">
+        <button class="quiz-option">Only mutual exclusion, not visibility</button><button class="quiz-option">Mutual exclusion and visibility around the same monitor</button><button class="quiz-option">Sorting of threads by priority</button><button class="quiz-option">That deadlocks are impossible</button>
+      </div>
+      <div class="quiz-result">
+        <strong>Why:</strong> A good answer includes both: only one thread can execute the critical section at a time, and monitor enter/exit also creates visibility guarantees.
+      </div>
+    </article>
+    
+          <article class="card takeaway-card">
+            <div class="card-label">Mini takeaway</div>
+            <h3>What to remember</h3>
+            <ul class="takeaway-list"><li>synchronized protects critical sections.</li><li>It gives both mutual exclusion and visibility.</li><li>You must synchronize consistently on the same shared state.</li></ul>
+          </article>
+        </div>
+      </div>
+    </section>
+    
+    <section class="section " data-section="2">
+      <div class="section-inner">
+        <div class="hero">
+          <div class="section-label">Section 3 of 5 · ~8 mins</div>
+          <h2>volatile and visibility</h2>
+          <p>volatile is often misunderstood. It is not a lightweight synchronized replacement for every concurrency problem.</p>
+        </div>
+        <div class="card-grid">
+          
+    <article class="card eli5">
+      <div class="card-label">🧒 ELI5</div>
+      <h3>Always read the latest sticky note</h3>
+      <p>Imagine one whiteboard in the hallway. If the note is volatile, everyone must read the latest note from the board, not a stale copy in their pocket.</p>
+    </article>
+    
+          
+    <article class="card analogy">
+      <div class="card-label">🔗 ANALOGY</div>
+      <h3>Freshness, not full coordination</h3>
+      <p>volatile is like forcing threads to read the latest published version of a value. It helps with visibility, but it does not put a lock around compound actions.</p>
+    </article>
+    
+          <article class="card technical">
+            <div class="card-label">Technical</div>
+            <div class="two-col">
+              <div>
+                <h3>volatile = visibility and ordering, not atomicity</h3>
+                <p>A volatile field tells the JVM and CPU that reads and writes to that variable must not be hidden in stale caches or reordered across certain boundaries. It improves visibility between threads, but operations like <code>count++</code> are still not atomic.</p>
+                <div class="mini-grid"><div class="mini-panel"><h4>Good use cases</h4><ul><li>Stop flags and shutdown signals</li><li>Publishing a simple state value</li><li>One writer / many readers for a simple variable</li></ul></div><div class="mini-panel"><h4>Bad assumptions</h4><ul><li>volatile does not make increments atomic</li><li>volatile does not replace locking for compound invariants</li><li>volatile alone does not prevent race conditions on multiple fields</li></ul></div></div>
+                <div class="badge-row">
+                  <span class="pill good">Interview answer</span>
+                  <p class="inline-text">volatile guarantees visibility of the latest value across threads and restricts harmful reordering around that variable, but it does not provide mutual exclusion or atomic compound updates.</p>
+                </div>
+              </div>
+              <div>
+                <h3>Java example</h3>
+                <pre class="code-block"><code><span class="kw">class</span> <span class="type">Worker</span> {
+    <span class="kw">private</span> <span class="kw">volatile</span> <span class="type">boolean</span> running = <span class="kw">true</span>;
+
+    <span class="kw">public</span> <span class="type">void</span> stop() {
+        running = <span class="kw">false</span>;
+    }
+
+    <span class="kw">public</span> <span class="type">void</span> runLoop() {
+        <span class="kw">while</span> (running) {
+            doUnitOfWork();
+        }
+    }
+}</code></pre>
+                <p class="code-note">This is a classic volatile use case. A stop flag needs freshness, not a long critical section.</p>
+              </div>
+            </div>
+          </article>
+          
+          <article class="card visual-card">
+            <div class="card-label">Visual</div>
+            <h3>Visibility vs atomicity</h3>
+            
+            <div class="split-layout">
+              <div class="diagram">
+                <h4>volatile read/write</h4>
+                <div class="chain-flow">
+                  <div class="box cyan">Thread A writes running = false</div>
+                  <div class="arrow">→ visible to →</div>
+                  <div class="box green">Thread B reads latest value</div>
+                </div>
+              </div>
+              <div class="diagram">
+                <h4>But count++ is still unsafe</h4>
+                <div class="chain-flow">
+                  <div class="box amber">read</div>
+                  <div class="arrow">→</div>
+                  <div class="box amber">add 1</div>
+                  <div class="arrow">→</div>
+                  <div class="box amber">write</div>
+                </div>
+                <p>Multiple steps mean races are still possible.</p>
+              </div>
+            </div>
+            
+          </article>
+          
+    <article class="card quiz-card">
+      <div class="card-label">Quiz</div>
+      <h3>Which statement about volatile is correct?</h3>
+      <div class="quiz-options" data-answer="1">
+        <button class="quiz-option">volatile makes count++ atomic</button><button class="quiz-option">volatile is mainly about visibility and ordering for a variable</button><button class="quiz-option">volatile prevents deadlocks</button><button class="quiz-option">volatile is identical to synchronized</button>
+      </div>
+      <div class="quiz-result">
+        <strong>Why:</strong> volatile is about seeing the latest value and preventing certain reorderings. It does not provide locking or atomic compound updates.
+      </div>
+    </article>
+    
+          <article class="card takeaway-card">
+            <div class="card-label">Mini takeaway</div>
+            <h3>What to remember</h3>
+            <ul class="takeaway-list"><li>volatile helps with visibility, not mutual exclusion.</li><li>It is good for simple state flags and publication.</li><li>count++ still needs stronger coordination like synchronization or atomics.</li></ul>
+          </article>
+        </div>
+      </div>
+    </section>
+    
+    <section class="section " data-section="3">
+      <div class="section-inner">
+        <div class="hero">
+          <div class="section-label">Section 4 of 5 · ~10 mins</div>
+          <h2>Deadlocks</h2>
+          <p>A deadlock is not just 'the app is stuck.' It is a very specific circular waiting pattern.</p>
+        </div>
+        <div class="card-grid">
+          
+    <article class="card eli5">
+      <div class="card-label">🧒 ELI5</div>
+      <h3>Two people holding each other’s keys</h3>
+      <p>Person A has key 1 and wants key 2. Person B has key 2 and wants key 1. Neither can move forward, so both wait forever.</p>
+    </article>
+    
+          
+    <article class="card analogy">
+      <div class="card-label">🔗 ANALOGY</div>
+      <h3>Circular waiting between locked resources</h3>
+      <p>Deadlocks happen when threads acquire locks in inconsistent order and end up waiting on each other. The work is not slow. It is frozen.</p>
+    </article>
+    
+          <article class="card technical">
+            <div class="card-label">Technical</div>
+            <div class="two-col">
+              <div>
+                <h3>How deadlock forms</h3>
+                <p>Deadlock happens when threads hold resources while waiting for other resources in a cycle. In Java, a common example is two threads acquiring the same pair of locks in opposite order.</p>
+                <div class="mini-grid"><div class="mini-panel"><h4>Classic causes</h4><ul><li>Inconsistent lock ordering</li><li>Nested synchronized blocks across shared resources</li><li>Multiple locks with no global acquisition rule</li></ul></div><div class="mini-panel"><h4>How to prevent</h4><ul><li>Use consistent lock ordering</li><li>Reduce lock scope and number of locks</li><li>Use timed locks or higher-level concurrency tools where appropriate</li></ul></div></div>
+                <div class="badge-row">
+                  <span class="pill good">Interview answer</span>
+                  <p class="inline-text">Deadlock is a circular wait condition. Thread A holds lock 1 and waits for lock 2 while Thread B holds lock 2 and waits for lock 1. The standard prevention technique is consistent lock ordering.</p>
+                </div>
+              </div>
+              <div>
+                <h3>Java example</h3>
+                <pre class="code-block"><code><span class="type">Object</span> lockA = <span class="kw">new</span> <span class="type">Object</span>();
+<span class="type">Object</span> lockB = <span class="kw">new</span> <span class="type">Object</span>();
+
+<span class="kw">synchronized</span> (lockA) {
+    <span class="kw">synchronized</span> (lockB) {
+        doWork();
+    }
+}
+
+<span class="cm">// Elsewhere, if another thread does lockB then lockA,</span>
+<span class="cm">// you have a deadlock risk.</span></code></pre>
+                <p class="code-note">The bug is not the nested lock itself. The bug is acquiring shared locks in different orders across threads.</p>
+              </div>
+            </div>
+          </article>
+          
+    <article class="card warning">
+      <div class="card-label">Warning</div>
+      <h3>Slow is not the same as deadlocked</h3>
+      <p>High contention can make a program slow, but deadlock means circular waiting with no forward progress. Use thread dumps to distinguish them.</p>
+    </article>
+    
+          <article class="card visual-card">
+            <div class="card-label">Visual</div>
+            <h3>Circular wait graph</h3>
+            
+            <div class="diagram">
+              <div class="chain-flow">
+                <div class="box cyan">Thread A holds Lock 1</div>
+                <div class="arrow">waits for</div>
+                <div class="box red">Lock 2</div>
+              </div>
+              <div class="chain-flow" style="margin-top:12px;">
+                <div class="box green">Thread B holds Lock 2</div>
+                <div class="arrow">waits for</div>
+                <div class="box red">Lock 1</div>
+              </div>
+              <p style="margin-top:12px;">That cycle is the deadlock.</p>
+            </div>
+            
+          </article>
+          
+    <article class="card quiz-card">
+      <div class="card-label">Quiz</div>
+      <h3>What is the most standard prevention technique for deadlocks involving multiple locks?</h3>
+      <div class="quiz-options" data-answer="1">
+        <button class="quiz-option">Use more volatile variables</button><button class="quiz-option">Always acquire locks in a consistent global order</button><button class="quiz-option">Call sleep before locking</button><button class="quiz-option">Use larger synchronized blocks</button>
+      </div>
+      <div class="quiz-result">
+        <strong>Why:</strong> Consistent lock ordering breaks the circular wait pattern that causes many deadlocks.
+      </div>
+    </article>
+    
+          <article class="card takeaway-card">
+            <div class="card-label">Mini takeaway</div>
+            <h3>What to remember</h3>
+            <ul class="takeaway-list"><li>Deadlock = circular waiting, not just slowness.</li><li>Inconsistent lock ordering is a classic cause.</li><li>Consistent acquisition order is the standard prevention answer.</li></ul>
+          </article>
+        </div>
+      </div>
+    </section>
+    
+    <section class="section " data-section="4">
+      <div class="section-inner">
+        <div class="hero">
+          <div class="section-label">Section 5 of 5 · ~10 mins</div>
+          <h2>Happens-before</h2>
+          <p>This is the deeper memory-model concept that ties together synchronized, volatile, and thread coordination.</p>
+        </div>
+        <div class="card-grid">
+          
+    <article class="card eli5">
+      <div class="card-label">🧒 ELI5</div>
+      <h3>One event must happen before another can trust it</h3>
+      <p>If one person writes the answer on a board, and only after that rings a bell, the next person who hears the bell knows the board is ready to read.</p>
+    </article>
+    
+          
+    <article class="card analogy">
+      <div class="card-label">🔗 ANALOGY</div>
+      <h3>A guaranteed publish-before-read relationship</h3>
+      <p>Happens-before is the promise that one action's effects are visible to another action. Without that relationship, one thread may not reliably see what another thread already did.</p>
+    </article>
+    
+          <article class="card technical">
+            <div class="card-label">Technical</div>
+            <div class="two-col">
+              <div>
+                <h3>The language of visibility and ordering</h3>
+                <p>A happens-before relationship means memory writes by one thread become visible to another thread in a defined order. Examples include monitor release/acquire with synchronized, volatile write/read, thread start, and thread join.</p>
+                <div class="mini-grid"><div class="mini-panel"><h4>Examples</h4><ul><li>Exiting a synchronized block happens-before another thread enters the same monitor</li><li>A volatile write happens-before a later volatile read of the same variable</li><li>Actions before thread.start() happen-before the started thread sees them</li><li>Actions in a thread happen-before another thread successfully returns from join()</li></ul></div><div class="mini-panel"><h4>Why interviewers ask it</h4><ul><li>Shows you understand visibility, not just syntax</li><li>Explains why synchronized and volatile work</li><li>Connects code to the Java Memory Model</li></ul></div></div>
+                <div class="badge-row">
+                  <span class="pill good">Interview answer</span>
+                  <p class="inline-text">Happens-before is the visibility and ordering guarantee in the Java Memory Model. If action A happens-before action B, then B is guaranteed to see the effects of A. synchronized, volatile, start, and join create these guarantees.</p>
+                </div>
+              </div>
+              <div>
+                <h3>Java example</h3>
+                <pre class="code-block"><code><span class="kw">private</span> <span class="kw">volatile</span> <span class="type">boolean</span> ready = <span class="kw">false</span>;
+<span class="kw">private</span> <span class="type">int</span> data;
+
+<span class="kw">public</span> <span class="type">void</span> writer() {
+    data = <span class="num">42</span>;
+    ready = <span class="kw">true</span>; <span class="cm">// volatile write</span>
+}
+
+<span class="kw">public</span> <span class="type">void</span> reader() {
+    <span class="kw">if</span> (ready) {       <span class="cm">// volatile read</span>
+        use(data);       <span class="cm">// guaranteed to see 42 here</span>
+    }
+}</code></pre>
+                <p class="code-note">The volatile write/read establishes the happens-before edge that makes data visible in the intended order.</p>
+              </div>
+            </div>
+          </article>
+          
+          <article class="card visual-card">
+            <div class="card-label">Visual</div>
+            <h3>Happens-before timeline</h3>
+            
+            <div class="diagram">
+              <div class="hb-flow">
+                <div class="box cyan">Thread A: write data = 42</div>
+                <div class="arrow">→</div>
+                <div class="box amber">write ready = true (volatile)</div>
+              </div>
+              <div class="hb-flow" style="margin-top:12px;">
+                <div class="box green">Thread B: read ready == true</div>
+                <div class="arrow">→</div>
+                <div class="box purple">safe to read data = 42</div>
+              </div>
+            </div>
+            
+          </article>
+          
+    <article class="card quiz-card">
+      <div class="card-label">Quiz</div>
+      <h3>What does a happens-before relationship guarantee?</h3>
+      <div class="quiz-options" data-answer="1">
+        <button class="quiz-option">That two threads run on the same CPU core</button><button class="quiz-option">That one action&#x27;s effects are visible to another in the required order</button><button class="quiz-option">That code is deadlock-free</button><button class="quiz-option">That every operation is atomic</button>
+      </div>
+      <div class="quiz-result">
+        <strong>Why:</strong> Happens-before is about visibility and ordering guarantees in the Java Memory Model. It does not mean all operations are atomic or deadlock-free.
+      </div>
+    </article>
+    
+          <article class="card takeaway-card">
+            <div class="card-label">Mini takeaway</div>
+            <h3>What to remember</h3>
+            <ul class="takeaway-list"><li>Happens-before is the core visibility concept.</li><li>synchronized and volatile are important because they create happens-before edges.</li><li>A strong interview answer names start, join, monitor release/acquire, and volatile read/write.</li></ul>
+          </article>
+        </div>
+      </div>
+    </section>
+    
+    <section class="section" data-section="5">
+      <div class="section-inner">
+        <div class="completion-wrap">
+          <div class="celebrate">🎉</div>
+          <div class="section-label">Completion screen</div>
+          <h2>Threads & Synchronization Cheat Sheet</h2>
+          <p>You now have the interview-ready concurrency story: what a thread does over its lifetime, what synchronized and volatile really guarantee, how deadlocks form, and why happens-before is the language of visibility and ordering.</p>
+
+          <div class="completion-grid">
+            <article class="card technical">
+              <div class="card-label">Cheat sheet</div>
+              <h3>Fast scan summary</h3>
+              <ul class="cheat-list"><li><strong>Lifecycle:</strong> Threads move through states like NEW, RUNNABLE, BLOCKED, WAITING, and TERMINATED.<div class="small-answer">Use thread states to reason about contention, waiting, and completion.</div></li><li><strong>synchronized:</strong> Protects critical sections with mutual exclusion and visibility.<div class="small-answer">A good answer mentions both locking and monitor-based visibility guarantees.</div></li><li><strong>volatile:</strong> Freshness and ordering for a variable, not full atomicity.<div class="small-answer">Use volatile for simple state publication like stop flags, not for compound updates like count++.</div></li><li><strong>Deadlock:</strong> Circular waiting between locks or resources.<div class="small-answer">The classic prevention technique is consistent lock ordering.</div></li><li><strong>Happens-before:</strong> The memory-model guarantee behind visibility and ordering.<div class="small-answer">If A happens-before B, then B must see A's effects in the defined order.</div></li></ul>
+            </article>
+
+            <article class="card analogy">
+              <div class="card-label">Common confusion</div>
+              <h3>Separate the look-alikes</h3>
+              <div class="confusion-grid"><div class="confusion-item"><h4>volatile vs synchronized</h4><p>volatile gives visibility for a variable. synchronized gives mutual exclusion plus visibility around a monitor-protected critical section.</p></div><div class="confusion-item"><h4>Slow threads vs deadlock</h4><p>A slow system may still be progressing. Deadlock means circular waiting with no forward progress.</p></div><div class="confusion-item"><h4>Atomicity vs visibility</h4><p>Seeing the latest value does not mean a multi-step update is atomic. That distinction is central in concurrency interviews.</p></div></div>
+            </article>
+
+            <article class="card eli5">
+              <div class="card-label">Next step</div>
+              <h3>How to use this before interviews</h3>
+              <ul class="takeaway-list">
+                <li>Read the cheat sheet once in scan mode.</li>
+                <li>Go back and answer each quiz without looking.</li>
+                <li>Practice the one-line interview answers out loud.</li>
+                <li>Use the diagrams to explain the internals on a whiteboard.</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    </main>
+
+    <footer class="footer-nav">
+      <div class="footer-inner">
+        <div class="footer-note">Built for fast interview prep and active recall.</div>
+        <div class="nav-actions">
+          <button id="prevBtn" class="btn">← Back</button>
+          <button id="nextBtn" class="btn primary">Next →</button>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    const MODULE_MINUTES = 45;
+    
+const sections = Array.from(document.querySelectorAll('.section'));
+const dots = Array.from(document.querySelectorAll('.nav-dot'));
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const timerEl = document.getElementById('timer');
+const progressBar = document.getElementById('progressBar');
+
+let currentIndex = 0;
+let visitedMax = 0;
+const totalSeconds = MODULE_MINUTES * 60;
+let remainingSeconds = totalSeconds;
+
+function showSection(index) {
+  currentIndex = Math.max(0, Math.min(index, sections.length - 1));
+  visitedMax = Math.max(visitedMax, currentIndex);
+
+  sections.forEach((section, i) => {
+    section.classList.toggle('active', i === currentIndex);
+  });
+
+  dots.forEach((dot, i) => {
+    dot.classList.remove('active', 'done');
+    if (i === currentIndex) {
+      dot.classList.add('active');
+    } else if (i < visitedMax) {
+      dot.classList.add('done');
+    }
+  });
+
+  prevBtn.disabled = currentIndex === 0;
+  nextBtn.textContent = currentIndex === sections.length - 1
+    ? 'Review Again ↺'
+    : (currentIndex === sections.length - 2 ? 'Finish / View Cheat Sheet →' : 'Next →');
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+dots.forEach((dot, index) => dot.addEventListener('click', () => showSection(index)));
+
+prevBtn.addEventListener('click', () => showSection(currentIndex - 1));
+nextBtn.addEventListener('click', () => {
+  if (currentIndex === sections.length - 1) {
+    showSection(0);
+  } else {
+    showSection(currentIndex + 1);
+  }
+});
+
+function formatTime(seconds) {
+  const mins = String(Math.floor(seconds / 60)).padStart(2, '0');
+  const secs = String(seconds % 60).padStart(2, '0');
+  return `${mins}:${secs}`;
+}
+
+function updateTimer() {
+  timerEl.textContent = formatTime(remainingSeconds);
+  timerEl.classList.remove('warning', 'critical');
+
+  if (remainingSeconds <= 60) {
+    timerEl.classList.add('critical');
+  } else if (remainingSeconds <= 300) {
+    timerEl.classList.add('warning');
+  }
+
+  const elapsed = totalSeconds - remainingSeconds;
+  progressBar.style.width = `${(elapsed / totalSeconds) * 100}%`;
+
+  if (remainingSeconds > 0) {
+    remainingSeconds -= 1;
+  }
+}
+updateTimer();
+setInterval(updateTimer, 1000);
+
+document.querySelectorAll('.quiz-options').forEach(group => {
+  const correctIndex = Number(group.dataset.answer);
+  const options = Array.from(group.querySelectorAll('.quiz-option'));
+  const result = group.nextElementSibling;
+
+  options.forEach((btn, index) => {
+    btn.addEventListener('click', () => {
+      if (group.dataset.locked === 'true') return;
+      group.dataset.locked = 'true';
+
+      options.forEach((option, i) => {
+        option.disabled = true;
+        if (i === correctIndex) option.classList.add('correct');
+      });
+
+      if (index !== correctIndex) {
+        btn.classList.add('wrong');
+      }
+
+      result.classList.add('show');
+    });
+  });
+});
+
+showSection(0);
+
+  </script>
+</body>
+</html>

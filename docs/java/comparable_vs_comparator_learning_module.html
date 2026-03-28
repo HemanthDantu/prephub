@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Comparable vs Comparator Learning Module</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+:root {
+  --bg: #0a0e1a;
+  --surface-1: #111827;
+  --surface-2: #1a2235;
+  --surface-3: #0f1726;
+  --border: rgba(255,255,255,0.08);
+  --text: #e5eefc;
+  --muted: #98a6c3;
+  --muted-2: #6f7b93;
+  --cyan: #00d4ff;
+  --purple: #7c3aed;
+  --green: #10b981;
+  --amber: #f59e0b;
+  --red: #ef4444;
+  --shadow: 0 20px 60px rgba(0,0,0,0.35);
+  --radius-xl: 22px;
+  --radius-lg: 16px;
+  --radius-md: 12px;
+  --max: 1180px;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: radial-gradient(circle at top, #101834 0%, var(--bg) 45%, #070b14 100%); color: var(--text); font-family: 'Syne', system-ui, sans-serif; }
+body { min-height: 100vh; }
+a { color: inherit; text-decoration: none; }
+.app { min-height: 100vh; display: flex; flex-direction: column; }
+.topbar { position: sticky; top: 0; z-index: 30; backdrop-filter: blur(14px); background: rgba(10, 14, 26, 0.86); border-bottom: 1px solid rgba(255,255,255,0.06); }
+.topbar-inner { max-width: var(--max); margin: 0 auto; padding: 16px 20px 14px; display: grid; gap: 12px; }
+.topbar-row { display: flex; align-items: center; justify-content: space-between; gap: 18px; flex-wrap: wrap; }
+.brand { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.brand h1 { margin: 0; font-size: clamp(1.2rem, 1rem + 1.2vw, 2rem); letter-spacing: -0.03em; }
+.brand p { margin: 0; color: var(--muted); font-size: 0.95rem; }
+.meta { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.timer-wrap { display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 999px; }
+.timer-label, .timer-value, .section-label, .card-label, .nav-dot, .pill, .tiny, .footer-note { font-family: 'JetBrains Mono', monospace; }
+.timer-label { color: var(--muted); font-size: 0.86rem; }
+.timer-value { font-size: 1rem; font-weight: 700; color: var(--cyan); transition: color 0.25s ease, transform 0.25s ease; }
+.timer-value.warning { color: var(--amber); }
+.timer-value.critical { color: var(--red); animation: pulse 1s infinite; }
+@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.07); } 100% { transform: scale(1); } }
+.progress-shell { width: 100%; height: 10px; border-radius: 999px; background: rgba(255,255,255,0.08); overflow: hidden; }
+.progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, var(--cyan), var(--purple)); transition: width 1s linear; }
+.nav-dots { display: flex; gap: 10px; flex-wrap: wrap; }
+.nav-dot { width: 34px; height: 34px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.18); background: transparent; color: var(--muted); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.25s ease; }
+.nav-dot:hover { border-color: var(--cyan); color: var(--cyan); transform: translateY(-1px); }
+.nav-dot.active { background: rgba(0,212,255,0.15); border-color: var(--cyan); color: var(--cyan); box-shadow: 0 0 0 4px rgba(0,212,255,0.08); }
+.nav-dot.done { border-color: rgba(16,185,129,0.8); color: var(--green); background: rgba(16,185,129,0.08); }
+.main { flex: 1; }
+.section { display: none; max-width: var(--max); margin: 0 auto; padding: 32px 20px 110px; }
+.section.active { display: block; animation: fadeIn 0.35s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(12px);} to { opacity: 1; transform: translateY(0);} }
+.section-inner { display: grid; gap: 22px; }
+.hero { display: grid; gap: 10px; padding: 28px; background: linear-gradient(135deg, rgba(17,24,39,0.96), rgba(26,34,53,0.94)); border: 1px solid var(--border); border-radius: var(--radius-xl); box-shadow: var(--shadow); }
+.section-label { color: var(--cyan); font-size: 0.84rem; text-transform: uppercase; letter-spacing: 0.06em; }
+.hero h2 { margin: 0; font-size: clamp(2rem, 1.2rem + 2vw, 3rem); letter-spacing: -0.04em; }
+.hero p { margin: 0; color: var(--muted); max-width: 860px; line-height: 1.7; font-size: 1.02rem; }
+.card-grid { display: grid; grid-template-columns: repeat(12, minmax(0,1fr)); gap: 18px; }
+.card { grid-column: span 12; background: linear-gradient(180deg, rgba(17,24,39,0.96), rgba(12,18,30,0.98)); border: 1px solid var(--border); border-left-width: 5px; border-radius: var(--radius-lg); padding: 22px; box-shadow: var(--shadow); }
+.card h3 { margin: 0 0 10px; font-size: 1.2rem; letter-spacing: -0.02em; }
+.card p { margin: 0; color: var(--muted); line-height: 1.7; }
+.card .card-label { margin-bottom: 10px; font-size: 0.76rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted-2); }
+.card.eli5 { border-left-color: var(--amber); }
+.card.analogy { border-left-color: var(--green); }
+.card.technical { border-left-color: var(--cyan); }
+.card.warning { border-left-color: var(--red); }
+.card.quiz-card { border-left-color: var(--purple); }
+.card.visual-card { border-left-color: var(--green); }
+.card.takeaway-card { border-left-color: var(--cyan); }
+@media (min-width: 900px) {
+  .card.eli5, .card.analogy { grid-column: span 6; }
+  .card.technical, .card.visual-card, .card.quiz-card { grid-column: span 12; }
+  .card.warning, .card.takeaway-card { grid-column: span 6; }
+}
+.two-col { display: grid; gap: 18px; }
+@media (min-width: 860px) { .two-col { grid-template-columns: 1.1fr 0.9fr; } }
+.mini-grid { display: grid; gap: 12px; margin-top: 16px; }
+@media (min-width: 760px) { .mini-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.mini-panel { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 14px; padding: 14px; }
+.mini-panel h4 { margin: 0 0 10px; font-size: 0.95rem; }
+.mini-panel ul, .takeaway-list, .cheat-list { margin: 0; padding-left: 18px; color: var(--muted); line-height: 1.7; }
+.badge-row { margin-top: 16px; display: grid; gap: 10px; }
+.pill { display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; width: fit-content; border-radius: 999px; border: 1px solid transparent; font-size: 0.8rem; letter-spacing: 0.03em; }
+.pill.good { background: rgba(16,185,129,0.12); color: var(--green); border-color: rgba(16,185,129,0.3); }
+.pill.warn { background: rgba(245,158,11,0.12); color: var(--amber); border-color: rgba(245,158,11,0.3); }
+.pill.bad { background: rgba(239,68,68,0.12); color: var(--red); border-color: rgba(239,68,68,0.3); }
+.inline-text { margin: 0; }
+.code-block { margin: 12px 0 0; background: #050810; border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 16px; overflow-x: auto; color: #dce7ff; font-family: 'JetBrains Mono', monospace; font-size: 0.86rem; line-height: 1.65; }
+.code-note { margin-top: 12px !important; }
+.kw { color: #7dd3fc; }
+.type { color: #c084fc; }
+.cm { color: #6b7280; font-style: italic; }
+.str { color: #34d399; }
+.num { color: #f59e0b; }
+.anno { color: #f472b6; }
+.diagram, .table-wrap, .flow-wrap, .decision-wrap { margin-top: 12px; border: 1px solid var(--border); border-radius: 18px; padding: 18px; background: rgba(255,255,255,0.025); }
+.array-strip, .node-chain, .bucket-list, .lifecycle-flow, .hb-flow, .chain-flow { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.box, .node, .bucket, .life, .chain-item, .gauge-box { min-height: 52px; display: inline-flex; align-items: center; justify-content: center; padding: 10px 14px; border-radius: 14px; border: 1px solid var(--border); background: rgba(255,255,255,0.03); font-family: 'JetBrains Mono', monospace; }
+.box.cyan, .life.active { border-color: rgba(0,212,255,0.5); box-shadow: inset 0 0 0 1px rgba(0,212,255,0.18); }
+.box.green, .node { border-color: rgba(16,185,129,0.5); box-shadow: inset 0 0 0 1px rgba(16,185,129,0.15); }
+.box.purple, .bucket.tree { border-color: rgba(124,58,237,0.5); box-shadow: inset 0 0 0 1px rgba(124,58,237,0.15); }
+.box.amber, .life.waiting { border-color: rgba(245,158,11,0.5); box-shadow: inset 0 0 0 1px rgba(245,158,11,0.15); }
+.box.red, .life.blocked { border-color: rgba(239,68,68,0.5); box-shadow: inset 0 0 0 1px rgba(239,68,68,0.15); }
+.arrow { color: var(--muted-2); font-family: 'JetBrains Mono', monospace; }
+.table-wrap table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+.table-wrap th, .table-wrap td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.08); text-align: left; vertical-align: top; }
+.table-wrap th { color: var(--text); font-size: 0.86rem; text-transform: uppercase; letter-spacing: 0.06em; font-family: 'JetBrains Mono', monospace; }
+.badge { display: inline-flex; align-items: center; border-radius: 999px; padding: 6px 10px; font-size: 0.76rem; font-family: 'JetBrains Mono', monospace; }
+.badge.good { background: rgba(16,185,129,0.12); color: var(--green); }
+.badge.warn { background: rgba(245,158,11,0.12); color: var(--amber); }
+.badge.bad { background: rgba(239,68,68,0.12); color: var(--red); }
+.quiz-options { display: grid; gap: 12px; margin-top: 16px; }
+.quiz-option { width: 100%; text-align: left; padding: 14px 16px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03); color: var(--text); cursor: pointer; transition: 0.2s ease; font: inherit; }
+.quiz-option:hover { transform: translateY(-1px); border-color: rgba(124,58,237,0.5); }
+.quiz-option:disabled { cursor: default; opacity: 1; }
+.quiz-option.correct { background: rgba(16,185,129,0.13); border-color: rgba(16,185,129,0.5); color: #d8ffef; }
+.quiz-option.wrong { background: rgba(239,68,68,0.13); border-color: rgba(239,68,68,0.5); color: #ffe3e3; }
+.quiz-result { display: none; margin-top: 14px; color: var(--muted); line-height: 1.7; }
+.quiz-result.show { display: block; }
+.footer-nav { position: fixed; inset: auto 0 0 0; background: rgba(8,12,22,0.92); border-top: 1px solid rgba(255,255,255,0.07); backdrop-filter: blur(14px); }
+.footer-inner { max-width: var(--max); margin: 0 auto; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+.nav-actions { display: flex; gap: 12px; }
+.btn { border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.03); color: var(--text); border-radius: 14px; padding: 12px 16px; font: inherit; cursor: pointer; transition: 0.2s ease; }
+.btn:hover { transform: translateY(-1px); border-color: rgba(0,212,255,0.4); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.btn.primary { background: linear-gradient(90deg, rgba(0,212,255,0.14), rgba(124,58,237,0.16)); border-color: rgba(0,212,255,0.3); }
+.footer-note { color: var(--muted); font-size: 0.82rem; }
+.completion-wrap { display: grid; gap: 20px; text-align: left; }
+.completion-grid { display: grid; gap: 18px; }
+@media (min-width: 960px) { .completion-grid { grid-template-columns: repeat(3, minmax(0,1fr)); } }
+.celebrate { font-size: 3rem; }
+.cheat-list li { margin-bottom: 12px; }
+.small-answer { margin-top: 6px; color: var(--text); }
+.confusion-grid { display: grid; gap: 14px; }
+.confusion-item { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 14px; padding: 14px; }
+.confusion-item h4 { margin: 0 0 8px; }
+.confusion-item p { margin: 0; }
+.callout { margin-top: 14px; display: grid; gap: 10px; }
+.callout-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.split-layout { display: grid; gap: 18px; }
+@media (min-width: 820px) { .split-layout { grid-template-columns: 1fr 1fr; } }
+.stack-col { display: grid; gap: 12px; }
+.legend { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+.legend span { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); font-size: 0.88rem; }
+.legend b { width: 12px; height: 12px; border-radius: 999px; display: inline-block; }
+b.c1 { background: var(--cyan); } b.c2 { background: var(--green);} b.c3 { background: var(--amber);} b.c4 { background: var(--purple);} b.c5 { background: var(--red);}
+@media (max-width: 720px) {
+  .topbar-inner { padding: 14px 14px 12px; }
+  .section { padding: 22px 14px 110px; }
+  .hero { padding: 22px; }
+  .card { padding: 18px; }
+}
+</style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="topbar-row">
+          <div class="brand">
+            <h1>Comparable vs Comparator</h1>
+            <p>Natural ordering, sorting strategies, and chained comparators</p>
+          </div>
+          <div class="meta">
+            <div class="timer-wrap">
+              <span class="timer-label">Time left</span>
+              <span id="timer" class="timer-value">00:00</span>
+            </div>
+          </div>
+        </div>
+        <div class="topbar-row">
+          <div class="nav-dots"><button class="nav-dot active" aria-label="Go to section 1">1</button><button class="nav-dot " aria-label="Go to section 2">2</button><button class="nav-dot " aria-label="Go to section 3">3</button><button class="nav-dot " aria-label="Go to section 4">4</button></div>
+          <div class="footer-note">20 minute module · click dots to jump</div>
+        </div>
+        <div class="progress-shell"><div id="progressBar" class="progress-bar"></div></div>
+      </div>
+    </header>
+
+    <main class="main">
+      
+    <section class="section active" data-section="0">
+      <div class="section-inner">
+        <div class="hero">
+          <div class="section-label">Section 1 of 3 · ~7 mins</div>
+          <h2>Natural ordering with Comparable</h2>
+          <p>Comparable answers a very specific question: if this type has one default order, how should two instances compare to each other?</p>
+        </div>
+        <div class="card-grid">
+          
+    <article class="card eli5">
+      <div class="card-label">🧒 ELI5</div>
+      <h3>The object carries its own rule book</h3>
+      <p>Imagine every student card says how students should line up by default, like roll number. The rule travels with the student type itself.</p>
+    </article>
+    
+          
+    <article class="card analogy">
+      <div class="card-label">🔗 ANALOGY</div>
+      <h3>Built-in default sort</h3>
+      <p>Comparable is like saying, 'Whenever you sort this thing and no one tells you otherwise, use this default order.' The ordering lives inside the class.</p>
+    </article>
+    
+          <article class="card technical">
+            <div class="card-label">Technical</div>
+            <div class="two-col">
+              <div>
+                <h3>Comparable = natural order inside the type</h3>
+                <p><strong>Comparable&lt;T&gt;</strong> is implemented by the class being sorted. It defines one natural ordering through <code>compareTo</code>.</p>
+                <div class="mini-grid"><div class="mini-panel"><h4>Use it when</h4><ul><li>The type has one obvious default order</li><li>You want Collections.sort(list) to work naturally</li><li>The ordering belongs to the domain model itself</li></ul></div><div class="mini-panel"><h4>Watch out for</h4><ul><li>Only one natural order fits cleanly here</li><li>compareTo should be consistent and transitive</li><li>Prefer using existing compare helpers for null safety and clarity</li></ul></div></div>
+                <div class="badge-row">
+                  <span class="pill good">Interview answer</span>
+                  <p class="inline-text">Comparable is for natural ordering defined by the class itself. If every Employee should normally be ordered by id or name, I put that rule in compareTo.</p>
+                </div>
+              </div>
+              <div>
+                <h3>Java example</h3>
+                <pre class="code-block"><code><span class="kw">class</span> <span class="type">Employee</span> <span class="kw">implements</span> <span class="type">Comparable</span>&lt;<span class="type">Employee</span>&gt; {
+    <span class="type">Long</span> id;
+    <span class="type">String</span> name;
+
+    <span class="anno">@Override</span>
+    <span class="kw">public</span> <span class="type">int</span> compareTo(<span class="type">Employee</span> other) {
+        <span class="kw">return</span> <span class="type">Long</span>.compare(<span class="kw">this</span>.id, other.id);
+    }
+}</code></pre>
+                <p class="code-note">Now Employee objects can be sorted by their built-in natural order without passing extra sorting logic.</p>
+              </div>
+            </div>
+          </article>
+          
+          <article class="card visual-card">
+            <div class="card-label">Visual</div>
+            <h3>Ordering rule lives inside the class</h3>
+            
+            <div class="diagram">
+              <div class="chain-flow">
+                <div class="box cyan">Employee class</div>
+                <div class="arrow">contains</div>
+                <div class="box green">compareTo()</div>
+                <div class="arrow">defines</div>
+                <div class="box purple">default sort order</div>
+              </div>
+            </div>
+            
+          </article>
+          
+    <article class="card quiz-card">
+      <div class="card-label">Quiz</div>
+      <h3>What is the best description of Comparable?</h3>
+      <div class="quiz-options" data-answer="1">
+        <button class="quiz-option">An external object that sorts many unrelated types</button><button class="quiz-option">A way for a class to define its natural ordering</button><button class="quiz-option">A replacement for equals</button><button class="quiz-option">A concurrent sorting interface</button>
+      </div>
+      <div class="quiz-result">
+        <strong>Why:</strong> Comparable puts the ordering rule inside the class itself, which is why it represents natural ordering.
+      </div>
+    </article>
+    
+          <article class="card takeaway-card">
+            <div class="card-label">Mini takeaway</div>
+            <h3>What to remember</h3>
+            <ul class="takeaway-list"><li>Comparable lives inside the class.</li><li>It defines one natural/default order.</li><li>Good fit when the domain has an obvious standard ordering.</li></ul>
+          </article>
+        </div>
+      </div>
+    </section>
+    
+    <section class="section " data-section="1">
+      <div class="section-inner">
+        <div class="hero">
+          <div class="section-label">Section 2 of 3 · ~7 mins</div>
+          <h2>External sorting strategies with Comparator</h2>
+          <p>Sometimes one type can be sorted in many valid ways. That is where Comparator becomes the better tool.</p>
+        </div>
+        <div class="card-grid">
+          
+    <article class="card eli5">
+      <div class="card-label">🧒 ELI5</div>
+      <h3>Different teachers, different line-up rules</h3>
+      <p>One teacher lines students by height. Another lines them by age. Same students, different outside rules. The students do not change; the rule changes.</p>
+    </article>
+    
+          
+    <article class="card analogy">
+      <div class="card-label">🔗 ANALOGY</div>
+      <h3>Sort policy as a plug-in</h3>
+      <p>Comparator is like a sorting plug-in. You keep the domain class clean and choose the rule from outside depending on the screen, report, or business need.</p>
+    </article>
+    
+          <article class="card technical">
+            <div class="card-label">Technical</div>
+            <div class="two-col">
+              <div>
+                <h3>Comparator = external, flexible, many strategies</h3>
+                <p><strong>Comparator&lt;T&gt;</strong> is a separate object that compares two instances. It is ideal when the class has multiple valid sort orders or when you cannot modify the class.</p>
+                <div class="mini-grid"><div class="mini-panel"><h4>Use it when</h4><ul><li>You need multiple sort rules</li><li>You cannot edit the source class</li><li>The ordering is view-specific or use-case-specific</li></ul></div><div class="mini-panel"><h4>Benefits</h4><ul><li>Keeps domain model cleaner</li><li>Easy to reuse and compose</li><li>Pairs well with streams and sort APIs</li></ul></div></div>
+                <div class="badge-row">
+                  <span class="pill good">Interview answer</span>
+                  <p class="inline-text">Comparator is for external sorting logic. I use it when a class can be sorted in different ways, like by salary, joining date, or name, without forcing one default into the class itself.</p>
+                </div>
+              </div>
+              <div>
+                <h3>Java example</h3>
+                <pre class="code-block"><code><span class="type">Comparator</span>&lt;<span class="type">Employee</span>&gt; byName =
+    <span class="type">Comparator</span>.comparing(emp -&gt; emp.name);
+
+<span class="type">Comparator</span>&lt;<span class="type">Employee</span>&gt; bySalaryDesc =
+    <span class="type">Comparator</span>.comparing(<span class="type">Employee</span>::getSalary).reversed();
+
+employees.sort(byName);
+employees.sort(bySalaryDesc);</code></pre>
+                <p class="code-note">Same Employee class, different sorting rules chosen from the outside.</p>
+              </div>
+            </div>
+          </article>
+          
+    <article class="card warning">
+      <div class="card-label">Warning</div>
+      <h3>Do not cram every order into Comparable</h3>
+      <p>If a class can naturally be sorted by name, salary, department, rating, and created date, Comparable is not the place for all of that. Use Comparator.</p>
+    </article>
+    
+          <article class="card visual-card">
+            <div class="card-label">Visual</div>
+            <h3>Same object, many sorting strategies</h3>
+            
+            <div class="diagram">
+              <div class="chain-flow">
+                <div class="box cyan">Employee list</div>
+                <div class="arrow">→</div>
+                <div class="box green">Comparator byName</div>
+              </div>
+              <div class="chain-flow" style="margin-top:12px;">
+                <div class="box cyan">Employee list</div>
+                <div class="arrow">→</div>
+                <div class="box amber">Comparator bySalary</div>
+              </div>
+              <div class="chain-flow" style="margin-top:12px;">
+                <div class="box cyan">Employee list</div>
+                <div class="arrow">→</div>
+                <div class="box purple">Comparator byJoinDate</div>
+              </div>
+            </div>
+            
+          </article>
+          
+    <article class="card quiz-card">
+      <div class="card-label">Quiz</div>
+      <h3>Which option is the strongest reason to use Comparator over Comparable?</h3>
+      <div class="quiz-options" data-answer="0">
+        <button class="quiz-option">You need multiple different sort orders for the same type</button><button class="quiz-option">You want to remove equals</button><button class="quiz-option">You want to make sorting impossible</button><button class="quiz-option">You need to store the object in a HashMap</button>
+      </div>
+      <div class="quiz-result">
+        <strong>Why:</strong> Comparator shines when one type has several valid ordering rules or when the ordering should stay outside the class.
+      </div>
+    </article>
+    
+          <article class="card takeaway-card">
+            <div class="card-label">Mini takeaway</div>
+            <h3>What to remember</h3>
+            <ul class="takeaway-list"><li>Comparator lives outside the class.</li><li>It supports multiple sorting strategies.</li><li>It is better for flexible or context-specific ordering.</li></ul>
+          </article>
+        </div>
+      </div>
+    </section>
+    
+    <section class="section " data-section="2">
+      <div class="section-inner">
+        <div class="hero">
+          <div class="section-label">Section 3 of 3 · ~6 mins</div>
+          <h2>Chained comparators and practical sorting</h2>
+          <p>Modern Java makes Comparator powerful because you can build readable, multi-level sorting pipelines.</p>
+        </div>
+        <div class="card-grid">
+          
+    <article class="card eli5">
+      <div class="card-label">🧒 ELI5</div>
+      <h3>Sort by one rule, then break ties with another</h3>
+      <p>First line people up by grade. If two people have the same grade, line those two up by name. That is chained comparison.</p>
+    </article>
+    
+          
+    <article class="card analogy">
+      <div class="card-label">🔗 ANALOGY</div>
+      <h3>Primary key, then tie-breakers</h3>
+      <p>Think of sorting like interview ranking. First by overall score. If tied, by years of experience. If still tied, by name. That is comparator chaining.</p>
+    </article>
+    
+          <article class="card technical">
+            <div class="card-label">Technical</div>
+            <div class="two-col">
+              <div>
+                <h3>Composable sorting rules</h3>
+                <p>Comparator supports fluent composition with methods like <code>comparing</code>, <code>thenComparing</code>, <code>reversed</code>, and specialized variants for primitives.</p>
+                <div class="mini-grid"><div class="mini-panel"><h4>Useful patterns</h4><ul><li>Primary sort + tie-breakers</li><li>Ascending on one field, descending on another</li><li>Readable sorting in streams and collection APIs</li></ul></div><div class="mini-panel"><h4>Interview nuance</h4><ul><li>Comparable gives one natural order</li><li>Comparator can reproduce that order or define many alternates</li><li>thenComparing avoids giant compare methods</li></ul></div></div>
+                <div class="badge-row">
+                  <span class="pill good">Interview answer</span>
+                  <p class="inline-text">For practical Java sorting, I usually prefer Comparator composition because it is readable and easy to extend. I can sort by department, then salary descending, then name, without bloating the model class.</p>
+                </div>
+              </div>
+              <div>
+                <h3>Java example</h3>
+                <pre class="code-block"><code><span class="type">Comparator</span>&lt;<span class="type">Employee</span>&gt; ranking =
+    <span class="type">Comparator</span>.comparing(<span class="type">Employee</span>::getDepartment)
+        .thenComparing(<span class="type">Employee</span>::getSalary, <span class="type">Comparator</span>.reverseOrder())
+        .thenComparing(<span class="type">Employee</span>::getName);
+
+employees.sort(ranking);</code></pre>
+                <p class="code-note">This reads like business intent: first department, then salary descending, then name.</p>
+              </div>
+            </div>
+          </article>
+          
+          <article class="card visual-card">
+            <div class="card-label">Visual</div>
+            <h3>Comparator chain</h3>
+            
+            <div class="diagram">
+              <div class="chain-flow">
+                <div class="box cyan">department</div>
+                <div class="arrow">then</div>
+                <div class="box amber">salary desc</div>
+                <div class="arrow">then</div>
+                <div class="box green">name</div>
+              </div>
+              <p>Each comparator acts as a tie-breaker for the previous one.</p>
+            </div>
+            
+          </article>
+          
+    <article class="card quiz-card">
+      <div class="card-label">Quiz</div>
+      <h3>What does thenComparing do?</h3>
+      <div class="quiz-options" data-answer="1">
+        <button class="quiz-option">It replaces the earlier comparator entirely</button><button class="quiz-option">It adds a tie-breaker when earlier comparison returns equality</button><button class="quiz-option">It makes sorting concurrent</button><button class="quiz-option">It converts Comparable into equals</button>
+      </div>
+      <div class="quiz-result">
+        <strong>Why:</strong> thenComparing only kicks in when the earlier comparator says two elements are equal for that sort level.
+      </div>
+    </article>
+    
+          <article class="card takeaway-card">
+            <div class="card-label">Mini takeaway</div>
+            <h3>What to remember</h3>
+            <ul class="takeaway-list"><li>Comparator chaining is how you express business sorting cleanly.</li><li>thenComparing adds tie-breakers.</li><li>Comparator composition is usually the most practical answer in modern Java.</li></ul>
+          </article>
+        </div>
+      </div>
+    </section>
+    
+    <section class="section" data-section="3">
+      <div class="section-inner">
+        <div class="completion-wrap">
+          <div class="celebrate">🎉</div>
+          <div class="section-label">Completion screen</div>
+          <h2>Comparable vs Comparator Cheat Sheet</h2>
+          <p>You now have the clean interview story: Comparable defines a type's natural ordering, Comparator provides external sorting strategies, and comparators can be composed fluently.</p>
+
+          <div class="completion-grid">
+            <article class="card technical">
+              <div class="card-label">Cheat sheet</div>
+              <h3>Fast scan summary</h3>
+              <ul class="cheat-list"><li><strong>Comparable:</strong> Natural ordering defined inside the class.<div class="small-answer">Use Comparable when the type has one obvious default order and compareTo belongs in the model.</div></li><li><strong>Comparator:</strong> External, flexible sorting strategy object.<div class="small-answer">Use Comparator when you need multiple valid orderings or cannot change the original class.</div></li><li><strong>Chaining:</strong> Readable multi-level sorting with tie-breakers.<div class="small-answer">thenComparing lets you express business intent cleanly without giant compare methods.</div></li></ul>
+            </article>
+
+            <article class="card analogy">
+              <div class="card-label">Common confusion</div>
+              <h3>Separate the look-alikes</h3>
+              <div class="confusion-grid"><div class="confusion-item"><h4>Natural order vs business-specific order</h4><p>Comparable is for the default order of the type itself. Comparator is for alternate or contextual orders.</p></div><div class="confusion-item"><h4>One class, many sorts</h4><p>If there are many valid sorting rules, pushing them all into compareTo is a design smell. Use external comparators.</p></div><div class="confusion-item"><h4>Chaining semantics</h4><p>thenComparing does not override the first comparator. It only acts when the earlier comparator returns equality.</p></div></div>
+            </article>
+
+            <article class="card eli5">
+              <div class="card-label">Next step</div>
+              <h3>How to use this before interviews</h3>
+              <ul class="takeaway-list">
+                <li>Read the cheat sheet once in scan mode.</li>
+                <li>Go back and answer each quiz without looking.</li>
+                <li>Practice the one-line interview answers out loud.</li>
+                <li>Use the diagrams to explain the internals on a whiteboard.</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    </main>
+
+    <footer class="footer-nav">
+      <div class="footer-inner">
+        <div class="footer-note">Built for fast interview prep and active recall.</div>
+        <div class="nav-actions">
+          <button id="prevBtn" class="btn">← Back</button>
+          <button id="nextBtn" class="btn primary">Next →</button>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    const MODULE_MINUTES = 20;
+    
+const sections = Array.from(document.querySelectorAll('.section'));
+const dots = Array.from(document.querySelectorAll('.nav-dot'));
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const timerEl = document.getElementById('timer');
+const progressBar = document.getElementById('progressBar');
+
+let currentIndex = 0;
+let visitedMax = 0;
+const totalSeconds = MODULE_MINUTES * 60;
+let remainingSeconds = totalSeconds;
+
+function showSection(index) {
+  currentIndex = Math.max(0, Math.min(index, sections.length - 1));
+  visitedMax = Math.max(visitedMax, currentIndex);
+
+  sections.forEach((section, i) => {
+    section.classList.toggle('active', i === currentIndex);
+  });
+
+  dots.forEach((dot, i) => {
+    dot.classList.remove('active', 'done');
+    if (i === currentIndex) {
+      dot.classList.add('active');
+    } else if (i < visitedMax) {
+      dot.classList.add('done');
+    }
+  });
+
+  prevBtn.disabled = currentIndex === 0;
+  nextBtn.textContent = currentIndex === sections.length - 1
+    ? 'Review Again ↺'
+    : (currentIndex === sections.length - 2 ? 'Finish / View Cheat Sheet →' : 'Next →');
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+dots.forEach((dot, index) => dot.addEventListener('click', () => showSection(index)));
+
+prevBtn.addEventListener('click', () => showSection(currentIndex - 1));
+nextBtn.addEventListener('click', () => {
+  if (currentIndex === sections.length - 1) {
+    showSection(0);
+  } else {
+    showSection(currentIndex + 1);
+  }
+});
+
+function formatTime(seconds) {
+  const mins = String(Math.floor(seconds / 60)).padStart(2, '0');
+  const secs = String(seconds % 60).padStart(2, '0');
+  return `${mins}:${secs}`;
+}
+
+function updateTimer() {
+  timerEl.textContent = formatTime(remainingSeconds);
+  timerEl.classList.remove('warning', 'critical');
+
+  if (remainingSeconds <= 60) {
+    timerEl.classList.add('critical');
+  } else if (remainingSeconds <= 300) {
+    timerEl.classList.add('warning');
+  }
+
+  const elapsed = totalSeconds - remainingSeconds;
+  progressBar.style.width = `${(elapsed / totalSeconds) * 100}%`;
+
+  if (remainingSeconds > 0) {
+    remainingSeconds -= 1;
+  }
+}
+updateTimer();
+setInterval(updateTimer, 1000);
+
+document.querySelectorAll('.quiz-options').forEach(group => {
+  const correctIndex = Number(group.dataset.answer);
+  const options = Array.from(group.querySelectorAll('.quiz-option'));
+  const result = group.nextElementSibling;
+
+  options.forEach((btn, index) => {
+    btn.addEventListener('click', () => {
+      if (group.dataset.locked === 'true') return;
+      group.dataset.locked = 'true';
+
+      options.forEach((option, i) => {
+        option.disabled = true;
+        if (i === correctIndex) option.classList.add('correct');
+      });
+
+      if (index !== correctIndex) {
+        btn.classList.add('wrong');
+      }
+
+      result.classList.add('show');
+    });
+  });
+});
+
+showSection(0);
+
+  </script>
+</body>
+</html>

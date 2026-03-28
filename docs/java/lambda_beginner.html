@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Java Lambdas — Beginner to Comfortable</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --surface: #111827;
+    --surface2: #1a2235;
+    --border: #1e3050;
+    --accent: #00d4ff;
+    --accent2: #7c3aed;
+    --accent3: #10b981;
+    --warn: #f59e0b;
+    --danger: #ef4444;
+    --text: #e2e8f0;
+    --text-dim: #64748b;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Syne',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; overflow-x:hidden; }
+
+  .topbar {
+    position:fixed; top:0; left:0; right:0; z-index:100;
+    background:rgba(10,14,26,0.96); border-bottom:1px solid var(--border);
+    backdrop-filter:blur(12px);
+    display:flex; align-items:center; gap:14px; padding:0 24px; height:56px;
+  }
+  .topbar-title { font-size:13px; font-weight:700; color:var(--accent); letter-spacing:.1em; text-transform:uppercase; white-space:nowrap; }
+  .progress-bar-wrap { flex:1; }
+  .progress-track { background:var(--border); border-radius:4px; height:5px; overflow:hidden; }
+  .progress-fill { height:100%; border-radius:4px; background:linear-gradient(90deg,var(--accent2),var(--accent)); transition:width 1s linear; }
+  .nav-dots { display:flex; gap:5px; }
+  .nav-dot {
+    width:26px; height:26px; border-radius:50%; border:2px solid var(--border);
+    background:transparent; cursor:pointer; font-family:'JetBrains Mono',monospace;
+    font-size:10px; font-weight:700; color:var(--text-dim); transition:all .2s;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .nav-dot:hover { border-color:var(--accent); color:var(--accent); }
+  .nav-dot.active { border-color:var(--accent); background:var(--accent); color:var(--bg); }
+  .nav-dot.done { border-color:var(--accent3); color:var(--accent3); }
+  .timer {
+    font-family:'JetBrains Mono',monospace; font-size:19px; font-weight:700;
+    color:var(--accent3); background:rgba(16,185,129,.1); padding:4px 12px;
+    border-radius:6px; border:1px solid rgba(16,185,129,.3); min-width:78px; text-align:center;
+    transition:color .3s,background .3s,border-color .3s;
+  }
+  .timer.warn { color:var(--warn); background:rgba(245,158,11,.1); border-color:rgba(245,158,11,.3); }
+  .timer.danger { color:var(--danger); background:rgba(239,68,68,.1); border-color:rgba(239,68,68,.3); animation:pulse 1s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1}50%{opacity:.55} }
+
+  .main { padding:80px 24px 80px; max-width:880px; margin:0 auto; }
+  .section { display:none; }
+  .section.active { display:block; animation:fadeIn .3s ease; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)} }
+
+  .section-header { margin-bottom:30px; }
+  .section-label { font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:500; color:var(--accent2); letter-spacing:.15em; text-transform:uppercase; margin-bottom:8px; }
+  .section-title { font-size:32px; font-weight:800; line-height:1.1; margin-bottom:6px; }
+  .section-meta { font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--text-dim); }
+
+  .card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:22px 24px; margin-bottom:18px; }
+  .card-label { font-size:11px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; margin-bottom:10px; }
+  .card.eli5 { border-color:rgba(245,158,11,.45); background:rgba(245,158,11,.04); }
+  .card.eli5::before { content:"🧒 ELI5"; font-size:17px; display:block; margin-bottom:8px; }
+  .card.eli5 .card-label { color:var(--warn); }
+  .card.analogy { border-color:rgba(16,185,129,.4); background:rgba(16,185,129,.04); }
+  .card.analogy::before { content:"🔗 ANALOGY"; font-size:17px; display:block; margin-bottom:8px; }
+  .card.analogy .card-label { color:var(--accent3); }
+  .card.technical { border-color:rgba(0,212,255,.28); background:rgba(0,212,255,.025); }
+  .card.technical .card-label { color:var(--accent); }
+  .card.warning { border-color:rgba(239,68,68,.4); background:rgba(239,68,68,.04); }
+  .card.warning .card-label { color:var(--danger); }
+  .card.purple { border-color:rgba(124,58,237,.45); background:rgba(124,58,237,.04); }
+  .card.purple .card-label { color:var(--accent2); }
+  .card.green { border-color:rgba(16,185,129,.45); background:rgba(16,185,129,.04); }
+  .card.green .card-label { color:var(--accent3); }
+
+  p { line-height:1.75; margin-bottom:10px; font-size:15px; }
+  p:last-child { margin-bottom:0; }
+  strong { color:var(--accent); font-weight:700; }
+  em { color:var(--accent3); font-style:normal; font-weight:600; }
+  ul,ol { padding-left:22px; }
+  li { line-height:1.8; font-size:14px; margin-bottom:3px; }
+  h3 { font-size:18px; font-weight:700; margin:24px 0 10px; }
+  h4 { font-size:13px; font-weight:700; margin:14px 0 6px; color:var(--accent2); text-transform:uppercase; letter-spacing:.06em; }
+  hr { border:none; border-top:1px solid var(--border); margin:22px 0; }
+
+  pre,code { font-family:'JetBrains Mono',monospace; }
+  pre { background:#050810; border:1px solid var(--border); border-radius:8px; padding:16px 20px; overflow-x:auto; margin:12px 0; line-height:1.65; font-size:12.5px; }
+  .ic { font-family:'JetBrains Mono',monospace; background:rgba(0,212,255,.1); padding:1px 6px; border-radius:4px; font-size:12px; color:var(--accent); }
+
+  /* syntax */
+  .kw{color:#c792ea} .ty{color:#82aaff} .st{color:#c3e88d} .cm{color:#546e7a;font-style:italic} .fn{color:var(--accent3)} .nu{color:var(--warn)} .an{color:#ffcb6b}
+
+  /* before / after transform */
+  .transform-box { display:grid; grid-template-columns:1fr 40px 1fr; gap:0; margin:16px 0; align-items:center; }
+  @media(max-width:640px){ .transform-box{grid-template-columns:1fr;} .transform-arrow{transform:rotate(90deg);} }
+  .transform-panel { border-radius:10px; overflow:hidden; }
+  .transform-header { padding:8px 14px; font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; }
+  .th-before { background:rgba(239,68,68,.18); color:var(--danger); }
+  .th-after  { background:rgba(16,185,129,.18); color:var(--accent3); }
+  .transform-arrow { text-align:center; font-size:24px; color:var(--text-dim); }
+
+  /* evolution steps */
+  .evo { display:flex; flex-direction:column; gap:2px; margin:16px 0; }
+  .evo-row { display:flex; align-items:stretch; gap:12px; }
+  .evo-label { width:100px; flex-shrink:0; display:flex; align-items:center; justify-content:flex-end; }
+  .evo-badge { font-size:10px; font-weight:700; padding:3px 8px; border-radius:4px; text-align:center; white-space:nowrap; }
+  .eb-old  { background:rgba(239,68,68,.2); color:var(--danger); }
+  .eb-mid  { background:rgba(245,158,11,.2); color:var(--warn); }
+  .eb-new  { background:rgba(16,185,129,.2); color:var(--accent3); }
+  .evo-code { flex:1; background:#050810; border:1px solid var(--border); border-radius:6px; padding:10px 14px; font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.5; }
+  .evo-connector { width:100px; flex-shrink:0; display:flex; align-items:center; justify-content:flex-end; padding-right:4px; }
+  .evo-line { width:2px; background:var(--border); flex:1; margin:0 auto; }
+
+  /* anatomy diagram */
+  .anatomy { background:#050810; border:1px solid var(--border); border-radius:10px; padding:20px; margin:14px 0; font-family:'JetBrains Mono',monospace; font-size:14px; line-height:2.2; }
+  .a-param { color:#82aaff; }
+  .a-arrow { color:var(--warn); font-weight:700; }
+  .a-body  { color:var(--accent3); }
+  .a-anno  { display:block; font-size:11px; color:var(--text-dim); margin-top:-6px; margin-bottom:2px; }
+  .a-bracket { color:var(--text-dim); }
+  .bracket-row { display:flex; gap:0; margin-top:8px; font-size:11px; }
+  .br-item { display:flex; flex-direction:column; align-items:center; }
+  .br-line { height:12px; width:1px; background:var(--text-dim); }
+  .br-label { color:var(--text-dim); padding:0 6px; white-space:nowrap; }
+
+  /* step flow */
+  .step-flow { display:flex; align-items:center; gap:7px; margin:14px 0; flex-wrap:wrap; }
+  .step { background:var(--surface2); border:1px solid var(--border); padding:7px 13px; border-radius:6px; font-size:12px; font-weight:600; line-height:1.4; text-align:center; }
+  .step-arrow { color:var(--text-dim); font-size:16px; }
+  .step.cyan   { border-color:var(--accent);  color:var(--accent);  background:rgba(0,212,255,.07); }
+  .step.green  { border-color:var(--accent3); color:var(--accent3); background:rgba(16,185,129,.07); }
+  .step.purple { border-color:var(--accent2); color:var(--accent2); background:rgba(124,58,237,.08); }
+  .step.amber  { border-color:var(--warn);    color:var(--warn);    background:rgba(245,158,11,.08); }
+  .step.red    { border-color:var(--danger);  color:var(--danger);  background:rgba(239,68,68,.08); }
+
+  /* fi grid */
+  .fi-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:14px 0; }
+  @media(max-width:600px){ .fi-grid{grid-template-columns:1fr;} }
+  .fi-card { background:var(--surface2); border-radius:10px; padding:16px; border:1px solid var(--border); }
+  .fi-name { font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--accent); font-weight:700; margin-bottom:4px; }
+  .fi-sig  { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--accent2); margin-bottom:8px; }
+  .fi-desc { font-size:13px; color:var(--text-dim); line-height:1.55; margin-bottom:8px; }
+  .fi-ex   { font-family:'JetBrains Mono',monospace; font-size:11.5px; background:#050810; padding:6px 10px; border-radius:5px; color:var(--accent3); }
+
+  /* stream pipeline visual */
+  .pipeline { display:flex; flex-direction:column; gap:0; margin:16px 0; }
+  .pipe-row { display:flex; align-items:center; gap:10px; padding:8px 0; }
+  .pipe-stage { display:flex; align-items:center; gap:8px; flex:1; background:var(--surface2); border:1px solid var(--border); border-radius:8px; padding:10px 14px; }
+  .pipe-icon { font-size:18px; }
+  .pipe-info { flex:1; }
+  .pipe-op   { font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--accent); font-weight:700; }
+  .pipe-desc { font-size:12px; color:var(--text-dim); margin-top:2px; }
+  .pipe-connector { display:flex; justify-content:flex-start; padding-left:24px; }
+  .pipe-line { width:2px; height:12px; background:var(--border); }
+  .pipe-badge { display:inline-block; font-size:10px; font-weight:700; padding:2px 7px; border-radius:3px; margin-left:8px; font-family:'JetBrains Mono',monospace; }
+  .pb-int { background:rgba(0,212,255,.14); color:var(--accent); }
+  .pb-term { background:rgba(16,185,129,.14); color:var(--accent3); }
+
+  /* quiz */
+  .quiz-section { background:var(--surface2); border:1px solid rgba(124,58,237,.5); border-radius:12px; padding:22px; margin:22px 0; }
+  .quiz-title { font-size:12px; font-weight:700; color:var(--accent2); letter-spacing:.1em; text-transform:uppercase; margin-bottom:14px; }
+  .quiz-q { font-size:15px; font-weight:600; margin-bottom:14px; line-height:1.6; }
+  .quiz-opts { display:flex; flex-direction:column; gap:8px; }
+  .quiz-opt {
+    background:var(--surface); border:1px solid var(--border); border-radius:8px;
+    padding:10px 15px; cursor:pointer; font-size:13.5px; text-align:left;
+    transition:all .15s; color:var(--text); font-family:'Syne',sans-serif;
+  }
+  .quiz-opt:hover:not(:disabled) { border-color:var(--accent2); background:rgba(124,58,237,.08); }
+  .quiz-opt.correct { border-color:var(--accent3); background:rgba(16,185,129,.14); color:var(--accent3); }
+  .quiz-opt.wrong   { border-color:var(--danger);  background:rgba(239,68,68,.09);  color:var(--danger); }
+  .quiz-opt.reveal  { border-color:var(--accent3); background:rgba(16,185,129,.07); color:var(--accent3); }
+  .quiz-fb { margin-top:13px; padding:11px 15px; border-radius:8px; font-size:13.5px; line-height:1.65; display:none; }
+  .quiz-fb.show { display:block; }
+  .quiz-fb.good { background:rgba(16,185,129,.09); border:1px solid rgba(16,185,129,.3); color:#6ee7b7; }
+  .quiz-fb.bad  { background:rgba(239,68,68,.07);  border:1px solid rgba(239,68,68,.3);  color:#fca5a5; }
+
+  /* nav */
+  .nav-buttons { display:flex; justify-content:space-between; margin-top:40px; padding-top:22px; border-top:1px solid var(--border); }
+  .btn { padding:10px 24px; border-radius:8px; font-family:'Syne',sans-serif; font-size:14px; font-weight:700; cursor:pointer; border:none; transition:all .15s; }
+  .btn-ghost   { background:transparent; border:1px solid var(--border); color:var(--text-dim); }
+  .btn-ghost:hover { border-color:var(--text-dim); color:var(--text); }
+  .btn-primary { background:var(--accent); color:var(--bg); }
+  .btn-primary:hover { background:#00bde8; }
+  .btn-success { background:var(--accent3); color:var(--bg); }
+  .btn-success:hover { background:#0ea472; }
+
+  /* completion */
+  #completion { display:none; text-align:center; padding:60px 24px; }
+  .complete-emoji { font-size:68px; margin-bottom:20px; }
+  .complete-title { font-size:34px; font-weight:800; margin-bottom:10px; }
+  .complete-sub { color:var(--text-dim); font-size:15px; margin-bottom:30px; line-height:1.7; }
+  .cheat-sheet { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:24px; max-width:620px; margin:0 auto 28px; text-align:left; }
+  .cheat-title { font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--accent2); margin-bottom:14px; }
+  .cheat-row { font-size:13px; margin-bottom:10px; line-height:1.65; }
+  .next-step-box { background:rgba(124,58,237,.08); border:1px solid rgba(124,58,237,.4); border-radius:12px; padding:20px 24px; max-width:520px; margin:0 auto 24px; }
+  .next-step-title { font-size:13px; font-weight:700; color:var(--accent2); margin-bottom:10px; letter-spacing:.06em; text-transform:uppercase; }
+  .twocol { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  @media(max-width:600px){.twocol{grid-template-columns:1fr;}}
+  .badge { display:inline-block; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:700; font-family:'JetBrains Mono',monospace; }
+  .bg{background:rgba(16,185,129,.18);color:var(--accent3);}
+  .by{background:rgba(245,158,11,.18);color:var(--warn);}
+  .br{background:rgba(239,68,68,.18);color:var(--danger);}
+  .bc{background:rgba(0,212,255,.14);color:var(--accent);}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <span class="topbar-title">☕ Java Lambdas — Level 0 → Comfortable</span>
+  <div class="progress-bar-wrap">
+    <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  </div>
+  <div class="nav-dots" id="navDots"></div>
+  <div class="timer" id="timer">40:00</div>
+</div>
+
+<div class="main">
+
+<!-- =========================================================
+     SECTION 1 — The Problem Lambdas Solve
+     ========================================================= -->
+<div class="section active" id="sec0">
+  <div class="section-header">
+    <div class="section-label">Section 1 of 6 · ~6 mins</div>
+    <div class="section-title">The Problem Lambdas Solve</div>
+    <div class="section-meta">Why Java was verbose · Passing behaviour as a value · The "before" world</div>
+  </div>
+
+  <div class="card eli5">
+    <div class="card-label">Start here</div>
+    <p>Before Java 8, if you wanted to pass a <em>behaviour</em> — like "sort these names alphabetically" — to a method, you couldn't just pass the idea. You had to create an <em>entire class</em> just to wrap that one idea and hand it over. It was like being asked to pass someone a recipe, but the rules said you had to build a whole restaurant first.</p>
+    <p>Lambdas let you just hand over the recipe — a small, anonymous piece of behaviour, right inline, no extra class needed.</p>
+  </div>
+
+  <div class="card analogy">
+    <div class="card-label">The callback analogy</div>
+    <p>Imagine telling a taxi driver: <em>"Call me when you arrive."</em> In real life, you just hand them your phone number — simple. In pre-Java-8, you'd have to create a <strong>PhoneNumber class</strong>, instantiate it, pass it to them, and they'd call a method named <code>ring()</code> on it. Same result, ten times the paperwork.</p>
+    <p>A lambda is the phone number — just the behaviour, passed directly, without ceremony.</p>
+  </div>
+
+  <h3>The "Before" vs "After"</h3>
+  <p>Let's say we want to sort a list of names. Watch how the code shrinks:</p>
+
+  <div class="evo">
+    <div class="evo-row">
+      <div class="evo-label"><span class="evo-badge eb-old">Java 1–7</span></div>
+      <div class="evo-code">
+<span class="cm">// You had to write a whole separate class</span>
+<span class="kw">class</span> <span class="ty">NameComparator</span> <span class="kw">implements</span> <span class="ty">Comparator</span>&lt;String&gt; {
+    <span class="kw">public int</span> <span class="fn">compare</span>(String a, String b) {
+        <span class="kw">return</span> a.<span class="fn">compareTo</span>(b);
+    }
+}
+Collections.<span class="fn">sort</span>(names, <span class="kw">new</span> <span class="fn">NameComparator</span>());</div>
+    </div>
+    <div class="evo-row" style="height:16px">
+      <div style="width:100px"></div>
+      <div style="flex:1; display:flex; align-items:center; padding-left:8px">
+        <div style="width:2px; height:100%; background:var(--border); margin-right:12px"></div>
+        <span style="font-size:11px; color:var(--text-dim)">anonymous inner class — still a class, just inline</span>
+      </div>
+    </div>
+    <div class="evo-row">
+      <div class="evo-label"><span class="evo-badge eb-mid">Java 7</span></div>
+      <div class="evo-code">
+<span class="cm">// Slightly better — inline, but still a LOT of boilerplate</span>
+Collections.<span class="fn">sort</span>(names, <span class="kw">new</span> Comparator&lt;String&gt;() {
+    <span class="kw">public int</span> <span class="fn">compare</span>(String a, String b) {
+        <span class="kw">return</span> a.<span class="fn">compareTo</span>(b);
+    }
+});</div>
+    </div>
+    <div class="evo-row" style="height:16px">
+      <div style="width:100px"></div>
+      <div style="flex:1; display:flex; align-items:center; padding-left:8px">
+        <div style="width:2px; height:100%; background:var(--border); margin-right:12px"></div>
+        <span style="font-size:11px; color:var(--text-dim)">Java 8 lambdas — same intent, fraction of the code</span>
+      </div>
+    </div>
+    <div class="evo-row">
+      <div class="evo-label"><span class="evo-badge eb-new">Java 8+</span></div>
+      <div class="evo-code">
+<span class="cm">// Lambda — expresses the SAME idea in one line</span>
+Collections.<span class="fn">sort</span>(names, (a, b) -> a.<span class="fn">compareTo</span>(b));
+
+<span class="cm">// Even shorter with a method reference:</span>
+names.<span class="fn">sort</span>(String::<span class="fn">compareTo</span>);</div>
+    </div>
+  </div>
+
+  <p>All three examples do the <em>exact same thing</em>. The lambda version just cuts out the noise and expresses the <strong>intent</strong> directly.</p>
+
+  <div class="card technical">
+    <div class="card-label">The key insight</div>
+    <p>In Java, a lambda is a way to treat <strong>behaviour as a value</strong> — something you can store in a variable, pass to a method, or return from a method. Just like you pass a <span class="ic">String</span> or an <span class="ic">int</span>, you can now pass a <em>piece of logic</em>.</p>
+    <pre><span class="cm">// Storing behaviour in a variable (we'll explain the type in Section 3)</span>
+Runnable greet = () -> System.out.<span class="fn">println</span>(<span class="st">"Hello, Hemanth!"</span>);
+
+<span class="cm">// Passing behaviour to a method</span>
+<span class="kw">new</span> <span class="fn">Thread</span>(greet).<span class="fn">start</span>();  <span class="cm">// prints "Hello, Hemanth!" on a new thread</span></pre>
+  </div>
+
+  <div class="quiz-section">
+    <div class="quiz-title">🧠 Quick Check</div>
+    <div class="quiz-q">Before lambdas (Java 7 and earlier), to pass a behaviour to a method, you had to:</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" onclick="answer(this,false,'q0')">Use a special "behaviour" keyword in Java</button>
+      <button class="quiz-opt" onclick="answer(this,true,'q0')">Create a class (or anonymous inner class) that implemented an interface, just to wrap the single piece of logic you wanted to pass</button>
+      <button class="quiz-opt" onclick="answer(this,false,'q0')">Pass a String with the method name, and Java would call it via reflection</button>
+      <button class="quiz-opt" onclick="answer(this,false,'q0')">You couldn't pass behaviour at all — it was not possible in Java 7</button>
+    </div>
+    <div class="quiz-fb" id="fb-q0"></div>
+  </div>
+
+  <div class="nav-buttons">
+    <div></div>
+    <button class="btn btn-primary" onclick="go(1)">Next: Lambda Syntax →</button>
+  </div>
+</div>
+
+<!-- =========================================================
+     SECTION 2 — Lambda Syntax
+     ========================================================= -->
+<div class="section" id="sec1">
+  <div class="section-header">
+    <div class="section-label">Section 2 of 6 · ~7 mins</div>
+    <div class="section-title">Lambda Syntax — Reading &amp; Writing</div>
+    <div class="section-meta">The arrow operator · Parameters · Body forms · Reading lambdas out loud</div>
+  </div>
+
+  <div class="card eli5">
+    <div class="card-label">The anatomy</div>
+    <p>A lambda has just two parts separated by an arrow <strong><code>-&gt;</code></strong>: what goes <em>in</em> (parameters), and what happens (the body). Read it as: <em>"given [these inputs], do [this]."</em></p>
+  </div>
+
+  <div class="card technical">
+    <div class="card-label">Lambda anatomy — labeled</div>
+    <div class="anatomy">
+      <span class="a-bracket">(</span><span class="a-param">String name, int age</span><span class="a-bracket">)</span>&nbsp;&nbsp;<span class="a-arrow">-&gt;</span>&nbsp;&nbsp;<span class="a-bracket">{</span>&nbsp;<span class="a-body">System.out.println(name + " is " + age);</span>&nbsp;<span class="a-bracket">}</span>
+    </div>
+    <div style="display:flex; gap:0; margin-top:4px; font-size:12px; font-family:'JetBrains Mono',monospace; color:var(--text-dim);">
+      <div style="flex:3.5; text-align:center; border-right:1px solid var(--border); padding:4px 8px;">⬆️ Parameters<br><span style="color:#82aaff">input values — types optional if inferable</span></div>
+      <div style="flex:0.5; text-align:center; border-right:1px solid var(--border); padding:4px 8px;">⬆️<br><span style="color:var(--warn)">"given … do"</span></div>
+      <div style="flex:6; text-align:center; padding:4px 8px;">⬆️ Body<br><span style="color:var(--accent3)">can be one expr or a full block {}</span></div>
+    </div>
+  </div>
+
+  <h3>All the Valid Syntax Forms</h3>
+  <div class="card technical">
+    <div class="card-label">These are all valid lambdas</div>
+    <pre><span class="cm">// ── PARAMETERS ──────────────────────────────────────────────</span>
+
+<span class="cm">// No parameters: use empty parentheses</span>
+() -> System.out.<span class="fn">println</span>(<span class="st">"Hello"</span>)
+
+<span class="cm">// One parameter: parentheses optional</span>
+name -> System.out.<span class="fn">println</span>(name)
+(name) -> System.out.<span class="fn">println</span>(name)   <span class="cm">// same thing</span>
+
+<span class="cm">// Multiple parameters: parentheses required</span>
+(a, b) -> a + b
+
+<span class="cm">// With explicit types (usually not needed — Java infers them)</span>
+(String a, String b) -> a.<span class="fn">compareTo</span>(b)
+
+<span class="cm">// ── BODY ────────────────────────────────────────────────────</span>
+
+<span class="cm">// Single expression — no braces, no return keyword needed</span>
+x -> x * x
+
+<span class="cm">// Multi-line block — needs braces AND explicit return</span>
+x -> {
+    <span class="kw">int</span> result = x * x;
+    System.out.<span class="fn">println</span>(<span class="st">"Squared: "</span> + result);
+    <span class="kw">return</span> result;
+}
+
+<span class="cm">// Returns nothing (void) — just has side effects</span>
+name -> System.out.<span class="fn">println</span>(name)</pre>
+  </div>
+
+  <h3>Reading Lambdas Out Loud</h3>
+  <div class="card analogy">
+    <div class="card-label">How to mentally parse a lambda you've never seen before</div>
+    <p>Left side of <code>-&gt;</code> = "given ___". Right side = "return ___" or "do ___".</p>
+    <pre><span class="cm">// Read: "given x, return x times x"</span>
+x -> x * x
+
+<span class="cm">// Read: "given name, print name"</span>
+name -> System.out.<span class="fn">println</span>(name)
+
+<span class="cm">// Read: "given a and b, return a.compareTo(b)"</span>
+(a, b) -> a.<span class="fn">compareTo</span>(b)
+
+<span class="cm">// Read: "given nothing, print Hello"</span>
+() -> System.out.<span class="fn">println</span>(<span class="st">"Hello"</span>)</pre>
+  </div>
+
+  <h3>Lambdas in Common Situations</h3>
+  <div class="card technical">
+    <div class="card-label">Places you'll immediately see lambdas in real Java code</div>
+    <pre><span class="cm">// 1. Sorting a list of strings</span>
+List&lt;String&gt; names = <span class="kw">new</span> ArrayList&lt;&gt;(List.<span class="fn">of</span>(<span class="st">"Charlie"</span>, <span class="st">"Alice"</span>, <span class="st">"Bob"</span>));
+names.<span class="fn">sort</span>((a, b) -> a.<span class="fn">compareTo</span>(b));
+<span class="cm">// names is now ["Alice", "Bob", "Charlie"]</span>
+
+<span class="cm">// 2. Printing every element of a list</span>
+names.<span class="fn">forEach</span>(name -> System.out.<span class="fn">println</span>(name));
+
+<span class="cm">// 3. Running something on a new thread</span>
+<span class="kw">new</span> <span class="fn">Thread</span>(() -> System.out.<span class="fn">println</span>(<span class="st">"Running on new thread!"</span>)).<span class="fn">start</span>();
+
+<span class="cm">// 4. Filtering a list (we'll go deeper in Streams section)</span>
+List&lt;String&gt; shortNames = names.<span class="fn">stream</span>()
+    .<span class="fn">filter</span>(name -> name.<span class="fn">length</span>() &lt;= <span class="nu">4</span>)
+    .<span class="fn">toList</span>();
+<span class="cm">// shortNames = ["Bob"]</span></pre>
+  </div>
+
+  <div class="quiz-section">
+    <div class="quiz-title">🧠 Quick Check</div>
+    <div class="quiz-q">Which of these is a valid lambda that takes a String and returns its length?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" onclick="answer(this,false,'q1')"><code>String -> { return length(); }</code></button>
+      <button class="quiz-opt" onclick="answer(this,true,'q1')"><code>s -> s.length()</code></button>
+      <button class="quiz-opt" onclick="answer(this,false,'q1')"><code>lambda(String s) { s.length(); }</code></button>
+      <button class="quiz-opt" onclick="answer(this,false,'q1')"><code>(String s) => s.length()</code></button>
+    </div>
+    <div class="quiz-fb" id="fb-q1"></div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn btn-ghost" onclick="go(0)">← Back</button>
+    <button class="btn btn-primary" onclick="go(2)">Next: Functional Interfaces →</button>
+  </div>
+</div>
+
+<!-- =========================================================
+     SECTION 3 — Functional Interfaces
+     ========================================================= -->
+<div class="section" id="sec2">
+  <div class="section-header">
+    <div class="section-label">Section 3 of 6 · ~7 mins</div>
+    <div class="section-title">Functional Interfaces — The Type of a Lambda</div>
+    <div class="section-meta">What type is a lambda? · The Big 5 · When to use each</div>
+  </div>
+
+  <div class="card eli5">
+    <div class="card-label">Every value needs a type — so what's a lambda's type?</div>
+    <p>In Java, every variable has a type. <code>String name</code>, <code>int age</code>. When you write a lambda, Java still needs to know its type. A <strong>functional interface</strong> is the type of a lambda — it's just an interface with one method, and the lambda fills in that method's body.</p>
+    <p>Think of it as a <em>slot</em>: the interface defines the shape of the slot (how many inputs, what type comes out), and the lambda is the piece that fits in.</p>
+  </div>
+
+  <div class="card analogy">
+    <div class="card-label">The socket analogy</div>
+    <p>Different countries have different socket shapes. A <strong>functional interface</strong> is the socket — it has a specific shape (signature). A <strong>lambda</strong> is the plug that fits that shape. <span class="ic">Runnable</span> is a socket for "no input, no output" — so <code>() -> doSomething()</code> plugs in. <span class="ic">Comparator&lt;T&gt;</span> is a socket for "two inputs, returns int" — so <code>(a,b) -> a.compareTo(b)</code> plugs in.</p>
+  </div>
+
+  <div class="card technical">
+    <div class="card-label">A functional interface has exactly ONE abstract method</div>
+    <pre><span class="cm">// This is a functional interface — one abstract method</span>
+<span class="an">@FunctionalInterface</span>  <span class="cm">// optional, but good practice</span>
+<span class="kw">interface</span> <span class="ty">Greeter</span> {
+    <span class="kw">void</span> <span class="fn">greet</span>(String name);  <span class="cm">// ← the ONE method</span>
+}
+
+<span class="cm">// A lambda can be used wherever a Greeter is expected:</span>
+<span class="ty">Greeter</span> g = name -> System.out.<span class="fn">println</span>(<span class="st">"Hello, "</span> + name);
+g.<span class="fn">greet</span>(<span class="st">"Hemanth"</span>);  <span class="cm">// prints: Hello, Hemanth</span></pre>
+  </div>
+
+  <h3>The Built-in Big 5 — You Don't Need to Write Your Own</h3>
+  <p>Java ships with a whole toolbox of ready-made functional interfaces in <span class="ic">java.util.function</span>. These 5 cover 90% of use cases:</p>
+
+  <div class="fi-grid">
+    <div class="fi-card" style="border-color:rgba(0,212,255,.35)">
+      <div class="fi-name">Function&lt;T, R&gt;</div>
+      <div class="fi-sig">R apply(T t)</div>
+      <div class="fi-desc">Takes something <em>in</em>, gives something <em>different</em> back. Use for transformations.</div>
+      <div class="fi-ex">s -> s.toUpperCase()<br>n -> n * 2</div>
+    </div>
+    <div class="fi-card" style="border-color:rgba(245,158,11,.35)">
+      <div class="fi-name">Predicate&lt;T&gt;</div>
+      <div class="fi-sig">boolean test(T t)</div>
+      <div class="fi-desc">Takes something in, answers <strong>yes or no</strong>. Use for filtering and checking.</div>
+      <div class="fi-ex">s -> s.isEmpty()<br>n -> n > 18</div>
+    </div>
+    <div class="fi-card" style="border-color:rgba(239,68,68,.35)">
+      <div class="fi-name">Consumer&lt;T&gt;</div>
+      <div class="fi-sig">void accept(T t)</div>
+      <div class="fi-desc">Takes something in, <strong>returns nothing</strong>. Use when you just want side-effects.</div>
+      <div class="fi-ex">s -> System.out.println(s)<br>order -> save(order)</div>
+    </div>
+    <div class="fi-card" style="border-color:rgba(16,185,129,.35)">
+      <div class="fi-name">Supplier&lt;T&gt;</div>
+      <div class="fi-sig">T get()</div>
+      <div class="fi-desc">Takes <strong>nothing in</strong>, gives something back. Use for lazy creation / factories.</div>
+      <div class="fi-ex">() -> new Order()<br>() -> "default"</div>
+    </div>
+    <div class="fi-card" style="border-color:rgba(124,58,237,.35); grid-column:span 2;">
+      <div class="fi-name">BiFunction&lt;T, U, R&gt;</div>
+      <div class="fi-sig">R apply(T t, U u)</div>
+      <div class="fi-desc">Like Function, but takes <strong>two inputs</strong> and returns one output.</div>
+      <div class="fi-ex">(first, last) -> first + " " + last &nbsp;|&nbsp; (price, qty) -> price * qty</div>
+    </div>
+  </div>
+
+  <div class="card technical">
+    <div class="card-label">Using the built-in types — no custom interface needed</div>
+    <pre><span class="cm">// Function — transform a String to its length</span>
+<span class="ty">Function</span>&lt;String, Integer&gt; getLength = s -> s.<span class="fn">length</span>();
+System.out.<span class="fn">println</span>(getLength.<span class="fn">apply</span>(<span class="st">"Hemanth"</span>));  <span class="cm">// 7</span>
+
+<span class="cm">// Predicate — check if a name is short</span>
+<span class="ty">Predicate</span>&lt;String&gt; isShort = name -> name.<span class="fn">length</span>() &lt;= <span class="nu">4</span>;
+System.out.<span class="fn">println</span>(isShort.<span class="fn">test</span>(<span class="st">"Bob"</span>));   <span class="cm">// true</span>
+System.out.<span class="fn">println</span>(isShort.<span class="fn">test</span>(<span class="st">"Alice"</span>)); <span class="cm">// false</span>
+
+<span class="cm">// Consumer — just print something</span>
+<span class="ty">Consumer</span>&lt;String&gt; printer = s -> System.out.<span class="fn">println</span>(<span class="st">"&gt;&gt; "</span> + s);
+printer.<span class="fn">accept</span>(<span class="st">"Hello"</span>);  <span class="cm">// >> Hello</span>
+
+<span class="cm">// Supplier — provide a default value lazily</span>
+<span class="ty">Supplier</span>&lt;String&gt; defaultName = () -> <span class="st">"Anonymous"</span>;
+System.out.<span class="fn">println</span>(defaultName.<span class="fn">get</span>());  <span class="cm">// Anonymous</span>
+
+<span class="cm">// BiFunction — combine two strings</span>
+<span class="ty">BiFunction</span>&lt;String, String, String&gt; fullName = (first, last) -> first + <span class="st">" "</span> + last;
+System.out.<span class="fn">println</span>(fullName.<span class="fn">apply</span>(<span class="st">"Hemanth"</span>, <span class="st">"Kumar"</span>));  <span class="cm">// Hemanth Kumar</span></pre>
+  </div>
+
+  <div class="card green">
+    <div class="card-label">Quick reference — which one to reach for</div>
+    <ul>
+      <li><strong>Something → Something else</strong> → <span class="ic">Function&lt;T, R&gt;</span></li>
+      <li><strong>Something → true/false</strong> → <span class="ic">Predicate&lt;T&gt;</span></li>
+      <li><strong>Something → (nothing, just do work)</strong> → <span class="ic">Consumer&lt;T&gt;</span></li>
+      <li><strong>(nothing) → Something</strong> → <span class="ic">Supplier&lt;T&gt;</span></li>
+      <li><strong>Two things → Something else</strong> → <span class="ic">BiFunction&lt;T, U, R&gt;</span></li>
+    </ul>
+  </div>
+
+  <div class="quiz-section">
+    <div class="quiz-title">🧠 Quick Check</div>
+    <div class="quiz-q">You want to write a lambda that checks if a number is greater than zero. Which functional interface fits?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" onclick="answer(this,false,'q2')">Consumer&lt;Integer&gt;</button>
+      <button class="quiz-opt" onclick="answer(this,false,'q2')">Supplier&lt;Integer&gt;</button>
+      <button class="quiz-opt" onclick="answer(this,false,'q2')">Function&lt;Integer, Integer&gt;</button>
+      <button class="quiz-opt" onclick="answer(this,true,'q2')">Predicate&lt;Integer&gt;</button>
+    </div>
+    <div class="quiz-fb" id="fb-q2"></div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn btn-ghost" onclick="go(1)">← Back</button>
+    <button class="btn btn-primary" onclick="go(3)">Next: Lambdas with Collections →</button>
+  </div>
+</div>
+
+<!-- =========================================================
+     SECTION 4 — Lambdas with Collections
+     ========================================================= -->
+<div class="section" id="sec3">
+  <div class="section-header">
+    <div class="section-label">Section 4 of 6 · ~7 mins</div>
+    <div class="section-title">Lambdas with Collections</div>
+    <div class="section-meta">forEach · sort · removeIf · replaceAll · Writing real code right now</div>
+  </div>
+
+  <div class="card eli5">
+    <div class="card-label">Where you'll use lambdas every single day</div>
+    <p>The most immediate place you'll encounter lambdas is with Java collections — Lists, Maps, Sets. Methods like <code>forEach</code>, <code>sort</code>, <code>removeIf</code> all take a lambda. Instead of writing a loop, you hand the collection a behaviour and say "do this for each element."</p>
+  </div>
+
+  <div class="card technical">
+    <div class="card-label">forEach — replace your for-loop</div>
+    <pre><span class="ty">List</span>&lt;String&gt; names = List.<span class="fn">of</span>(<span class="st">"Alice"</span>, <span class="st">"Bob"</span>, <span class="st">"Charlie"</span>);
+
+<span class="cm">// Old way:</span>
+<span class="kw">for</span> (String name : names) {
+    System.out.<span class="fn">println</span>(name);
+}
+
+<span class="cm">// Lambda way — same result, cleaner intent:</span>
+names.<span class="fn">forEach</span>(name -> System.out.<span class="fn">println</span>(name));
+
+<span class="cm">// Even shorter with method reference (we cover these next section):</span>
+names.<span class="fn">forEach</span>(System.out::<span class="fn">println</span>);</pre>
+  </div>
+
+  <div class="card technical">
+    <div class="card-label">sort — custom ordering</div>
+    <pre><span class="ty">List</span>&lt;String&gt; names = <span class="kw">new</span> ArrayList&lt;&gt;(List.<span class="fn">of</span>(<span class="st">"Charlie"</span>, <span class="st">"Alice"</span>, <span class="st">"Bob"</span>));
+
+<span class="cm">// Alphabetical (natural order):</span>
+names.<span class="fn">sort</span>((a, b) -> a.<span class="fn">compareTo</span>(b));
+<span class="cm">// ["Alice", "Bob", "Charlie"]</span>
+
+<span class="cm">// Sort by length (shortest first):</span>
+names.<span class="fn">sort</span>((a, b) -> a.<span class="fn">length</span>() - b.<span class="fn">length</span>());
+<span class="cm">// ["Bob", "Alice", "Charlie"]</span>
+
+<span class="cm">// Sort in reverse alphabetical:</span>
+names.<span class="fn">sort</span>((a, b) -> b.<span class="fn">compareTo</span>(a));
+<span class="cm">// ["Charlie", "Bob", "Alice"]</span>
+
+<span class="cm">// Cleaner: Comparator.comparing() — reads like English</span>
+names.<span class="fn">sort</span>(Comparator.<span class="fn">comparing</span>(String::<span class="fn">length</span>));
+names.<span class="fn">sort</span>(Comparator.<span class="fn">comparing</span>(String::<span class="fn">length</span>).<span class="fn">reversed</span>());</pre>
+  </div>
+
+  <div class="card technical">
+    <div class="card-label">removeIf and replaceAll</div>
+    <pre><span class="ty">List</span>&lt;String&gt; names = <span class="kw">new</span> ArrayList&lt;&gt;(List.<span class="fn">of</span>(<span class="st">"Alice"</span>, <span class="st">"Bob"</span>, <span class="st">""</span>, <span class="st">"Charlie"</span>, <span class="st">""</span>));
+
+<span class="cm">// removeIf — remove all elements that match a condition</span>
+names.<span class="fn">removeIf</span>(name -> name.<span class="fn">isEmpty</span>());
+<span class="cm">// ["Alice", "Bob", "Charlie"]</span>
+
+<span class="cm">// replaceAll — transform every element in place</span>
+names.<span class="fn">replaceAll</span>(name -> name.<span class="fn">toUpperCase</span>());
+<span class="cm">// ["ALICE", "BOB", "CHARLIE"]</span></pre>
+  </div>
+
+  <div class="card technical">
+    <div class="card-label">Map — iterating over key-value pairs</div>
+    <pre><span class="ty">Map</span>&lt;String, Integer&gt; scores = <span class="kw">new</span> HashMap&lt;&gt;();
+scores.<span class="fn">put</span>(<span class="st">"Alice"</span>, <span class="nu">90</span>);
+scores.<span class="fn">put</span>(<span class="st">"Bob"</span>, <span class="nu">75</span>);
+scores.<span class="fn">put</span>(<span class="st">"Charlie"</span>, <span class="nu">85</span>);
+
+<span class="cm">// forEach on a Map gives you key AND value</span>
+scores.<span class="fn">forEach</span>((name, score) -> System.out.<span class="fn">println</span>(name + <span class="st">": "</span> + score));
+
+<span class="cm">// getOrDefault with Supplier — provide value if key missing</span>
+scores.<span class="fn">computeIfAbsent</span>(<span class="st">"Dave"</span>, key -> <span class="nu">0</span>);  <span class="cm">// Dave gets 0 if not in map</span></pre>
+  </div>
+
+  <div class="quiz-section">
+    <div class="quiz-title">🧠 Quick Check</div>
+    <div class="quiz-q">You have a <code>List&lt;Integer&gt; numbers</code> and want to remove all values less than 10. Which is correct?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" onclick="answer(this,false,'q3')"><code>numbers.forEach(n -> n &lt; 10)</code></button>
+      <button class="quiz-opt" onclick="answer(this,false,'q3')"><code>numbers.sort(n -> n &lt; 10)</code></button>
+      <button class="quiz-opt" onclick="answer(this,true,'q3')"><code>numbers.removeIf(n -> n &lt; 10)</code></button>
+      <button class="quiz-opt" onclick="answer(this,false,'q3')"><code>numbers.replaceAll(n -> n &lt; 10)</code></button>
+    </div>
+    <div class="quiz-fb" id="fb-q3"></div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn btn-ghost" onclick="go(2)">← Back</button>
+    <button class="btn btn-primary" onclick="go(4)">Next: Method References →</button>
+  </div>
+</div>
+
+<!-- =========================================================
+     SECTION 5 — Method References
+     ========================================================= -->
+<div class="section" id="sec4">
+  <div class="section-header">
+    <div class="section-label">Section 5 of 6 · ~6 mins</div>
+    <div class="section-title">Method References — Shorthand Lambdas</div>
+    <div class="section-meta">:: syntax · 4 types · When to use them · Reading fluently</div>
+  </div>
+
+  <div class="card eli5">
+    <div class="card-label">The core idea</div>
+    <p>Sometimes your lambda does nothing but call an existing method: <code>name -> System.out.println(name)</code>. That's just calling <code>println</code> with one argument. Java lets you shortcut that to <code>System.out::println</code>. The double-colon <code>::</code> means "use this existing method as my lambda." They're not new — just shorthand.</p>
+  </div>
+
+  <div class="card analogy">
+    <div class="card-label">Speed dial analogy</div>
+    <p>A lambda is like dialing a full number: <code>name -> System.out.println(name)</code>. A method reference is a speed-dial contact already saved: <code>System.out::println</code>. Same call, one tap.</p>
+  </div>
+
+  <div class="card technical">
+    <div class="card-label">The 4 types — with plain English explanations</div>
+    <pre><span class="cm">// ① Static method: ClassName::staticMethod</span>
+<span class="cm">// Lambda:  s -> Integer.parseInt(s)</span>
+<span class="cm">// Ref:     Integer::parseInt</span>
+List.<span class="fn">of</span>(<span class="st">"1"</span>, <span class="st">"2"</span>, <span class="st">"3"</span>).<span class="fn">stream</span>().<span class="fn">map</span>(Integer::<span class="fn">parseInt</span>).<span class="fn">toList</span>();
+<span class="cm">// [1, 2, 3] as Integers</span>
+
+<span class="cm">// ② Bound instance: specificObject::method</span>
+<span class="cm">// Lambda:  s -> System.out.println(s)   (System.out is the specific object)</span>
+<span class="cm">// Ref:     System.out::println</span>
+List.<span class="fn">of</span>(<span class="st">"Alice"</span>, <span class="st">"Bob"</span>).<span class="fn">forEach</span>(System.out::<span class="fn">println</span>);
+
+<span class="cm">// ③ Unbound instance: ClassName::instanceMethod</span>
+<span class="cm">// Lambda:  s -> s.toUpperCase()   (each s becomes 'this')</span>
+<span class="cm">// Ref:     String::toUpperCase</span>
+List.<span class="fn">of</span>(<span class="st">"alice"</span>, <span class="st">"bob"</span>).<span class="fn">stream</span>().<span class="fn">map</span>(String::<span class="fn">toUpperCase</span>).<span class="fn">toList</span>();
+<span class="cm">// ["ALICE", "BOB"]</span>
+
+<span class="cm">// ④ Constructor: ClassName::new</span>
+<span class="cm">// Lambda:  name -> new StringBuilder(name)</span>
+<span class="cm">// Ref:     StringBuilder::new</span>
+List.<span class="fn">of</span>(<span class="st">"Alice"</span>, <span class="st">"Bob"</span>).<span class="fn">stream</span>().<span class="fn">map</span>(StringBuilder::<span class="kw">new</span>).<span class="fn">toList</span>();</pre>
+  </div>
+
+  <div class="card green">
+    <div class="card-label">When to use a method reference vs a lambda</div>
+    <p>Simple rule: <strong>if the lambda does nothing but delegate to one method call</strong>, use a reference. If it does anything else (combines calls, has conditions, does math), keep it as a lambda.</p>
+    <pre><span class="cm">// ✅ Use method reference — just delegating</span>
+names.<span class="fn">forEach</span>(System.out::<span class="fn">println</span>);
+names.<span class="fn">stream</span>().<span class="fn">map</span>(String::<span class="fn">trim</span>)
+
+<span class="cm">// ✅ Keep as lambda — doing more than one thing</span>
+names.<span class="fn">forEach</span>(name -> System.out.<span class="fn">println</span>(<span class="st">"Hello, "</span> + name));
+names.<span class="fn">stream</span>().<span class="fn">map</span>(name -> name.<span class="fn">trim</span>().<span class="fn">toLowerCase</span>())</pre>
+  </div>
+
+  <div class="quiz-section">
+    <div class="quiz-title">🧠 Quick Check</div>
+    <div class="quiz-q">What does <code>String::toUpperCase</code> do when used in <code>.map(String::toUpperCase)</code>?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" onclick="answer(this,false,'q4')">Calls a static method called toUpperCase on the String class</button>
+      <button class="quiz-opt" onclick="answer(this,false,'q4')">Creates a new String using the toUpperCase constructor</button>
+      <button class="quiz-opt" onclick="answer(this,true,'q4')">For each String in the stream, calls .toUpperCase() on that String (it becomes 'this') — equivalent to s -> s.toUpperCase()</button>
+      <button class="quiz-opt" onclick="answer(this,false,'q4')">Stores the word "toUpperCase" into each String</button>
+    </div>
+    <div class="quiz-fb" id="fb-q4"></div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn btn-ghost" onclick="go(3)">← Back</button>
+    <button class="btn btn-primary" onclick="go(5)">Next: Streams Intro →</button>
+  </div>
+</div>
+
+<!-- =========================================================
+     SECTION 6 — Streams Intro
+     ========================================================= -->
+<div class="section" id="sec5">
+  <div class="section-header">
+    <div class="section-label">Section 6 of 6 · ~7 mins</div>
+    <div class="section-title">Streams — Where Lambdas Truly Shine</div>
+    <div class="section-meta">What is a Stream? · filter · map · collect · Reading a pipeline</div>
+  </div>
+
+  <div class="card eli5">
+    <div class="card-label">The core idea</div>
+    <p>A Stream is like an assembly line for data. Raw parts (your List) go in one end, pass through a series of operations (each powered by a lambda), and a finished product comes out the other end. Each operation on the line does one focused thing — filter out defects, transform a part, count what's left.</p>
+    <p>The beauty: you describe <em>what</em> you want done, not <em>how</em> to loop through doing it.</p>
+  </div>
+
+  <div class="card analogy">
+    <div class="card-label">The assembly line analogy in detail</div>
+    <p>Imagine a factory: raw orders come in, they're <em>filtered</em> (reject invalid ones), <em>transformed</em> (convert to shipment format), and finally <em>collected</em> into a box ready to ship. Each station on the line is a lambda. The stream is the conveyor belt. You never need to write "move to next station" — it's automatic.</p>
+  </div>
+
+  <h3>The Three Types of Stream Operations</h3>
+  <div class="pipeline">
+    <div class="pipe-row">
+      <div class="pipe-stage">
+        <div class="pipe-icon">📦</div>
+        <div class="pipe-info">
+          <div class="pipe-op">Source <span class="pipe-badge pb-int">start</span></div>
+          <div class="pipe-desc">list.stream() · Set.stream() · Stream.of(...) · IntStream.range(0, 10)</div>
+        </div>
+      </div>
+    </div>
+    <div class="pipe-connector"><div class="pipe-line"></div></div>
+    <div class="pipe-row">
+      <div class="pipe-stage">
+        <div class="pipe-icon">🔍</div>
+        <div class="pipe-info">
+          <div class="pipe-op">filter(Predicate) <span class="pipe-badge pb-int">intermediate</span></div>
+          <div class="pipe-desc">Keep only elements where the predicate returns true. Lazy — no work until terminal.</div>
+        </div>
+      </div>
+    </div>
+    <div class="pipe-connector"><div class="pipe-line"></div></div>
+    <div class="pipe-row">
+      <div class="pipe-stage">
+        <div class="pipe-icon">🔀</div>
+        <div class="pipe-info">
+          <div class="pipe-op">map(Function) <span class="pipe-badge pb-int">intermediate</span></div>
+          <div class="pipe-desc">Transform each element. Input type can differ from output type. Returns a new Stream.</div>
+        </div>
+      </div>
+    </div>
+    <div class="pipe-connector"><div class="pipe-line"></div></div>
+    <div class="pipe-row">
+      <div class="pipe-stage">
+        <div class="pipe-icon">🧺</div>
+        <div class="pipe-info">
+          <div class="pipe-op">collect / toList / count / forEach <span class="pipe-badge pb-term">terminal</span></div>
+          <div class="pipe-desc">Triggers the whole pipeline. Produces a result or side-effect. Stream can't be reused after.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card technical">
+    <div class="card-label">A complete stream pipeline — step by step</div>
+    <pre><span class="ty">List</span>&lt;String&gt; names = List.<span class="fn">of</span>(<span class="st">"Alice"</span>, <span class="st">"Bob"</span>, <span class="st">"Charlie"</span>, <span class="st">"Dave"</span>, <span class="st">"Eve"</span>);
+
+<span class="ty">List</span>&lt;String&gt; result = names
+    .<span class="fn">stream</span>()                              <span class="cm">// 1. Create a stream from the list</span>
+    .<span class="fn">filter</span>(name -> name.<span class="fn">length</span>() > <span class="nu">3</span>)  <span class="cm">// 2. Keep only names longer than 3 chars</span>
+    .<span class="fn">map</span>(String::<span class="fn">toUpperCase</span>)             <span class="cm">// 3. Uppercase every remaining name</span>
+    .<span class="fn">sorted</span>()                              <span class="cm">// 4. Sort alphabetically</span>
+    .<span class="fn">toList</span>();                             <span class="cm">// 5. Collect into a new List (terminal)</span>
+
+<span class="cm">// result = ["ALICE", "CHARLIE", "DAVE"]</span>
+<span class="cm">// "Bob" filtered out (length 3), "Eve" filtered out (length 3)</span></pre>
+  </div>
+
+  <div class="card technical">
+    <div class="card-label">More useful terminal operations</div>
+    <pre><span class="ty">List</span>&lt;Integer&gt; nums = List.<span class="fn">of</span>(<span class="nu">3</span>, <span class="nu">1</span>, <span class="nu">4</span>, <span class="nu">1</span>, <span class="nu">5</span>, <span class="nu">9</span>, <span class="nu">2</span>, <span class="nu">6</span>);
+
+<span class="cm">// count() — how many elements pass the filter?</span>
+<span class="kw">long</span> bigCount = nums.<span class="fn">stream</span>().<span class="fn">filter</span>(n -> n > <span class="nu">4</span>).<span class="fn">count</span>();  <span class="cm">// 3</span>
+
+<span class="cm">// anyMatch / allMatch / noneMatch — boolean questions</span>
+<span class="kw">boolean</span> hasNine  = nums.<span class="fn">stream</span>().<span class="fn">anyMatch</span>(n -> n == <span class="nu">9</span>);   <span class="cm">// true</span>
+<span class="kw">boolean</span> allSmall = nums.<span class="fn">stream</span>().<span class="fn">allMatch</span>(n -> n < <span class="nu">10</span>);  <span class="cm">// true</span>
+
+<span class="cm">// min / max</span>
+Optional&lt;Integer&gt; max = nums.<span class="fn">stream</span>().<span class="fn">max</span>(Integer::<span class="fn">compareTo</span>);  <span class="cm">// 9</span>
+
+<span class="cm">// joining strings</span>
+String result = List.<span class="fn">of</span>(<span class="st">"Alice"</span>, <span class="st">"Bob"</span>).<span class="fn">stream</span>()
+    .<span class="fn">collect</span>(Collectors.<span class="fn">joining</span>(<span class="st">", "</span>));  <span class="cm">// "Alice, Bob"</span></pre>
+  </div>
+
+  <div class="card warning">
+    <div class="card-label">⚠️ One important rule: streams are one-use</div>
+    <pre><span class="ty">Stream</span>&lt;String&gt; s = names.<span class="fn">stream</span>();
+s.<span class="fn">forEach</span>(System.out::<span class="fn">println</span>);  <span class="cm">// ✅ works</span>
+s.<span class="fn">count</span>();                         <span class="cm">// ❌ IllegalStateException: stream already closed</span>
+<span class="cm">// Solution: call .stream() again to create a fresh one</span></pre>
+  </div>
+
+  <div class="quiz-section">
+    <div class="quiz-title">🧠 Final Check</div>
+    <div class="quiz-q">In a stream pipeline, what is the role of a <strong>terminal operation</strong> like <code>collect()</code> or <code>count()</code>?</div>
+    <div class="quiz-opts">
+      <button class="quiz-opt" onclick="answer(this,false,'q5')">It filters the stream before any other operations run</button>
+      <button class="quiz-opt" onclick="answer(this,false,'q5')">It transforms each element in the stream to a new type</button>
+      <button class="quiz-opt" onclick="answer(this,true,'q5')">It triggers the entire pipeline to execute and produces a final result — no work actually happens until a terminal operation is called</button>
+      <button class="quiz-opt" onclick="answer(this,false,'q5')">It adds elements to the stream</button>
+    </div>
+    <div class="quiz-fb" id="fb-q5"></div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn btn-ghost" onclick="go(4)">← Back</button>
+    <button class="btn btn-success" onclick="finish()">✓ Complete Session</button>
+  </div>
+</div>
+
+<!-- COMPLETION SCREEN -->
+<div id="completion">
+  <div class="complete-emoji">🎉</div>
+  <div class="complete-title">Lambda Foundations — Complete!</div>
+  <div class="complete-sub">You now understand what lambdas are, how to write them,<br>and how they power collections and streams.</div>
+
+  <div class="cheat-sheet">
+    <div class="cheat-title">Cheat Sheet</div>
+    <div class="cheat-row">🎯 <strong>Lambdas = behaviour as a value.</strong> Pass them to methods instead of writing one-off classes.</div>
+    <div class="cheat-row">✍️ <strong>Syntax:</strong> <span class="ic">(params) -> body</span>. One param? No parens needed. One expression? No braces or return needed.</div>
+    <div class="cheat-row">🧩 <strong>Functional interface = the type of a lambda.</strong> One abstract method. <span class="ic">@FunctionalInterface</span> enforces it.</div>
+    <div class="cheat-row">🔧 <strong>The Big 5:</strong> <span class="ic">Function</span> (T→R) · <span class="ic">Predicate</span> (T→boolean) · <span class="ic">Consumer</span> (T→void) · <span class="ic">Supplier</span> (→T) · <span class="ic">BiFunction</span> (T,U→R)</div>
+    <div class="cheat-row">📚 <strong>Collections:</strong> <span class="ic">forEach</span> · <span class="ic">sort</span> · <span class="ic">removeIf</span> · <span class="ic">replaceAll</span> — all take lambdas.</div>
+    <div class="cheat-row">⚡ <strong>Method refs</strong> <span class="ic">Class::method</span> — shorthand when lambda just delegates to one method call.</div>
+    <div class="cheat-row">🏭 <strong>Streams:</strong> source → intermediate ops (filter/map, lazy) → terminal op (collect/count, triggers execution). One-use only.</div>
+  </div>
+
+  <div class="next-step-box">
+    <div class="next-step-title">🚀 You're ready for the next level</div>
+    <p style="font-size:14px; line-height:1.7; color:var(--text-dim)">Now that you're comfortable using lambdas, the <strong>Lambda Internals</strong> tutorial will make complete sense. It covers <em>why</em> lambdas work the way they do under the hood — invokedynamic, effectively final, SAM interfaces, and the LambdaMetafactory. That's your next step.</p>
+  </div>
+
+  <button class="btn btn-ghost" onclick="restart()">↺ Review Again</button>
+</div>
+
+</div><!-- end .main -->
+
+<script>
+  // ── Timer ──────────────────────────────────────────────
+  const TOTAL = 40 * 60;
+  let elapsed = 0;
+  const timerEl = document.getElementById('timer');
+  const progressEl = document.getElementById('progressFill');
+  setInterval(() => {
+    elapsed++;
+    const rem = Math.max(0, TOTAL - elapsed);
+    const m = String(Math.floor(rem/60)).padStart(2,'0');
+    const s = String(rem%60).padStart(2,'0');
+    timerEl.textContent = `${m}:${s}`;
+    progressEl.style.width = `${Math.min(100,(elapsed/TOTAL)*100)}%`;
+    if (rem <= 60)  timerEl.className = 'timer danger';
+    else if (rem <= 300) timerEl.className = 'timer warn';
+  }, 1000);
+
+  // ── Navigation ─────────────────────────────────────────
+  const N = 6;
+  const TITLES = ['The Problem','Syntax','Functional I/F','Collections','Method Refs','Streams'];
+  let cur = 0;
+  const dotsEl = document.getElementById('navDots');
+  for (let i = 0; i < N; i++) {
+    const d = document.createElement('button');
+    d.className = 'nav-dot' + (i===0?' active':'');
+    d.textContent = i+1; d.title = TITLES[i]; d.id='dot'+i;
+    d.onclick = ()=>go(i);
+    dotsEl.appendChild(d);
+  }
+  function go(idx) {
+    document.getElementById('sec'+cur).classList.remove('active');
+    document.getElementById('dot'+cur).className = 'nav-dot done';
+    cur = idx;
+    document.getElementById('sec'+cur).classList.add('active');
+    document.getElementById('dot'+cur).className = 'nav-dot active';
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+  function finish() {
+    document.getElementById('dot'+cur).className = 'nav-dot done';
+    document.getElementById('sec'+cur).classList.remove('active');
+    document.getElementById('completion').style.display = 'block';
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+  function restart() {
+    document.getElementById('completion').style.display = 'none';
+    cur = 0;
+    for(let i=0;i<N;i++) document.getElementById('dot'+i).className='nav-dot'+(i===0?' active':'');
+    document.getElementById('sec0').classList.add('active');
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  // ── Quiz ───────────────────────────────────────────────
+  const CORRECT = {
+    q0: 'Create a class (or anonymous inner class) that implemented an interface, just to wrap the single piece of logic you wanted to pass',
+    q1: 's -> s.length()',
+    q2: 'Predicate<Integer>',
+    q3: 'numbers.removeIf(n -> n < 10)',
+    q4: "For each String in the stream, calls .toUpperCase() on that String (it becomes 'this') — equivalent to s -> s.toUpperCase()",
+    q5: 'It triggers the entire pipeline to execute and produces a final result — no work actually happens until a terminal operation is called'
+  };
+  const FB = {
+    q0: { y:"Correct. You had to create a full class (or an anonymous inner class) just to pass one behaviour. That's the verbosity lambdas eliminated.", n:"Actually you could pass behaviour — but only by wrapping it in a full class or anonymous inner class. Lambdas cut that boilerplate." },
+    q1: { y:"Correct! s is the parameter (Java infers it's a String from context), and s.length() is the expression that's returned. No braces or return keyword needed for a single expression.", n:"Check the syntax: parameter(s) on the left of ->, body on the right. Java uses -> not =>. No lambda keyword. The type is inferred." },
+    q2: { y:"Correct! Predicate<Integer> has a test(Integer t) method that returns boolean — exactly 'number in, yes/no out'. Use n -> n > 0 as the lambda.", n:"Think about the output: the result is true or false (a boolean check). That's exactly what Predicate is for. Consumer returns void, Supplier takes no input, Function returns a different type." },
+    q3: { y:"Correct! removeIf takes a Predicate — a condition that returns true for elements you want removed. It's the clean, lambda-powered replacement for iterating and calling iterator.remove().", n:"forEach just runs code per element with no removal. sort reorders. replaceAll transforms in place. removeIf is the one that removes matching elements." },
+    q4: { y:"Exactly. String::toUpperCase is an unbound instance reference. The stream hands each String element to toUpperCase() as its receiver (this). It's identical to writing s -> s.toUpperCase().", n:"toUpperCase() is not static — you can check the docs. String::toUpperCase means 'call toUpperCase() on each element', where each element becomes the object the method is called on." },
+    q5: { y:"Exactly right. Intermediate operations like filter() and map() are lazy — they just build up a description of work. Nothing actually runs until a terminal operation (collect, count, forEach, etc.) is called.", n:"Terminal operations are the trigger. Intermediate operations are lazy — they only describe what to do. The terminal op is what actually starts the conveyor belt." }
+  };
+  const done = {};
+  function answer(btn, correct, id) {
+    if (done[id]) return;
+    done[id] = true;
+    btn.closest('.quiz-opts').querySelectorAll('.quiz-opt').forEach(o => {
+      o.disabled = true;
+      if (o.textContent.trim() === CORRECT[id]) o.classList.add('reveal');
+    });
+    btn.classList.add(correct ? 'correct' : 'wrong');
+    const fb = document.getElementById('fb-'+id);
+    fb.className = 'quiz-fb show ' + (correct ? 'good' : 'bad');
+    fb.textContent = (correct ? '✓ ' : '✗ ') + (correct ? FB[id].y : FB[id].n);
+  }
+</script>
+</body>
+</html>

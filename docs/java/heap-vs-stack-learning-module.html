@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Heap vs Stack · Interactive Learning Module</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0e1a;
+      --surface: #111827;
+      --surface-2: #1a2235;
+      --text: #e5eefb;
+      --muted: #94a3b8;
+      --cyan: #00d4ff;
+      --purple: #7c3aed;
+      --green: #10b981;
+      --amber: #f59e0b;
+      --red: #ef4444;
+      --border: rgba(255,255,255,0.08);
+      --shadow: 0 18px 50px rgba(0,0,0,0.35);
+      --radius: 20px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text); font-family: 'Syne', sans-serif; }
+    body { min-height: 100vh; }
+    .app { max-width: 1180px; margin: 0 auto; padding: 20px 20px 40px; }
+
+    .topbar {
+      position: sticky; top: 0; z-index: 50;
+      background: rgba(10,14,26,0.92);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 14px 16px 16px;
+      box-shadow: var(--shadow);
+      margin-bottom: 20px;
+    }
+
+    .topbar-row {
+      display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap;
+    }
+
+    .brand {
+      display: flex; flex-direction: column; gap: 3px;
+    }
+    .brand .eyebrow {
+      font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted);
+    }
+    .brand h1 {
+      font-size: 1.2rem; margin: 0; font-weight: 800;
+    }
+
+    .nav-dots {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: center;
+    }
+
+    .nav-dot {
+      width: 38px; height: 38px; border-radius: 999px; border: 2px solid rgba(255,255,255,0.15);
+      background: transparent; color: var(--text); cursor: pointer; font-family: 'JetBrains Mono', monospace;
+      font-size: 13px; font-weight: 700; transition: all 0.2s ease;
+    }
+    .nav-dot:hover { transform: translateY(-1px); border-color: var(--cyan); }
+    .nav-dot.active { background: var(--cyan); color: #001019; border-color: var(--cyan); box-shadow: 0 0 0 5px rgba(0,212,255,0.14); }
+    .nav-dot.done { border-color: var(--green); color: var(--green); }
+
+    .status-panel {
+      display: flex; align-items: center; gap: 16px; margin-top: 14px;
+    }
+    .timer {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700; font-size: 1rem; padding: 10px 12px; border-radius: 14px;
+      background: var(--surface-2); border: 1px solid var(--border); min-width: 96px; text-align: center;
+      transition: all 0.25s ease;
+    }
+    .timer.warn { color: var(--amber); border-color: rgba(245,158,11,0.45); }
+    .timer.danger {
+      color: var(--red); border-color: rgba(239,68,68,0.5);
+      animation: pulse 1s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.35); }
+      50% { box-shadow: 0 0 0 10px rgba(239,68,68,0); }
+    }
+
+    .progress-wrap {
+      flex: 1; display: flex; flex-direction: column; gap: 8px;
+    }
+    .progress-meta {
+      display: flex; justify-content: space-between; align-items: center; color: var(--muted); font-size: 0.9rem;
+    }
+    .progress-bar {
+      width: 100%; height: 12px; border-radius: 999px; background: rgba(255,255,255,0.08); overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%; width: 0%; border-radius: 999px;
+      background: linear-gradient(90deg, var(--purple), var(--cyan));
+      transition: width 1s linear;
+    }
+
+    .section {
+      display: none;
+      background: linear-gradient(180deg, rgba(17,24,39,0.95), rgba(17,24,39,0.86));
+      border: 1px solid var(--border);
+      border-radius: 26px;
+      padding: 28px;
+      box-shadow: var(--shadow);
+      min-height: 72vh;
+    }
+    .section.active { display: block; }
+
+    .section-label {
+      color: var(--muted); text-transform: uppercase; letter-spacing: 0.14em; font-size: 12px; margin-bottom: 8px;
+    }
+    .section h2 {
+      font-size: clamp(1.8rem, 2.7vw, 2.8rem);
+      margin: 0 0 10px;
+      line-height: 1.1;
+    }
+    .section > p.intro { color: #c5d2e5; font-size: 1.05rem; max-width: 950px; margin-bottom: 22px; }
+
+    .grid { display: grid; gap: 18px; }
+    .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    @media (max-width: 860px) {
+      .grid.two, .grid.three { grid-template-columns: 1fr; }
+      .topbar-row { align-items: flex-start; }
+      .status-panel { flex-direction: column; align-items: stretch; }
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 6px solid var(--cyan);
+      border-radius: var(--radius);
+      padding: 18px 18px 18px 20px;
+    }
+    .card h3 { margin: 0 0 10px; font-size: 1.1rem; }
+    .card p, .card li { color: #d7e3f5; line-height: 1.65; }
+    .card ul { margin: 10px 0 0 18px; padding: 0; }
+    .eli5 { border-left-color: var(--amber); }
+    .analogy { border-left-color: var(--green); }
+    .technical { border-left-color: var(--cyan); }
+    .warning { border-left-color: var(--red); }
+    .prefix { font-family: 'JetBrains Mono', monospace; font-size: 12px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); margin-bottom: 6px; }
+
+    .diagram {
+      background: var(--surface-2); border: 1px solid var(--border); border-radius: 20px; padding: 18px; margin-top: 6px;
+    }
+    .diagram-title { margin: 0 0 14px; font-size: 0.95rem; color: #dfeafe; }
+
+    .memory-layout {
+      display: grid; grid-template-columns: 1fr 1.35fr; gap: 16px;
+    }
+    @media (max-width: 900px) { .memory-layout { grid-template-columns: 1fr; } }
+    .memory-column { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; padding: 14px; }
+    .memory-column h4 { margin: 0 0 12px; }
+    .stack-frame, .heap-box, .meta-box, .thread-box {
+      border-radius: 12px; padding: 12px; margin-bottom: 10px; font-size: 0.95rem;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(5,8,16,0.85);
+    }
+    .stack-frame { border-left: 4px solid var(--amber); }
+    .heap-box { border-left: 4px solid var(--cyan); }
+    .meta-box { border-left: 4px solid var(--purple); }
+    .thread-box { border-left: 4px solid var(--green); }
+
+    .pill-flow {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+    }
+    .pill {
+      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 999px;
+      padding: 10px 14px; font-size: 0.95rem;
+    }
+    .pill.arrow { background: transparent; border: none; color: var(--muted); padding: 0 2px; }
+    .pill.cyan { border-color: rgba(0,212,255,0.45); }
+    .pill.green { border-color: rgba(16,185,129,0.4); }
+    .pill.amber { border-color: rgba(245,158,11,0.4); }
+    .pill.red { border-color: rgba(239,68,68,0.45); }
+    .pill.purple { border-color: rgba(124,58,237,0.45); }
+
+    .comparison-table {
+      width: 100%; border-collapse: collapse; overflow: hidden; border-radius: 16px;
+      border: 1px solid var(--border); background: var(--surface-2);
+    }
+    .comparison-table th, .comparison-table td {
+      padding: 14px 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.06); vertical-align: top;
+    }
+    .comparison-table th { color: #f3f7ff; font-size: 0.95rem; }
+    .comparison-table td { color: #d2dded; }
+    .badge {
+      display: inline-flex; align-items: center; padding: 5px 10px; border-radius: 999px; font-size: 12px; font-weight: 700;
+      font-family: 'JetBrains Mono', monospace; letter-spacing: 0.02em;
+    }
+    .badge.green { background: rgba(16,185,129,0.14); color: #7ef0c7; }
+    .badge.amber { background: rgba(245,158,11,0.14); color: #ffd48a; }
+    .badge.red { background: rgba(239,68,68,0.15); color: #ff9f9f; }
+    .badge.cyan { background: rgba(0,212,255,0.14); color: #7deaff; }
+    .badge.purple { background: rgba(124,58,237,0.18); color: #c5afff; }
+
+    pre.code {
+      margin: 0; background: #050810; color: #dfe7f3; border-radius: 16px; padding: 16px; overflow: auto;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.93rem; line-height: 1.65; border: 1px solid rgba(255,255,255,0.07);
+    }
+    .tok-key { color: #7dd3fc; }
+    .tok-type { color: #c4b5fd; }
+    .tok-num { color: #fbbf24; }
+    .tok-com { color: #6b7280; }
+    .tok-str { color: #86efac; }
+    .tok-fn { color: #22d3ee; }
+
+    .quiz {
+      margin-top: 20px; background: rgba(124,58,237,0.1); border: 1px solid rgba(124,58,237,0.45); border-radius: 20px; padding: 18px;
+    }
+    .quiz h3 { margin-top: 0; }
+    .quiz-options { display: grid; gap: 10px; margin-top: 12px; }
+    .quiz-option {
+      width: 100%; text-align: left; background: rgba(255,255,255,0.04); color: var(--text);
+      border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; padding: 12px 14px; cursor: pointer;
+      font-family: 'Syne', sans-serif; transition: all 0.18s ease;
+    }
+    .quiz-option:hover:not(:disabled) { border-color: var(--purple); transform: translateY(-1px); }
+    .quiz-option.correct { border-color: var(--green); background: rgba(16,185,129,0.14); }
+    .quiz-option.wrong { border-color: var(--red); background: rgba(239,68,68,0.12); }
+    .quiz-option:disabled { cursor: not-allowed; opacity: 0.96; }
+    .quiz-feedback {
+      margin-top: 14px; padding: 12px 14px; border-radius: 14px; background: rgba(255,255,255,0.04); color: #dce7f8; display: none;
+    }
+    .quiz-feedback.show { display: block; }
+
+    .nav-buttons {
+      display: flex; justify-content: space-between; gap: 12px; margin-top: 28px;
+    }
+    .btn {
+      border: 1px solid rgba(255,255,255,0.12); background: var(--surface-2); color: var(--text);
+      padding: 12px 18px; border-radius: 14px; font-family: 'Syne', sans-serif; font-weight: 700; cursor: pointer;
+      transition: all 0.18s ease;
+    }
+    .btn:hover { transform: translateY(-1px); border-color: var(--cyan); }
+    .btn.primary { background: linear-gradient(135deg, rgba(124,58,237,0.35), rgba(0,212,255,0.18)); border-color: rgba(0,212,255,0.28); }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+
+    .memory-grid {
+      display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px;
+    }
+    @media (max-width: 800px) { .memory-grid { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+    .mem-cell {
+      padding: 14px 10px; border-radius: 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); min-height: 92px;
+    }
+    .mem-cell .label { font-family: 'JetBrains Mono', monospace; color: var(--muted); font-size: 12px; margin-bottom: 8px; }
+
+    .timeline {
+      display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 12px;
+    }
+    @media (max-width: 860px) { .timeline { grid-template-columns: 1fr; } }
+    .timeline-step {
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 14px;
+    }
+
+    .completion {
+      text-align: center; padding-top: 22px;
+    }
+    .completion .hero {
+      font-size: 3rem; margin-bottom: 10px;
+    }
+    .completion ul {
+      text-align: left; display: inline-block; max-width: 860px; margin: 18px auto 0; color: #dbe7f8; line-height: 1.8;
+    }
+    .small-note { color: var(--muted); font-size: 0.92rem; }
+    .kicker { color: var(--cyan); font-weight: 700; }
+    .footer-note { margin-top: 18px; color: var(--muted); font-size: 0.93rem; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="topbar">
+      <div class="topbar-row">
+        <div class="brand">
+          <div class="eyebrow">Interactive JVM Memory Module</div>
+          <h1>Heap vs Stack · 30-minute guided lesson</h1>
+        </div>
+        <div class="nav-dots" id="navDots"></div>
+      </div>
+      <div class="status-panel">
+        <div class="timer" id="timer">30:00</div>
+        <div class="progress-wrap">
+          <div class="progress-meta">
+            <span id="progressLabel">Progress through time budget</span>
+            <span class="small-note" id="sectionStatus">Section 1 of 5</span>
+          </div>
+          <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <section class="section active" data-section="0">
+      <div class="section-label">Section 1 of 5 · ~6 mins</div>
+      <h2>Two kinds of memory: what lives where?</h2>
+      <p class="intro">Start with the mental model first. The stack is about <span class="kicker">active work per thread</span>. The heap is about <span class="kicker">shared objects that outlive a single method call</span>. That one sentence alone clears up a lot of confusion.</p>
+
+      <div class="grid two">
+        <div class="card eli5">
+          <div class="prefix">🧒 ELI5</div>
+          <h3>Think of a chef during a busy dinner service</h3>
+          <p>The chef keeps a tiny scratchpad in hand for the current order: table number, "2 soups", "1 salad", "fire steak". That scratchpad is like the <strong>stack</strong>: fast, small, and only for what is happening right now.</p>
+          <p>The kitchen pantry and fridge hold the actual ingredients and dishes. That is the <strong>heap</strong>: the bigger shared storage where the real stuff lives.</p>
+        </div>
+
+        <div class="card analogy">
+          <div class="prefix">🔗 ANALOGY</div>
+          <h3>Backpack vs storage room</h3>
+          <p>Your <strong>backpack</strong> carries quick-access things for the current trip: wallet, keys, a sticky note, a map address. That is the stack.</p>
+          <p>Your <strong>storage room</strong> holds the actual larger items: suitcases, winter coats, tools. That is the heap.</p>
+          <p>The backpack can hold an <em>address</em> to the storage room shelf, but not the full shelf itself. That is why a reference can be on the stack while the object is on the heap.</p>
+        </div>
+      </div>
+
+      <div class="grid two" style="margin-top:18px;">
+        <div class="card technical">
+          <div class="prefix">Technical</div>
+          <h3>Precise model</h3>
+          <ul>
+            <li><strong>Stack</strong> is thread-local memory.</li>
+            <li>Each method call creates a <strong>stack frame</strong>.</li>
+            <li>Frames contain local primitives and local <strong>references</strong>.</li>
+            <li><strong>Heap</strong> is shared across threads.</li>
+            <li>All normal Java objects and arrays are allocated on the heap.</li>
+          </ul>
+        </div>
+        <div class="diagram">
+          <div class="diagram-title">Interactive memory layout mental model</div>
+          <div class="memory-layout">
+            <div class="memory-column">
+              <h4>Thread Stack</h4>
+              <div class="stack-frame"><strong>main()</strong><br><span class="small-note">args ref, user ref</span></div>
+              <div class="stack-frame"><strong>createUser()</strong><br><span class="small-note">name ref, age primitive</span></div>
+              <div class="stack-frame"><strong>format()</strong><br><span class="small-note">temp locals</span></div>
+            </div>
+            <div class="memory-column">
+              <h4>Shared Heap</h4>
+              <div class="heap-box"><strong>User object</strong><br><span class="small-note">name field, age field</span></div>
+              <div class="heap-box"><strong>String object</strong><br><span class="small-note">"Hemanth"</span></div>
+              <div class="heap-box"><strong>ArrayList object</strong><br><span class="small-note">elements stored via refs</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card technical" style="margin-top:18px;">
+        <div class="prefix">Java example</div>
+        <h3>Where each piece goes</h3>
+        <pre class="code"><span class="tok-key">public</span> <span class="tok-key">void</span> <span class="tok-fn">demo</span>() {
+    <span class="tok-type">int</span> age = <span class="tok-num">30</span>;                 <span class="tok-com">// primitive local -> stack frame</span>
+    <span class="tok-type">User</span> u = <span class="tok-key">new</span> <span class="tok-type">User</span>();   <span class="tok-com">// ref 'u' -> stack, object -> heap</span>
+    u.name = <span class="tok-str">"Sam"</span>;                <span class="tok-com">// String object on heap</span>
+}</pre>
+      </div>
+
+      <div class="quiz" data-correct="1">
+        <h3>Quiz · What is stored directly in a stack frame?</h3>
+        <div class="quiz-options">
+          <button class="quiz-option">The full User object created with <code>new User()</code></button>
+          <button class="quiz-option">Method-local primitives and references</button>
+          <button class="quiz-option">All objects reachable by the current thread</button>
+          <button class="quiz-option">Class metadata and bytecode</button>
+        </div>
+        <div class="quiz-feedback"></div>
+      </div>
+
+      <div class="nav-buttons">
+        <button class="btn" disabled>← Back</button>
+        <button class="btn primary next-btn">Next →</button>
+      </div>
+    </section>
+
+    <section class="section" data-section="1">
+      <div class="section-label">Section 2 of 5 · ~6 mins</div>
+      <h2>The stack in detail: frames, locals, and references</h2>
+      <p class="intro">Now zoom in on the stack. The biggest mistake people make is thinking an object variable <em>is</em> the object. In most cases, the local variable is only a reference stored in the current frame.</p>
+
+      <div class="grid two">
+        <div class="card eli5">
+          <div class="prefix">🧒 ELI5</div>
+          <h3>Stack frames are like sticky notes for each task</h3>
+          <p>Every time you start a new tiny task, you place a fresh sticky note on top of the pile. When the task finishes, you remove the top note. That top-down last-in-first-out behavior is exactly why it is called a stack.</p>
+        </div>
+        <div class="card analogy">
+          <div class="prefix">🔗 ANALOGY</div>
+          <h3>A phone call stack</h3>
+          <p>You call one person, they transfer you to someone else, who then transfers you again. Each call is stacked on top of the previous one. The current active call is on top. When a call ends, you return to the previous one.</p>
+          <p>That is like <strong>method invocation</strong>. Each method call pushes a new frame.</p>
+        </div>
+      </div>
+
+      <div class="grid two" style="margin-top:18px;">
+        <div class="card technical">
+          <div class="prefix">Technical</div>
+          <h3>What a stack frame contains</h3>
+          <ul>
+            <li>Parameters passed into the method</li>
+            <li>Local primitive variables like <code>int</code>, <code>boolean</code></li>
+            <li>Local reference variables like <code>User u</code></li>
+            <li>Bookkeeping data for returning to the caller</li>
+          </ul>
+          <p><strong>Important:</strong> the frame contains the <em>reference value</em>, not the heap object's full contents.</p>
+        </div>
+
+        <div class="diagram">
+          <div class="diagram-title">Method-call timeline</div>
+          <div class="pill-flow">
+            <div class="pill amber">main()</div>
+            <div class="pill arrow">→</div>
+            <div class="pill amber">process()</div>
+            <div class="pill arrow">→</div>
+            <div class="pill amber">save()</div>
+            <div class="pill arrow">→</div>
+            <div class="pill green">return</div>
+            <div class="pill arrow">→</div>
+            <div class="pill green">return</div>
+            <div class="pill arrow">→</div>
+            <div class="pill green">return</div>
+          </div>
+          <div class="timeline" style="margin-top:14px;">
+            <div class="timeline-step"><strong>1</strong><br>main frame pushed</div>
+            <div class="timeline-step"><strong>2</strong><br>process frame pushed</div>
+            <div class="timeline-step"><strong>3</strong><br>save frame pushed</div>
+            <div class="timeline-step"><strong>4</strong><br>Frames popped in reverse order</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card technical" style="margin-top:18px;">
+        <div class="prefix">Java example</div>
+        <h3>One heap object, two stack references</h3>
+        <pre class="code"><span class="tok-type">User</span> u1 = <span class="tok-key">new</span> <span class="tok-type">User</span>();
+<span class="tok-type">User</span> u2 = u1;
+
+u1.name = <span class="tok-str">"Ava"</span>;
+System.out.println(u2.name);  <span class="tok-com">// prints Ava</span></pre>
+        <p style="margin-top:10px;">Why? Because <code>u1</code> and <code>u2</code> are two separate <strong>references</strong> in stack frames, both pointing to the same heap object.</p>
+      </div>
+
+      <table class="comparison-table" style="margin-top:18px;">
+        <thead>
+          <tr><th>Thing</th><th>Usually lives in</th><th>At-a-glance</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>int count</code></td><td>Stack frame</td><td><span class="badge amber">primitive local</span></td></tr>
+          <tr><td><code>User u</code></td><td>Stack frame</td><td><span class="badge cyan">reference only</span></td></tr>
+          <tr><td><code>new User()</code></td><td>Heap</td><td><span class="badge green">actual object</span></td></tr>
+          <tr><td><code>User.class</code> metadata</td><td>Metaspace</td><td><span class="badge purple">class info</span></td></tr>
+        </tbody>
+      </table>
+
+      <div class="quiz" data-correct="2">
+        <h3>Quiz · In <code>User u = new User();</code>, what is <code>u</code>?</h3>
+        <div class="quiz-options">
+          <button class="quiz-option">The object itself</button>
+          <button class="quiz-option">A class definition stored in metaspace</button>
+          <button class="quiz-option">A reference variable that points to the heap object</button>
+          <button class="quiz-option">A primitive pointer stored inside the object</button>
+        </div>
+        <div class="quiz-feedback"></div>
+      </div>
+
+      <div class="nav-buttons">
+        <button class="btn prev-btn">← Back</button>
+        <button class="btn primary next-btn">Next →</button>
+      </div>
+    </section>
+
+    <section class="section" data-section="2">
+      <div class="section-label">Section 3 of 5 · ~6 mins</div>
+      <h2>The heap in detail: Young Gen, Old Gen, and object lifetime</h2>
+      <p class="intro">The heap is not one flat bucket. Generational GC is based on a practical observation: most objects die young. That is why the heap is organized into regions that reflect object age and survival.</p>
+
+      <div class="grid two">
+        <div class="card eli5">
+          <div class="prefix">🧒 ELI5</div>
+          <h3>A school with new students and long-term teachers</h3>
+          <p>Most new students show up and leave quickly. Only a smaller number stick around for years. So the school keeps a fast temporary area for new arrivals and a more stable area for long-term people.</p>
+          <p>That is like the heap: many new objects are born in the <strong>Young Generation</strong>; only survivors get promoted to the <strong>Old Generation</strong>.</p>
+        </div>
+        <div class="card analogy">
+          <div class="prefix">🔗 ANALOGY</div>
+          <h3>Airport terminal → lounge → long-stay hotel</h3>
+          <p><strong>Eden</strong> is the arrivals hall where new objects first land. If they survive garbage collection, they move through <strong>Survivor</strong> spaces. Objects that keep surviving are promoted to <strong>Old Gen</strong>, like guests who stay for the long haul.</p>
+        </div>
+      </div>
+
+      <div class="diagram" style="margin-top:18px;">
+        <div class="diagram-title">Heap generation flow</div>
+        <div class="pill-flow">
+          <div class="pill cyan">new object</div>
+          <div class="pill arrow">→</div>
+          <div class="pill cyan">Eden</div>
+          <div class="pill arrow">→</div>
+          <div class="pill green">Survivor S0 / S1</div>
+          <div class="pill arrow">→</div>
+          <div class="pill purple">Old Gen</div>
+        </div>
+        <div class="memory-grid" style="margin-top:16px;">
+          <div class="mem-cell"><div class="label">Young Gen</div><strong>Eden</strong><br>Fresh allocations happen here first.</div>
+          <div class="mem-cell"><div class="label">Young Gen</div><strong>Survivor S0</strong><br>Objects that survived a minor GC.</div>
+          <div class="mem-cell"><div class="label">Young Gen</div><strong>Survivor S1</strong><br>Alternate survivor space during copying.</div>
+          <div class="mem-cell"><div class="label">Old Gen</div><strong>Tenured</strong><br>Long-lived objects promoted here.</div>
+        </div>
+      </div>
+
+      <div class="grid two" style="margin-top:18px;">
+        <div class="card technical">
+          <div class="prefix">Technical</div>
+          <h3>Precise terminology</h3>
+          <ul>
+            <li><strong>Eden:</strong> default area for most new object allocations.</li>
+            <li><strong>Survivor spaces:</strong> intermediate regions for objects that survive minor collection.</li>
+            <li><strong>Old Gen:</strong> region for long-lived objects, usually collected less frequently.</li>
+            <li><strong>Minor GC:</strong> focuses mostly on young generation cleanup.</li>
+            <li><strong>Major/Old collection:</strong> deals with old generation pressure.</li>
+          </ul>
+        </div>
+        <div class="card technical">
+          <div class="prefix">Java example</div>
+          <h3>Short-lived vs long-lived objects</h3>
+          <pre class="code"><span class="tok-key">public</span> <span class="tok-type">String</span> <span class="tok-fn">formatName</span>(<span class="tok-type">User</span> user) {
+    <span class="tok-type">StringBuilder</span> sb = <span class="tok-key">new</span> <span class="tok-type">StringBuilder</span>();
+    sb.append(user.firstName).append(<span class="tok-str">" "</span>).append(user.lastName);
+    <span class="tok-key">return</span> sb.toString();
+}</pre>
+          <p style="margin-top:10px;">The <code>StringBuilder</code> is often short-lived and dies young. A cached singleton service object may survive long enough to reach Old Gen.</p>
+        </div>
+      </div>
+
+      <div class="quiz" data-correct="0">
+        <h3>Quiz · Where do most new Java objects begin their life?</h3>
+        <div class="quiz-options">
+          <button class="quiz-option">Eden in the Young Generation</button>
+          <button class="quiz-option">Old Generation directly</button>
+          <button class="quiz-option">Metaspace</button>
+          <button class="quiz-option">The current thread's stack</button>
+        </div>
+        <div class="quiz-feedback"></div>
+      </div>
+
+      <div class="nav-buttons">
+        <button class="btn prev-btn">← Back</button>
+        <button class="btn primary next-btn">Next →</button>
+      </div>
+    </section>
+
+    <section class="section" data-section="3">
+      <div class="section-label">Section 4 of 5 · ~6 mins</div>
+      <h2>Metaspace: class metadata, interned strings, and what changed in Java 8</h2>
+      <p class="intro">Metaspace is commonly misunderstood because it is not where normal objects live. Think of it as the JVM's area for <span class="kicker">describing classes</span>, not for storing your business objects.</p>
+
+      <div class="grid two">
+        <div class="card eli5">
+          <div class="prefix">🧒 ELI5</div>
+          <h3>The instruction manual shelf</h3>
+          <p>You have toys in the room, but you also have the instruction manuals that explain how each toy is built and what pieces it has. The manuals are not the toys. They are descriptions.</p>
+          <p>Metaspace is that shelf of descriptions for loaded classes.</p>
+        </div>
+        <div class="card analogy">
+          <div class="prefix">🔗 ANALOGY</div>
+          <h3>Blueprint archive vs actual buildings</h3>
+          <p>The city archive stores blueprints, property records, and structural definitions. Those documents are like class metadata. The actual buildings in the city are like heap objects created from those class definitions.</p>
+        </div>
+      </div>
+
+      <div class="grid two" style="margin-top:18px;">
+        <div class="card technical">
+          <div class="prefix">Technical</div>
+          <h3>What goes in Metaspace?</h3>
+          <ul>
+            <li>Loaded class metadata</li>
+            <li>Method metadata</li>
+            <li>Field metadata</li>
+            <li>Runtime constant pool data associated with classes</li>
+            <li>Classloader-related metadata</li>
+          </ul>
+          <p>Metaspace uses <strong>native memory</strong>, unlike the heap which is JVM heap memory.</p>
+        </div>
+        <div class="card warning">
+          <div class="prefix">Warning</div>
+          <h3>About interned Strings post-Java 8</h3>
+          <p>For interview purposes, the most useful simplification is:</p>
+          <ul>
+            <li><strong>String objects themselves</strong>, including interned strings, are associated with the <strong>heap</strong> in modern Java.</li>
+            <li>The <strong>class metadata</strong> about <code>String</code> and other classes is in <strong>Metaspace</strong>.</li>
+          </ul>
+          <p>So if somebody says “interned Strings are in Metaspace,” treat that as a trap. The clearer answer is: <strong>class metadata is in Metaspace; String objects are heap objects</strong>.</p>
+        </div>
+      </div>
+
+      <div class="diagram" style="margin-top:18px;">
+        <div class="diagram-title">Class metadata vs runtime objects</div>
+        <div class="memory-layout">
+          <div class="memory-column">
+            <h4>Metaspace</h4>
+            <div class="meta-box"><strong>User.class</strong><br><span class="small-note">field layout, methods, metadata</span></div>
+            <div class="meta-box"><strong>OrderService.class</strong><br><span class="small-note">bytecode-derived runtime metadata</span></div>
+            <div class="meta-box"><strong>ClassLoader records</strong></div>
+          </div>
+          <div class="memory-column">
+            <h4>Heap</h4>
+            <div class="heap-box"><strong>User instance #1</strong></div>
+            <div class="heap-box"><strong>User instance #2</strong></div>
+            <div class="heap-box"><strong>"hello" String object</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card technical" style="margin-top:18px;">
+        <div class="prefix">Java example</div>
+        <h3>Class loading can consume Metaspace</h3>
+        <pre class="code"><span class="tok-com">// Conceptual example:</span>
+<span class="tok-com">// frameworks that generate lots of proxy classes</span>
+<span class="tok-com">// or classloaders that never get released</span>
+<span class="tok-com">// can keep adding class metadata to Metaspace</span></pre>
+        <p style="margin-top:10px;">This is why Metaspace pressure is often linked to dynamic proxies, hot reloading, bytecode generation, or classloader leaks.</p>
+      </div>
+
+      <div class="quiz" data-correct="3">
+        <h3>Quiz · Which statement is the most accurate?</h3>
+        <div class="quiz-options">
+          <button class="quiz-option">Metaspace stores all normal Java objects</button>
+          <button class="quiz-option">Metaspace is just another name for Old Gen</button>
+          <button class="quiz-option">Interned Strings replacing PermGen means all Strings now live in Metaspace</button>
+          <button class="quiz-option">Metaspace primarily stores class metadata, while String objects live on the heap</button>
+        </div>
+        <div class="quiz-feedback"></div>
+      </div>
+
+      <div class="nav-buttons">
+        <button class="btn prev-btn">← Back</button>
+        <button class="btn primary next-btn">Next →</button>
+      </div>
+    </section>
+
+    <section class="section" data-section="4">
+      <div class="section-label">Section 5 of 5 · ~6 mins</div>
+      <h2>Why StackOverflowError and OutOfMemoryError happen differently</h2>
+      <p class="intro">These failures look similar because both mention memory, but they come from different memory regions, different resource limits, and different root causes. This distinction matters a lot in debugging and interviews.</p>
+
+      <div class="grid two">
+        <div class="card eli5">
+          <div class="prefix">🧒 ELI5</div>
+          <h3>Two different ways a house can fail</h3>
+          <p>One failure is stacking too many boxes on a narrow staircase until no one can move. That is <strong>StackOverflowError</strong>.</p>
+          <p>The other is filling the storage areas until there is simply no room left. That is <strong>OutOfMemoryError</strong>.</p>
+        </div>
+        <div class="card analogy">
+          <div class="prefix">🔗 ANALOGY</div>
+          <h3>Phone menu loop vs warehouse overflow</h3>
+          <p>If customer support keeps transferring you in a loop, the call chain grows until it breaks. That is recursion causing stack overflow.</p>
+          <p>If a warehouse keeps receiving boxes faster than it can remove them, space runs out. That is heap pressure. If the blueprint archive keeps growing due to endless new building plans, that is metaspace pressure.</p>
+        </div>
+      </div>
+
+      <div class="grid two" style="margin-top:18px;">
+        <div class="card technical">
+          <div class="prefix">Technical</div>
+          <h3>StackOverflowError</h3>
+          <ul>
+            <li>Usually caused by <strong>deep or infinite recursion</strong>.</li>
+            <li>Each method call pushes another stack frame.</li>
+            <li>When the thread's stack limit is exhausted, JVM throws <code>StackOverflowError</code>.</li>
+          </ul>
+          <pre class="code"><span class="tok-key">void</span> <span class="tok-fn">recurse</span>() {
+    recurse();
+}</pre>
+        </div>
+
+        <div class="card technical">
+          <div class="prefix">Technical</div>
+          <h3>OutOfMemoryError: Java heap space</h3>
+          <ul>
+            <li>Happens when the JVM cannot allocate more heap objects.</li>
+            <li>Typical causes: leaks, unbounded collections, too-small heap, large burst allocations.</li>
+          </ul>
+          <pre class="code"><span class="tok-type">List</span>&lt;<span class="tok-type">byte</span>[]&gt; list = <span class="tok-key">new</span> <span class="tok-type">ArrayList</span>&lt;&gt;();
+<span class="tok-key">while</span> (<span class="tok-key">true</span>) {
+    list.add(<span class="tok-key">new</span> <span class="tok-type">byte</span>[<span class="tok-num">1024</span> * <span class="tok-num">1024</span>]);
+}</pre>
+        </div>
+      </div>
+
+      <div class="grid two" style="margin-top:18px;">
+        <div class="card warning">
+          <div class="prefix">Warning</div>
+          <h3>OutOfMemoryError: Metaspace</h3>
+          <ul>
+            <li>This is different from heap exhaustion.</li>
+            <li>The JVM cannot reserve enough native memory for more class metadata.</li>
+            <li>Often linked to <strong>many dynamically generated classes</strong> or <strong>classloader leaks</strong>.</li>
+          </ul>
+        </div>
+
+        <div class="diagram">
+          <div class="diagram-title">Failure mode comparison</div>
+          <table class="comparison-table">
+            <thead>
+              <tr><th>Error</th><th>Memory region</th><th>Typical cause</th><th>Fast clue</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><code>StackOverflowError</code></td><td>Thread stack</td><td>Too many nested calls</td><td><span class="badge red">recursion loop</span></td></tr>
+              <tr><td><code>OutOfMemoryError: Java heap space</code></td><td>Heap</td><td>Too many/live objects</td><td><span class="badge amber">growing collections</span></td></tr>
+              <tr><td><code>OutOfMemoryError: Metaspace</code></td><td>Metaspace / native mem</td><td>Too many loaded classes</td><td><span class="badge purple">proxy/classloader leak</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="diagram" style="margin-top:18px;">
+        <div class="diagram-title">How the failure unfolds</div>
+        <div class="pill-flow">
+          <div class="pill red">recursive call</div>
+          <div class="pill arrow">→</div>
+          <div class="pill red">new frame</div>
+          <div class="pill arrow">→</div>
+          <div class="pill red">new frame</div>
+          <div class="pill arrow">→</div>
+          <div class="pill red">stack limit hit</div>
+          <div class="pill arrow">→</div>
+          <div class="pill red">StackOverflowError</div>
+        </div>
+        <div class="pill-flow" style="margin-top:12px;">
+          <div class="pill amber">allocate object</div>
+          <div class="pill arrow">→</div>
+          <div class="pill amber">heap fills</div>
+          <div class="pill arrow">→</div>
+          <div class="pill amber">GC can't free enough</div>
+          <div class="pill arrow">→</div>
+          <div class="pill amber">Heap OOME</div>
+        </div>
+      </div>
+
+      <div class="quiz" data-correct="1">
+        <h3>Quiz · Which scenario most strongly points to a Metaspace problem?</h3>
+        <div class="quiz-options">
+          <button class="quiz-option">A recursive method with no base case</button>
+          <button class="quiz-option">A framework keeps generating proxy classes and classloaders never unload</button>
+          <button class="quiz-option">A request creates many temporary JSON objects</button>
+          <button class="quiz-option">A local variable <code>int i</code> is declared inside a loop</button>
+        </div>
+        <div class="quiz-feedback"></div>
+      </div>
+
+      <div class="nav-buttons">
+        <button class="btn prev-btn">← Back</button>
+        <button class="btn primary next-btn">Finish →</button>
+      </div>
+    </section>
+
+    <section class="section" data-section="5">
+      <div class="section-label">Complete · Cheat sheet</div>
+      <div class="completion">
+        <div class="hero">🎉</div>
+        <h2>You finished Heap vs Stack</h2>
+        <p class="intro" style="margin: 0 auto 18px; max-width: 820px;">Here is the compressed version you should be able to say in an interview without sounding memorized.</p>
+
+        <div class="grid two" style="text-align:left; margin-top: 20px;">
+          <div class="card technical">
+            <div class="prefix">Cheat sheet</div>
+            <h3>Core ideas</h3>
+            <ul>
+              <li><strong>Stack</strong> is thread-local and stores method frames, local primitives, and local references.</li>
+              <li><strong>Heap</strong> is shared and stores objects and arrays.</li>
+              <li><strong>Young Gen</strong> contains Eden and Survivor spaces for new and recently surviving objects.</li>
+              <li><strong>Old Gen</strong> stores longer-lived objects.</li>
+              <li><strong>Metaspace</strong> stores class metadata using native memory.</li>
+            </ul>
+          </div>
+          <div class="card technical">
+            <div class="prefix">Cheat sheet</div>
+            <h3>Error patterns</h3>
+            <ul>
+              <li><strong>StackOverflowError</strong> usually means runaway recursion or very deep call depth.</li>
+              <li><strong>Heap OOME</strong> means the JVM cannot allocate enough object memory on the heap.</li>
+              <li><strong>Metaspace OOME</strong> usually means too many loaded/generated classes or classloader leaks.</li>
+              <li>In modern Java, <strong>class metadata is in Metaspace</strong>; <strong>String objects are heap objects</strong>.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card analogy" style="text-align:left; margin-top:18px;">
+          <div class="prefix">🔗 ANALOGY</div>
+          <h3>One-line memory analogy you can remember</h3>
+          <p><strong>Stack = active sticky notes for the current work.</strong> <strong>Heap = shared storage room for real objects.</strong> <strong>Metaspace = library of class blueprints.</strong></p>
+        </div>
+
+        <ul>
+          <li>Local primitive? Usually stack frame.</li>
+          <li>Local object variable? Usually a stack reference.</li>
+          <li>Actual object created with <code>new</code>? Heap.</li>
+          <li><code>User.class</code> metadata? Metaspace.</li>
+          <li>Infinite recursion? Think stack overflow first.</li>
+          <li>Growing collection? Think heap pressure first.</li>
+          <li>Dynamic proxies and classloader leaks? Think metaspace pressure.</li>
+        </ul>
+
+        <div class="footer-note">You can reopen any section using the numbered dots above.</div>
+        <div class="nav-buttons" style="justify-content:center; margin-top:24px;">
+          <button class="btn prev-btn">← Back to last section</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const totalMinutes = 30;
+    const totalSeconds = totalMinutes * 60;
+    let remainingSeconds = totalSeconds;
+    let currentSection = 0;
+
+    const sections = Array.from(document.querySelectorAll('.section'));
+    const navDotsContainer = document.getElementById('navDots');
+    const timerEl = document.getElementById('timer');
+    const progressFill = document.getElementById('progressFill');
+    const sectionStatus = document.getElementById('sectionStatus');
+
+    function buildDots() {
+      sections.forEach((_, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'nav-dot';
+        btn.textContent = index + 1;
+        btn.setAttribute('aria-label', `Go to section ${index + 1}`);
+        btn.addEventListener('click', () => goToSection(index));
+        navDotsContainer.appendChild(btn);
+      });
+      updateDots();
+    }
+
+    function updateDots() {
+      const dots = Array.from(document.querySelectorAll('.nav-dot'));
+      dots.forEach((dot, index) => {
+        dot.classList.remove('active', 'done');
+        if (index === currentSection) dot.classList.add('active');
+        if (index < currentSection) dot.classList.add('done');
+      });
+    }
+
+    function goToSection(index) {
+      if (index < 0 || index >= sections.length) return;
+      sections[currentSection].classList.remove('active');
+      currentSection = index;
+      sections[currentSection].classList.add('active');
+      sectionStatus.textContent = currentSection < 5 ? `Section ${currentSection + 1} of 5` : 'Completion';
+      updateDots();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function attachNavButtons() {
+      document.querySelectorAll('.next-btn').forEach(btn => {
+        btn.addEventListener('click', () => goToSection(currentSection + 1));
+      });
+      document.querySelectorAll('.prev-btn').forEach(btn => {
+        btn.addEventListener('click', () => goToSection(currentSection - 1));
+      });
+    }
+
+    function formatTime(sec) {
+      const m = Math.floor(sec / 60).toString().padStart(2, '0');
+      const s = (sec % 60).toString().padStart(2, '0');
+      return `${m}:${s}`;
+    }
+
+    function updateTimerUI() {
+      timerEl.textContent = formatTime(remainingSeconds);
+      const elapsed = totalSeconds - remainingSeconds;
+      const percent = (elapsed / totalSeconds) * 100;
+      progressFill.style.width = `${Math.min(100, Math.max(0, percent))}%`;
+      timerEl.classList.remove('warn', 'danger');
+      if (remainingSeconds <= 60) {
+        timerEl.classList.add('danger');
+      } else if (remainingSeconds <= 300) {
+        timerEl.classList.add('warn');
+      }
+    }
+
+    function startTimer() {
+      updateTimerUI();
+      setInterval(() => {
+        if (remainingSeconds > 0) {
+          remainingSeconds -= 1;
+          updateTimerUI();
+        }
+      }, 1000);
+    }
+
+    function attachQuizzes() {
+      document.querySelectorAll('.quiz').forEach(quiz => {
+        const correct = Number(quiz.dataset.correct);
+        const options = Array.from(quiz.querySelectorAll('.quiz-option'));
+        const feedback = quiz.querySelector('.quiz-feedback');
+
+        options.forEach((option, index) => {
+          option.addEventListener('click', () => {
+            if (options.some(o => o.disabled)) return;
+
+            options.forEach((btn, btnIndex) => {
+              btn.disabled = true;
+              if (btnIndex === correct) btn.classList.add('correct');
+            });
+
+            const wasCorrect = index === correct;
+            if (!wasCorrect) option.classList.add('wrong');
+
+            const answerText = options[correct].textContent.trim();
+            feedback.classList.add('show');
+            feedback.innerHTML = wasCorrect
+              ? `<strong>Correct.</strong> ${answerText} is right because stack frames hold local primitives and references, while the referenced objects usually live elsewhere such as the heap.`
+              : `<strong>Not quite.</strong> The correct answer is: <strong>${answerText}</strong>. The key idea is to separate the <em>reference in the frame</em> from the <em>object in the heap</em>, or the <em>class metadata in metaspace</em>, depending on the case.`;
+          });
+        });
+      });
+    }
+
+    buildDots();
+    attachNavButtons();
+    attachQuizzes();
+    startTimer();
+  </script>
+</body>
+</html>

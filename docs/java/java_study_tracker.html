@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>17-Day Java Senior Interview Prep</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;500;700;800&display=swap');
+
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --surface2: #1a1a24;
+    --surface3: #22222f;
+    --accent: #6c63ff;
+    --accent2: #ff6584;
+    --green: #00e5a0;
+    --amber: #ffb347;
+    --red: #ff4757;
+    --text: #e8e8f0;
+    --text2: #9090aa;
+    --text3: #55556a;
+    --border: #2a2a3a;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Syne', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  /* HEADER */
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-left { display: flex; align-items: center; gap: 16px; }
+  .logo { font-size: 13px; font-family: var(--mono); color: var(--accent); letter-spacing: 0.08em; }
+  .header-title { font-size: 15px; font-weight: 700; color: var(--text); }
+  .header-meta { font-size: 12px; color: var(--text2); font-family: var(--mono); }
+  .overall-progress { display: flex; align-items: center; gap: 12px; }
+  .overall-pct { font-size: 24px; font-weight: 800; color: var(--green); font-family: var(--mono); }
+  .overall-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.1em; }
+
+  /* LAYOUT */
+  .layout { display: grid; grid-template-columns: 260px 1fr; min-height: calc(100vh - 69px); }
+
+  /* SIDEBAR */
+  .sidebar {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 20px 0;
+    overflow-y: auto;
+    max-height: calc(100vh - 69px);
+    position: sticky;
+    top: 69px;
+  }
+  .sidebar-section { margin-bottom: 8px; }
+  .sidebar-label {
+    font-size: 10px; font-family: var(--mono); color: var(--text3);
+    text-transform: uppercase; letter-spacing: 0.12em;
+    padding: 0 20px 8px;
+  }
+  .day-btn {
+    display: flex; align-items: center; gap: 10px;
+    width: 100%; padding: 10px 20px;
+    background: none; border: none; cursor: pointer;
+    text-align: left; transition: background 0.15s;
+    border-left: 3px solid transparent;
+  }
+  .day-btn:hover { background: var(--surface2); }
+  .day-btn.active { background: var(--surface2); border-left-color: var(--accent); }
+  .day-btn.completed { border-left-color: var(--green); }
+  .day-num {
+    font-size: 11px; font-family: var(--mono); color: var(--text3);
+    min-width: 28px;
+  }
+  .day-btn.active .day-num, .day-btn.completed .day-num { color: var(--accent); }
+  .day-btn.completed .day-num { color: var(--green); }
+  .day-info { flex: 1; }
+  .day-topic { font-size: 12px; font-weight: 700; color: var(--text2); line-height: 1.3; }
+  .day-btn.active .day-topic { color: var(--text); }
+  .day-progress-mini {
+    width: 36px; height: 4px; background: var(--surface3);
+    border-radius: 2px; overflow: hidden;
+  }
+  .day-progress-mini-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.3s; }
+  .day-btn.completed .day-progress-mini-fill { background: var(--green); }
+
+  /* MAIN */
+  .main { padding: 28px 32px; overflow-y: auto; }
+
+  /* DAY HEADER */
+  .day-header {
+    display: flex; align-items: flex-start;
+    justify-content: space-between; margin-bottom: 24px;
+    padding-bottom: 20px; border-bottom: 1px solid var(--border);
+  }
+  .day-badge {
+    font-size: 10px; font-family: var(--mono); color: var(--accent);
+    background: rgba(108,99,255,0.12); padding: 4px 10px;
+    border-radius: 4px; letter-spacing: 0.1em; text-transform: uppercase;
+    margin-bottom: 8px; display: inline-block;
+  }
+  .day-title { font-size: 22px; font-weight: 800; color: var(--text); line-height: 1.2; margin-bottom: 4px; }
+  .day-subtitle { font-size: 13px; color: var(--text2); }
+  .day-stats { display: flex; gap: 16px; align-items: center; }
+  .stat-box {
+    text-align: center; background: var(--surface2);
+    border: 1px solid var(--border); border-radius: 8px;
+    padding: 10px 16px; min-width: 70px;
+  }
+  .stat-val { font-size: 20px; font-weight: 800; font-family: var(--mono); color: var(--green); }
+  .stat-lbl { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 2px; }
+
+  /* PROGRESS BAR */
+  .day-progress-bar {
+    height: 6px; background: var(--surface3);
+    border-radius: 3px; margin-bottom: 24px; overflow: hidden;
+  }
+  .day-progress-bar-fill {
+    height: 100%; background: linear-gradient(90deg, var(--accent), var(--green));
+    border-radius: 3px; transition: width 0.4s ease;
+  }
+
+  /* HOUR BLOCKS */
+  .hours-grid { display: flex; flex-direction: column; gap: 12px; margin-bottom: 28px; }
+
+  .hour-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px; overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .hour-block:hover { border-color: var(--surface3); }
+  .hour-block.done { border-color: rgba(0,229,160,0.25); }
+  .hour-block.struggling { border-color: rgba(255,71,87,0.3); }
+
+  .hour-header {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 16px; cursor: pointer;
+    user-select: none;
+  }
+  .hour-tag {
+    font-size: 10px; font-family: var(--mono);
+    padding: 3px 8px; border-radius: 4px;
+    font-weight: 700; white-space: nowrap;
+    text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  .tag-revision { background: rgba(255,179,71,0.15); color: var(--amber); }
+  .tag-theory { background: rgba(108,99,255,0.15); color: var(--accent); }
+  .tag-lab { background: rgba(0,229,160,0.12); color: var(--green); }
+  .tag-interview { background: rgba(255,101,132,0.15); color: var(--accent2); }
+
+  .hour-time { font-size: 11px; font-family: var(--mono); color: var(--text3); min-width: 50px; }
+  .hour-title { font-size: 13px; font-weight: 700; color: var(--text); flex: 1; }
+  .hour-actions { display: flex; gap: 8px; align-items: center; }
+
+  .status-btn {
+    font-size: 10px; font-family: var(--mono); padding: 4px 10px;
+    border-radius: 4px; border: 1px solid var(--border);
+    cursor: pointer; background: var(--surface2);
+    color: var(--text2); transition: all 0.15s; white-space: nowrap;
+  }
+  .status-btn:hover { border-color: var(--text3); color: var(--text); }
+  .status-btn.active-done { background: rgba(0,229,160,0.15); border-color: var(--green); color: var(--green); }
+  .status-btn.active-struggle { background: rgba(255,71,87,0.15); border-color: var(--red); color: var(--red); }
+  .status-btn.active-skip { background: rgba(255,179,71,0.1); border-color: var(--amber); color: var(--amber); }
+
+  .hour-body { padding: 0 16px 14px; display: none; }
+  .hour-body.open { display: block; }
+
+  .hour-section { margin-top: 12px; }
+  .hour-section-label {
+    font-size: 10px; font-family: var(--mono); color: var(--text3);
+    text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 6px;
+  }
+  .task-list { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+  .task-item {
+    display: flex; align-items: flex-start; gap: 8px;
+    font-size: 12px; color: var(--text2); line-height: 1.5;
+    padding: 2px 0;
+  }
+  .task-item::before {
+    content: '→'; color: var(--text3); font-family: var(--mono);
+    font-size: 11px; margin-top: 1px; flex-shrink: 0;
+  }
+  .task-item code {
+    font-family: var(--mono); font-size: 11px;
+    background: var(--surface3); padding: 1px 5px;
+    border-radius: 3px; color: var(--accent);
+  }
+
+  .note-area {
+    width: 100%; background: var(--surface2);
+    border: 1px solid var(--border); border-radius: 6px;
+    padding: 10px 12px; font-family: var(--mono); font-size: 12px;
+    color: var(--text); resize: vertical; min-height: 70px;
+    margin-top: 8px; outline: none; transition: border-color 0.2s;
+  }
+  .note-area::placeholder { color: var(--text3); }
+  .note-area:focus { border-color: var(--accent); }
+
+  /* WEAK SPOTS */
+  .weak-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px; padding: 20px;
+    margin-bottom: 24px;
+  }
+  .weak-panel-title {
+    font-size: 11px; font-family: var(--mono); color: var(--text3);
+    text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 14px;
+  }
+  .weak-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+  .weak-tag {
+    font-size: 11px; font-family: var(--mono);
+    background: rgba(255,71,87,0.1); color: var(--red);
+    border: 1px solid rgba(255,71,87,0.25); border-radius: 4px;
+    padding: 4px 10px;
+  }
+  .weak-empty { font-size: 12px; color: var(--text3); font-family: var(--mono); }
+
+  /* TOMORROW PANEL */
+  .tomorrow-panel {
+    background: linear-gradient(135deg, rgba(108,99,255,0.08), rgba(0,229,160,0.05));
+    border: 1px solid rgba(108,99,255,0.2);
+    border-radius: 10px; padding: 20px; margin-bottom: 24px;
+  }
+  .tomorrow-title {
+    font-size: 11px; font-family: var(--mono); color: var(--accent);
+    text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 10px;
+  }
+  .tomorrow-focus { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+  .tomorrow-note { font-size: 12px; color: var(--text2); line-height: 1.6; }
+
+  /* DAILY LOG */
+  .daily-log {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 20px;
+  }
+  .daily-log-title {
+    font-size: 11px; font-family: var(--mono); color: var(--text3);
+    text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px;
+  }
+  .log-field-label { font-size: 11px; color: var(--text3); font-family: var(--mono); margin-bottom: 4px; margin-top: 12px; }
+
+  /* EXPORT/IMPORT */
+  .io-btn {
+    font-size: 11px; font-family: var(--mono); padding: 6px 12px;
+    border-radius: 6px; border: 1px solid var(--border);
+    cursor: pointer; background: var(--surface2);
+    color: var(--text2); transition: all 0.15s; white-space: nowrap;
+    text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
+  }
+  .io-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .io-btn.import { border-color: var(--border); }
+  .io-btn.import:hover { border-color: var(--green); color: var(--green); }
+  .toast {
+    position: fixed; bottom: 24px; right: 24px;
+    background: var(--surface2); border: 1px solid var(--green);
+    color: var(--green); font-family: var(--mono); font-size: 12px;
+    padding: 10px 18px; border-radius: 8px; z-index: 999;
+    opacity: 0; transition: opacity 0.3s; pointer-events: none;
+  }
+  .toast.show { opacity: 1; }
+  #import-file { display: none; }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 3px; }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { position: static; max-height: none; }
+    .main { padding: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-left">
+    <span class="logo">JAVA.PREP</span>
+    <div>
+      <div class="header-title">14-Day Senior Interview Reconstruction</div>
+      <div class="header-meta" id="header-meta">Bank Transaction System · 17-Day Reconstruction</div>
+    </div>
+  </div>
+  <div class="overall-progress">
+    <div>
+      <div class="overall-pct" id="overall-pct">0%</div>
+      <div class="overall-label">Overall</div>
+    </div>
+    <div class="stat-box" style="min-width:60px">
+      <div class="stat-val" id="done-count">0</div>
+      <div class="stat-lbl">Done</div>
+    </div>
+    <div class="stat-box" style="min-width:60px">
+      <div class="stat-val" style="color:var(--red)" id="struggle-count">0</div>
+      <div class="stat-lbl">Weak</div>
+    </div>
+    <div style="display:flex;gap:8px;margin-left:8px">
+      <button class="io-btn" onclick="exportProgress()">↓ Export</button>
+      <label class="io-btn import">↑ Import<input type="file" id="import-file" accept=".json" onchange="importProgress(event)"></label>
+    </div>
+  </div>
+</header>
+<div class="toast" id="toast"></div>
+
+<div class="layout">
+  <nav class="sidebar" id="sidebar"></nav>
+  <main class="main" id="main-content"></main>
+</div>
+
+<script>
+const DAYS = [
+  {
+    day: 1,
+    topic: "JVM Internals & Java Memory Model",
+    subtitle: "Stack, Heap, GC, ClassLoader — the engine room",
+    tomorrow: "Java Fundamentals — Collections, Generics, Exceptions, String internals. Foundation before Streams.",
+    hours: [
+      { time:"8–9am", type:"theory", tag:"Theory", title:"JVM Architecture — ClassLoaders & Bytecode",
+        tasks:["Look up: Bootstrap, Extension, Application ClassLoader hierarchy","Understand: parent-delegation model — why does it exist?","Look up: what does javap -c do? Run it on a simple class","Key class internals: java.lang.ClassLoader, defineClass(), loadClass()","How does Spring hot reload break the parent-delegation model?"] },
+      { time:"9–10am", type:"theory", tag:"Theory", title:"Stack vs Heap — What lives where",
+        tasks:["Stack: method frames, local primitives, object references (NOT the objects themselves)","Heap: all objects, Young Gen (Eden+Survivor), Old Gen, Metaspace","Look up: what goes in Metaspace? (class metadata, interned Strings post-Java 8)","Why does StackOverflowError happen? Write a recursive method to trigger one deliberately","Why does OutOfMemoryError in Heap differ from Metaspace OOM?"] },
+      { time:"10–11am", type:"theory", tag:"Theory", title:"Garbage Collection — How objects die",
+        tasks:["Minor GC vs Major GC vs Full GC — when does each trigger?","Mark-and-Sweep, Mark-Compact, Copying — understand each algorithm","Look up: G1GC regions. Why is G1 the default since Java 9?","JVM flags to know: -Xmx, -Xms, -XX:+UseG1GC, -XX:MaxGCPauseMillis","Key concept: Stop-the-world pauses — what causes them, why they matter in production"] },
+      { time:"11am–12pm", type:"lab", tag:"Lab 1", title:"Memory Leak Hunt — Diagnose a broken app",
+        tasks:["Create a class that causes a memory leak using a static HashMap that never clears","Add a shutdown hook that prints heap usage using Runtime.getRuntime().totalMemory()","Write a method that causes StackOverflowError — catch it and log the depth","Run with -verbose:gc flag and observe GC output in console","Document: what JVM flags would you add to a production Spring Boot app and why?"] },
+      { time:"1–2pm", type:"theory", tag:"Theory", title:"Java Memory Model — volatile, happens-before",
+        tasks:["What does volatile actually guarantee? (visibility, NOT atomicity)","happens-before relationship — the formal guarantee of JMM","Why can double-checked locking break without volatile?","Look up: memory barriers, CPU cache coherence","Difference between synchronized visibility guarantee vs volatile"] },
+      { time:"2–4pm", type:"lab", tag:"Lab 2", title:"Bank Account — Foundation class",
+        tasks:["Create BankAccount POJO: id (UUID), owner (String), balance (BigDecimal — never double for money)","Create Transaction record: transactionId, accountId, type (DEPOSIT/WITHDRAW), amount, timestamp","Write equals/hashCode using UUID only — explain why in a comment","Write toString() — explain why you exclude balance from logs (PII)","Create BankAccountRepository interface — just the contract, no implementation yet"] },
+      { time:"4–5pm", type:"lab", tag:"Lab 3", title:"ClassLoader experiment",
+        tasks:["Write a program that prints the ClassLoader chain for String.class, your own class, and a Spring class","Observe: String uses Bootstrap (prints null), yours uses AppClassLoader","Look up: how does Tomcat use custom ClassLoaders for webapp isolation?","Write in your notes: explain ClassLoader parent delegation in plain English (Feynman prep)"] },
+      { time:"5–6pm", type:"interview", tag:"Interview", title:"Senior Edge-Case Questions — JVM",
+        tasks:["Q: A production app is getting frequent Full GCs every 2 minutes. Walk me through your diagnosis.","Q: What is the difference between Metaspace and PermGen? Why was PermGen removed?","Q: Why should you never use float or double for currency in Java?","Q: What does String.intern() do — when is it useful and when is it dangerous?","Q: Explain a memory leak scenario specific to a long-running Spring Boot application.","Vocab: Stop-the-world, eden space, survivor ratio, GC root, reachable object, safepoint"] }
+    ]
+  },
+  {
+    day: 2,
+    topic: "Java Fundamentals — Collections, Generics, Exceptions",
+    subtitle: "The foundation Streams and lambdas are built on",
+    tomorrow: "Streams & Lambdas — now you have the Collections and type system knowledge to understand them properly.",
+    hours: [
+      { time:"8–9am", type:"revision", tag:"Revision A", title:"Day 1 Recall — JVM from memory",
+        tasks:["Without notes: draw JVM memory regions — Stack, Heap (Eden/Survivor/Old), Metaspace","Explain ClassLoader parent-delegation in 60 seconds out loud","What is the difference between Minor GC and Full GC? When does each trigger?","Why is BigDecimal used for money? What goes wrong with double?"] },
+      { time:"9–10am", type:"theory", tag:"Theory", title:"Collections — internals that matter for interviews",
+        tasks:["ArrayList: backed by Object[], resizes at 1.5x — amortized O(1) add","LinkedList: doubly-linked nodes — O(1) add/remove at ends, O(n) get(index) — rarely the right choice","HashMap: array of buckets, hash(key) % capacity — look up: what happens on collision? (chaining vs open addressing)","HashMap resize: load factor 0.75, doubles capacity, rehashes ALL entries — why this matters for memory spikes","HashSet is just a HashMap with dummy values — know this","LinkedHashMap: insertion-order — useful for LRU cache implementation","TreeMap: Red-Black tree, O(log n) — keys always sorted","Fail-fast iterators: ConcurrentModificationException — what causes it?"] },
+      { time:"10–11am", type:"theory", tag:"Theory", title:"Generics — wildcards, bounds, type erasure",
+        tasks:["Generic class: class Box<T> — T is erased at compile time (type erasure)","Bounded wildcards: <? extends T> (covariant, read-only), <? super T> (contravariant, write)","PECS rule: Producer Extends, Consumer Super — know when to use each","Look up: what is type erasure? Why can't you do new T() inside a generic class?","Difference between List<Object> and List<?> — common interview trap","Generic methods vs generic classes — when do you need a generic method?"] },
+      { time:"11am–12pm", type:"theory", tag:"Theory", title:"Exception handling — checked vs unchecked internals",
+        tasks:["Throwable → Error (JVM failures) vs Exception (application failures)","Checked exceptions: must declare or catch — compiler enforced — extends Exception","Unchecked: RuntimeException subclasses — no compile-time enforcement","try-with-resources: AutoCloseable.close() called automatically — look up: what if both try and close() throw?","Multi-catch: catch (IOException | SQLException e) — e is effectively final","Exception chaining: new RuntimeException('msg', cause) — always wrap with cause in production","Common mistake: swallowing exceptions with empty catch block — what to do instead"] },
+      { time:"1–3pm", type:"lab", tag:"Lab", title:"Collections deep dive in Bank project",
+        tasks:["Add Map<UUID, BankAccount> as an in-memory store — explain why HashMap not TreeMap here","Write getTopNAccounts(int n) — returns accounts sorted by balance using TreeMap or Comparator","Write findDuplicateOwners() — uses groupingBy + filter on stream to find owners with 2+ accounts (preview of Day 3)","Deliberately trigger ConcurrentModificationException — then fix with Iterator.remove()","Implement a simple LRU cache for account lookups using LinkedHashMap — override removeEldestEntry()"] },
+      { time:"3–4pm", type:"theory", tag:"Theory", title:"String internals — pool, immutability, StringBuilder",
+        tasks:["String is immutable — every concat creates a new object — why this matters in loops","String pool: string literals are interned by default — == vs equals() trap","Look up: String.intern() — forces heap string into pool — when is this actually useful?","StringBuilder vs StringBuffer — Buffer is synchronized, Builder is not — which to use and why?","String.format() vs StringBuilder for concatenation — performance implications in hot paths"] },
+      { time:"4–5pm", type:"lab", tag:"Lab", title:"Exception handling in Bank project",
+        tasks:["Create custom checked exception: InsufficientFundsException extends Exception","Create custom unchecked: InvalidTransactionException extends RuntimeException","Add try-with-resources to any file/connection handling in your project","Write a method that wraps a checked exception in an unchecked one — explain why this pattern exists","Make sure every catch block either logs+rethrows or handles — no swallowed exceptions"] },
+      { time:"5–6pm", type:"interview", tag:"Interview", title:"Senior Edge-Case Questions — Collections & Exceptions",
+        tasks:["Q: Why does HashMap allow one null key but Hashtable does not?","Q: What is the difference between fail-fast and fail-safe iterators? Give an example of each.","Q: When would you use LinkedHashMap over HashMap?","Q: What happens if hashCode() always returns the same value?","Q: Why do checked exceptions exist? Make the case for and against them.","Vocab: load factor, rehashing, type erasure, PECS, ConcurrentModificationException, autoboxing trap"] }
+    ]
+  },
+  {
+    day: 3,
+    topic: "Java 8+ — Streams, Lambdas, Optional",
+    subtitle: "Functional programming the right way — built on Day 2 foundations",
+    tomorrow: "OOP Design — polymorphism depth, SOLID principles, design patterns.",
+    hours: [
+      { time:"8–9am", type:"revision", tag:"Revision A", title:"Day 2 Recall — Collections from memory",
+        tasks:["What is HashMap's internal structure? What happens on hash collision?","What does the load factor 0.75 mean? When does HashMap resize?","Explain the PECS rule with a concrete example","What is the difference between a checked and unchecked exception? Which does Spring prefer?"] },
+      { time:"9–9:30am", type:"revision", tag:"Revision B", title:"Day 1 Feynman — JVM to a non-developer",
+        tasks:["Explain stack vs heap as if talking to a non-technical manager — use an analogy","Explain GC: what is a reachable object? Use a real-world metaphor","Explain why double fails for currency — make it vivid with a concrete $0.10 + $0.20 example"] },
+      { time:"9:30–11am", type:"theory", tag:"Theory", title:"Lambda internals — what actually happens",
+        tasks:["Lambdas are NOT anonymous inner classes — look up: invokedynamic bytecode instruction","A lambda captures effectively final variables — WHY? (relates to Day 1 stack/heap — variable must be safe to copy)","Functional interfaces: Function<T,R>, Predicate<T>, Consumer<T>, Supplier<T>, BiFunction<T,U,R>","Look up: what is a SAM interface? Why does @FunctionalInterface matter?","Method references — 4 types: static (Class::method), instance (obj::method), arbitrary instance (Class::method), constructor (Class::new)"] },
+      { time:"11am–12pm", type:"theory", tag:"Theory", title:"Stream API — pipeline internals",
+        tasks:["Streams are lazy — intermediate ops don't execute until terminal op is called","Intermediate: filter, map, flatMap, distinct, sorted, peek, limit, skip","Terminal: collect, forEach, reduce, count, findFirst, anyMatch, allMatch","Look up: what is a Spliterator? How does parallel stream use ForkJoinPool?","Critical: why is forEach on a parallel stream dangerous with mutable state?","Collectors: toList(), toMap(), groupingBy(), partitioningBy(), joining()"] },
+      { time:"12–1pm", type:"theory", tag:"Theory", title:"Optional — the right way",
+        tasks:["Optional.of() vs Optional.ofNullable() vs Optional.empty() — when each","NEVER call .get() without .isPresent() — use .orElse(), .orElseGet(), .orElseThrow()","map() vs flatMap() on Optional — when does flatMap matter?","Common mistake: Optional as a method parameter — why is this bad design?","orElse() vs orElseGet() performance difference — orElse always evaluates the argument"] },
+      { time:"1–3pm", type:"lab", tag:"Lab", title:"Stream-powered Transaction Reports",
+        tasks:["Given List<Transaction>, use Streams: find total DEPOSIT amount using reduce()","Group transactions by type using Collectors.groupingBy()","Find top 3 largest withdrawals using sorted() + limit()","Write findTransactionById(UUID id) returning Optional<Transaction>","Throw IllegalArgumentException if amount <= 0 using Optional.filter().orElseThrow()","HARD: use flatMap to flatten List<List<Transaction>> from multiple accounts into one stream"] },
+      { time:"3–4pm", type:"lab", tag:"Lab", title:"Broken code — fix the Stream bugs",
+        tasks:["Bug 1: Stream reused after terminal op — fix it (streams are single-use)","Bug 2: parallel stream modifying a shared ArrayList — fix with thread-safe collector","Bug 3: Optional.get() called without check — refactor to orElseThrow with message","Bug 4: map() used where flatMap() needed on Optional<Optional<T>>","Write a comment on each fix explaining root cause"] },
+      { time:"4–5pm", type:"lab", tag:"Lab", title:"Add Stream reporting to Bank project",
+        tasks:["Add List<Transaction> history to BankAccount","Write getMonthlyReport() — groups by month, sums deposits and withdrawals","Write findSuspiciousTransactions() — transactions over $10,000 in a single day","All methods return Optional or List — no null returns anywhere in this codebase"] },
+      { time:"5–6pm", type:"interview", tag:"Interview", title:"Senior Edge-Case Questions — Streams",
+        tasks:["Q: What is the difference between map() and flatMap()? Give a concrete example.","Q: Why should you avoid stateful lambdas in parallel streams?","Q: When does Collectors.toMap() throw an exception and how do you handle it?","Q: What is the difference between .orElse() and .orElseGet()? When does it matter?","Q: A stream pipeline has peek() in the middle but it never prints. Why?","Vocab: lazy evaluation, terminal operation, short-circuit, spliterator, effectively final, invokedynamic"] }
+    ]
+  },
+  {
+    day: 4,
+    topic: "OOP Depth & SOLID Principles",
+    subtitle: "Polymorphism internals, design patterns, SOLID for Spring",
+    tomorrow: "SQL Fundamentals — JOINs, indexes, ACID. You need solid OOP to model JPA entities correctly.",
+    hours: [
+      { time:"8–9am", type:"revision", tag:"Revision A", title:"Day 3 Recall — Streams from memory",
+        tasks:["Write a Stream pipeline from memory: filter + map + collect to List","What is the difference between map() and flatMap()? Give an example","What does Collectors.groupingBy() return? What is the value type?","When does orElseGet() perform better than orElse()?"] },
+      { time:"9–9:30am", type:"revision", tag:"Revision B", title:"Day 2 Feynman — Collections to a colleague",
+        tasks:["Explain HashMap collision resolution — make it visual with a bucket analogy","Explain type erasure — why can't you check instanceof on a generic type at runtime?","Explain the checked vs unchecked exception distinction — when does Spring prefer unchecked?"] },
+      { time:"9:30–11am", type:"theory", tag:"Theory", title:"Polymorphism internals — vtables & dispatch",
+        tasks:["Static dispatch (compile-time) vs Dynamic dispatch (runtime) — know the difference","Look up: vtable (virtual method table) — how does JVM resolve method calls at runtime?","Covariant return types — why can an overriding method return a subtype?","Interface default methods (Java 8) — diamond problem resolution rules","Abstract class vs Interface: the REAL distinction is about state, not just is-a vs can-do"] },
+      { time:"11am–12pm", type:"theory", tag:"Theory", title:"SOLID — as applied to Spring Boot",
+        tasks:["S: Single Responsibility — a Service class should not also do HTTP response building","O: Open/Closed — use Strategy pattern instead of if/else chains","L: Liskov Substitution — subtypes must not break contracts (JPA entity inheritance pitfall)","I: Interface Segregation — why you have separate Repository interfaces per entity","D: Dependency Inversion — this IS Spring's entire DI model. Understand it deeply."] },
+      { time:"1–3pm", type:"lab", tag:"Lab", title:"Refactor Bank project for SOLID",
+        tasks:["Extract a TransactionValidator interface with validate(Transaction t)","Create BasicValidator (amount > 0) and FraudValidator (amount < 10000)","Wire with List<TransactionValidator> in service — Spring injects all implementations","This demonstrates Interface Segregation + Open/Closed + Dependency Inversion in one pattern","Write a comment on each class explaining which SOLID principle it satisfies"] },
+      { time:"3–5pm", type:"lab", tag:"Lab", title:"Design Patterns in Java",
+        tasks:["Builder pattern on BankAccount: BankAccount.builder().owner().balance().build()","Strategy pattern for fee: FeeStrategy interface, ZeroFeeStrategy, PercentageFeeStrategy","Observer pattern: AccountEventListener logs when balance changes — preview of Spring Events","Singleton: implement, then explain why Spring beans are singletons and what that means for thread safety"] },
+      { time:"5–6pm", type:"interview", tag:"Interview", title:"Senior Edge-Case Questions — OOP & Design",
+        tasks:["Q: Explain Liskov Substitution with a concrete violation example in Java.","Q: Why is composition preferred over inheritance in Spring applications?","Q: You have 6 validators on every request. How do you add a 7th without modifying existing code?","Q: A Spring @Service is a singleton — what happens if it has a mutable field?","Q: What is the difference between an abstract class and an interface in Java 8+?","Vocab: vtable dispatch, covariant return, ISP, DIP, Strategy pattern, invariant"] }
+    ]
+  },
+  {
+    day: 5,
+    topic: "SQL Fundamentals & ACID Transactions",
+    subtitle: "JOINs, indexes, isolation levels — the DB knowledge gap closed",
+    tomorrow: "JPA & Hibernate internals — you need SQL to understand what Hibernate generates.",
+    hours: [
+      { time:"8–9am", type:"revision", tag:"Revision A", title:"Day 4 Recall — SOLID from memory",
+        tasks:["Name all 5 SOLID principles and give a one-sentence definition of each","Explain Dependency Inversion using Spring @Service and @Repository as examples","What design pattern allows adding validators without modifying the service?","What is the diamond problem in Java? How does Java 8 resolve it?"] },
+      { time:"9–9:30am", type:"revision", tag:"Revision B", title:"Day 3 Feynman — Streams to a colleague",
+        tasks:["Explain lazy evaluation in Streams — use a pipeline analogy","Explain why parallel streams can be dangerous — give a concrete scenario","Explain Optional.orElseGet() vs orElse() and when the difference matters in production"] },
+      { time:"9:30–11am", type:"theory", tag:"Theory", title:"SQL basics — SELECT, WHERE, GROUP BY, ORDER BY",
+        tasks:["Write SELECT with WHERE, AND, OR, IN, BETWEEN, LIKE — know each clause","GROUP BY + HAVING — HAVING filters groups, WHERE filters rows — know the difference","ORDER BY ASC/DESC, LIMIT/OFFSET for pagination","Aggregate functions: COUNT, SUM, AVG, MIN, MAX — when do they ignore NULLs?","Subqueries vs JOINs — when is each appropriate? Subquery in WHERE vs FROM vs SELECT"] },
+      { time:"11am–12pm", type:"theory", tag:"Theory", title:"SQL JOINs — all types with real examples",
+        tasks:["INNER JOIN: only matching rows — most common","LEFT JOIN: all left rows + matching right (NULLs for no match) — use for optional relationships","RIGHT JOIN: rarely used, prefer LEFT with tables swapped","FULL OUTER JOIN: all rows from both, NULLs where no match","CROSS JOIN: Cartesian product — when is this intentional?","Write each JOIN type against bank_accounts + transactions tables mentally"] },
+      { time:"1–2pm", type:"theory", tag:"Theory", title:"ACID & Isolation Levels",
+        tasks:["Atomicity: all-or-nothing — what happens at DB level on rollback? (undo log)","Consistency: constraints enforced — NOT NULL, FK, CHECK constraints","Isolation levels: Read Uncommitted → Read Committed → Repeatable Read → Serializable","Anomalies: dirty read, non-repeatable read, phantom read, lost update, write skew — know each","Look up: WAL (Write-Ahead Log) — how Postgres guarantees durability","For bank transfers: which isolation level? Why?"] },
+      { time:"2–4pm", type:"lab", tag:"Lab", title:"Write the SQL for your Bank schema",
+        tasks:["Write CREATE TABLE for bank_accounts and transactions with proper constraints","Write: total balance across all accounts — SUM with GROUP BY","Write: accounts with more than 5 transactions in last 30 days — JOIN + HAVING","Write: largest single transaction per account — window function MAX() OVER (PARTITION BY)","Write: detect suspicious activity — same account, 3+ withdrawals within 1 hour","Add index on transactions(account_id, created_at) — explain this specific combination"] },
+      { time:"4–5pm", type:"lab", tag:"Lab", title:"Indexes — understand the B-tree",
+        tasks:["Look up: B-tree index structure — how does Postgres walk it for a range query?","When does an index NOT get used? (function on column, implicit cast, low cardinality)","Composite index column order matters — explain why (account_id, date) is not (date, account_id)","Look up: EXPLAIN ANALYZE output — Seq Scan vs Index Scan","Add @Index annotation to your JPA entity based on your query patterns"] },
+      { time:"5–6pm", type:"interview", tag:"Interview", title:"Senior Edge-Case Questions — SQL & ACID",
+        tasks:["Q: Two concurrent transactions both read $100 and both deduct $80. What anomaly is this?","Q: What is a phantom read? Give a bank-specific example.","Q: Why does adding an index sometimes make writes slower?","Q: What is a covering index?","Q: Explain WAL and why it is essential for durability.","Vocab: undo log, WAL, B-tree, covering index, write skew, serialization anomaly"] }
+    ]
+  },
+  {
+    day: 6,
+    topic: "JPA & Hibernate Internals",
+    subtitle: "Persistence context, dirty checking, N+1, locking",
+    tomorrow: "Spring Beans 101 — what a Bean is, @Component scanning, basic wiring. Foundation before Spring Core internals.",
+    hours: [
+      { time:"8–9am", type:"revision", tag:"Revision A", title:"Day 5 Recall — SQL & ACID from memory",
+        tasks:["Write the 4 ACID properties with a one-sentence failure example each","Name the 4 SQL JOIN types and when you use each","What anomaly does Repeatable Read prevent that Read Committed does not?","Why does composite index column order matter?"] },
+      { time:"9–9:30am", type:"revision", tag:"Revision B", title:"Day 4 Feynman — SOLID & Patterns",
+        tasks:["Explain Open/Closed principle using your TransactionValidator example","Explain why a singleton @Service with a mutable instance field is dangerous","Explain the Strategy pattern — when would an interviewer expect you to reach for it?"] },
+      { time:"9:30–11am", type:"theory", tag:"Theory", title:"Persistence Context — the first-level cache",
+        tasks:["EntityManager IS the persistence context — one per transaction in Spring","Managed vs Detached vs Transient — draw the state machine","Dirty checking: Hibernate snapshots state at load, diffs at flush — no save() needed","flush() vs commit() vs clear() — different things, know each precisely","Look up: FlushModeType.AUTO vs COMMIT — when does auto-flush fire?"] },
+      { time:"11am–1pm", type:"theory", tag:"Theory", title:"N+1, @EntityGraph, Lazy/Eager — deep",
+        tasks:["N+1 root cause: LAZY collection + loop = N SELECT statements","Three fixes: JOIN FETCH in JPQL, @EntityGraph, @BatchSize — know the tradeoffs","@EntityGraph overrides LAZY for ONE specific query — entity default stays LAZY","JOIN FETCH with pagination: HHH90003004 warning — pagination happens in-memory. Why?","Look up: Hibernate StatisticsImpl — how to count queries in a test to detect N+1"] },
+      { time:"1–3pm", type:"lab", tag:"Lab", title:"Add JPA to Bank project",
+        tasks:["Add @Entity to BankAccount and Transaction with @Id, @Column constraints","Map @OneToMany(fetch=LAZY) between BankAccount and Transaction","Write BankAccountRepository extending JpaRepository","Write findAccountsWithTransactions() using @EntityGraph(attributePaths='transactions')","Deliberately trigger N+1 in a test, observe SQL, then fix — document both versions"] },
+      { time:"3–5pm", type:"lab", tag:"Lab", title:"Locking in JPA",
+        tasks:["Add @Version Long version to BankAccount for optimistic locking","Write a test that triggers OptimisticLockException: two threads load same account, both modify","Catch OptimisticLockException and retry — implement simple retry logic","Look up: LockModeType.PESSIMISTIC_WRITE — write a findByIdForUpdate() method","Comment: when would you choose optimistic vs pessimistic for a bank transfer?"] },
+      { time:"5–6pm", type:"interview", tag:"Interview", title:"Senior Edge-Case Questions — JPA",
+        tasks:["Q: What happens if you modify a JPA entity outside a transaction?","Q: Why does Spring's @Transactional on a private method silently fail?","Q: What is LazyInitializationException and name 3 ways to prevent it.","Q: If two transactions update the same row, what happens with @Version?","Q: Why do you never use float for a @Column storing money?","Vocab: persistence context, managed entity, dirty checking, flush, snapshot, proxy initialization"] }
+    ]
+  },
+  {
+    day: 7,
+    topic: "Spring Beans 101 — What a Bean Actually Is",
+    subtitle: "Before proxies and CGLIB — understand the basics first",
+    tomorrow: "Spring Core internals — IoC container, BeanFactory, CGLIB proxies, @SpringBootApplication unpacked.",
+    hours: [
+      { time:"8–9am", type:"revision", tag:"Revision A", title:"Day 6 Recall — JPA from memory",
+        tasks:["Draw the JPA entity state machine: Transient → Managed → Detached → Removed","Explain dirty checking — what does Hibernate compare and when?","What causes LazyInitializationException? What are 3 fixes?","When do you choose optimistic locking vs pessimistic locking?"] },
+      { time:"9–9:30am", type:"revision", tag:"Revision B", title:"Day 5 Feynman — SQL to a non-developer",
+        tasks:["Explain LEFT JOIN using a real-world analogy — not database language","Explain isolation levels using a bank transfer story — make each anomaly vivid","Explain what an index does using an analogy (book index, dictionary)"] },
+      { time:"9:30–10:30am", type:"theory", tag:"Theory", title:"What is a Spring Bean — from first principles",
+        tasks:["A bean is simply an object whose lifecycle is managed by Spring — not by you with new","Without Spring: you write new TransactionService(new AccountRepo(new DataSource()))","With Spring: you declare what you need, Spring builds the graph — this is IoC","@Component marks a class as a bean candidate — Spring creates exactly one instance (Singleton scope)","The bean lives in the ApplicationContext — a big map of name → instance"] },
+      { time:"10:30–11:30am", type:"theory", tag:"Theory", title:"@Component, @Service, @Repository, @Controller — the real differences",
+        tasks:["All four are @Component aliases — they all get picked up by component scanning","@Service: semantic marker — no extra behavior, signals business logic layer","@Repository: adds exception translation — DataAccessException wrapping for SQL errors","@Controller: marks class for Spring MVC handler mapping","Why semantic annotations matter: readability, tooling, and future Spring features can target them"] },
+      { time:"11:30am–12:30pm", type:"theory", tag:"Theory", title:"Dependency Injection — 3 styles",
+        tasks:["Constructor injection: dependencies declared in constructor — preferred, enables immutability","Field injection: @Autowired on field — convenient but hides dependencies and breaks testing","Setter injection: @Autowired on setter — useful for optional dependencies","Why constructor injection is best: testable without Spring (just pass mocks), immutable, no NPE risk","Look up: @Autowired required=false — what does it do?"] },
+      { time:"1–3pm", type:"lab", tag:"Lab", title:"Wire the Bank project with Spring DI",
+        tasks:["Annotate BankAccountService with @Service, BankAccountRepository with @Repository","Use constructor injection everywhere — remove all field @Autowired","Write a test that instantiates BankAccountService directly (no Spring) by passing mock repo — this proves constructor injection works","Add @Qualifier: create two implementations of TransactionValidator — use @Qualifier to inject a specific one","Observe: what happens if Spring finds two beans of the same type with no @Qualifier?"] },
+      { time:"3–4pm", type:"theory", tag:"Theory", title:"Bean Scopes — Singleton, Prototype, Request, Session",
+        tasks:["Singleton (default): one instance per ApplicationContext — shared across all threads","Prototype: new instance every time the bean is requested — Spring does NOT manage its destruction","Request: one instance per HTTP request — only valid in web context","Session: one instance per HTTP session","Critical: injecting a Prototype bean into a Singleton — what goes wrong? (stale prototype problem)","Fix: inject ApplicationContext and call getBean() at method time — or use @Lookup"] },
+      { time:"4–5pm", type:"lab", tag:"Lab", title:"Scope experiments",
+        tasks:["Create a Singleton counter bean and a Prototype counter bean","Inject Prototype into Singleton — observe it never changes (stale prototype bug)","Fix with ApplicationContext.getBean() inside the method","Add @Scope('request') to a bean — observe what happens outside a web context (IllegalStateException)","Write in your notes: when would you actually use Prototype scope in a real app?"] },
+      { time:"5–6pm", type:"interview", tag:"Interview", title:"Senior Edge-Case Questions — Spring Beans",
+        tasks:["Q: What is the difference between @Component, @Service, @Repository, and @Controller?","Q: Why is field injection considered bad practice? What breaks?","Q: A Prototype bean is injected into a Singleton — what happens? How do you fix it?","Q: What happens if you have two beans of the same type and no @Qualifier?","Q: What does @Autowired(required=false) do? Give a use case.","Vocab: IoC, DI, ApplicationContext, bean scope, component scanning, qualifier ambiguity"] }
+    ]
+  },
+  {
+    day: 8,
+    topic: "Spring Core Internals — IoC Container, Lifecycle, CGLIB",
+    subtitle: "What @SpringBootApplication actually does under the hood",
+    tomorrow: "Spring MVC & REST — DispatcherServlet, request lifecycle, exception handling.",
+    hours: [
+      { time:"8–9am", type:"revision", tag:"Revision A", title:"Day 7 Recall — Spring Beans from memory",
+        tasks:["Explain IoC in one sentence without using the word 'framework'","What are the 3 styles of DI? Which is best and why?","What is the stale prototype problem? How do you fix it?","What does @Repository add that @Component does not?"] },
+      { time:"9–9:30am", type:"revision", tag:"Revision B", title:"Day 6 Feynman — JPA Internals",
+        tasks:["Explain the persistence context as a first-level cache — use an analogy","Explain N+1 to a non-technical interviewer — make it vivid","Explain optimistic locking: what does @Version actually add to the SQL?"] },
+      { time:"9:30–11am", type:"theory", tag:"Theory", title:"IoC Container — BeanFactory vs ApplicationContext",
+        tasks:["BeanFactory: lazy, minimal — base interface. Rarely used directly.","ApplicationContext: eager, adds events, i18n, AOP — what Spring Boot uses","Look up: AnnotationConfigApplicationContext vs ClassPathXmlApplicationContext","ApplicationContext refresh lifecycle — when are beans instantiated?","Singleton beans are shared across all threads — mutable state in @Service is a concurrency bug"] },
+      { time:"11am–1pm", type:"theory", tag:"Theory", title:"Bean Lifecycle — every phase with class names",
+        tasks:["Phase 1: instantiation via constructor","Phase 2: dependency injection (@Autowired fields/setters)","Phase 3: BeanNameAware, BeanFactoryAware callbacks","Phase 4: BeanPostProcessor.postProcessBeforeInitialization()","Phase 5: @PostConstruct / InitializingBean.afterPropertiesSet()","Phase 6: BeanPostProcessor.postProcessAfterInitialization() — THIS is where AOP proxies are created","Phase 7: bean ready for use. Phase 8: @PreDestroy on shutdown.","Look up: @Conditional, @ConditionalOnProperty — how Spring Boot autoconfiguration works"] },
+      { time:"1–3pm", type:"theory", tag:"Theory", title:"@SpringBootApplication unpacked + CGLIB",
+        tasks:["@SpringBootApplication = @Configuration + @EnableAutoConfiguration + @ComponentScan","@EnableAutoConfiguration reads spring.factories / AutoConfiguration.imports","Look up: SpringFactoriesLoader — what file does it read? What is the format?","CGLIB proxy: Spring subclasses your @Configuration class at runtime","Why: @Bean methods inside @Configuration are intercepted — calling accountService() twice returns same singleton","Without CGLIB (plain @Component with @Bean): each call creates a new instance — THIS is the interview trap","Look up: proxyBeanMethods=false on @Configuration — when and why you would use it"] },
+      { time:"3–5pm", type:"lab", tag:"Lab", title:"Spring internals in Bank project",
+        tasks:["Add @Service to TransactionService — inject List<TransactionValidator> (all impls auto-injected)","Write @Configuration class that conditionally creates FraudDetectionService using @ConditionalOnProperty","Add @PostConstruct to load 3 seed accounts into H2 — explain why not in constructor","Write a BeanPostProcessor that logs every bean name at startup — run and observe order","Verify: calling a @Bean method twice inside @Configuration returns same object (CGLIB proof)"] },
+      { time:"5–6pm", type:"interview", tag:"Interview", title:"Senior Edge-Case Questions — Spring Core",
+        tasks:["Q: At what phase of the bean lifecycle is an AOP proxy created?","Q: What is the difference between BeanPostProcessor and BeanFactoryPostProcessor?","Q: What does @PostConstruct guarantee that a constructor does not?","Q: How does Spring Boot decide which auto-configurations to load?","Q: What does proxyBeanMethods=false on @Configuration do? When would you use it?","Vocab: BeanPostProcessor, ApplicationContext refresh, CGLIB subclass, SpringFactoriesLoader, @Conditional"] }
+    ]
+  },
+  {
+    day: 9,
+    topic: "Spring MVC & REST API Internals",
+    subtitle: "DispatcherServlet, request lifecycle, exception handling",
+    tomorrow: "Auth Concepts 101 — sessions, tokens, cookies, HTTP auth. Foundation before Spring Security internals.",
+    hours: [
+      { time:"8–9am", type:"revision", tag:"Revision A", title:"Day 8 Recall — Spring Core from memory",
+        tasks:["Explain what @SpringBootApplication expands to — all 3 annotations and what each does","Explain bean lifecycle phases — specifically where AOP proxies are created","What is the stale prototype problem? What is the CGLIB @Configuration trick?","How does Spring Boot autoconfiguration decide what to load?"] },
+      { time:"9–9:30am", type:"revision", tag:"Revision B", title:"Day 7 Feynman — Spring Beans",
+        tasks:["Explain IoC to someone who only knows new MyService() — what does Spring do differently?","Explain constructor injection vs field injection — why does it matter for testability?","Explain @Repository exception translation — what problem does it solve?"] },
+      { time:"9:30–11am", type:"theory", tag:"Theory", title:"DispatcherServlet — the front controller",
+        tasks:["DispatcherServlet: a single servlet all requests pass through (Front Controller pattern)","HandlerMapping: maps URL to @Controller method","HandlerAdapter: invokes the method, handles argument resolution","Look up: RequestMappingHandlerMapping — how does it build the URL→method map at startup?","Look up: HttpMessageConverter — how does @ResponseBody serialize to JSON? (Jackson MappingJackson2HttpMessageConverter)","ContentNegotiation: how Spring chooses XML vs JSON based on Accept header"] },
+      { time:"11am–1pm", type:"theory", tag:"Theory", title:"Request lifecycle — full trace",
+        tasks:["HTTP request → Filter chain → DispatcherServlet → HandlerMapping → HandlerInterceptor.preHandle → Controller → HandlerInterceptor.postHandle → MessageConverter → Response","@RequestBody: Jackson deserializes JSON → Java object","@PathVariable vs @RequestParam vs @RequestBody — when each binding happens","@Valid + BindingResult — where does validation fit in the pipeline?","Look up: HandlerMethodArgumentResolver — how Spring resolves custom method parameters"] },
+      { time:"1–3pm", type:"lab", tag:"Lab", title:"Build REST API for Bank project",
+        tasks:["POST /accounts — create account, return 201 with Location header","GET /accounts/{id} — return account, 404 if not found (use ResponseEntity)","POST /accounts/{id}/transactions — deposit or withdraw, validate with @Valid","GET /accounts/{id}/transactions?type=DEPOSIT — filter with @RequestParam","Implement @ControllerAdvice: EntityNotFoundException → 404, IllegalArgumentException → 400, OptimisticLockException → 409"] },
+      { time:"3–5pm", type:"lab", tag:"Lab", title:"Filters vs Interceptors vs AOP",
+        tasks:["Write a servlet Filter that logs request method + URI + response time for every request","Write a HandlerInterceptor that adds X-Request-ID header to every response","Explain in comments: why use a Filter vs Interceptor? (Filters run before Spring, Interceptors are Spring-aware)","Look up: OncePerRequestFilter — why does Spring Security extend this instead of plain Filter?"] },
+      { time:"5–6pm", type:"interview", tag:"Interview", title:"Senior Edge-Case Questions — Spring MVC",
+        tasks:["Q: What is the difference between a Filter and a HandlerInterceptor? When would you use each?","Q: How does @ControllerAdvice differ from @ExceptionHandler on the controller itself?","Q: What happens if you return null from a @ResponseBody method?","Q: How does Spring resolve which HttpMessageConverter to use?","Q: A request reaches your controller but @Valid is not triggering. Name 3 possible reasons.","Vocab: DispatcherServlet, HandlerMapping, HandlerAdapter, MessageConverter, ContentNegotiation"] }
+    ]
+  },
+  {
+    day: 10,
+    topic: "Auth Concepts 101 — Sessions, Tokens, HTTP Auth",
+    subtitle: "Understand authentication before diving into Spring Security internals",
+    tomorrow: "Spring Security — filter chain, JWT internals, OAuth2. Now you have the auth foundation.",
+    hours: [
+      { time:"8–9am", type:"revision", tag:"Revision A", title:"Day 9 Recall — Spring MVC from memory",
+        tasks:["Name all steps of the request lifecycle from HTTP to JSON response","What is the difference between a Filter and a HandlerInterceptor?","How does @ControllerAdvice work — at what stage does it intercept?","What is ContentNegotiation and how does Spring decide which converter to use?"] },
+      { time:"9–9:30am", type:"revision", tag:"Revision B", title:"Day 8 Feynman — Spring Core",
+        tasks:["Explain IoC to someone who only knows new MyService()","Explain why CGLIB is needed for @Configuration bean method interception","Explain BeanPostProcessor — what does it let you do and when does it run?"] },
+      { time:"9:30–10:30am", type:"theory", tag:"Theory", title:"Authentication vs Authorization — from first principles",
+        tasks:["Authentication: who are you? — proving identity (username/password, fingerprint, certificate)","Authorization: what are you allowed to do? — comes AFTER auth","401 Unauthorized: you are not authenticated — I do not know who you are","403 Forbidden: you ARE authenticated, but you do not have permission","Never confuse these — interviewers test this distinction deliberately"] },
+      { time:"10:30–11:30am", type:"theory", tag:"Theory", title:"Session-based auth — how it works",
+        tasks:["User logs in → server creates a session → stores session in memory (or Redis) → sends session ID in cookie","Every subsequent request: browser sends cookie → server looks up session ID → finds user","Stateful: server must remember sessions — horizontal scaling problem (sticky sessions or shared session store)","Session hijacking: attacker steals session cookie — why Secure + HttpOnly cookie flags exist","Look up: CSRF attack — why does session-based auth need CSRF tokens? (browser auto-sends cookies)"] },
+      { time:"11:30am–12:30pm", type:"theory", tag:"Theory", title:"Token-based auth — what problem it solves",
+        tasks:["User logs in → server creates a signed token → sends token to client → client stores it","Every subsequent request: client sends token in Authorization header → server verifies signature","Stateless: server holds NO session — any server in the cluster can verify the token","No CSRF risk: Authorization header is NOT auto-sent by browsers (unlike cookies)","Trade-off: tokens cannot be invalidated before expiry — this is the core JWT weakness","Where to store tokens: localStorage (XSS risk) vs httpOnly cookie (CSRF risk) — know both trade-offs"] },
+      { time:"1–2pm", type:"theory", tag:"Theory", title:"HTTP Auth headers + OAuth2 concepts",
+        tasks:["Basic Auth: Authorization: Basic base64(username:password) — sent on every request — only safe over HTTPS","Bearer token: Authorization: Bearer <token> — standard header for JWT","OAuth2 roles: Resource Owner (user), Client (your app), Authorization Server (Google/GitHub), Resource Server (your API)","OAuth2 flows: Authorization Code (for web apps), Client Credentials (machine-to-machine), Implicit (deprecated)","Understand: OAuth2 is about AUTHORIZATION delegation — not authentication (OpenID Connect adds auth on top)"] },
+      { time:"2–4pm", type:"lab", tag:"Lab", title:"Implement session-based auth manually",
+        tasks:["Build a simple in-memory session store: Map<String, String> sessions (sessionId → username)","POST /login: validate credentials, create UUID session ID, store in map, return in Set-Cookie header","GET /profile: read session ID from Cookie header, look up in map, return user","POST /logout: remove session from map","Then ask yourself: what breaks if you have 2 servers? This is exactly why JWT was invented."] },
+      { time:"4–5pm", type:"lab", tag:"Lab", title:"Trace an OAuth2 flow",
+        tasks:["Draw the Authorization Code flow on paper: 4 steps, 4 parties","Step 1: user clicks Login with Google → redirected to Google with client_id + redirect_uri","Step 2: user authenticates at Google → Google redirects back with authorization code","Step 3: your server exchanges code for access_token (server-to-server, secret not exposed)","Step 4: your server uses access_token to call Google APIs on behalf of user","Write in notes: why is the code exchange server-side? (to keep client_secret out of browser)"] },
+      { time:"5–6pm", type:"interview", tag:"Interview", title:"Senior Edge-Case Questions — Auth Concepts",
+        tasks:["Q: What is the difference between authentication and authorization?","Q: Why does session-based auth have a horizontal scaling problem?","Q: Why does token-based auth not need CSRF protection?","Q: Where should a browser store a JWT — localStorage or httpOnly cookie? What is the trade-off?","Q: What is the difference between OAuth2 and OpenID Connect?","Vocab: stateless, CSRF, XSS, httpOnly, Secure flag, Bearer token, Authorization Code flow, Resource Server"] }
+    ]
+  },
+  {
+    day: 11,
+    topic: "Spring Security — Filter Chain & JWT",
+    subtitle: "SecurityContext, JWT internals, OAuth2 resource server",
+    tomorrow: "Thread Basics 101 — Thread, Runnable, Callable, lifecycle. Foundation before ExecutorService.",
+    hours: [
+      { time:"8–9am", type:"revision", tag:"Revision A", title:"Day 10 Recall — Auth Concepts from memory",
+        tasks:["Explain the difference between 401 and 403 — give a bank API example for each","Explain why session-based auth struggles with horizontal scaling","Explain why token-based auth does not need CSRF protection","Explain the OAuth2 Authorization Code flow — all 4 steps"] },
+      { time:"9–9:30am", type:"revision", tag:"Revision B", title:"Day 9 Feynman — Spring MVC",
+        tasks:["Explain DispatcherServlet as a traffic controller — walk through a POST request","Explain @ControllerAdvice — how does it differ from try/catch in the controller?","Explain ContentNegotiation using the Accept header"] },
+      { time:"9:30–11am", type:"theory", tag:"Theory", title:"SecurityFilterChain — every filter in order",
+        tasks:["Look up: the default Spring Security filter order — there are 15+ filters","Key filters: SecurityContextPersistenceFilter, UsernamePasswordAuthenticationFilter, ExceptionTranslationFilter, FilterSecurityInterceptor","Authentication object lives in SecurityContextHolder (ThreadLocal — important for concurrency)","AuthenticationManager → AuthenticationProvider → UserDetailsService — the auth chain","Look up: ProviderManager — how does it delegate to multiple AuthenticationProviders?"] },
+      { time:"11am–1pm", type:"theory", tag:"Theory", title:"JWT — what is inside the token",
+        tasks:["JWT = header.payload.signature — base64url encoded (NOT encrypted by default)","Header: algorithm (HS256 vs RS256 — know the difference and when to use each)","Payload: claims — sub, iat, exp, custom claims — what NEVER to put in payload (passwords)","Signature: HMAC-SHA256(base64(header)+dot+base64(payload), secret)","Stateless: server holds NO session — how does logout work with JWT? (blacklist / short expiry)","Look up: JwtAuthenticationFilter extends OncePerRequestFilter — why OncePerRequestFilter?"] },
+      { time:"1–3pm", type:"lab", tag:"Lab", title:"Add JWT Security to Bank project",
+        tasks:["Write SecurityConfig: disable CSRF (why OK for stateless REST), configure SecurityFilterChain","Write JwtUtil: generateToken(username), validateToken(token), extractUsername(token)","Write JwtAuthenticationFilter: extract token from Authorization header, validate, set SecurityContext","POST /auth/login: authenticate, return JWT","Protect POST /accounts/{id}/transactions — only ROLE_USER can call","Add ROLE_ADMIN — only admin can GET all accounts"] },
+      { time:"3–5pm", type:"lab", tag:"Lab", title:"Security edge cases",
+        tasks:["Test: expired token → must return 401 not 500 (add exception handling in filter)","Test: valid token, wrong role → must return 403 not 401","Implement @PreAuthorize('hasRole(ADMIN) or #accountId == authentication.principal.id')","Look up: SecurityContext and async — why ThreadLocal breaks with @Async (DelegatingSecurityContextExecutor fix)"] },
+      { time:"5–6pm", type:"interview", tag:"Interview", title:"Senior Edge-Case Questions — Security",
+        tasks:["Q: What is the difference between 401 and 403? When does Spring return each?","Q: Why is HS256 inappropriate for microservices JWT? What should you use instead?","Q: How do you invalidate a JWT before it expires?","Q: Why is CSRF protection disabled for stateless REST APIs?","Q: The SecurityContext is stored in a ThreadLocal. What problem does this cause with @Async?","Vocab: SecurityContextHolder, AuthenticationManager, GrantedAuthority, OncePerRequestFilter, RS256, JWKS"] }
+    ]
+  },
+  {
+    day: 12,
+    topic: "Thread Basics 101 — Thread, Runnable, Callable",
+    subtitle: "Start from scratch — lifecycle, basic sync, before ExecutorService",
+    tomorrow: "Java Concurrency — ExecutorService, thread pools, atomic ops, CompletableFuture.",
+    hours: [
+      { time:"8–9am", type:"revision", tag:"Revision A", title:"Day 11 Recall — Security from memory",
+        tasks:["Draw the Spring Security filter chain — key filters in order","Explain JWT structure — what are the 3 parts and what is in each?","What is the difference between HS256 and RS256? When do you use each?","Why does ThreadLocal break with @Async? How do you fix it?"] },
+      { time:"9–9:30am", type:"revision", tag:"Revision B", title:"Day 10 Feynman — Auth Concepts",
+        tasks:["Explain session-based auth — make it a story with a user logging in","Explain why tokens do not need CSRF protection — use an analogy","Explain OAuth2 Authorization Code flow in plain English — all 4 steps"] },
+      { time:"9:30–10:30am", type:"theory", tag:"Theory", title:"What is a Thread — from first principles",
+        tasks:["A process has its own memory space. A thread shares memory within the same process.","Why threads: parallelism on multi-core CPUs, not blocking on I/O (waiting for DB, HTTP)","Thread vs Runnable: Thread IS a thread. Runnable is just a task — prefer Runnable for separation of concerns.","Creating a thread: new Thread(runnable).start() — start() schedules it, run() executes it directly (wrong)","NEVER call run() directly — it executes on the current thread, no new thread is created"] },
+      { time:"10:30–11:30am", type:"theory", tag:"Theory", title:"Thread lifecycle — all 6 states",
+        tasks:["NEW: created but not started","RUNNABLE: start() called — ready to run or currently running on CPU","BLOCKED: waiting to acquire a monitor lock (synchronized block)","WAITING: Thread.wait(), Thread.join() with no timeout — indefinite","TIMED_WAITING: Thread.sleep(n), wait(n), join(n) — wakes after timeout","TERMINATED: run() method completed or exception thrown","Draw the state transition diagram — interviewers love asking about BLOCKED vs WAITING"] },
+      { time:"11:30am–12:30pm", type:"theory", tag:"Theory", title:"Callable, Future, and basic synchronization",
+        tasks:["Callable<T>: like Runnable but returns a value and can throw checked exceptions","Future<T>: represents a pending result — future.get() blocks until result is ready","Thread.sleep() vs Object.wait() — sleep holds any lock it has, wait() releases the monitor lock","synchronized keyword: mutual exclusion — only one thread executes the synchronized block at a time","Intrinsic lock (monitor): every object has one — synchronized(this) uses it","Reentrant: a thread can re-enter a synchronized block it already holds the lock for"] },
+      { time:"1–3pm", type:"lab", tag:"Lab", title:"Thread basics in Bank project",
+        tasks:["Create a Runnable that processes a transaction and run it in a new Thread","Create a Callable<Boolean> that validates and deposits — retrieve result with Future","Demonstrate race condition: 2 threads deposit to same account without sync — print wrong final balance","Fix with synchronized on the deposit method — verify correct balance with Thread.join()","Demonstrate: calling run() directly vs start() — prove run() is on the same thread using Thread.currentThread().getName()"] },
+      { time:"3–4pm", type:"theory", tag:"Theory", title:"volatile and basic visibility",
+        tasks:["CPU cache problem: thread A writes a value, thread B may read stale cached version","volatile: guarantees every read goes to main memory, every write flushes immediately","volatile is NOT atomic: i++ is read-modify-write (3 operations) — volatile does not protect this","When volatile is enough: one writer, multiple readers of a boolean flag (stop signal)","When volatile is NOT enough: counter incremented by multiple threads — need AtomicInteger instead"] },
+      { time:"4–5pm", type:"lab", tag:"Lab", title:"Visibility bugs",
+        tasks:["Create a running boolean flag WITHOUT volatile — observe thread never stops (infinite loop)","Add volatile to the flag — observe thread stops correctly","Try to use volatile int counter++ with 2 threads — observe wrong count (race condition)","Fix with AtomicInteger — observe correct count","Document in comments: why volatile fixed the flag but not the counter"] },
+      { time:"5–6pm", type:"interview", tag:"Interview", title:"Senior Edge-Case Questions — Thread Basics",
+        tasks:["Q: What is the difference between BLOCKED and WAITING thread states?","Q: What happens if you call thread.run() instead of thread.start()?","Q: What does volatile guarantee? What does it NOT guarantee?","Q: Thread A holds lock on object X and waits for object Y. Thread B holds Y and waits for X. What is this?","Q: What is the difference between Thread.sleep() and Object.wait() regarding locks?","Vocab: monitor lock, intrinsic lock, memory visibility, happens-before, race condition, deadlock"] }
+    ]
+  },
+  {
+    day: 13,
+    topic: "Java Concurrency — ExecutorService, Atomic, CompletableFuture",
+    subtitle: "Thread pools, synchronization tools, async pipelines",
+    tomorrow: "@Transactional deep dive — propagation, isolation, rollback rules, self-invocation trap.",
+    hours: [
+      { time:"8–9am", type:"revision", tag:"Revision A", title:"Day 12 Recall — Thread Basics from memory",
+        tasks:["Draw the 6 thread lifecycle states and transitions between them","Explain the race condition in a bank deposit — what goes wrong at the CPU level?","What does volatile guarantee? What does it NOT guarantee?","What is the difference between Thread.sleep() and Object.wait() regarding locks?"] },
+      { time:"9–9:30am", type:"revision", tag:"Revision B", title:"Day 11 Feynman — Spring Security",
+        tasks:["Explain JWT stateless auth — what does the server verify on each request?","Explain the 401 vs 403 distinction — give bank API examples","Explain why CSRF is disabled for REST — what attack does CSRF protect against?"] },
+      { time:"9:30–11am", type:"theory", tag:"Theory", title:"ExecutorService & thread pools",
+        tasks:["ExecutorService: submit() returns Future<T> — never use .get() without timeout on a web thread","ThreadPoolExecutor parameters: corePoolSize, maxPoolSize, keepAliveTime, BlockingQueue type","Executors.newFixedThreadPool() vs newCachedThreadPool() vs newSingleThreadExecutor() — when each","Look up: ForkJoinPool — how parallel stream uses it. Why dangerous in web apps.","CompletableFuture: thenApply (map), thenCompose (flatMap), exceptionally (error), allOf (combine)","Look up: why CompletableFuture.supplyAsync() uses ForkJoinPool by default — why to provide your own Executor"] },
+      { time:"11am–1pm", type:"theory", tag:"Theory", title:"Synchronization tools — beyond synchronized",
+        tasks:["AtomicInteger, AtomicLong, AtomicReference — CAS (Compare-And-Swap) — no lock needed","ReentrantLock vs synchronized: ReentrantLock adds tryLock(), lockInterruptibly(), fairness","ReadWriteLock: multiple readers OR one writer — ideal for read-heavy account lookups","Look up: CountDownLatch — wait for N threads to complete before proceeding","Look up: Semaphore — limit concurrent access (e.g. max 10 concurrent DB connections)","ConcurrentHashMap: segment-level locking — better than synchronizedMap for high concurrency"] },
+      { time:"1–3pm", type:"lab", tag:"Lab", title:"Concurrency in Bank project",
+        tasks:["Fix race condition from Day 12 using ReentrantReadWriteLock — reads use readLock(), writes use writeLock()","Add CompletableFuture: process 100 transactions async using custom thread pool (not ForkJoinPool)","Demonstrate deadlock: two accounts each trying to lock the other — then fix with lock ordering","Implement BlockingQueue<Transaction> producer-consumer: REST endpoint produces, background thread consumes","Add poison pill to shut down consumer cleanly on app shutdown"] },
+      { time:"3–5pm", type:"lab", tag:"Lab", title:"Thread pool sizing and rejection",
+        tasks:["Create ThreadPoolExecutor with coreSize=2, maxSize=4, queue=10 — submit 20 tasks — observe RejectedExecutionException","Implement CallerRunsPolicy — observe main thread handles overflow tasks","Measure: fixed pool vs cached pool for I/O-bound vs CPU-bound tasks — document difference","Add CompletableFuture.allOf() to wait for all 100 transaction futures, then report total processed","Ensure your custom ExecutorService is shut down in @PreDestroy"] },
+      { time:"5–6pm", type:"interview", tag:"Interview", title:"Senior Edge-Case Questions — Concurrency",
+        tasks:["Q: What is the difference between volatile and AtomicInteger?","Q: Explain a deadlock scenario in a banking app and how to prevent it with lock ordering.","Q: Why should you never call CompletableFuture.get() without a timeout on a web thread?","Q: What happens to a thread pool when its queue fills up? What are the 4 rejection policies?","Q: Why is Collections.synchronizedList() often not enough for thread safety?","Vocab: CAS, happens-before, lock ordering, starvation, livelock, thread pool saturation, RejectedExecutionHandler"] }
+    ]
+  },
+  {
+    day: 14,
+    topic: "@Transactional Deep Dive",
+    subtitle: "Propagation, isolation, rollback rules — every gotcha",
+    tomorrow: "Testing — JUnit 5, Mockito, @SpringBootTest, TestContainers.",
+    hours: [
+      { time:"8–9am", type:"revision", tag:"Revision A", title:"Day 13 Recall — Concurrency from memory",
+        tasks:["Explain the race condition in a bank withdrawal — what goes wrong at the CPU level?","Difference between ReentrantLock and synchronized — when would you pick ReentrantLock?","What is CAS? How does AtomicInteger use it?","Why is CompletableFuture.get() dangerous on a web thread?"] },
+      { time:"9–9:30am", type:"revision", tag:"Revision B", title:"Day 12 Feynman — Thread Basics",
+        tasks:["Explain a deadlock using two bank accounts — make it a story","Explain CAS in plain English — why is it better than synchronized for simple counters?","Explain why thread pools have a bounded queue and what happens when it fills up"] },
+      { time:"9:30–11am", type:"theory", tag:"Theory", title:"@Transactional propagation — all 7 types",
+        tasks:["REQUIRED (default): join existing or create new — most common","REQUIRES_NEW: suspend outer, create new, commit independently — audit logs","NESTED: savepoint within outer transaction — rolls back to savepoint on failure","SUPPORTS: run in tx if exists, otherwise non-transactional","NOT_SUPPORTED: suspend any existing tx — for non-transactional reads","MANDATORY: must have existing tx, throw if none","NEVER: must NOT have tx, throw if one exists","Critical: REQUIRES_NEW commits even if outer rolls back — when is this dangerous?"] },
+      { time:"11am–1pm", type:"theory", tag:"Theory", title:"Rollback rules & self-invocation trap",
+        tasks:["Default rollback: unchecked (RuntimeException) → rollback, checked (Exception) → NO rollback","Override: @Transactional(rollbackFor=Exception.class) to rollback on checked exceptions","noRollbackFor: commit even on specific RuntimeException — use carefully","Self-invocation: this.method() bypasses proxy → @Transactional silently ignored","Fix: inject self or restructure to separate bean","Look up: TransactionSynchronizationManager — register callbacks on commit/rollback"] },
+      { time:"1–3pm", type:"lab", tag:"Lab", title:"Transaction scenarios in Bank project",
+        tasks:["Write transferFunds(from, to, amount): debit, credit, save AuditLog — all in one REQUIRED tx","Write auditLog with REQUIRES_NEW — verify it commits even when transfer throws","Deliberately trigger self-invocation trap — call @Transactional sibling via this — observe no tx","Fix the self-invocation bug — document the fix","Write a test: transfer fails midway — assert both accounts unchanged"] },
+      { time:"3–5pm", type:"lab", tag:"Lab", title:"Isolation in practice",
+        tasks:["Simulate non-repeatable read: two reads in same tx with update between them","Add @Transactional(isolation=REPEATABLE_READ) — verify behavior changes","Write @Transactional(readOnly=true) on all GET service methods — explain what this optimizes","Look up: how does @Transactional(readOnly=true) interact with Hibernate flush mode?"] },
+      { time:"5–6pm", type:"interview", tag:"Interview", title:"Senior Edge-Case Questions — Transactions",
+        tasks:["Q: Walk me through what happens when REQUIRES_NEW is called inside an existing transaction.","Q: Why does @Transactional on a private method silently do nothing?","Q: What is the difference between rollbackFor=Exception.class and the default?","Q: You have a @Transactional service that calls an external HTTP API. HTTP succeeds but DB write fails. What happened?","Q: What does readOnly=true actually do at the Hibernate and DB levels?","Vocab: savepoint, proxy bypass, TransactionSynchronizationManager, isolation level, flush mode"] }
+    ]
+  },
+  {
+    day: 15,
+    topic: "Testing — JUnit 5, Mockito, Integration Tests",
+    subtitle: "Write tests that prove understanding, not just coverage",
+    tomorrow: "Spring Data JPA advanced + Exception handling + API design.",
+    hours: [
+      { time:"8–9am", type:"revision", tag:"Revision A", title:"Day 14 Recall — Transactions from memory",
+        tasks:["Name all 7 propagation types and give a use case for REQUIRED, REQUIRES_NEW, and NESTED","What is the self-invocation trap? How do you detect and fix it?","What does @Transactional(readOnly=true) optimize at the Hibernate level?","When does @Transactional NOT roll back by default? How do you override?"] },
+      { time:"9–9:30am", type:"revision", tag:"Revision B", title:"Day 13 Feynman — Concurrency",
+        tasks:["Explain a deadlock using two bank accounts — make it a story","Explain CAS in plain English — why better than synchronized for simple counters?","Explain why thread pools have a bounded queue and what happens when it fills up"] },
+      { time:"9:30–11am", type:"theory", tag:"Theory", title:"JUnit 5 internals & annotations",
+        tasks:["@Test, @BeforeEach, @AfterEach, @BeforeAll, @AfterAll — lifecycle order","@ParameterizedTest + @ValueSource, @CsvSource, @MethodSource — data-driven tests","@ExtendWith(MockitoExtension.class) vs @ExtendWith(SpringExtension.class) — when each","@Nested test classes — grouping related tests, shared setup","Look up: JUnit 5 extension model — how MockitoExtension injects mocks via @Mock"] },
+      { time:"11am–1pm", type:"theory", tag:"Theory", title:"Mockito — beyond the basics",
+        tasks:["@Mock vs @MockBean — Mock is pure Mockito, MockBean replaces Spring bean in context","@Spy vs @Mock — Spy calls real methods, Mock returns defaults","ArgumentCaptor: capture what was actually passed to a mock — use for complex assertions","verify() with times(), never(), atLeast() — verify interactions not just return values","Look up: @InjectMocks — how Mockito injects: constructor first, then setter, then field","doThrow() vs when().thenThrow() — doThrow needed for void methods"] },
+      { time:"1–3pm", type:"lab", tag:"Lab", title:"Unit tests for Bank project",
+        tasks:["Test TransactionService.deposit(): mock BankAccountRepository, verify save() called with correct balance","Test TransactionValidator: use @ParameterizedTest with amounts: -1, 0, 1, 10000, 10001","Use ArgumentCaptor to verify the exact Transaction object passed to repo.save()","Test that OptimisticLockException is thrown and retried — use doThrow().doReturn()","Rule: every test tests ONE behavior — if a test has more than one reason to fail, split it"] },
+      { time:"3–5pm", type:"lab", tag:"Lab", title:"Integration tests with @SpringBootTest",
+        tasks:["Write @SpringBootTest test for POST /accounts/{id}/transactions — full HTTP stack","Use MockMvc to POST a deposit, assert 200, assert response body balance","Use @Transactional on test class to rollback DB changes after each test — explain why","Write a test for the 409 OptimisticLockException flow — full integration","Add TestContainers Postgres — replace H2 with real Postgres — look up @Container annotation"] },
+      { time:"5–6pm", type:"interview", tag:"Interview", title:"Senior Edge-Case Questions — Testing",
+        tasks:["Q: What is the difference between @Mock and @MockBean? When does @MockBean slow tests?","Q: Why should a unit test never access the database?","Q: How would you test a @Transactional method that should roll back on exception?","Q: What is the test pyramid and why have fewer integration tests than unit tests?","Q: ArgumentCaptor vs custom Mockito matcher — when would you use each?","Vocab: test pyramid, test double, mock vs stub vs spy, test isolation, regression harness"] }
+    ]
+  },
+  {
+    day: 16,
+    topic: "Exception Handling, Validation & Performance",
+    subtitle: "RFC 7807, @Valid internals, HikariCP, caching",
+    tomorrow: "System Design & Mock Interview — tie everything together.",
+    hours: [
+      { time:"8–9am", type:"revision", tag:"Revision A", title:"Day 15 Recall — Testing from memory",
+        tasks:["Difference between @Mock and @MockBean — and why MockBean is slower","What does ArgumentCaptor capture? Write the code from memory","What is the test pyramid? What ratio of unit to integration is recommended?","Why annotate integration tests with @Transactional?"] },
+      { time:"9–9:30am", type:"revision", tag:"Revision B", title:"Day 14 Feynman — @Transactional",
+        tasks:["Explain REQUIRES_NEW using an audit log scenario — vivid and concrete","Explain the self-invocation proxy trap — why does it happen? Draw it","Explain what readOnly=true does at the Hibernate dirty-checking level"] },
+      { time:"9:30–11am", type:"theory", tag:"Theory", title:"Exception handling — production patterns",
+        tasks:["@ControllerAdvice with @ExceptionHandler — global, ordered by specificity","ResponseEntityExceptionHandler — extend to handle Spring MVC internal exceptions","RFC 7807: Problem Details for HTTP APIs — the standard error response format","Look up: ProblemDetail (Spring 6) — Spring built-in RFC 7807 implementation","Error response fields: type, title, status, detail, instance — know each","Never expose stack traces in production — server.error.include-stacktrace=never"] },
+      { time:"11am–12pm", type:"theory", tag:"Theory", title:"Bean Validation — @Valid internals",
+        tasks:["JSR-380: @NotNull, @NotBlank, @Size, @Min, @Max, @Pattern, @Email","@Valid triggers validation at HandlerMethodArgumentResolver stage","@Validated vs @Valid: @Validated supports groups, @Valid does not","Custom constraint: @interface + ConstraintValidator<A,T> — implement isValid()","Cross-field validation: class-level @Constraint on the DTO itself"] },
+      { time:"1–2pm", type:"theory", tag:"Theory", title:"HikariCP & Caching internals",
+        tasks:["DB connection is expensive: TCP handshake + auth + session setup — pooling reuses them","HikariCP: maximumPoolSize formula = (core_count * 2) + effective_spindle_count","connectionTimeout: how long to wait before throwing — default 30s (too high for production)","@Cacheable works via AOP proxy — same self-invocation trap as @Transactional","CacheManager: ConcurrentMapCacheManager (no TTL) vs RedisCacheManager (TTL, distributed)","Cache stampede: 1000 requests miss cache simultaneously — all hit DB — how to prevent?"] },
+      { time:"2–4pm", type:"lab", tag:"Lab", title:"Production error handling + caching in Bank project",
+        tasks:["Create custom exceptions: InsufficientFundsException, AccountNotFoundException","Implement @ControllerAdvice returning ProblemDetail for each exception","Add @Valid to all request DTOs with positive amount, valid type","Write custom @ValidTransactionType constraint + ConstraintValidator","Add HikariCP config: maximumPoolSize=10, connectionTimeout=3000 in application.yml","Add @Cacheable to getAccount(id) + @CacheEvict on updateAccount()"] },
+      { time:"4–5pm", type:"lab", tag:"Lab", title:"Idempotency + slow query diagnosis",
+        tasks:["Implement idempotency key header: X-Idempotency-Key — prevent double-deposit","Enable Hibernate statistics: spring.jpa.properties.hibernate.generate_statistics=true","Enable slow query log: LOG_QUERIES_SLOWER_THAN_MS=100","Run findAllWithAuthor() — count SQL queries in logs, fix any remaining N+1","Add pagination on GET /accounts/all — verify LIMIT in SQL"] },
+      { time:"5–6pm", type:"interview", tag:"Interview", title:"Senior Edge-Case Questions — Error Handling & Performance",
+        tasks:["Q: What is RFC 7807 and why should you follow it?","Q: What is the difference between @Valid and @Validated?","Q: What is idempotency and why does it matter for POST /transfer?","Q: Walk me through diagnosing a slow API endpoint — tools, steps, fixes.","Q: What is connection pool exhaustion and how do you diagnose it?","Vocab: ProblemDetail, ConstraintViolation, idempotency key, HikariCP, cache stampede, EXPLAIN ANALYZE"] }
+    ]
+  },
+  {
+    day: 17,
+    topic: "System Design & Mock Interview Day",
+    subtitle: "Tie everything together — design, defend, talk like a senior",
+    tomorrow: "Your interview. You are ready.",
+    hours: [
+      { time:"8–9am", type:"revision", tag:"Revision A", title:"Day 16 Recall — Error Handling & Performance",
+        tasks:["What is RFC 7807? Write the 5 fields of a ProblemDetail response","Difference between @Valid and @Validated — give a use case for each","What is idempotency? How do you implement it for a bank transfer API?","HikariCP pool size formula — give it and explain each variable"] },
+      { time:"9–9:30am", type:"revision", tag:"Revision B", title:"Day 15 Feynman — Testing",
+        tasks:["Explain @MockBean vs @Mock using the Spring application context as context","Explain test pyramid — why are unit tests cheapest? What makes integration tests expensive?","Explain how TestContainers gives you a real database — what does it actually run?"] },
+      { time:"9:30–11am", type:"theory", tag:"Theory", title:"System Design — distributed patterns",
+        tasks:["Saga pattern: choreography vs orchestration — for distributed transactions (no 2PC)","CQRS: separate read model from write model — when does this make sense?","Event sourcing: store events not state — what is the audit trail benefit?","Circuit breaker (Resilience4j): CLOSED → OPEN → HALF_OPEN — what triggers each?","Look up: Outbox pattern — reliably publish events after DB write without 2-phase commit","Idempotent consumers: why Kafka consumer must handle duplicate messages"] },
+      { time:"11am–1pm", type:"lab", tag:"Lab", title:"Design: Bank Transfer at scale",
+        tasks:["Design a system handling 10,000 transfer requests/second — draw on paper first","Identify: where is the bottleneck? (DB write, connection pool, network)","Add: async processing with a queue (BlockingQueue from Day 13, or Kafka conceptually)","Add: idempotency layer (Redis key-value check before processing)","Add: circuit breaker around external fraud-check API","Write: what breaks first at 10x load? What scales horizontally vs vertically?"] },
+      { time:"1–2pm", type:"lab", tag:"Lab", title:"Final Bank project polish",
+        tasks:["Add @Version optimistic locking to BankAccount — verify end-to-end","Ensure all @Service methods have @Transactional with correct propagation","Ensure all GET methods have @Transactional(readOnly=true)","Run all tests — they must all pass","Write a README explaining the architecture — you will talk through this in the interview"] },
+      { time:"2–4pm", type:"interview", tag:"Mock Interview", title:"Full Mock Interview — 2 hours",
+        tasks:["Round 1 (30 min): Java internals — JVM, Streams, Concurrency — answer out loud, record yourself","Round 2 (30 min): Spring deep dive — @Transactional self-invocation, Security filter chain, Bean lifecycle","Round 3 (30 min): Live coding — write a Stream pipeline, a @Transactional service, fix a broken test","Round 4 (30 min): System design — design a rate limiter for the bank API","Grade yourself: did you use precise vocabulary? Did you explain WHY not just WHAT?"] },
+      { time:"4–5pm", type:"interview", tag:"Interview", title:"Senior Edge-Case Final Gauntlet",
+        tasks:["Q: Walk me through exactly what happens from POST /accounts/{id}/transactions hitting your app to the DB row being committed.","Q: Your @Transactional transfer service calls an external payment gateway. It succeeds but the DB write fails. What is the consistency problem? How do you solve it?","Q: You see 100% CPU on your Spring Boot app. Walk me through your diagnosis.","Q: Design a system where each bank account has a daily withdrawal limit — thread-safe, persistent, high throughput.","Q: What is the most dangerous thing a junior dev could do in your codebase and why?"] },
+      { time:"5–6pm", type:"revision", tag:"Final Review", title:"Weak spots — last chance",
+        tasks:["Open your weak spots panel — every topic flagged as struggling","Spend 10 minutes on each weak topic — active recall only, no re-reading","Write one sentence summary of each weak topic — if you cannot, that is the gap","Final check: can you explain JVM → SQL pipeline end-to-end with correct vocabulary?","Rest. Preparation is done. Tomorrow you execute."] }
+    ]
+  }
+];
+
+
+let state = {};
+try { state = JSON.parse(localStorage.getItem('java_prep_state') || '{}'); } catch(e) {}
+
+function save() {
+  try { localStorage.setItem('java_prep_state', JSON.stringify(state)); } catch(e) {}
+  updateOverall();
+}
+
+function getHourKey(day, hourIdx) { return `d${day}_h${hourIdx}`; }
+function getNoteKey(day, hourIdx) { return `note_d${day}_h${hourIdx}`; }
+function getDayNoteKey(day, field) { return `daynote_d${day}_${field}`; }
+
+function getHourStatus(day, hourIdx) { return state[getHourKey(day, hourIdx)] || 'none'; }
+function setHourStatus(day, hourIdx, status) {
+  state[getHourKey(day, hourIdx)] = status;
+  save();
+  renderDay(day);
+  renderSidebar();
+}
+
+function getNote(day, hourIdx) { return state[getNoteKey(day, hourIdx)] || ''; }
+function setNote(day, hourIdx, val) { state[getNoteKey(day, hourIdx)] = val; save(); }
+
+function getDayNote(day, field) { return state[getDayNoteKey(day, field)] || ''; }
+function setDayNote(day, field, val) { state[getDayNoteKey(day, field)] = val; save(); }
+
+function getDayProgress(dayIdx) {
+  const d = DAYS[dayIdx];
+  const total = d.hours.length;
+  const done = d.hours.filter((_, i) => getHourStatus(d.day, i) === 'done').length;
+  return { done, total, pct: total > 0 ? Math.round((done/total)*100) : 0 };
+}
+
+function getWeakSpots() {
+  const spots = [];
+  DAYS.forEach(d => {
+    d.hours.forEach((h, i) => {
+      if (getHourStatus(d.day, i) === 'struggle') {
+        spots.push({ day: d.day, topic: d.topic, hour: h.title });
+      }
+    });
+  });
+  return spots;
+}
+
+function updateOverall() {
+  let totalDone = 0, totalHours = 0, totalStruggle = 0;
+  DAYS.forEach(d => {
+    d.hours.forEach((_, i) => {
+      totalHours++;
+      const s = getHourStatus(d.day, i);
+      if (s === 'done') totalDone++;
+      if (s === 'struggle') totalStruggle++;
+    });
+  });
+  const pct = Math.round((totalDone / totalHours) * 100);
+  document.getElementById('overall-pct').textContent = pct + '%';
+  document.getElementById('done-count').textContent = totalDone;
+  document.getElementById('struggle-count').textContent = totalStruggle;
+}
+
+let currentDay = 1;
+
+function renderSidebar() {
+  const sb = document.getElementById('sidebar');
+  sb.innerHTML = '<div class="sidebar-section"><div class="sidebar-label">14-Day Plan</div>' +
+    DAYS.map(d => {
+      const prog = getDayProgress(d.day - 1);
+      const isActive = d.day === currentDay;
+      const isDone = prog.pct === 100;
+      return `<button class="day-btn ${isActive ? 'active' : ''} ${isDone ? 'completed' : ''}" onclick="switchDay(${d.day})">
+        <span class="day-num">D${String(d.day).padStart(2,'0')}</span>
+        <div class="day-info">
+          <div class="day-topic">${d.topic.split('—')[0].trim()}</div>
+          <div class="day-progress-mini"><div class="day-progress-mini-fill" style="width:${prog.pct}%"></div></div>
+        </div>
+      </button>`;
+    }).join('') + '</div>';
+}
+
+function switchDay(dayNum) {
+  currentDay = dayNum;
+  renderSidebar();
+  renderDay(dayNum);
+  document.getElementById('main-content').scrollTop = 0;
+}
+
+function renderDay(dayNum) {
+  const d = DAYS[dayNum - 1];
+  const prog = getDayProgress(dayNum - 1);
+  const weakSpots = getWeakSpots();
+
+  const typeMap = { revision: 'tag-revision', theory: 'tag-theory', lab: 'tag-lab', interview: 'tag-interview' };
+
+  const hoursHtml = d.hours.map((h, i) => {
+    const status = getHourStatus(dayNum, i);
+    const note = getNote(dayNum, i);
+    const blockClass = status === 'done' ? 'done' : status === 'struggle' ? 'struggling' : '';
+    const openClass = ''; // collapsed by default
+
+    return `<div class="hour-block ${blockClass}" id="hblock-${i}">
+      <div class="hour-header" onclick="toggleHour(${i})">
+        <span class="hour-time">${h.time}</span>
+        <span class="hour-tag ${typeMap[h.type] || 'tag-theory'}">${h.tag}</span>
+        <span class="hour-title">${h.title}</span>
+        <div class="hour-actions" onclick="event.stopPropagation()">
+          <button class="status-btn ${status==='done'?'active-done':''}" onclick="setHourStatus(${dayNum},${i},'${status==='done'?'none':'done'}')">Done</button>
+          <button class="status-btn ${status==='struggle'?'active-struggle':''}" onclick="setHourStatus(${dayNum},${i},'${status==='struggle'?'none':'struggle'}')">Weak</button>
+          <button class="status-btn ${status==='skip'?'active-skip':''}" onclick="setHourStatus(${dayNum},${i},'${status==='skip'?'none':'skip'}')">Skip</button>
+        </div>
+      </div>
+      <div class="hour-body" id="hbody-${i}">
+        <div class="hour-section">
+          <div class="hour-section-label">Tasks</div>
+          <ul class="task-list">${h.tasks.map(t => `<li class="task-item">${t.replace(/`([^`]+)`/g, '<code>$1</code>')}</li>`).join('')}</ul>
+        </div>
+        <div class="hour-section">
+          <div class="hour-section-label">My notes / struggles</div>
+          <textarea class="note-area" placeholder="What did I actually do? What confused me? What should I revisit?" oninput="setNote(${dayNum},${i},this.value)">${note}</textarea>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  const weakHtml = weakSpots.length === 0
+    ? '<div class="weak-empty">No weak spots flagged yet — mark hours as Weak above</div>'
+    : `<div class="weak-tags">${weakSpots.map(w => `<span class="weak-tag">D${w.day}: ${w.hour}</span>`).join('')}</div>`;
+
+  const mc = document.getElementById('main-content');
+  mc.innerHTML = `
+    <div class="day-header">
+      <div>
+        <div class="day-badge">Day ${d.day} of 14</div>
+        <div class="day-title">${d.topic}</div>
+        <div class="day-subtitle">${d.subtitle}</div>
+      </div>
+      <div class="day-stats">
+        <div class="stat-box"><div class="stat-val">${prog.done}</div><div class="stat-lbl">Done</div></div>
+        <div class="stat-box"><div class="stat-val">${d.hours.length}</div><div class="stat-lbl">Total</div></div>
+        <div class="stat-box"><div class="stat-val">${prog.pct}%</div><div class="stat-lbl">Progress</div></div>
+      </div>
+    </div>
+
+    <div class="day-progress-bar"><div class="day-progress-bar-fill" style="width:${prog.pct}%"></div></div>
+
+    <div class="hours-grid">${hoursHtml}</div>
+
+    <div class="weak-panel">
+      <div class="weak-panel-title">Weak spots across all days</div>
+      ${weakHtml}
+    </div>
+
+    <div class="tomorrow-panel">
+      <div class="tomorrow-title">Tomorrow's focus</div>
+      <div class="tomorrow-note">${d.tomorrow}</div>
+    </div>
+
+    <div class="daily-log">
+      <div class="daily-log-title">End-of-day log</div>
+      <div class="log-field-label">What did I actually finish today?</div>
+      <textarea class="note-area" placeholder="Honest summary..." oninput="setDayNote(${dayNum},'finished',this.value)">${getDayNote(dayNum,'finished')}</textarea>
+      <div class="log-field-label">What am I still weak on?</div>
+      <textarea class="note-area" placeholder="Topics that need more time..." oninput="setDayNote(${dayNum},'weak',this.value)">${getDayNote(dayNum,'weak')}</textarea>
+      <div class="log-field-label">What should I fix tomorrow (Hour 1 & 2)?</div>
+      <textarea class="note-area" placeholder="Specific things to recall/explain tomorrow..." oninput="setDayNote(${dayNum},'tomorrow',this.value)">${getDayNote(dayNum,'tomorrow')}</textarea>
+    </div>
+  `;
+}
+
+function toggleHour(i) {
+  const body = document.getElementById('hbody-'+i);
+  body.classList.toggle('open');
+}
+
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+function exportProgress() {
+  const data = JSON.stringify(state, null, 2);
+  const blob = new Blob([data], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  const date = new Date().toISOString().slice(0,10);
+  a.download = 'java_prep_backup_' + date + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Exported: java_prep_backup_' + date + '.json');
+}
+
+function importProgress(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const imported = JSON.parse(e.target.result);
+      if (typeof imported !== 'object' || Array.isArray(imported)) throw new Error('bad');
+      state = imported;
+      save();
+      renderSidebar();
+      renderDay(currentDay);
+      showToast('Progress imported successfully');
+    } catch(err) {
+      showToast('Import failed — invalid file');
+    }
+    event.target.value = '';
+  };
+  reader.readAsText(file);
+}
+
+updateOverall();
+renderSidebar();
+renderDay(1);
+</script>
+</body>
+</html>
