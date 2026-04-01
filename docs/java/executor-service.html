@@ -820,6 +820,7 @@ pool.shutdown();</span></pre>
     </div>
     </div>
               <p>The pool handles thread reuse and you control the shutdown lifecycle.</p>
+                  <p class="deep-note">Thread pools are about throughput and backpressure. Size depends on CPU vs I/O, and the queue plus rejection policy determines behavior under load.</p>
             </article>
 
             <article class="card warning">
@@ -917,6 +918,7 @@ pool.shutdown();</span></pre>
     </div>
     </div>
               <p>CallerRunsPolicy slows the caller when the pool is saturated, creating natural backpressure.</p>
+                  <p class="deep-note">Thread pools are about throughput and backpressure. Size depends on CPU vs I/O, and the queue plus rejection policy determines behavior under load.</p>
             </article>
 
             <article class="card warning">
@@ -1014,6 +1016,7 @@ String v = f.get(200, TimeUnit.MILLISECONDS);</span></pre>
     </div>
     </div>
               <p>Timeouts protect the calling thread and prevent cascading latency.</p>
+                  <p class="deep-note">CompletableFuture is a pipeline. Prefer chaining and composing over blocking, and always handle exceptions so failures don't silently disappear.</p>
             </article>
 
             <article class="card warning">
@@ -1111,6 +1114,7 @@ String v = f.get(200, TimeUnit.MILLISECONDS);</span></pre>
     </div>
     </div>
               <p>CallerRunsPolicy slows producers, which is often better than dropping work silently.</p>
+                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
             </article>
 
             <article class="card warning">
@@ -1185,6 +1189,7 @@ String v = f.get(200, TimeUnit.MILLISECONDS);</span></pre>
                 <div>
                   <h3>Interview answer</h3>
                   <p>“I tune pool size based on CPU vs IO, cap queues, and use a rejection policy to apply backpressure.”</p>
+                  <p class="deep-note">Thread pools are about throughput and backpressure. Size depends on CPU vs I/O, and the queue plus rejection policy determines behavior under load.</p>
                   <table>
                     <thead><tr><th>Queue</th><th>Behavior</th></tr></thead>
                     <tbody><tr><td>Unbounded</td><td><span class="pill bad">Memory risk</span></td></tr><tr><td>Bounded</td><td><span class="pill good">Backpressure</span></td></tr><tr><td>SynchronousQueue</td><td><span class="pill info">Direct handoff</span></td></tr></tbody>

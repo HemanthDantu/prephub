@@ -813,14 +813,15 @@
       
     <div>
       <div class="code-title">Constructor injection</div>
-      <pre><span class="token-comment">class=@@STR0@@&gt;@Service
+      <pre>@Service
 public class BillingService {
   private final PaymentClient client;
   public BillingService(PaymentClient client){ this.client = client; }
-}</span></pre>
+}</pre>
     </div>
     </div>
               <p>Constructor injection makes dependencies explicit and immutable.</p>
+                  <p class="deep-note">DI keeps construction separate from behavior. Constructor injection is safest, qualifiers resolve ambiguity, and scopes decide lifecycle and caching.</p>
             </article>
 
             <article class="card warning">
@@ -913,12 +914,13 @@ public class BillingService {
       
     <div>
       <div class="code-title">Qualifier example</div>
-      <pre><span class="token-comment">public class ReportService {
-  public ReportService(class=@@STR0@@&gt;@Qualifier(class=@@STR1@@&gt;@@STR2@@) Writer writer){ }
-}</span></pre>
+      <pre>public class ReportService {
+  public ReportService(@Qualifier("example") Writer writer){ }
+}</pre>
     </div>
     </div>
               <p>Qualifiers prevent accidental wiring of the wrong implementation.</p>
+                  <p class="deep-note">DI keeps construction separate from behavior. Constructor injection is safest, qualifiers resolve ambiguity, and scopes decide lifecycle and caching.</p>
             </article>
 
             <article class="card warning">
@@ -1011,12 +1013,13 @@ public class BillingService {
       
     <div>
       <div class="code-title">Scope example</div>
-      <pre><span class="token-comment">class=@@STR0@@&gt;@Scope(class=@@STR1@@&gt;@@STR2@@)
-class=@@STR3@@&gt;@Component
-public class RequestContext { }</span></pre>
+      <pre>@Scope("example")
+@Component
+public class RequestContext { }</pre>
     </div>
     </div>
               <p>Request scope prevents data from leaking across users.</p>
+                  <p class="deep-note">DI keeps construction separate from behavior. Constructor injection is safest, qualifiers resolve ambiguity, and scopes decide lifecycle and caching.</p>
             </article>
 
             <article class="card warning">
@@ -1109,12 +1112,13 @@ public class RequestContext { }</span></pre>
       
     <div>
       <div class="code-title">Profile example</div>
-      <pre><span class="token-comment">class=@@STR0@@&gt;@Profile(class=@@STR1@@&gt;@@STR2@@)
-class=@@STR3@@&gt;@Bean
-DataSource h2(){ return new EmbeddedDatabaseBuilder().build(); }</span></pre>
+      <pre>@Profile("example")
+@Bean
+DataSource h2(){ return new EmbeddedDatabaseBuilder().build(); }</pre>
     </div>
     </div>
               <p>Profiles keep your code clean while changing environments.</p>
+                  <p class="deep-note">Property sources are ordered, and later sources override earlier ones. Profiles and environment variables are the safe way to separate dev/test/prod behavior.</p>
             </article>
 
             <article class="card warning">
@@ -1189,6 +1193,7 @@ DataSource h2(){ return new EmbeddedDatabaseBuilder().build(); }</span></pre>
                 <div>
                   <h3>Interview answer</h3>
                   <p>“Constructor injection with qualifiers makes dependencies explicit and avoids runtime ambiguity.”</p>
+                  <p class="deep-note">DI keeps construction separate from behavior. Constructor injection is safest, qualifiers resolve ambiguity, and scopes decide lifecycle and caching.</p>
                   <table>
                     <thead><tr><th>Scenario</th><th>Solution</th></tr></thead>
                     <tbody><tr><td>Two beans same type</td><td><span class="pill good">@Qualifier</span></td></tr><tr><td>One default bean</td><td><span class="pill info">@Primary</span></td></tr><tr><td>Web-only scope</td><td><span class="pill caution">request/session</span></td></tr></tbody>

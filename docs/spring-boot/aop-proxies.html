@@ -813,6 +813,7 @@
                 <div>
                   <h3>Interview answer</h3>
                   <p>“Spring AOP uses proxies to intercept method calls and apply cross-cutting logic like transactions.”</p>
+                  <p class="deep-note">AOP only works through proxies. Internal self-invocation bypasses advice, which is why annotations sometimes appear to be ignored.</p>
                   
                   <table>
                     <thead><tr><th>Concern</th><th>Example</th></tr></thead>
@@ -919,6 +920,7 @@ public class TimingAspect {
                 <div>
                   <h3>Interview answer</h3>
                   <p>“If a bean has an interface, Spring can use JDK proxies; otherwise it falls back to CGLIB.”</p>
+                  <p class="deep-note">AOP only works through proxies. Internal self-invocation bypasses advice, which is why annotations sometimes appear to be ignored.</p>
                   
                   <table>
                     <thead><tr><th>Proxy</th><th>Constraint</th></tr></thead>
@@ -1018,6 +1020,7 @@ public class TimingAspect {
                 <div>
                   <h3>Interview answer</h3>
                   <p>“Self-invocation bypasses proxies, so annotations like @Transactional or @Cacheable do not apply.”</p>
+                  <p class="deep-note">AOP only works through proxies. Internal self-invocation bypasses advice, which is why annotations sometimes appear to be ignored.</p>
                   
                   <table>
                     <thead><tr><th>Scenario</th><th>Result</th></tr></thead>
@@ -1123,6 +1126,7 @@ public class BillingService {
                 <div>
                   <h3>Interview answer</h3>
                   <p>“Spring AOP wraps service calls to manage transactions, caching, and security without cluttering code.”</p>
+                  <p class="deep-note">AOP only works through proxies. Internal self-invocation bypasses advice, which is why annotations sometimes appear to be ignored.</p>
                   
                   <table>
                     <thead><tr><th>Annotation</th><th>Concern</th></tr></thead>
@@ -1219,6 +1223,7 @@ public class OrderService {
                 <div>
                   <h3>Interview answer</h3>
                   <p>“If advice doesn’t run, I check whether the call crossed the proxy boundary.”</p>
+                  <p class="deep-note">AOP only works through proxies. Internal self-invocation bypasses advice, which is why annotations sometimes appear to be ignored.</p>
                   <table>
                     <thead><tr><th>Scenario</th><th>Advice?</th></tr></thead>
                     <tbody><tr><td>Bean called externally</td><td><span class="pill good">Yes</span></td></tr><tr><td>Self-invocation</td><td><span class="pill bad">No</span></td></tr><tr><td>Proxy-aware call</td><td><span class="pill info">Yes</span></td></tr></tbody>

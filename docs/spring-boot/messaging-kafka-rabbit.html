@@ -813,6 +813,7 @@
                 <div>
                   <h3>Interview answer</h3>
                   <p>“RabbitMQ is queue-based for work distribution; Kafka is log-based with consumer groups.”</p>
+                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
                   
                   <table>
                     <thead><tr><th>System</th><th>Characteristic</th></tr></thead>
@@ -913,6 +914,7 @@ public void onMessage(OrderEvent event) {
                 <div>
                   <h3>Interview answer</h3>
                   <p>“I use KafkaTemplate to publish and @KafkaListener to consume with a configured serializer.”</p>
+                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
                   
                   <table>
                     <thead><tr><th>Component</th><th>Role</th></tr></thead>
@@ -1014,6 +1016,7 @@ public void handle(OrderEvent event, Acknowledgment ack) {
                 <div>
                   <h3>Interview answer</h3>
                   <p>“I assume duplicates and make consumers idempotent, with retries and a dead-letter queue.”</p>
+                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
                   
                   <table>
                     <thead><tr><th>Guarantee</th><th>Meaning</th></tr></thead>
@@ -1115,6 +1118,7 @@ handle(event);</pre>
                 <div>
                   <h3>Interview answer</h3>
                   <p>“I use the outbox pattern to avoid dual-write issues and sagas to coordinate multi-step workflows.”</p>
+                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
                   
                   <table>
                     <thead><tr><th>Pattern</th><th>Goal</th></tr></thead>
@@ -1205,6 +1209,7 @@ values (?, ?, 'NEW');</pre>
                 <div>
                   <h3>Interview answer</h3>
                   <p>“Kafka ordering is per partition, so I choose keys like orderId and send failures to a DLQ.”</p>
+                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
                   <table>
                     <thead><tr><th>Concern</th><th>Practice</th></tr></thead>
                     <tbody><tr><td>Ordering</td><td><span class="pill good">Stable key</span></td></tr><tr><td>Failures</td><td><span class="pill info">DLQ</span></td></tr><tr><td>Retries</td><td><span class="pill caution">Backoff + limit</span></td></tr></tbody>

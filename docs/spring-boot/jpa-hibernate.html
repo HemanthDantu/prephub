@@ -813,15 +813,16 @@
       
     <div>
       <div class="code-title">Mapping example</div>
-      <pre><span class="token-comment">class=@@STR0@@&gt;@Entity
+      <pre>@Entity
 class Order {
-  class=@@STR1@@&gt;@ManyToOne
-  class=@@STR2@@&gt;@JoinColumn(name=class=@@STR3@@&gt;@@STR4@@)
+  @ManyToOne
+  @JoinColumn(name="example")
   private Customer customer;
-}</span></pre>
+}</pre>
     </div>
     </div>
               <p>The side with @JoinColumn is the owning side.</p>
+                  <p class="deep-note">Pay attention to the persistence context: managed entities are tracked and flushed at commit, while detached ones require merge. Fetch strategy (lazy vs eager) is the biggest source of performance surprises.</p>
             </article>
 
             <article class="card warning">
@@ -914,11 +915,12 @@ class Order {
       
     <div>
       <div class="code-title">Fetch join</div>
-      <pre><span class="token-comment">class=@@STR0@@&gt;@Query(class=@@STR1@@&gt;@@STR2@@)
-List&lt;Order&gt; findAllWithCustomer();</span></pre>
+      <pre>@Query("example")
+List&lt;Order&gt; findAllWithCustomer();</pre>
     </div>
     </div>
               <p>Fetch joins load relationships in a single query.</p>
+                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
             </article>
 
             <article class="card warning">
@@ -1011,14 +1013,15 @@ List&lt;Order&gt; findAllWithCustomer();</span></pre>
       
     <div>
       <div class="code-title">Dirty checking</div>
-      <pre><span class="token-comment">class=@@STR0@@&gt;@Transactional
+      <pre>@Transactional
 public void rename(Long id){
   Order o = repo.findById(id).get();
-  o.setStatus(class=@@STR1@@&gt;@@STR2@@);
-} class=class=@@STR3@@&gt;@@STR4@@&gt;@@CMT0@@</span></pre>
+  o.setStatus("SHIPPED");
+} // dirty checking flushes on commit</pre>
     </div>
     </div>
               <p>No explicit save needed if the entity is managed.</p>
+                  <p class="deep-note">Pay attention to the persistence context: managed entities are tracked and flushed at commit, while detached ones require merge. Fetch strategy (lazy vs eager) is the biggest source of performance surprises.</p>
             </article>
 
             <article class="card warning">
@@ -1111,11 +1114,12 @@ public void rename(Long id){
       
     <div>
       <div class="code-title">DTO projection</div>
-      <pre><span class="token-comment">class=@@STR0@@&gt;@Query(class=@@STR1@@&gt;@@STR2@@)
-List&lt;OrderRow&gt; rows();</span></pre>
+      <pre>@Query("example")
+List&lt;OrderRow&gt; rows();</pre>
     </div>
     </div>
               <p>DTO projections avoid loading full entities when you only need a subset.</p>
+                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
             </article>
 
             <article class="card warning">
@@ -1190,6 +1194,7 @@ List&lt;OrderRow&gt; rows();</span></pre>
                 <div>
                   <h3>Interview answer</h3>
                   <p>“I detect N+1 via logs and fix it with fetch joins or entity graphs.”</p>
+                  <p class="deep-note">Transactions are enforced via proxies, so propagation and rollback rules only apply when calls cross the proxy boundary. Always call transactional methods through Spring-managed beans, and be explicit about checked-exception rollback behavior.</p>
                   <table>
                     <thead><tr><th>Strategy</th><th>Trade-off</th></tr></thead>
                     <tbody><tr><td>Fetch join</td><td><span class="pill good">Single query</span></td></tr><tr><td>Entity graph</td><td><span class="pill info">Reusable plan</span></td></tr><tr><td>EAGER mapping</td><td><span class="pill bad">Unexpected loads</span></td></tr></tbody>

@@ -813,13 +813,14 @@
       
     <div>
       <div class="code-title">Web slice</div>
-      <pre><span class="token-comment">class=@@STR0@@&gt;@WebMvcTest(UserController.class)
+      <pre>@WebMvcTest(UserController.class)
 class UserControllerTest {
-  class=@@STR1@@&gt;@Autowired MockMvc mvc;
-}</span></pre>
+  @Autowired MockMvc mvc;
+}</pre>
     </div>
     </div>
               <p>Slice tests are fast and isolate one layer.</p>
+                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
             </article>
 
             <article class="card warning">
@@ -912,13 +913,14 @@ class UserControllerTest {
       
     <div>
       <div class="code-title">@MockBean example</div>
-      <pre><span class="token-comment">class=@@STR0@@&gt;@WebMvcTest(UserController.class)
+      <pre>@WebMvcTest(UserController.class)
 class UserControllerTest {
-  class=@@STR1@@&gt;@MockBean UserService service;
-}</span></pre>
+  @MockBean UserService service;
+}</pre>
     </div>
     </div>
               <p>@MockBean lets Spring inject the mock into the test context.</p>
+                  <p class="deep-note">DI keeps construction separate from behavior. Constructor injection is safest, qualifiers resolve ambiguity, and scopes decide lifecycle and caching.</p>
             </article>
 
             <article class="card warning">
@@ -1011,12 +1013,13 @@ class UserControllerTest {
       
     <div>
       <div class="code-title">MockMvc example</div>
-      <pre><span class="token-comment">mvc.perform(get(class=@@STR0@@&gt;@@STR1@@))
+      <pre>mvc.perform(get("example"))
   .andExpect(status().isOk())
-  .andExpect(jsonPath(class=@@STR2@@&gt;@@STR3@@).value(1));</span></pre>
+  .andExpect(jsonPath("example").value(1));</pre>
     </div>
     </div>
               <p>MockMvc validates routing, serialization, and response structure.</p>
+                  <p class="deep-note">Tests should slice the surface you're validating. Use @WebMvcTest for controllers, @MockBean for collaborators, and keep full integration tests minimal.</p>
             </article>
 
             <article class="card warning">
@@ -1115,6 +1118,7 @@ verify(repo).findById(1L);</span></pre>
     </div>
     </div>
               <p>Focus verification on the interactions that matter to behavior.</p>
+                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
             </article>
 
             <article class="card warning">
@@ -1189,6 +1193,7 @@ verify(repo).findById(1L);</span></pre>
                 <div>
                   <h3>Interview answer</h3>
                   <p>“I use narrow slices for unit-style tests and @SpringBootTest only for end-to-end behavior.”</p>
+                  <p class="deep-note">Resilience patterns protect downstreams and your own service. Always pair retries with timeouts and circuit breakers to avoid cascading failure.</p>
                   <table>
                     <thead><tr><th>Annotation</th><th>Scope</th></tr></thead>
                     <tbody><tr><td>@WebMvcTest</td><td><span class="pill good">Controller only</span></td></tr><tr><td>@DataJpaTest</td><td><span class="pill info">JPA layer</span></td></tr><tr><td>@SpringBootTest</td><td><span class="pill caution">Full context</span></td></tr></tbody>

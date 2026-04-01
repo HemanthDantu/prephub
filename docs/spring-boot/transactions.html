@@ -813,14 +813,15 @@
       
     <div>
       <div class="code-title">@Transactional usage</div>
-      <pre><span class="token-comment">class=@@STR0@@&gt;@Transactional
+      <pre>@Transactional
 public void transfer(){
   debit();
   credit();
-}</span></pre>
+}</pre>
     </div>
     </div>
               <p>Place @Transactional on public service methods called from outside the bean.</p>
+                  <p class="deep-note">Transactions are enforced via proxies, so propagation and rollback rules only apply when calls cross the proxy boundary. Always call transactional methods through Spring-managed beans, and be explicit about checked-exception rollback behavior.</p>
             </article>
 
             <article class="card warning">
@@ -913,11 +914,12 @@ public void transfer(){
       
     <div>
       <div class="code-title">Propagation example</div>
-      <pre><span class="token-comment">class=@@STR0@@&gt;@Transactional(propagation = Propagation.REQUIRES_NEW)
-public void writeAudit(){ ... }</span></pre>
+      <pre>@Transactional(propagation = Propagation.REQUIRES_NEW)
+public void writeAudit(){ ... }</pre>
     </div>
     </div>
               <p>Use REQUIRES_NEW for side effects that must commit independently.</p>
+                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
             </article>
 
             <article class="card warning">
@@ -1010,11 +1012,12 @@ public void writeAudit(){ ... }</span></pre>
       
     <div>
       <div class="code-title">Isolation example</div>
-      <pre><span class="token-comment">class=@@STR0@@&gt;@Transactional(isolation = Isolation.REPEATABLE_READ)
-public void readReport(){ ... }</span></pre>
+      <pre>@Transactional(isolation = Isolation.REPEATABLE_READ)
+public void readReport(){ ... }</pre>
     </div>
     </div>
               <p>Higher isolation means more locking and lower concurrency.</p>
+                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
             </article>
 
             <article class="card warning">
@@ -1107,11 +1110,12 @@ public void readReport(){ ... }</span></pre>
       
     <div>
       <div class="code-title">Rollback rule</div>
-      <pre><span class="token-comment">class=@@STR0@@&gt;@Transactional(rollbackFor = IOException.class, timeout = 5)
-public void importData(){ ... }</span></pre>
+      <pre>@Transactional(rollbackFor = IOException.class, timeout = 5)
+public void importData(){ ... }</pre>
     </div>
     </div>
               <p>Timeouts prevent transactions from hanging too long.</p>
+                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
             </article>
 
             <article class="card warning">
@@ -1186,6 +1190,7 @@ public void importData(){ ... }</span></pre>
                 <div>
                   <h3>Interview answer</h3>
                   <p>“I use REQUIRED for default joins, REQUIRES_NEW for independent side effects.”</p>
+                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
                   <table>
                     <thead><tr><th>Propagation</th><th>Behavior</th></tr></thead>
                     <tbody><tr><td>REQUIRED</td><td><span class="pill good">Join if exists</span></td></tr><tr><td>REQUIRES_NEW</td><td><span class="pill info">Suspend + new</span></td></tr><tr><td>NESTED</td><td><span class="pill caution">Savepoint</span></td></tr></tbody>

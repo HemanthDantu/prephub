@@ -813,6 +813,7 @@
                 <div>
                   <h3>Interview answer</h3>
                   <p>“Boot scans auto-config classes and applies them only when the right classes and properties exist, so defaults appear without manual wiring.”</p>
+                  <p class="deep-note">Auto-configuration is just conditional beans. Starters pull dependencies and register defaults; overriding a bean is how you take control.</p>
                   
                   <table>
                     <thead><tr><th>Condition</th><th>Outcome</th></tr></thead>
@@ -918,6 +919,7 @@ public class DbAutoConfig {
                 <div>
                   <h3>Interview answer</h3>
                   <p>“Starters are curated dependency bundles managed by the Boot BOM so you get compatible libraries and matching auto-config.”</p>
+                  <p class="deep-note">Auto-configuration is just conditional beans. Starters pull dependencies and register defaults; overriding a bean is how you take control.</p>
                   
                   <table>
                     <thead><tr><th>Starter</th><th>What it brings</th></tr></thead>
@@ -1017,6 +1019,7 @@ public class DbAutoConfig {
                 <div>
                   <h3>Interview answer</h3>
                   <p>“I override auto-config by defining my own @Bean or marking a bean @Primary, and conditions decide which defaults load.”</p>
+                  <p class="deep-note">DI keeps construction separate from behavior. Constructor injection is safest, qualifiers resolve ambiguity, and scopes decide lifecycle and caching.</p>
                   
                   <table>
                     <thead><tr><th>Scenario</th><th>What happens</th></tr></thead>
@@ -1120,6 +1123,7 @@ public class CustomConfig {
                 <div>
                   <h3>Interview answer</h3>
                   <p>“A starter is two modules: an auto-config module plus a dependency-only starter that apps include.”</p>
+                  <p class="deep-note">Auto-configuration is just conditional beans. Starters pull dependencies and register defaults; overriding a bean is how you take control.</p>
                   
                   <table>
                     <thead><tr><th>Part</th><th>Role</th></tr></thead>
@@ -1210,6 +1214,7 @@ com.acme.logging.LoggingAutoConfiguration</pre>
                 <div>
                   <h3>Interview answer</h3>
                   <p>“I enable condition reports to see why auto-config applied or not, then override with @Bean.”</p>
+                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
                   <table>
                     <thead><tr><th>Tool</th><th>Use</th></tr></thead>
                     <tbody><tr><td>--debug</td><td><span class="pill good">Condition report</span></td></tr><tr><td>/actuator/beans</td><td><span class="pill info">Bean list</span></td></tr><tr><td>/actuator/conditions</td><td><span class="pill caution">Why matched</span></td></tr></tbody>

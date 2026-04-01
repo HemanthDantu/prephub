@@ -818,6 +818,7 @@ CompletableFuture&lt;Profile&gt; p = u.thenCompose(user -&gt; fetchProfile(user)
     </div>
     </div>
               <p>thenCompose avoids nested futures and keeps the pipeline flat.</p>
+                  <p class="deep-note">CompletableFuture is a pipeline. Prefer chaining and composing over blocking, and always handle exceptions so failures don't silently disappear.</p>
             </article>
 
             <article class="card warning">
@@ -915,6 +916,7 @@ List&lt;Result&gt; results = all.thenApply(v -&gt; List.of(a.join(), b.join(), c
     </div>
     </div>
               <p>You still need to handle failures; allOf completes exceptionally if any fail.</p>
+                  <p class="deep-note">CompletableFuture is a pipeline. Prefer chaining and composing over blocking, and always handle exceptions so failures don't silently disappear.</p>
             </article>
 
             <article class="card warning">
@@ -1012,6 +1014,7 @@ List&lt;Result&gt; results = all.thenApply(v -&gt; List.of(a.join(), b.join(), c
     </div>
     </div>
               <p>Always log or surface exceptions so failures are visible in production.</p>
+                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
             </article>
 
             <article class="card warning">
@@ -1109,6 +1112,7 @@ CompletableFuture.supplyAsync(() -&gt; fetch(), ioPool);</span></pre>
     </div>
     </div>
               <p>Dedicated pools keep I/O work from starving CPU tasks.</p>
+                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
             </article>
 
             <article class="card warning">
@@ -1183,6 +1187,7 @@ CompletableFuture.supplyAsync(() -&gt; fetch(), ioPool);</span></pre>
                 <div>
                   <h3>Interview answer</h3>
                   <p>“I use allOf to combine independent calls, apply timeouts, and return fallbacks on failures.”</p>
+                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
                   <table>
                     <thead><tr><th>Method</th><th>Use</th></tr></thead>
                     <tbody><tr><td>allOf</td><td><span class="pill good">Wait for all</span></td></tr><tr><td>anyOf</td><td><span class="pill info">First response wins</span></td></tr><tr><td>orTimeout</td><td><span class="pill caution">Fail fast</span></td></tr></tbody>

@@ -813,6 +813,7 @@
                 <div>
                   <h3>Interview answer</h3>
                   <p>“@Cacheable wraps a method so it returns cached data when a key exists, otherwise it computes and stores.”</p>
+                  <p class="deep-note">Caching trades freshness for speed. The key decisions are cache keys, eviction rules, and what happens on write so you don't serve stale data.</p>
                   
                   <table>
                     <thead><tr><th>Step</th><th>Result</th></tr></thead>
@@ -913,6 +914,7 @@ public User getUser(String id) {
                 <div>
                   <h3>Interview answer</h3>
                   <p>“I use @CachePut for write-through updates and @CacheEvict for invalidation when data changes.”</p>
+                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
                   
                   <table>
                     <thead><tr><th>Annotation</th><th>Behavior</th></tr></thead>
@@ -1013,6 +1015,7 @@ public User update(User user) {
                 <div>
                   <h3>Interview answer</h3>
                   <p>“I pick Caffeine for in-memory speed and Redis when multiple instances need shared caches.”</p>
+                  <p class="deep-note">Caching trades freshness for speed. The key decisions are cache keys, eviction rules, and what happens on write so you don't serve stale data.</p>
                   
                   <table>
                     <thead><tr><th>Provider</th><th>Best for</th></tr></thead>
@@ -1114,6 +1117,7 @@ public User update(User user) {
                 <div>
                   <h3>Interview answer</h3>
                   <p>“Caching speeds reads but I mitigate stampedes, handle eviction, and avoid self-invocation bypassing the proxy.”</p>
+                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
                   
                   <table>
                     <thead><tr><th>Risk</th><th>Mitigation</th></tr></thead>
@@ -1210,6 +1214,7 @@ public User update(User user) {
                 <div>
                   <h3>Interview answer</h3>
                   <p>“I design stable keys and choose invalidation based on consistency requirements.”</p>
+                  <p class="deep-note">Caching trades freshness for speed. The key decisions are cache keys, eviction rules, and what happens on write so you don't serve stale data.</p>
                   <table>
                     <thead><tr><th>Strategy</th><th>When</th></tr></thead>
                     <tbody><tr><td>TTL</td><td><span class="pill info">Eventually stale ok</span></td></tr><tr><td>Explicit evict</td><td><span class="pill good">Strong consistency</span></td></tr><tr><td>Write-through</td><td><span class="pill caution">High write load</span></td></tr></tbody>

@@ -813,6 +813,7 @@
                 <div>
                   <h3>Interview answer</h3>
                   <p>“Circuit breakers fail fast when a dependency is unhealthy and periodically test recovery.”</p>
+                  <p class="deep-note">Resilience patterns protect downstreams and your own service. Always pair retries with timeouts and circuit breakers to avoid cascading failure.</p>
                   
                   <table>
                     <thead><tr><th>State</th><th>Behavior</th></tr></thead>
@@ -911,6 +912,7 @@ public Inventory check(String sku) { ... }</pre>
                 <div>
                   <h3>Interview answer</h3>
                   <p>“Retries with backoff work for transient errors, but only for idempotent calls and with timeouts.”</p>
+                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
                   
                   <table>
                     <thead><tr><th>Rule</th><th>Reason</th></tr></thead>
@@ -1013,6 +1015,7 @@ public Inventory check(String sku) { ... }</pre>
                 <div>
                   <h3>Interview answer</h3>
                   <p>“Bulkheads isolate expensive calls with their own pools, while rate limiting caps total load.”</p>
+                  <p class="deep-note">Resilience patterns protect downstreams and your own service. Always pair retries with timeouts and circuit breakers to avoid cascading failure.</p>
                   
                   <table>
                     <thead><tr><th>Pattern</th><th>Goal</th></tr></thead>
@@ -1111,6 +1114,7 @@ public Inventory check(String sku) { ... }</pre>
                 <div>
                   <h3>Interview answer</h3>
                   <p>“Resilience4j integrates via annotations and exposes metrics so we can monitor circuit states and retries.”</p>
+                  <p class="deep-note">Observability is about visibility. Expose only the endpoints you need, tag metrics consistently, and wire tracing so you can follow a request end-to-end.</p>
                   
                   <table>
                     <thead><tr><th>Signal</th><th>Value</th></tr></thead>
@@ -1205,6 +1209,7 @@ public Inventory check(String sku) { ... }</pre>
                 <div>
                   <h3>Interview answer</h3>
                   <p>“I combine circuit breakers with safe fallbacks so the system degrades instead of failing hard.”</p>
+                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
                   <table>
                     <thead><tr><th>Fallback</th><th>Example</th></tr></thead>
                     <tbody><tr><td>Cached data</td><td><span class="pill good">Stale ok</span></td></tr><tr><td>Partial response</td><td><span class="pill info">Degraded</span></td></tr><tr><td>Error message</td><td><span class="pill caution">Worst-case</span></td></tr></tbody>

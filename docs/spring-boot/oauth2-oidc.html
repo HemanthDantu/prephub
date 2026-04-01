@@ -813,6 +813,7 @@
                 <div>
                   <h3>Interview answer</h3>
                   <p>“OAuth2 gives access tokens for API access; OIDC adds ID tokens for identity claims.”</p>
+                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
                   
                   <table>
                     <thead><tr><th>Token</th><th>Purpose</th></tr></thead>
@@ -915,6 +916,7 @@
                 <div>
                   <h3>Interview answer</h3>
                   <p>“Auth Code with PKCE is the recommended flow for public clients like SPAs.”</p>
+                  <p class="deep-note">Security is a filter-chain problem: authentication establishes identity, authorization decides access. In interviews, call out where tokens are validated and how you map claims to authorities.</p>
                   
                   <table>
                     <thead><tr><th>Flow</th><th>Use case</th></tr></thead>
@@ -1018,6 +1020,7 @@
                 <div>
                   <h3>Interview answer</h3>
                   <p>“I use the OAuth2 resource server starter and configure issuer-uri so Boot validates JWTs automatically.”</p>
+                  <p class="deep-note">Property sources are ordered, and later sources override earlier ones. Profiles and environment variables are the safe way to separate dev/test/prod behavior.</p>
                   
                   <table>
                     <thead><tr><th>Starter</th><th>Purpose</th></tr></thead>
@@ -1122,6 +1125,7 @@ SecurityFilterChain security(HttpSecurity http) throws Exception {
                 <div>
                   <h3>Interview answer</h3>
                   <p>“I validate issuer, audience, and expiry on every access token before authorizing.”</p>
+                  <p class="deep-note">Security is a filter-chain problem: authentication establishes identity, authorization decides access. In interviews, call out where tokens are validated and how you map claims to authorities.</p>
                   
                   <table>
                     <thead><tr><th>Check</th><th>Reason</th></tr></thead>
@@ -1215,6 +1219,7 @@ SecurityFilterChain security(HttpSecurity http) throws Exception {
                 <div>
                   <h3>Interview answer</h3>
                   <p>“I keep access tokens short-lived and use refresh tokens securely to renew.”</p>
+                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
                   <table>
                     <thead><tr><th>Token</th><th>Lifetime</th></tr></thead>
                     <tbody><tr><td>Access</td><td><span class="pill good">Minutes</span></td></tr><tr><td>Refresh</td><td><span class="pill info">Hours/days</span></td></tr><tr><td>ID</td><td><span class="pill caution">Short-lived</span></td></tr></tbody>

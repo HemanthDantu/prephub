@@ -813,12 +813,13 @@
       
     <div>
       <div class="code-title">Filter chain snippet</div>
-      <pre><span class="token-comment">http.authorizeHttpRequests(auth -&gt; auth
-  .requestMatchers(class=@@STR0@@&gt;@@STR1@@).hasRole(class=@@STR2@@&gt;@@STR3@@)
-  .anyRequest().authenticated());</span></pre>
+      <pre>http.authorizeHttpRequests(auth -&gt; auth
+  .requestMatchers("example").hasRole("example")
+  .anyRequest().authenticated());</pre>
     </div>
     </div>
               <p>The filter chain enforces authentication and authorization consistently.</p>
+                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
             </article>
 
             <article class="card warning">
@@ -916,6 +917,7 @@ if (jwt.isExpired()) throw new SecurityException();</span></pre>
     </div>
     </div>
               <p>Validation happens on every request; no server session required.</p>
+                  <p class="deep-note">Security is a filter-chain problem: authentication establishes identity, authorization decides access. In interviews, call out where tokens are validated and how you map claims to authorities.</p>
             </article>
 
             <article class="card warning">
@@ -1013,6 +1015,7 @@ Invalidate old refresh token</span></pre>
     </div>
     </div>
               <p>Rotate refresh tokens to reduce replay risk.</p>
+                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
             </article>
 
             <article class="card warning">
@@ -1109,6 +1112,7 @@ Invalidate old refresh token</span></pre>
     </div>
     </div>
               <p>Security is a system — token storage matters as much as validation.</p>
+                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
             </article>
 
             <article class="card warning">
@@ -1183,6 +1187,7 @@ Invalidate old refresh token</span></pre>
                 <div>
                   <h3>Interview answer</h3>
                   <p>“I validate signature, issuer, and audience, then map claims to authorities in the filter chain.”</p>
+                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
                   <table>
                     <thead><tr><th>Check</th><th>Reason</th></tr></thead>
                     <tbody><tr><td>Signature</td><td><span class="pill good">Integrity</span></td></tr><tr><td>Issuer</td><td><span class="pill info">Trust</span></td></tr><tr><td>Audience</td><td><span class="pill caution">Scope</span></td></tr></tbody>
