@@ -497,6 +497,16 @@ const SITE_DATA = {
           name: 'Reference',
           concepts: [
             {
+              title:      'Spring Boot 8-Hour Study Plan',
+              subtitle:   'Pomodoro-based path to complete the entire module',
+              difficulty: 'beginner',
+              time:       '15 min',
+              tags:       ['plan', 'schedule', 'study'],
+              file:       'study-plan.html',
+              status:     'available',
+              featured:   true
+            },
+            {
               title:      'Spring Boot Interview Reference Sheet',
               subtitle:   'Complete Spring Boot interview cheatsheet — beans, web, data, security',
               difficulty: 'intermediate',

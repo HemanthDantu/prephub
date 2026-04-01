@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spring Boot — 8-Hour Pomodoro Plan</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0e1a;
+      --surface-1: #111827;
+      --surface-2: #1a2235;
+      --surface-3: #1e2d45;
+      --border: rgba(255,255,255,0.08);
+      --text: #e2e8f0;
+      --muted: #9aa6bf;
+      --green: #10b981;
+      --cyan: #00d4ff;
+      --purple: #7c3aed;
+      --amber: #f59e0b;
+      --red: #ef4444;
+      --shadow: 0 20px 60px rgba(0,0,0,0.35);
+      --radius-lg: 18px;
+      --radius-md: 12px;
+      --radius-sm: 8px;
+      --max: 1100px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Syne', system-ui, sans-serif;
+      color: var(--text);
+      background: radial-gradient(1200px 700px at 20% -10%, #14213b 0%, #0a0e1a 60%);
+    }
+    a { color: inherit; text-decoration: none; }
+
+    .shell {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 28px 22px 60px;
+    }
+
+    .top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .crumbs {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      font-size: 0.95rem;
+      color: var(--muted);
+    }
+    .crumbs a {
+      color: var(--cyan);
+    }
+    .badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(16,185,129,0.15);
+      color: #9af3d1;
+      border: 1px solid rgba(16,185,129,0.35);
+    }
+
+    .hero {
+      background: linear-gradient(135deg, rgba(16,185,129,0.16), rgba(0,212,255,0.08));
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 26px;
+      box-shadow: var(--shadow);
+      margin-bottom: 22px;
+    }
+    .hero h1 {
+      margin: 0 0 10px;
+      font-size: 2.4rem;
+    }
+    .hero p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }
+    .stat {
+      background: var(--surface-2);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      padding: 14px;
+    }
+    .stat .label {
+      color: var(--muted);
+      font-size: 0.85rem;
+      margin-bottom: 6px;
+    }
+    .stat .value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.1rem;
+      color: var(--cyan);
+    }
+
+    .plan {
+      display: grid;
+      gap: 18px;
+    }
+
+    .phase {
+      background: var(--surface-1);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+    }
+    .phase h2 {
+      margin: 0 0 8px;
+      font-size: 1.4rem;
+    }
+    .phase p {
+      margin: 0 0 16px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .pomo-list {
+      display: grid;
+      gap: 12px;
+    }
+    .pomo {
+      display: grid;
+      grid-template-columns: 28px 1fr auto;
+      gap: 12px;
+      align-items: center;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px;
+    }
+    .pomo input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--green);
+    }
+    .pomo .meta {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .pomo .title {
+      font-weight: 600;
+      font-size: 1rem;
+    }
+    .pomo .links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 0.92rem;
+    }
+    .pomo .links a {
+      color: var(--cyan);
+      border-bottom: 1px dashed rgba(0,212,255,0.35);
+    }
+    .pomo .time {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--muted);
+      font-size: 0.85rem;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .progress {
+      margin-top: 18px;
+      background: var(--surface-1);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      display: grid;
+      gap: 12px;
+    }
+    .progress-bar {
+      height: 8px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .progress-bar span {
+      display: block;
+      height: 100%;
+      background: linear-gradient(90deg, var(--green), var(--cyan));
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+    .progress-meta {
+      display: flex;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+    .reset {
+      border: 1px solid rgba(239,68,68,0.5);
+      color: #fecaca;
+      background: rgba(239,68,68,0.12);
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      cursor: pointer;
+      justify-self: flex-start;
+    }
+
+    .note {
+      margin-top: 18px;
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 0.95rem;
+    }
+    .note strong {
+      color: var(--text);
+    }
+
+    @media (max-width: 700px) {
+      .pomo {
+        grid-template-columns: 28px 1fr;
+      }
+      .pomo .time {
+        grid-column: 1 / -1;
+        justify-self: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="top">
+      <div class="crumbs">
+        <a href="../index.html">Home</a>
+        <span>›</span>
+        <a href="index.html">Spring Boot</a>
+        <span>›</span>
+        <span>8-Hour Plan</span>
+      </div>
+      <span class="badge">16 Pomodoros · 8 Hours</span>
+    </div>
+
+    <section class="hero">
+      <h1>Spring Boot — 8-Hour Pomodoro Plan</h1>
+      <p>
+        This is a structured, prerequisite-aware path through the Spring Boot module.
+        Each block is 30 minutes focused study, ordered so each topic builds on the last.
+        Check items as you finish them to track progress.
+      </p>
+      <div class="stats">
+        <div class="stat">
+          <div class="label">Focus Blocks</div>
+          <div class="value">16 × 30 min</div>
+        </div>
+        <div class="stat">
+          <div class="label">Estimated Completion</div>
+          <div class="value">8 hours</div>
+        </div>
+        <div class="stat">
+          <div class="label">Suggested Breaks</div>
+          <div class="value">5–10 min after every 2</div>
+        </div>
+        <div class="stat">
+          <div class="label">Checkpoint Reviews</div>
+          <div class="value">After blocks 4, 10, 16</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="plan">
+      <div class="phase">
+        <h2>Phase 1 — Core Foundations</h2>
+        <p>Start with Spring’s container and DI. These concepts explain nearly every “why” you’ll hit later.</p>
+        <div class="pomo-list">
+          <label class="pomo">
+            <input type="checkbox" data-key="p1" />
+            <div class="meta">
+              <div class="title">P1 · IoC Container & Beans</div>
+              <div class="links">
+                <a href="spring-core-module.html">Open: Spring Core Module</a>
+              </div>
+            </div>
+            <div class="time">30 min</div>
+          </label>
+          <label class="pomo">
+            <input type="checkbox" data-key="p2" />
+            <div class="meta">
+              <div class="title">P2 · Dependency Injection Patterns</div>
+              <div class="links">
+                <a href="dependency-injection.html">Open: Dependency Injection</a>
+              </div>
+            </div>
+            <div class="time">30 min</div>
+          </label>
+        </div>
+      </div>
+
+      <div class="phase">
+        <h2>Phase 2 — Web & API Basics</h2>
+        <p>Build a solid REST layer before touching data or security. You’ll reuse these patterns everywhere.</p>
+        <div class="pomo-list">
+          <label class="pomo">
+            <input type="checkbox" data-key="p3" />
+            <div class="meta">
+              <div class="title">P3 · REST Controllers & Validation</div>
+              <div class="links">
+                <a href="spring-mvc-module.html">Open: Spring MVC Module</a>
+              </div>
+            </div>
+            <div class="time">30 min</div>
+          </label>
+          <label class="pomo">
+            <input type="checkbox" data-key="p4" />
+            <div class="meta">
+              <div class="title">P4 · Global Exception Handling</div>
+              <div class="links">
+                <a href="spring-bridge-module.html">Open: Exception Handling</a>
+              </div>
+            </div>
+            <div class="time">30 min</div>
+          </label>
+        </div>
+      </div>
+
+      <div class="phase">
+        <h2>Phase 3 — Data & Transactions</h2>
+        <p>Model entities, understand fetching, then lock in transaction semantics. This is the backend backbone.</p>
+        <div class="pomo-list">
+          <label class="pomo">
+            <input type="checkbox" data-key="p5" />
+            <div class="meta">
+              <div class="title">P5 · JPA & Hibernate (Core Concepts)</div>
+              <div class="links">
+                <a href="jpa-hibernate.html">Open: JPA & Hibernate</a>
+              </div>
+            </div>
+            <div class="time">30 min</div>
+          </label>
+          <label class="pomo">
+            <input type="checkbox" data-key="p6" />
+            <div class="meta">
+              <div class="title">P6 · JPA Fetching, N+1, Performance</div>
+              <div class="links">
+                <a href="jpa-hibernate.html">Open: JPA & Hibernate</a>
+              </div>
+            </div>
+            <div class="time">30 min</div>
+          </label>
+          <label class="pomo">
+            <input type="checkbox" data-key="p7" />
+            <div class="meta">
+              <div class="title">P7 · Transactions + Why Proxies Matter</div>
+              <div class="links">
+                <a href="transactions.html">Open: Transactions</a>
+                <a href="aop-proxies.html">Open: AOP & Proxies</a>
+              </div>
+            </div>
+            <div class="time">30 min</div>
+          </label>
+        </div>
+      </div>
+
+      <div class="phase">
+        <h2>Phase 4 — Testing & Boot Internals</h2>
+        <p>Learn to test what you build, then uncover how Spring Boot wires defaults under the hood.</p>
+        <div class="pomo-list">
+          <label class="pomo">
+            <input type="checkbox" data-key="p8" />
+            <div class="meta">
+              <div class="title">P8 · Testing with Mockito</div>
+              <div class="links">
+                <a href="testing-mockito.html">Open: Testing with Mockito</a>
+              </div>
+            </div>
+            <div class="time">30 min</div>
+          </label>
+          <label class="pomo">
+            <input type="checkbox" data-key="p9" />
+            <div class="meta">
+              <div class="title">P9 · Auto-Configuration & Starters</div>
+              <div class="links">
+                <a href="auto-configuration-starters.html">Open: Auto-Configuration & Starters</a>
+              </div>
+            </div>
+            <div class="time">30 min</div>
+          </label>
+          <label class="pomo">
+            <input type="checkbox" data-key="p10" />
+            <div class="meta">
+              <div class="title">P10 · Externalized Configuration & Profiles</div>
+              <div class="links">
+                <a href="externalized-configuration.html">Open: Externalized Configuration</a>
+              </div>
+            </div>
+            <div class="time">30 min</div>
+          </label>
+        </div>
+      </div>
+
+      <div class="phase">
+        <h2>Phase 5 — Security & Integration</h2>
+        <p>Secure APIs first, then learn robust client/integration patterns for real-world service calls.</p>
+        <div class="pomo-list">
+          <label class="pomo">
+            <input type="checkbox" data-key="p11" />
+            <div class="meta">
+              <div class="title">P11 · Spring Security & JWT</div>
+              <div class="links">
+                <a href="security-jwt.html">Open: Security & JWT</a>
+              </div>
+            </div>
+            <div class="time">30 min</div>
+          </label>
+          <label class="pomo">
+            <input type="checkbox" data-key="p12" />
+            <div class="meta">
+              <div class="title">P12 · OAuth2 / OIDC Basics</div>
+              <div class="links">
+                <a href="oauth2-oidc.html">Open: OAuth2 / OIDC</a>
+              </div>
+            </div>
+            <div class="time">30 min</div>
+          </label>
+          <label class="pomo">
+            <input type="checkbox" data-key="p13" />
+            <div class="meta">
+              <div class="title">P13 · WebClient + Resilience Patterns</div>
+              <div class="links">
+                <a href="webclient-rest-clients.html">Open: WebClient & REST Clients</a>
+                <a href="resilience-patterns.html">Open: Resilience Patterns</a>
+              </div>
+            </div>
+            <div class="time">30 min</div>
+          </label>
+        </div>
+      </div>
+
+      <div class="phase">
+        <h2>Phase 6 — Production Readiness</h2>
+        <p>Operational topics that get you from “works on my machine” to “safe in production.”</p>
+        <div class="pomo-list">
+          <label class="pomo">
+            <input type="checkbox" data-key="p14" />
+            <div class="meta">
+              <div class="title">P14 · Actuator & Observability</div>
+              <div class="links">
+                <a href="actuator-observability.html">Open: Actuator & Observability</a>
+              </div>
+            </div>
+            <div class="time">30 min</div>
+          </label>
+          <label class="pomo">
+            <input type="checkbox" data-key="p15" />
+            <div class="meta">
+              <div class="title">P15 · Caching + Scheduling</div>
+              <div class="links">
+                <a href="caching.html">Open: Caching</a>
+                <a href="scheduling.html">Open: Scheduling</a>
+              </div>
+            </div>
+            <div class="time">30 min</div>
+          </label>
+          <label class="pomo">
+            <input type="checkbox" data-key="p16" />
+            <div class="meta">
+              <div class="title">P16 · Messaging + Database Migrations</div>
+              <div class="links">
+                <a href="messaging-kafka-rabbit.html">Open: Messaging</a>
+                <a href="database-migrations.html">Open: Database Migrations</a>
+              </div>
+            </div>
+            <div class="time">30 min</div>
+          </label>
+        </div>
+      </div>
+    </section>
+
+    <section class="progress">
+      <div class="progress-meta">
+        <span id="progressText">0 of 16 completed</span>
+        <span id="progressPercent">0%</span>
+      </div>
+      <div class="progress-bar"><span id="progressFill"></span></div>
+      <button class="reset" id="resetBtn">Reset Progress</button>
+    </section>
+
+    <p class="note">
+      <strong>Optional wrap-up:</strong> Spend 15 minutes skimming the
+      <a href="spring_boot_interview_reference_sheet.html">Spring Boot Interview Reference Sheet</a>
+      to lock in recall. If any block felt dense, repeat it on a fresh day and take notes.
+    </p>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'iph_plan_spring_boot_v1';
+    const checkboxes = Array.from(document.querySelectorAll('input[type="checkbox"][data-key]'));
+    const progressText = document.getElementById('progressText');
+    const progressPercent = document.getElementById('progressPercent');
+    const progressFill = document.getElementById('progressFill');
+    const resetBtn = document.getElementById('resetBtn');
+
+    function loadState() {
+      try {
+        return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+      } catch (e) {
+        return {};
+      }
+    }
+
+    function saveState(state) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function updateProgress(state) {
+      const total = checkboxes.length;
+      const done = checkboxes.filter((box) => box.checked).length;
+      const pct = total === 0 ? 0 : Math.round((done / total) * 100);
+      progressText.textContent = `${done} of ${total} completed`;
+      progressPercent.textContent = `${pct}%`;
+      progressFill.style.width = `${pct}%`;
+      saveState(state);
+    }
+
+    const state = loadState();
+    checkboxes.forEach((box) => {
+      const key = box.dataset.key;
+      box.checked = Boolean(state[key]);
+      box.addEventListener('change', () => {
+        state[key] = box.checked;
+        updateProgress(state);
+      });
+    });
+
+    resetBtn.addEventListener('click', () => {
+      checkboxes.forEach((box) => {
+        box.checked = false;
+        state[box.dataset.key] = false;
+      });
+      updateProgress(state);
+    });
+
+    updateProgress(state);
+  </script>
+</body>
+</html>
