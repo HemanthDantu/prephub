@@ -1231,7 +1231,42 @@ class BillingService {
               <ul class="takeaways"><li>Advice runs across proxy boundary.</li><li>Avoid self-invocation.</li><li>Split beans when needed.</li></ul>
             </article>
 
-            <article class="card quiz-card">
+            
+          
+            <article class="card technical">
+              <div class="card-label">Edge cases</div>
+              <h3>Edge Cases & Tradeoffs</h3>
+              <ul class="takeaways"><li>Self-invocation bypasses proxies.</li><li>Final classes/methods cannot be proxied by CGLIB.</li><li>Proxying changes equals/hashCode semantics.</li><li>Ordering of aspects can change behavior.</li><li>Advice with heavy logic slows calls.</li></ul>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Checklist</div>
+              <h3>Production Checklist</h3>
+              <ul class="takeaways"><li>Keep aspects small and focused.</li><li>Document ordering with @Order.</li><li>Avoid AOP for core business logic.</li><li>Use interface-based proxies when possible.</li><li>Test cross-cutting behavior separately.</li></ul>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Interview</div>
+              <h3>Interview Hooks</h3>
+              <p>Explain proxies, join points, and advice types.</p>
+              <ul class="takeaways"><li>JDK proxies use interfaces; CGLIB subclasses classes.</li><li>Advice types: before, after, around.</li><li>Pointcuts select join points.</li></ul>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Advanced Example</div>
+              <div class="code-blocks">
+        <div>
+          <div class="code-title">Around advice example</div>
+          <pre>@Around("execution(* com.app..*(..))")
+public Object timing(ProceedingJoinPoint pjp) throws Throwable {
+  long start = System.nanoTime();
+  try { return pjp.proceed(); }
+  finally { log(pjp.getSignature(), System.nanoTime()-start); }
+}</pre>
+        </div>
+      </div>
+      <p>Around advice can measure performance or enforce policies.</p>
+            </article><article class="card quiz-card">
               <div class="card-label">Quiz</div>
               <h3>Why does self-invocation bypass advice?</h3>
               <div class="quiz-options" data-answer="1">
@@ -1241,8 +1276,7 @@ class BillingService {
                 <strong>Correct answer: B</strong>
                 <span>Self-calls do not go through the proxy, so advice doesn’t run.</span>
               </div>
-            </article>
-          </div>
+            </article></div>
         </div>
       </section>
 <section class="section" data-section="5">

@@ -1201,7 +1201,41 @@
               <ul class="takeaways"><li>Prefer primitive streams for hot loops.</li><li>Use downstream collectors.</li><li>Profile before parallelizing.</li></ul>
             </article>
 
-            <article class="card quiz-card">
+            
+          
+            <article class="card technical">
+              <div class="card-label">Edge cases</div>
+              <h3>Edge Cases & Tradeoffs</h3>
+              <ul class="takeaways"><li>Parallel streams can reorder results and hurt performance.</li><li>Stateful lambdas introduce race conditions.</li><li>Streams are single-use; reuse causes IllegalStateException.</li><li>Excessive boxing adds hidden GC overhead.</li><li>Short-circuiting changes evaluation order.</li></ul>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Checklist</div>
+              <h3>Production Checklist</h3>
+              <ul class="takeaways"><li>Prefer sequential unless profiling proves otherwise.</li><li>Avoid side effects; use collectors.</li><li>Use primitive streams for numeric work.</li><li>Keep pipelines readable and short.</li><li>Collect into immutable outputs when possible.</li></ul>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Interview</div>
+              <h3>Interview Hooks</h3>
+              <p>Demonstrate you understand correctness and performance tradeoffs.</p>
+              <ul class="takeaways"><li>map vs flatMap vs filter with examples.</li><li>reduce vs collect and identity pitfalls.</li><li>When parallel streams are a bad fit.</li></ul>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Advanced Example</div>
+              <div class="code-blocks">
+        <div>
+          <div class="code-title">Grouping with downstream collectors</div>
+          <pre>Map&lt;String, Long&gt; counts = orders.stream()
+  .collect(Collectors.groupingBy(
+    Order::region,
+    Collectors.counting()
+  ));</pre>
+        </div>
+      </div>
+      <p>Downstream collectors keep pipelines expressive and efficient.</p>
+            </article><article class="card quiz-card">
               <div class="card-label">Quiz</div>
               <h3>What triggers stream execution?</h3>
               <div class="quiz-options" data-answer="2">
@@ -1211,8 +1245,7 @@
                 <strong>Correct answer: C</strong>
                 <span>Streams are lazy; only terminal ops execute the pipeline.</span>
               </div>
-            </article>
-          </div>
+            </article></div>
         </div>
       </section>
 <section class="section" data-section="5">

@@ -1227,7 +1227,37 @@ SecurityFilterChain security(HttpSecurity http) throws Exception {
               <ul class="takeaways"><li>Short access token TTLs.</li><li>Secure refresh tokens.</li><li>Validate issuer/audience.</li></ul>
             </article>
 
-            <article class="card quiz-card">
+            
+          
+            <article class="card technical">
+              <div class="card-label">Edge cases</div>
+              <h3>Edge Cases & Tradeoffs</h3>
+              <ul class="takeaways"><li>Auth code flow should use PKCE for public clients.</li><li>Refresh token rotation prevents replay.</li><li>ID token is for identity, not API access.</li><li>JWKS caching needs eviction on key rotation.</li><li>Scopes and claims should be minimal.</li></ul>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Checklist</div>
+              <h3>Production Checklist</h3>
+              <ul class="takeaways"><li>Validate issuer, audience, and signature.</li><li>Use OIDC discovery endpoints.</li><li>Separate access and ID token usage.</li><li>Store tokens securely and avoid localStorage for SPAs.</li><li>Handle logout and token revocation.</li></ul>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Interview</div>
+              <h3>Interview Hooks</h3>
+              <p>Clarify OAuth2 vs OIDC and token purpose.</p>
+              <ul class="takeaways"><li>OAuth2 is authorization; OIDC adds identity.</li><li>Access token vs ID token vs refresh token.</li><li>PKCE protects public clients.</li></ul>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Advanced Example</div>
+              <div class="code-blocks">
+        <div>
+          <div class="code-title">Resource server config</div>
+          <pre>http.oauth2ResourceServer(o -&gt; o.jwt());</pre>
+        </div>
+      </div>
+      <p>Resource servers validate access tokens for APIs.</p>
+            </article><article class="card quiz-card">
               <div class="card-label">Quiz</div>
               <h3>Why keep access tokens short-lived?</h3>
               <div class="quiz-options" data-answer="1">
@@ -1237,8 +1267,7 @@ SecurityFilterChain security(HttpSecurity http) throws Exception {
                 <strong>Correct answer: B</strong>
                 <span>Short lifetimes limit exposure if a token leaks.</span>
               </div>
-            </article>
-          </div>
+            </article></div>
         </div>
       </section>
 <section class="section" data-section="5">

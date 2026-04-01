@@ -1219,7 +1219,43 @@ public void nightlyJob() { ... }</pre>
               <ul class="takeaways"><li>Use explicit timezones.</li><li>Protect clustered jobs.</li><li>Monitor job outcomes.</li></ul>
             </article>
 
-            <article class="card quiz-card">
+            
+          
+            <article class="card technical">
+              <div class="card-label">Edge cases</div>
+              <h3>Edge Cases & Tradeoffs</h3>
+              <ul class="takeaways"><li>Long tasks can overlap without safeguards.</li><li>Default scheduler is single-threaded.</li><li>Cron runs in server time zone by default.</li><li>Exceptions can stop future executions.</li><li>Clock drift affects fixedRate scheduling.</li></ul>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Checklist</div>
+              <h3>Production Checklist</h3>
+              <ul class="takeaways"><li>Use a dedicated TaskScheduler pool.</li><li>Guard with locks for single-instance jobs.</li><li>Set zone in cron expressions.</li><li>Handle exceptions inside tasks.</li><li>Monitor execution duration.</li></ul>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Interview</div>
+              <h3>Interview Hooks</h3>
+              <p>Show you understand fixedRate vs fixedDelay.</p>
+              <ul class="takeaways"><li>fixedRate schedules from start time; fixedDelay from end time.</li><li>Use @SchedulerLock or leader election for clusters.</li><li>Avoid heavy work on the scheduler thread.</li></ul>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Advanced Example</div>
+              <div class="code-blocks">
+        <div>
+          <div class="code-title">Custom scheduler pool</div>
+          <pre>@Bean
+public TaskScheduler taskScheduler(){
+  ThreadPoolTaskScheduler ts = new ThreadPoolTaskScheduler();
+  ts.setPoolSize(4);
+  ts.setThreadNamePrefix("jobs-");
+  return ts;
+}</pre>
+        </div>
+      </div>
+      <p>Dedicated pools prevent jobs from blocking each other.</p>
+            </article><article class="card quiz-card">
               <div class="card-label">Quiz</div>
               <h3>Why use ShedLock?</h3>
               <div class="quiz-options" data-answer="1">
@@ -1229,8 +1265,7 @@ public void nightlyJob() { ... }</pre>
                 <strong>Correct answer: B</strong>
                 <span>ShedLock ensures only one instance runs the scheduled job.</span>
               </div>
-            </article>
-          </div>
+            </article></div>
         </div>
       </section>
 <section class="section" data-section="5">

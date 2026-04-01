@@ -1218,7 +1218,41 @@ public Price price(String sku, String region) { ... }</pre>
               <ul class="takeaways"><li>Design keys carefully.</li><li>Pick invalidation strategy.</li><li>Monitor hit ratios.</li></ul>
             </article>
 
-            <article class="card quiz-card">
+            
+          
+            <article class="card technical">
+              <div class="card-label">Edge cases</div>
+              <h3>Edge Cases & Tradeoffs</h3>
+              <ul class="takeaways"><li>Stale data if eviction is forgotten.</li><li>Cache stampede under high load.</li><li>Incorrect keys lead to collisions.</li><li>Serialization costs can dominate.</li><li>Caching nulls can mask data fixes.</li></ul>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Checklist</div>
+              <h3>Production Checklist</h3>
+              <ul class="takeaways"><li>Define cache TTLs and eviction strategy.</li><li>Use @CacheEvict on writes.</li><li>Include relevant fields in cache keys.</li><li>Protect hot keys with locking or refresh.</li><li>Monitor hit ratio and latency.</li></ul>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Interview</div>
+              <h3>Interview Hooks</h3>
+              <p>Explain cache-aside and invalidation strategies.</p>
+              <ul class="takeaways"><li>@Cacheable caches reads, @CachePut updates, @CacheEvict invalidates.</li><li>Write-through vs write-behind tradeoffs.</li><li>When not to cache (high churn or sensitive data).</li></ul>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Advanced Example</div>
+              <div class="code-blocks">
+        <div>
+          <div class="code-title">Cacheable + Evict</div>
+          <pre>@Cacheable(value = "users", key = "#id")
+public User getUser(String id){ ... }
+
+@CacheEvict(value = "users", key = "#user.id")
+public void updateUser(User user){ ... }</pre>
+        </div>
+      </div>
+      <p>Make invalidation part of write paths.</p>
+            </article><article class="card quiz-card">
               <div class="card-label">Quiz</div>
               <h3>What is the safest invalidation when consistency is critical?</h3>
               <div class="quiz-options" data-answer="1">
@@ -1228,8 +1262,7 @@ public Price price(String sku, String region) { ... }</pre>
                 <strong>Correct answer: B</strong>
                 <span>Explicit eviction on writes keeps cache consistent with source of truth.</span>
               </div>
-            </article>
-          </div>
+            </article></div>
         </div>
       </section>
 <section class="section" data-section="5">

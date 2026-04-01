@@ -1228,7 +1228,45 @@ class CheckoutService {
               <ul class="takeaways"><li>Patterns model change, not complexity.</li><li>Prefer composition over inheritance.</li><li>Leave escape hatches for future changes.</li></ul>
             </article>
 
-            <article class="card quiz-card">
+            
+          
+            <article class="card technical">
+              <div class="card-label">Edge cases</div>
+              <h3>Edge Cases & Tradeoffs</h3>
+              <ul class="takeaways"><li>Over-abstracting adds indirection without real variability.</li><li>Singletons hide global state and make tests flaky.</li><li>Factories can drift into mini service locators.</li><li>Pattern-heavy designs can hurt readability and onboarding.</li><li>Choose composition over inheritance when behavior varies.</li></ul>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Checklist</div>
+              <h3>Production Checklist</h3>
+              <ul class="takeaways"><li>Identify the variation point first (creation, behavior, structure).</li><li>Keep the public interface stable and hide wiring details.</li><li>Prefer DI-managed lifecycles over manual singletons.</li><li>Add tests that prove substitutability and extension.</li><li>Document tradeoffs so others know why the pattern exists.</li></ul>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Interview</div>
+              <h3>Interview Hooks</h3>
+              <p>Frame patterns as tools for specific pain points, not badges of honor.</p>
+              <ul class="takeaways"><li>Explain the problem first, then the pattern that fixes it.</li><li>Call out the alternative you rejected and why.</li><li>Mention how the pattern affects testability and coupling.</li></ul>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Advanced Example</div>
+              <div class="code-blocks">
+        <div>
+          <div class="code-title">Strategy + Factory in practice</div>
+          <pre>interface PricingStrategy { double price(Order o); }
+class StandardPricing implements PricingStrategy {
+  public double price(Order o){ return o.base(); }
+}
+class PricingFactory {
+  static PricingStrategy forTier(String tier){
+    return "VIP".equals(tier) ? o -&gt; o.base() * 0.8 : new StandardPricing();
+  }
+}</pre>
+        </div>
+      </div>
+      <p>Factories keep creation centralized, strategies keep behavior swappable.</p>
+            </article><article class="card quiz-card">
               <div class="card-label">Quiz</div>
               <h3>What is the best reason to introduce a pattern?</h3>
               <div class="quiz-options" data-answer="1">
@@ -1238,8 +1276,7 @@ class CheckoutService {
                 <strong>Correct answer: B</strong>
                 <span>Patterns are justified when they reduce a concrete change risk or clarify extension points.</span>
               </div>
-            </article>
-          </div>
+            </article></div>
         </div>
       </section>
 <section class="section" data-section="5">

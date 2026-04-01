@@ -1231,7 +1231,42 @@ WebClient client = WebClient.builder()
               <ul class="takeaways"><li>Map errors explicitly.</li><li>Retry only safe calls.</li><li>Propagate trace headers.</li></ul>
             </article>
 
-            <article class="card quiz-card">
+            
+          
+            <article class="card technical">
+              <div class="card-label">Edge cases</div>
+              <h3>Edge Cases & Tradeoffs</h3>
+              <ul class="takeaways"><li>Default timeouts can be too lenient.</li><li>Blocking in reactive chains causes deadlocks.</li><li>Retries can amplify load during outages.</li><li>Large payloads need memory limits.</li><li>Error handling differs between retrieve and exchange.</li></ul>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Checklist</div>
+              <h3>Production Checklist</h3>
+              <ul class="takeaways"><li>Configure connect/read timeouts.</li><li>Use exchangeToMono for full response control.</li><li>Add retry with backoff and circuit breaker.</li><li>Propagate correlation IDs.</li><li>Avoid blocking calls in reactive flows.</li></ul>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Interview</div>
+              <h3>Interview Hooks</h3>
+              <p>Discuss retrieve vs exchange and resilience patterns.</p>
+              <ul class="takeaways"><li>retrieve() is simple, exchangeToMono gives status control.</li><li>Use Reactor retry with jitter.</li><li>Use connection pooling to avoid socket churn.</li></ul>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Advanced Example</div>
+              <div class="code-blocks">
+        <div>
+          <div class="code-title">WebClient with timeouts</div>
+          <pre>HttpClient httpClient = HttpClient.create()
+  .responseTimeout(Duration.ofSeconds(2));
+
+WebClient client = WebClient.builder()
+  .clientConnector(new ReactorClientHttpConnector(httpClient))
+  .build();</pre>
+        </div>
+      </div>
+      <p>Explicit timeouts prevent hung requests.</p>
+            </article><article class="card quiz-card">
               <div class="card-label">Quiz</div>
               <h3>Which status class is usually safe to retry?</h3>
               <div class="quiz-options" data-answer="3">
@@ -1241,8 +1276,7 @@ WebClient client = WebClient.builder()
                 <strong>Correct answer: D</strong>
                 <span>Transient server errors (5xx) are candidates for retry.</span>
               </div>
-            </article>
-          </div>
+            </article></div>
         </div>
       </section>
 <section class="section" data-section="5">

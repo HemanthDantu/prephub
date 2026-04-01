@@ -1217,7 +1217,44 @@ com.acme.logging.LoggingAutoConfiguration</pre>
               <ul class="takeaways"><li>Use condition reports.</li><li>Inspect actuator beans.</li><li>Override only when necessary.</li></ul>
             </article>
 
-            <article class="card quiz-card">
+            
+          
+            <article class="card technical">
+              <div class="card-label">Edge cases</div>
+              <h3>Edge Cases & Tradeoffs</h3>
+              <ul class="takeaways"><li>Auto-config order can override your beans.</li><li>Classpath conditions change with optional deps.</li><li>Conditional beans are skipped if a bean already exists.</li><li>Overriding bean names can be confusing.</li><li>Eager initialization can slow startup.</li></ul>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Checklist</div>
+              <h3>Production Checklist</h3>
+              <ul class="takeaways"><li>Use @ConditionalOnMissingBean for extensibility.</li><li>Document property toggles for features.</li><li>Expose sensible defaults that are easy to override.</li><li>Keep auto-config in separate module.</li><li>Use AutoConfigurationMetadata for performance.</li></ul>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Interview</div>
+              <h3>Interview Hooks</h3>
+              <p>Connect starters, auto-config, and conditional beans.</p>
+              <ul class="takeaways"><li>@SpringBootApplication pulls in @EnableAutoConfiguration.</li><li>Auto-config is driven by spring.factories / AutoConfiguration.imports.</li><li>Conditions decide if beans are created.</li></ul>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Advanced Example</div>
+              <div class="code-blocks">
+        <div>
+          <div class="code-title">Conditional bean example</div>
+          <pre>@AutoConfiguration
+class MyAutoConfig {
+  @Bean
+  @ConditionalOnMissingBean
+  MyClient myClient(MyProps props){
+    return new MyClient(props.getUrl());
+  }
+}</pre>
+        </div>
+      </div>
+      <p>Auto-config creates beans only when users did not override them.</p>
+            </article><article class="card quiz-card">
               <div class="card-label">Quiz</div>
               <h3>Which actuator endpoint shows condition evaluation?</h3>
               <div class="quiz-options" data-answer="1">
@@ -1227,8 +1264,7 @@ com.acme.logging.LoggingAutoConfiguration</pre>
                 <strong>Correct answer: B</strong>
                 <span>/actuator/conditions lists auto-config conditions.</span>
               </div>
-            </article>
-          </div>
+            </article></div>
         </div>
       </section>
 <section class="section" data-section="5">

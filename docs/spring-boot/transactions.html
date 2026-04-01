@@ -1194,7 +1194,42 @@ public void importFile() throws IOException { ... }</pre>
               <ul class="takeaways"><li>Know propagation types.</li><li>Configure rollback rules explicitly.</li><li>Avoid self-invocation issues.</li></ul>
             </article>
 
-            <article class="card quiz-card">
+            
+          
+            <article class="card technical">
+              <div class="card-label">Edge cases</div>
+              <h3>Edge Cases & Tradeoffs</h3>
+              <ul class="takeaways"><li>Self-invocation bypasses @Transactional.</li><li>Checked exceptions do not trigger rollback by default.</li><li>Long transactions hold locks and reduce throughput.</li><li>Isolation level mismatch causes anomalies.</li><li>Nested transactions need explicit propagation.</li></ul>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Checklist</div>
+              <h3>Production Checklist</h3>
+              <ul class="takeaways"><li>Annotate service-layer methods, not controllers.</li><li>Pick propagation that matches the use case.</li><li>Set timeouts for long-running work.</li><li>Use readOnly for query-only paths.</li><li>Document rollback rules explicitly.</li></ul>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Interview</div>
+              <h3>Interview Hooks</h3>
+              <p>Show you understand proxy semantics and isolation tradeoffs.</p>
+              <ul class="takeaways"><li>Propagation: REQUIRED vs REQUIRES_NEW.</li><li>Isolation levels and which anomalies they prevent.</li><li>Why self-invocation breaks proxies.</li></ul>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Advanced Example</div>
+              <div class="code-blocks">
+        <div>
+          <div class="code-title">Transactional boundary with rollback rules</div>
+          <pre>@Transactional(
+  propagation = Propagation.REQUIRES_NEW,
+  rollbackFor = Exception.class,
+  timeout = 5
+)
+public void settleInvoice(...) { ... }</pre>
+        </div>
+      </div>
+      <p>Explicit rollback rules avoid surprises with checked exceptions.</p>
+            </article><article class="card quiz-card">
               <div class="card-label">Quiz</div>
               <h3>Which propagation always starts a new transaction?</h3>
               <div class="quiz-options" data-answer="2">
@@ -1204,8 +1239,7 @@ public void importFile() throws IOException { ... }</pre>
                 <strong>Correct answer: C</strong>
                 <span>REQUIRES_NEW suspends any existing transaction and starts a new one.</span>
               </div>
-            </article>
-          </div>
+            </article></div>
         </div>
       </section>
 <section class="section" data-section="5">

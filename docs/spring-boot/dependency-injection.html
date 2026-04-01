@@ -1202,7 +1202,43 @@ class BillingService {
               <ul class="takeaways"><li>Constructor injection is preferred.</li><li>Qualifiers resolve ambiguity.</li><li>Scopes matter for lifecycle.</li></ul>
             </article>
 
-            <article class="card quiz-card">
+            
+          
+            <article class="card technical">
+              <div class="card-label">Edge cases</div>
+              <h3>Edge Cases & Tradeoffs</h3>
+              <ul class="takeaways"><li>Self-invocation bypasses proxies and annotations.</li><li>Circular deps cause startup failures or proxy chains.</li><li>Multiple beans need @Qualifier or @Primary.</li><li>Final classes can block proxying.</li><li>Field injection hides required dependencies.</li></ul>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Checklist</div>
+              <h3>Production Checklist</h3>
+              <ul class="takeaways"><li>Prefer constructor injection for required deps.</li><li>Use @Qualifier for multiple implementations.</li><li>Keep configuration in @Configuration classes.</li><li>Avoid static access to beans.</li><li>Use @Profile for environment-specific wiring.</li></ul>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Interview</div>
+              <h3>Interview Hooks</h3>
+              <p>Explain IoC vs DI and how Spring manages lifecycle.</p>
+              <ul class="takeaways"><li>Bean scopes: singleton, prototype, request, session.</li><li>Lifecycle hooks: @PostConstruct, @PreDestroy.</li><li>Proxies enable AOP and @Transactional.</li></ul>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Advanced Example</div>
+              <div class="code-blocks">
+        <div>
+          <div class="code-title">Constructor injection with qualifiers</div>
+          <pre>@Service
+class ReportService {
+  private final Notifier notifier;
+  ReportService(@Qualifier("email") Notifier notifier){
+    this.notifier = notifier;
+  }
+}</pre>
+        </div>
+      </div>
+      <p>Constructor injection makes dependencies explicit and testable.</p>
+            </article><article class="card quiz-card">
               <div class="card-label">Quiz</div>
               <h3>What is the best way to resolve two beans of the same type?</h3>
               <div class="quiz-options" data-answer="1">
@@ -1212,8 +1248,7 @@ class BillingService {
                 <strong>Correct answer: B</strong>
                 <span>@Qualifier explicitly selects which bean to inject.</span>
               </div>
-            </article>
-          </div>
+            </article></div>
         </div>
       </section>
 <section class="section" data-section="5">

@@ -1212,7 +1212,41 @@ values (?, ?, 'NEW');</pre>
               <ul class="takeaways"><li>Key by entity for order.</li><li>Use DLQs.</li><li>Limit retries to avoid poison loops.</li></ul>
             </article>
 
-            <article class="card quiz-card">
+            
+          
+            <article class="card technical">
+              <div class="card-label">Edge cases</div>
+              <h3>Edge Cases & Tradeoffs</h3>
+              <ul class="takeaways"><li>At-least-once delivery causes duplicates.</li><li>Ordering is per partition/queue, not global.</li><li>Retries can create poison message loops.</li><li>Consumer lag builds if processing is slow.</li><li>Idempotency is required for safety.</li></ul>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Checklist</div>
+              <h3>Production Checklist</h3>
+              <ul class="takeaways"><li>Pick partition keys for ordering needs.</li><li>Use DLQ for poison messages.</li><li>Tune consumer concurrency and fetch size.</li><li>Make handlers idempotent.</li><li>Monitor lag and retry counts.</li></ul>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Interview</div>
+              <h3>Interview Hooks</h3>
+              <p>Contrast Kafka (log) vs Rabbit (queue) semantics.</p>
+              <ul class="takeaways"><li>Kafka uses consumer groups and partitions.</li><li>Ack mode controls delivery guarantees.</li><li>Idempotent producers reduce duplicates.</li></ul>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Advanced Example</div>
+              <div class="code-blocks">
+        <div>
+          <div class="code-title">Kafka listener with manual ack</div>
+          <pre>@KafkaListener(topics = "orders")
+public void onMessage(ConsumerRecord&lt;String, String&gt; rec, Acknowledgment ack){
+  process(rec.value());
+  ack.acknowledge();
+}</pre>
+        </div>
+      </div>
+      <p>Manual ack helps control retry and duplicate handling.</p>
+            </article><article class="card quiz-card">
               <div class="card-label">Quiz</div>
               <h3>Kafka guarantees ordering within what scope?</h3>
               <div class="quiz-options" data-answer="1">
@@ -1222,8 +1256,7 @@ values (?, ?, 'NEW');</pre>
                 <strong>Correct answer: B</strong>
                 <span>Kafka ordering is only guaranteed within a partition.</span>
               </div>
-            </article>
-          </div>
+            </article></div>
         </div>
       </section>
 <section class="section" data-section="5">

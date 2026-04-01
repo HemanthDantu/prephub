@@ -1194,7 +1194,40 @@ conv.setJwtGrantedAuthoritiesConverter(jwt -&gt;
               <ul class="takeaways"><li>Validate all JWT claims.</li><li>Know filter chain order.</li><li>Map claims to authorities safely.</li></ul>
             </article>
 
-            <article class="card quiz-card">
+            
+          
+            <article class="card technical">
+              <div class="card-label">Edge cases</div>
+              <h3>Edge Cases & Tradeoffs</h3>
+              <ul class="takeaways"><li>Clock skew causes token rejection.</li><li>JWT is not encrypted; do not store secrets inside.</li><li>Key rotation must be supported (kid + JWKS).</li><li>Refresh tokens need secure storage.</li><li>CSRF still matters if tokens are in cookies.</li></ul>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Checklist</div>
+              <h3>Production Checklist</h3>
+              <ul class="takeaways"><li>Validate issuer, audience, and signature.</li><li>Use short-lived access tokens.</li><li>Rotate signing keys and cache JWKS.</li><li>Use httpOnly cookies or secure storage.</li><li>Log auth failures with correlation IDs.</li></ul>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Interview</div>
+              <h3>Interview Hooks</h3>
+              <p>Explain stateless auth, validation, and rotation clearly.</p>
+              <ul class="takeaways"><li>JWT is a format, OAuth is a protocol.</li><li>Access vs refresh token roles.</li><li>Verification vs decoding without validation.</li></ul>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Advanced Example</div>
+              <div class="code-blocks">
+        <div>
+          <div class="code-title">Resource server config snippet</div>
+          <pre>http
+  .oauth2ResourceServer(o -&gt; o
+    .jwt(j -&gt; j.jwkSetUri(jwksUri))
+  );</pre>
+        </div>
+      </div>
+      <p>Always validate tokens using trusted JWKS.</p>
+            </article><article class="card quiz-card">
               <div class="card-label">Quiz</div>
               <h3>Which validation prevents accepting a token meant for another API?</h3>
               <div class="quiz-options" data-answer="1">
@@ -1204,8 +1237,7 @@ conv.setJwtGrantedAuthoritiesConverter(jwt -&gt;
                 <strong>Correct answer: B</strong>
                 <span>Audience validation ensures the token is intended for your API.</span>
               </div>
-            </article>
-          </div>
+            </article></div>
         </div>
       </section>
 <section class="section" data-section="5">

@@ -1196,7 +1196,41 @@ return CompletableFuture.allOf(user, acct)
               <ul class="takeaways"><li>Compose independent calls.</li><li>Always set timeouts.</li><li>Use exceptionally/handle for recovery.</li></ul>
             </article>
 
-            <article class="card quiz-card">
+            
+          
+            <article class="card technical">
+              <div class="card-label">Edge cases</div>
+              <h3>Edge Cases & Tradeoffs</h3>
+              <ul class="takeaways"><li>Default async uses ForkJoinPool.commonPool (shared).</li><li>Blocking inside async stages can deadlock.</li><li>Exception handling needs handle/exceptionally, not try/catch.</li><li>Cancellation is cooperative and not always effective.</li><li>thenApply vs thenCompose changes nesting and flow.</li></ul>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Checklist</div>
+              <h3>Production Checklist</h3>
+              <ul class="takeaways"><li>Provide an explicit Executor for IO-heavy tasks.</li><li>Use orTimeout/completeOnTimeout for SLAs.</li><li>Always attach error handling at the end.</li><li>Avoid join() in reactive paths; prefer non-blocking chains.</li><li>Compose async boundaries with thenCompose.</li></ul>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Interview</div>
+              <h3>Interview Hooks</h3>
+              <p>Highlight async composition, error handling, and timeouts.</p>
+              <ul class="takeaways"><li>thenApply transforms, thenCompose flattens.</li><li>allOf for fan-in, anyOf for first wins.</li><li>handle/exceptionally for failures and fallbacks.</li></ul>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Advanced Example</div>
+              <div class="code-blocks">
+        <div>
+          <div class="code-title">Compose + timeout + fallback</div>
+          <pre>CompletableFuture&lt;User&gt; cf =
+  fetchUser(id)
+    .thenCompose(this::fetchProfile)
+    .orTimeout(800, TimeUnit.MILLISECONDS)
+    .exceptionally(ex -&gt; User.guest());</pre>
+        </div>
+      </div>
+      <p>Keep chains linear and make timeouts explicit.</p>
+            </article><article class="card quiz-card">
               <div class="card-label">Quiz</div>
               <h3>Which method waits for all futures to complete?</h3>
               <div class="quiz-options" data-answer="2">
@@ -1206,8 +1240,7 @@ return CompletableFuture.allOf(user, acct)
                 <strong>Correct answer: C</strong>
                 <span>allOf completes only when all futures finish.</span>
               </div>
-            </article>
-          </div>
+            </article></div>
         </div>
       </section>
 <section class="section" data-section="5">

@@ -1220,7 +1220,42 @@ record LimitsProps(@Min(1) int maxItems) {}</pre>
               <ul class="takeaways"><li>Validate config on startup.</li><li>Use typed properties.</li><li>Document overrides.</li></ul>
             </article>
 
-            <article class="card quiz-card">
+            
+          
+            <article class="card technical">
+              <div class="card-label">Edge cases</div>
+              <h3>Edge Cases & Tradeoffs</h3>
+              <ul class="takeaways"><li>Property precedence surprises across env/system/files.</li><li>Relaxed binding can map unexpected names.</li><li>Profiles can mask missing defaults.</li><li>Secrets should not live in source control.</li><li>Config changes require refresh strategy.</li></ul>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Checklist</div>
+              <h3>Production Checklist</h3>
+              <ul class="takeaways"><li>Use @ConfigurationProperties for typed config.</li><li>Validate with @Validated and constraints.</li><li>Separate prod secrets into vault or env vars.</li><li>Document defaults in application.yml.</li><li>Use profiles for environment-specific overrides.</li></ul>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Interview</div>
+              <h3>Interview Hooks</h3>
+              <p>Explain config precedence and typed binding.</p>
+              <ul class="takeaways"><li>Order: command line > env > application.yml.</li><li>Profiles merge properties by priority.</li><li>Relaxed binding supports kebab/underscore/camel.</li></ul>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Advanced Example</div>
+              <div class="code-blocks">
+        <div>
+          <div class="code-title">Typed config class</div>
+          <pre>@ConfigurationProperties(prefix = "payment")
+@Validated
+class PaymentProps {
+  @NotBlank String endpoint;
+  Duration timeout = Duration.ofSeconds(2);
+}</pre>
+        </div>
+      </div>
+      <p>Typed properties improve safety and discoverability.</p>
+            </article><article class="card quiz-card">
               <div class="card-label">Quiz</div>
               <h3>Why use @Validated with @ConfigurationProperties?</h3>
               <div class="quiz-options" data-answer="1">
@@ -1230,8 +1265,7 @@ record LimitsProps(@Min(1) int maxItems) {}</pre>
                 <strong>Correct answer: B</strong>
                 <span>Validation prevents the app from starting with invalid config.</span>
               </div>
-            </article>
-          </div>
+            </article></div>
         </div>
       </section>
 <section class="section" data-section="5">

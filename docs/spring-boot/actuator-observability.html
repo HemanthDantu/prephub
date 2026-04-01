@@ -1223,7 +1223,38 @@ finally { timer.record(System.nanoTime() - start, TimeUnit.NANOSECONDS); }</pre>
               <ul class="takeaways"><li>Measure golden signals.</li><li>Define SLOs.</li><li>Keep tags bounded.</li></ul>
             </article>
 
-            <article class="card quiz-card">
+            
+          
+            <article class="card technical">
+              <div class="card-label">Edge cases</div>
+              <h3>Edge Cases & Tradeoffs</h3>
+              <ul class="takeaways"><li>Exposing all endpoints is a security risk.</li><li>High-cardinality tags can explode metrics.</li><li>Tracing adds overhead without sampling.</li><li>Health checks should be lightweight.</li><li>Prometheus scraping needs consistent labels.</li></ul>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Checklist</div>
+              <h3>Production Checklist</h3>
+              <ul class="takeaways"><li>Expose only needed endpoints.</li><li>Set management port and security.</li><li>Add low-cardinality tags.</li><li>Enable tracing with proper sampling.</li><li>Tie alerts to SLOs, not raw metrics.</li></ul>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Interview</div>
+              <h3>Interview Hooks</h3>
+              <p>Show you understand metrics, tracing, and health endpoints.</p>
+              <ul class="takeaways"><li>Micrometer is the metrics facade.</li><li>Trace context should flow through logs.</li><li>Health indicators can be custom.</li></ul>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Advanced Example</div>
+              <div class="code-blocks">
+        <div>
+          <div class="code-title">Management config snippet</div>
+          <pre>management.endpoints.web.exposure.include=health,info,metrics,prometheus
+management.tracing.sampling.probability=0.1</pre>
+        </div>
+      </div>
+      <p>Expose only required endpoints and sample traces.</p>
+            </article><article class="card quiz-card">
               <div class="card-label">Quiz</div>
               <h3>Which metric best represents user experience?</h3>
               <div class="quiz-options" data-answer="1">
@@ -1233,8 +1264,7 @@ finally { timer.record(System.nanoTime() - start, TimeUnit.NANOSECONDS); }</pre>
                 <strong>Correct answer: B</strong>
                 <span>Latency (especially P95/P99) tracks user experience.</span>
               </div>
-            </article>
-          </div>
+            </article></div>
         </div>
       </section>
 <section class="section" data-section="5">

@@ -1197,7 +1197,42 @@ String v = f.get(200, TimeUnit.MILLISECONDS);</span></pre>
               <ul class="takeaways"><li>Size pools by workload type.</li><li>Use bounded queues.</li><li>Monitor queue length and active threads.</li></ul>
             </article>
 
-            <article class="card quiz-card">
+            
+          
+            <article class="card technical">
+              <div class="card-label">Edge cases</div>
+              <h3>Edge Cases & Tradeoffs</h3>
+              <ul class="takeaways"><li>Unbounded queues hide backpressure and cause OOM.</li><li>Thread leaks happen if you never shutdown pools.</li><li>Blocking tasks can starve CPU-bound pools.</li><li>RejectedExecutionHandler defaults may silently drop work.</li><li>ThreadLocal context is not propagated automatically.</li></ul>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Checklist</div>
+              <h3>Production Checklist</h3>
+              <ul class="takeaways"><li>Pick pool type based on workload (CPU vs IO).</li><li>Use bounded queues and explicit rejection policy.</li><li>Name threads with a ThreadFactory for debugging.</li><li>Always shutdown() and awaitTermination().</li><li>Use timeouts on futures to avoid indefinite waits.</li></ul>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Interview</div>
+              <h3>Interview Hooks</h3>
+              <p>Show you understand sizing, backpressure, and lifecycle management.</p>
+              <ul class="takeaways"><li>Explain submit() vs execute() and future handling.</li><li>Describe how you size pools for CPU vs IO.</li><li>Mention why Executors.newCachedThreadPool is risky.</li></ul>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Advanced Example</div>
+              <div class="code-blocks">
+        <div>
+          <div class="code-title">Bounded ThreadPoolExecutor</div>
+          <pre>BlockingQueue&lt;Runnable&gt; queue = new ArrayBlockingQueue&lt;&gt;(200);
+ThreadFactory tf = r -&gt; new Thread(r, "api-worker");
+ExecutorService pool = new ThreadPoolExecutor(
+  8, 16, 30, TimeUnit.SECONDS, queue, tf,
+  new ThreadPoolExecutor.CallerRunsPolicy()
+);</pre>
+        </div>
+      </div>
+      <p>CallerRunsPolicy provides backpressure when the queue is full.</p>
+            </article><article class="card quiz-card">
               <div class="card-label">Quiz</div>
               <h3>Which queue choice provides the clearest backpressure?</h3>
               <div class="quiz-options" data-answer="1">
@@ -1207,8 +1242,7 @@ String v = f.get(200, TimeUnit.MILLISECONDS);</span></pre>
                 <strong>Correct answer: B</strong>
                 <span>Bounded queues force rejection or caller-runs when saturated.</span>
               </div>
-            </article>
-          </div>
+            </article></div>
         </div>
       </section>
 <section class="section" data-section="5">

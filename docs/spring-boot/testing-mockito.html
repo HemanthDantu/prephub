@@ -1205,7 +1205,39 @@ class OrderControllerTest {
               <ul class="takeaways"><li>Use the smallest slice.</li><li>Mock external boundaries.</li><li>Add a few full integration tests.</li></ul>
             </article>
 
-            <article class="card quiz-card">
+            
+          
+            <article class="card technical">
+              <div class="card-label">Edge cases</div>
+              <h3>Edge Cases & Tradeoffs</h3>
+              <ul class="takeaways"><li>Over-mocking hides real integration bugs.</li><li>Stubbing unused interactions can mask regressions.</li><li>Final classes require inline mocking or PowerMockito.</li><li>Argument matchers mixed with raw values cause errors.</li><li>Async code needs deterministic scheduling.</li></ul>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Checklist</div>
+              <h3>Production Checklist</h3>
+              <ul class="takeaways"><li>Mock external boundaries, not core logic.</li><li>Use @ExtendWith(MockitoExtension).</li><li>Prefer verify() for behavior, not internal calls.</li><li>Use ArgumentCaptor for complex args.</li><li>Keep tests fast and focused.</li></ul>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Interview</div>
+              <h3>Interview Hooks</h3>
+              <p>Show you know when to mock and when to integrate.</p>
+              <ul class="takeaways"><li>Mock vs spy vs fake tradeoffs.</li><li>Stubbing with when/thenReturn and BDDMockito.</li><li>Avoid testing implementation details.</li></ul>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Advanced Example</div>
+              <div class="code-blocks">
+        <div>
+          <div class="code-title">Captor example</div>
+          <pre>@Captor ArgumentCaptor&lt;Email&gt; captor;
+verify(mailer).send(captor.capture());
+assertEquals("welcome", captor.getValue().subject());</pre>
+        </div>
+      </div>
+      <p>Captors validate arguments without over-specifying behavior.</p>
+            </article><article class="card quiz-card">
               <div class="card-label">Quiz</div>
               <h3>Which annotation is best for controller-only tests?</h3>
               <div class="quiz-options" data-answer="1">
@@ -1215,8 +1247,7 @@ class OrderControllerTest {
                 <strong>Correct answer: B</strong>
                 <span>@WebMvcTest limits the context to MVC components.</span>
               </div>
-            </article>
-          </div>
+            </article></div>
         </div>
       </section>
 <section class="section" data-section="5">

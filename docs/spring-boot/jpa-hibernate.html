@@ -1198,7 +1198,38 @@ Optional&lt;Order&gt; findWithItems(Long id);</pre>
               <ul class="takeaways"><li>Measure queries in logs.</li><li>Prefer lazy + explicit fetch.</li><li>Control transactions around data access.</li></ul>
             </article>
 
-            <article class="card quiz-card">
+            
+          
+            <article class="card technical">
+              <div class="card-label">Edge cases</div>
+              <h3>Edge Cases & Tradeoffs</h3>
+              <ul class="takeaways"><li>N+1 queries from lazy collections.</li><li>LazyInitializationException outside transactions.</li><li>Bidirectional mappings can cause recursion in JSON.</li><li>equals/hashCode using ID before persistence.</li><li>Cascades can delete more than intended.</li></ul>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Checklist</div>
+              <h3>Production Checklist</h3>
+              <ul class="takeaways"><li>Use fetch joins or entity graphs for reads.</li><li>Keep transactions around lazy access.</li><li>Map DTOs for API responses.</li><li>Define indexes for hot queries.</li><li>Use batch size for collections.</li></ul>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Interview</div>
+              <h3>Interview Hooks</h3>
+              <p>Focus on entity lifecycle and performance traps.</p>
+              <ul class="takeaways"><li>Entity states: transient, managed, detached.</li><li>Dirty checking and persistence context.</li><li>First vs second level cache.</li></ul>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Advanced Example</div>
+              <div class="code-blocks">
+        <div>
+          <div class="code-title">Fetch join to avoid N+1</div>
+          <pre>@Query("select o from Order o join fetch o.items where o.id = :id")
+Order loadWithItems(@Param("id") Long id);</pre>
+        </div>
+      </div>
+      <p>Fetch joins hydrate relationships in one query.</p>
+            </article><article class="card quiz-card">
               <div class="card-label">Quiz</div>
               <h3>What is the common fix for N+1?</h3>
               <div class="quiz-options" data-answer="1">
@@ -1208,8 +1239,7 @@ Optional&lt;Order&gt; findWithItems(Long id);</pre>
                 <strong>Correct answer: B</strong>
                 <span>Fetch joins and entity graphs load related data in fewer queries.</span>
               </div>
-            </article>
-          </div>
+            </article></div>
         </div>
       </section>
 <section class="section" data-section="5">

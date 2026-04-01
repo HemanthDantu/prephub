@@ -1214,7 +1214,39 @@ public Inventory check(String sku) { ... }</pre>
               <ul class="takeaways"><li>Provide safe fallbacks.</li><li>Monitor fallback rate.</li><li>Tune retry budgets.</li></ul>
             </article>
 
-            <article class="card quiz-card">
+            
+          
+            <article class="card technical">
+              <div class="card-label">Edge cases</div>
+              <h3>Edge Cases & Tradeoffs</h3>
+              <ul class="takeaways"><li>Retry storms amplify outages.</li><li>Circuit breakers must be tuned per dependency.</li><li>Fallbacks can hide real failures.</li><li>Bulkhead limits can starve critical traffic.</li><li>Timeouts should be lower than upstream SLAs.</li></ul>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Checklist</div>
+              <h3>Production Checklist</h3>
+              <ul class="takeaways"><li>Set timeouts before retries.</li><li>Use exponential backoff with jitter.</li><li>Add circuit breakers for unstable deps.</li><li>Limit concurrency with bulkheads.</li><li>Export metrics for breaker state.</li></ul>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Interview</div>
+              <h3>Interview Hooks</h3>
+              <p>Describe how retries, timeouts, and CBs work together.</p>
+              <ul class="takeaways"><li>Timeouts cap latency; retries recover transient errors.</li><li>Circuit breakers prevent cascading failure.</li><li>Bulkheads isolate resources.</li></ul>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Advanced Example</div>
+              <div class="code-blocks">
+        <div>
+          <div class="code-title">Resilience4j annotations</div>
+          <pre>@Retry(name = "inventory")
+@CircuitBreaker(name = "inventory", fallbackMethod = "fallback")
+public Item getItem(String id){ ... }</pre>
+        </div>
+      </div>
+      <p>Combine patterns carefully to avoid retry storms.</p>
+            </article><article class="card quiz-card">
               <div class="card-label">Quiz</div>
               <h3>Why are fallbacks important?</h3>
               <div class="quiz-options" data-answer="1">
@@ -1224,8 +1256,7 @@ public Inventory check(String sku) { ... }</pre>
                 <strong>Correct answer: B</strong>
                 <span>Fallbacks keep the service usable when dependencies fail.</span>
               </div>
-            </article>
-          </div>
+            </article></div>
         </div>
       </section>
 <section class="section" data-section="5">
