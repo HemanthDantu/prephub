@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Resilience Patterns (Resilience4j) Learning Module</title>
+  <title>Docker Compose Learning Module</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -35,6 +35,17 @@
 
     a { color: inherit; }
 
+    .back-link {
+      display: inline-flex;
+      margin-top: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--muted);
+      text-decoration: none;
+    }
+
+    .back-link:hover { color: var(--cyan); }
+
     .breadcrumb {
       display: flex;
       align-items: center;
@@ -52,17 +63,6 @@
     .breadcrumb a:hover { color: var(--cyan); }
 
     .breadcrumb span { color: var(--text); font-weight: 600; }
-
-    .back-link {
-      display: inline-flex;
-      margin-top: 12px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.78rem;
-      color: var(--muted);
-      text-decoration: none;
-    }
-
-    .back-link:hover { color: var(--cyan); }
 
     .app {
       min-height: 100vh;
@@ -727,25 +727,25 @@
       <div class="topbar-inner">
         <div class="topbar-row">
           <div class="brand">
-            <h1>Resilience Patterns (Resilience4j)</h1>
-            <small>Interactive 35-minute learning module</small>
+            <h1>Docker Compose</h1>
+            <small>Interactive 28-minute learning module</small>
           </div>
                 <div class="topbar-row">
           <div class="breadcrumb">
             <a href="../index.html">Home</a>
             <span>›</span>
-            <a href="index.html">Spring Boot</a>
+            <a href="index.html">Cloud</a>
             <span>›</span>
-            <span>Resilience Patterns (Resilience4j)</span>
+            <span>Docker Compose</span>
           </div>
         </div>
           <div class="timer-wrap" aria-live="polite">
             <span class="timer-label">Time Left</span>
-            <span class="timer" id="timer">35:00</span>
+            <span class="timer" id="timer">28:00</span>
           </div>
         </div>
         <div class="topbar-row">
-                    <nav class="nav-dots" aria-label="Section navigation"><button class="nav-dot active" data-index="0" aria-label="Go to section 1">1</button><button class="nav-dot" data-index="1" aria-label="Go to section 2">2</button><button class="nav-dot" data-index="2" aria-label="Go to section 3">3</button><button class="nav-dot" data-index="3" aria-label="Go to section 4">4</button><button class="nav-dot" data-index="4" aria-label="Go to section 5">5</button><button class="nav-dot" data-index="5" aria-label="Go to completion screen">6</button></nav>
+                    <nav class="nav-dots" aria-label="Section navigation"><button class="nav-dot active" data-index="0" aria-label="Go to section 1">1</button><button class="nav-dot" data-index="1" aria-label="Go to section 2">2</button><button class="nav-dot" data-index="2" aria-label="Go to section 3">3</button><button class="nav-dot" data-index="3" aria-label="Go to section 4">4</button><button class="nav-dot" data-index="4" aria-label="Go to completion screen">5</button></nav>
         </div>
         <div class="progress-shell" aria-hidden="true">
           <div class="progress-bar" id="progressBar"></div>
@@ -758,23 +758,22 @@
       <section class="section active" data-section="0">
         <div class="section-inner">
           <div class="hero">
-            <div class="section-label">Section 1 of 5 · ~7 mins</div>
-            <h2>Circuit Breakers</h2>
-            <p>Circuit breakers stop calls to failing dependencies to protect the system and allow recovery.</p>
-            <a class="back-link" href="index.html">← Back to Spring Boot</a>
+            <div class="section-label">Section 1 of 4 · ~7 mins</div>
+            <h2>Compose Essentials</h2>
+            <p>Docker Compose runs multi-container applications locally.</p>
           </div>
 
           <div class="card-grid">
             <article class="card eli5">
               <div class="card-label">🧒 ELI5</div>
-              <h3>A safety fuse</h3>
-              <p>If the power surges, the fuse trips to protect the house.</p>
+              <h3>LEGO set</h3>
+              <p>You build multiple pieces and snap them together.</p>
             </article>
 
             <article class="card analogy">
               <div class="card-label">🔗 ANALOGY</div>
-              <h3>Traffic barrier</h3>
-              <p>If a road is closed, you stop cars from entering so it can recover.</p>
+              <h3>Band setup</h3>
+              <p>Each instrument is separate but plays together.</p>
             </article>
 
             <article class="card technical">
@@ -782,68 +781,59 @@
               <div class="two-col">
                 <div>
                   <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> A circuit breaker tracks failures and opens when a threshold is reached, then half-opens to test recovery.</p>
+                  <p><strong>Definition:</strong> Compose uses YAML to define services, networks, and volumes.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
-                      <ul>
-                        <li>Prevents cascading failures</li><li>Fails fast</li><li>Gives dependencies time to recover</li>
-                      </ul>
+                      <ul><li>Local dev parity</li><li>Simple multi-service setup</li><li>Repeatable environment</li></ul>
                     </div>
                     <div class="mini-panel">
                       <h4>Common pitfall</h4>
-                      <ul>
-                        <li>Repeated timeouts</li><li>Cascading failures</li><li>No fallback logic</li>
-                      </ul>
+                      <ul><li>Manual container runs</li><li>Inconsistent env</li><li>Port conflicts</li></ul>
                     </div>
                   </div>
-                  <div class="badge-row"><span class="pill good">Closed</span><span class="pill caution">Open</span><span class="pill info">Half-open</span></div>
-                  
-                  <div class="flow"><span class="flow-step">Call service</span><span class="flow-arrow">→</span><span class="flow-step">Failures exceed threshold</span><span class="flow-arrow">→</span><span class="flow-step">Open circuit</span><span class="flow-arrow">→</span><span class="flow-step">Half-open trial</span></div>
+                  <div class="badge-row"><span class="pill good">services</span><span class="pill info">networks</span><span class="pill caution">volumes</span></div>
+                  <div class="flow"><span class="flow-step">Define services</span><span class="flow-arrow">→</span><span class="flow-step">Run docker compose up</span><span class="flow-arrow">→</span><span class="flow-step">Services discover</span><span class="flow-arrow">→</span><span class="flow-step">Persist data</span></div>
                 </div>
                 <div>
                   <h3>Interview answer</h3>
-                  <p>“Circuit breakers fail fast when a dependency is unhealthy and periodically test recovery.”</p>
-                  
-                  <table>
-                    <thead><tr><th>State</th><th>Behavior</th></tr></thead>
-                    <tbody><tr><td>Closed</td><td><span class="pill good">Calls allowed</span></td></tr><tr><td>Open</td><td><span class="pill bad">Calls blocked</span></td></tr><tr><td>Half-open</td><td><span class="pill info">Trial requests</span></td></tr></tbody>
-                  </table>
+                  <p>“Compose is for local orchestration of multi-service stacks.”</p>
+                  <table><thead><tr><th>Key</th><th>Role</th></tr></thead><tbody><tr><td>services</td><td><span class="pill info">Containers</span></td></tr><tr><td>volumes</td><td><span class="pill good">Persistence</span></td></tr></tbody></table>
                 </div>
               </div>
-              
-    <div class="code-blocks">
+              <div class="code-blocks">
     <div>
-      <div class="code-title">Resilience4j annotation</div>
-      <pre>@CircuitBreaker(name = "inventory", fallbackMethod = "fallback")
-public Inventory check(String sku) { ... }</pre>
+      <div class="code-title">Compose file</div>
+      <pre>services:
+  api:
+    build: .
+    ports: ["8080:8080"]
+  db:
+    image: postgres:16</pre>
     </div>
     </div>
-              
             </article>
 
             <article class="card warning">
               <div class="card-label">Warning</div>
-              <h3>No fallback = poor UX</h3>
-              <p>If the circuit opens, you need a fallback or you will fail every request.</p>
+              <h3>Compose is not production orchestration</h3>
+              <p>Use Kubernetes or ECS for production.</p>
             </article>
 
             <article class="card technical">
               <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>Circuit breakers fail fast.</li><li>Use fallback methods.</li><li>Monitor breaker events.</li>
-              </ul>
+              <ul class="takeaways"><li>Compose for local dev.</li><li>Define services clearly.</li><li>Use env files.</li></ul>
             </article>
 
             <article class="card quiz-card">
               <div class="card-label">Quiz</div>
-              <h3>What is the purpose of the half-open state?</h3>
+              <h3>What is Compose best for?</h3>
               <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. Block all traffic</button><button class="quiz-option">B. Allow a few test calls</button><button class="quiz-option">C. Disable metrics</button><button class="quiz-option">D. Force retries</button>
+                <button class="quiz-option">A. Production orchestration</button><button class="quiz-option">B. Local multi-service dev</button><button class="quiz-option">C. Bare-metal installs</button><button class="quiz-option">D. Only single containers</button>
               </div>
               <div class="quiz-result">
                 <strong>Correct answer: B</strong>
-                <span>Half-open allows limited calls to test recovery.</span>
+                <span>Compose is designed for local multi-service workflows.</span>
               </div>
             </article>
           </div>
@@ -853,23 +843,22 @@ public Inventory check(String sku) { ... }</pre>
       <section class="section" data-section="1">
         <div class="section-inner">
           <div class="hero">
-            <div class="section-label">Section 2 of 5 · ~7 mins</div>
-            <h2>Retries and Timeouts</h2>
-            <p>Retries handle transient errors, while timeouts prevent hanging calls.</p>
-            
+            <div class="section-label">Section 2 of 4 · ~7 mins</div>
+            <h2>Service Dependencies and Health</h2>
+            <p>depends_on controls startup order; health checks ensure readiness.</p>
           </div>
 
           <div class="card-grid">
             <article class="card eli5">
               <div class="card-label">🧒 ELI5</div>
-              <h3>Try again, but not forever</h3>
-              <p>If a toy does not work, you try again a couple of times then move on.</p>
+              <h3>Wait for the oven</h3>
+              <p>You don’t bake before the oven is hot.</p>
             </article>
 
             <article class="card analogy">
               <div class="card-label">🔗 ANALOGY</div>
-              <h3>Redial with patience</h3>
-              <p>You redial after a short wait instead of hanging on forever.</p>
+              <h3>Stage setup</h3>
+              <p>You wait until lights are on before performers go out.</p>
             </article>
 
             <article class="card technical">
@@ -877,72 +866,58 @@ public Inventory check(String sku) { ... }</pre>
               <div class="two-col">
                 <div>
                   <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Retries should use backoff and be applied only to idempotent operations, with timeouts to cap latency.</p>
+                  <p><strong>Definition:</strong> depends_on orders startup but does not guarantee service readiness unless health checks are used.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
-                      <ul>
-                        <li>Improves resilience</li><li>Avoids long waits</li><li>Handles transient faults</li>
-                      </ul>
+                      <ul><li>Avoids startup failures</li><li>Improves reliability</li><li>Clear dependencies</li></ul>
                     </div>
                     <div class="mini-panel">
                       <h4>Common pitfall</h4>
-                      <ul>
-                        <li>Retry storms</li><li>No timeouts</li><li>Retrying writes</li>
-                      </ul>
+                      <ul><li>App fails on startup</li><li>Race conditions</li><li>No health checks</li></ul>
                     </div>
                   </div>
-                  <div class="badge-row"><span class="pill good">Backoff</span><span class="pill info">Timeout</span><span class="pill caution">Idempotent</span></div>
-                  
-                  <div class="flow"><span class="flow-step">Call</span><span class="flow-arrow">→</span><span class="flow-step">Timeout or error</span><span class="flow-arrow">→</span><span class="flow-step">Retry with backoff</span><span class="flow-arrow">→</span><span class="flow-step">Fail or succeed</span></div>
+                  <div class="badge-row"><span class="pill good">depends_on</span><span class="pill info">healthcheck</span><span class="pill caution">readiness</span></div>
+                  <div class="flow"><span class="flow-step">Start db</span><span class="flow-arrow">→</span><span class="flow-step">Wait health</span><span class="flow-arrow">→</span><span class="flow-step">Start api</span><span class="flow-arrow">→</span><span class="flow-step">Connect</span></div>
                 </div>
                 <div>
                   <h3>Interview answer</h3>
-                  <p>“Retries with backoff work for transient errors, but only for idempotent calls and with timeouts.”</p>
-                  
-                  <table>
-                    <thead><tr><th>Rule</th><th>Reason</th></tr></thead>
-                    <tbody><tr><td>Use backoff</td><td><span class="pill good">Reduce load</span></td></tr><tr><td>Limit attempts</td><td><span class="pill info">Avoid storms</span></td></tr><tr><td>Idempotent only</td><td><span class="pill caution">Prevent duplicates</span></td></tr></tbody>
-                  </table>
+                  <p>“I add health checks so depends_on waits for real readiness.”</p>
+                  <table><thead><tr><th>Feature</th><th>Note</th></tr></thead><tbody><tr><td>depends_on</td><td><span class="pill info">Order only</span></td></tr><tr><td>healthcheck</td><td><span class="pill good">Readiness</span></td></tr></tbody></table>
                 </div>
               </div>
-              
-    <div class="code-blocks">
+              <div class="code-blocks">
     <div>
-      <div class="code-title">Retry config</div>
-      <pre>resilience4j:
-  retry:
-    instances:
-      payments:
-        max-attempts: 3
-        wait-duration: 200ms</pre>
+      <div class="code-title">Health check</div>
+      <pre>services:
+  db:
+    image: postgres:16
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]</pre>
     </div>
     </div>
-              
             </article>
 
             <article class="card warning">
               <div class="card-label">Warning</div>
-              <h3>Retries can amplify failures</h3>
-              <p>If every caller retries, a failing service can get overwhelmed.</p>
+              <h3>Order != readiness</h3>
+              <p>depends_on does not wait for readiness by default.</p>
             </article>
 
             <article class="card technical">
               <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>Retry only safe calls.</li><li>Add backoff.</li><li>Always use timeouts.</li>
-              </ul>
+              <ul class="takeaways"><li>Add health checks.</li><li>Avoid race conditions.</li><li>Document dependencies.</li></ul>
             </article>
 
             <article class="card quiz-card">
               <div class="card-label">Quiz</div>
-              <h3>Why use exponential backoff on retries?</h3>
+              <h3>What does depends_on guarantee?</h3>
               <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. To increase throughput</button><button class="quiz-option">B. To reduce load on failing services</button><button class="quiz-option">C. To remove timeouts</button><button class="quiz-option">D. To avoid idempotency</button>
+                <button class="quiz-option">A. Readiness</button><button class="quiz-option">B. Startup order only</button><button class="quiz-option">C. Network creation</button><button class="quiz-option">D. Secrets</button>
               </div>
               <div class="quiz-result">
                 <strong>Correct answer: B</strong>
-                <span>Backoff reduces pressure on a failing service.</span>
+                <span>depends_on only guarantees order, not readiness.</span>
               </div>
             </article>
           </div>
@@ -952,23 +927,22 @@ public Inventory check(String sku) { ... }</pre>
       <section class="section" data-section="2">
         <div class="section-inner">
           <div class="hero">
-            <div class="section-label">Section 3 of 5 · ~7 mins</div>
-            <h2>Bulkheads and Rate Limiting</h2>
-            <p>Bulkheads isolate resources so one failure does not take down the whole system.</p>
-            
+            <div class="section-label">Section 3 of 4 · ~7 mins</div>
+            <h2>Networks and Volumes</h2>
+            <p>Compose creates networks for service discovery and volumes for persistence.</p>
           </div>
 
           <div class="card-grid">
             <article class="card eli5">
               <div class="card-label">🧒 ELI5</div>
-              <h3>Separate rooms</h3>
-              <p>If one room is noisy, the rest of the house stays quiet.</p>
+              <h3>Shared hallway</h3>
+              <p>Rooms connect through a shared hallway.</p>
             </article>
 
             <article class="card analogy">
               <div class="card-label">🔗 ANALOGY</div>
-              <h3>Lifeboats on a ship</h3>
-              <p>Compartments prevent water from flooding the entire ship.</p>
+              <h3>Shared storage closet</h3>
+              <p>You keep common items in a shared closet.</p>
             </article>
 
             <article class="card technical">
@@ -976,68 +950,59 @@ public Inventory check(String sku) { ... }</pre>
               <div class="two-col">
                 <div>
                   <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Bulkheads limit concurrent calls via separate thread pools or semaphores, and rate limiters cap traffic.</p>
+                  <p><strong>Definition:</strong> Compose networks enable DNS discovery by service name; volumes persist data.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
-                      <ul>
-                        <li>Prevents resource exhaustion</li><li>Keeps critical paths alive</li><li>Controls load</li>
-                      </ul>
+                      <ul><li>Stable connectivity</li><li>Persistent databases</li><li>Simpler dev</li></ul>
                     </div>
                     <div class="mini-panel">
                       <h4>Common pitfall</h4>
-                      <ul>
-                        <li>Shared thread pool for everything</li><li>No rate limits</li><li>Cascading failures</li>
-                      </ul>
+                      <ul><li>Hard-coded IPs</li><li>Data loss</li><li>Mixed networks</li></ul>
                     </div>
                   </div>
-                  <div class="badge-row"><span class="pill good">Bulkhead</span><span class="pill info">Semaphore</span><span class="pill caution">Rate limit</span></div>
-                  
-                  <div class="flow"><span class="flow-step">Request enters</span><span class="flow-arrow">→</span><span class="flow-step">Check capacity</span><span class="flow-arrow">→</span><span class="flow-step">Execute or reject</span><span class="flow-arrow">→</span><span class="flow-step">Protect resources</span></div>
+                  <div class="badge-row"><span class="pill good">Network</span><span class="pill info">Volume</span><span class="pill caution">DNS</span></div>
+                  <div class="flow"><span class="flow-step">Create network</span><span class="flow-arrow">→</span><span class="flow-step">Attach services</span><span class="flow-arrow">→</span><span class="flow-step">Resolve by name</span><span class="flow-arrow">→</span><span class="flow-step">Persist data</span></div>
                 </div>
                 <div>
                   <h3>Interview answer</h3>
-                  <p>“Bulkheads isolate expensive calls with their own pools, while rate limiting caps total load.”</p>
-                  
-                  <table>
-                    <thead><tr><th>Pattern</th><th>Goal</th></tr></thead>
-                    <tbody><tr><td>Bulkhead</td><td><span class="pill good">Isolation</span></td></tr><tr><td>Rate limiter</td><td><span class="pill info">Traffic control</span></td></tr><tr><td>Timeout</td><td><span class="pill caution">Bound latency</span></td></tr></tbody>
-                  </table>
+                  <p>“I use service names for DNS and volumes for data persistence.”</p>
+                  <table><thead><tr><th>Element</th><th>Purpose</th></tr></thead><tbody><tr><td>Network</td><td><span class="pill info">Discovery</span></td></tr><tr><td>Volume</td><td><span class="pill good">State</span></td></tr></tbody></table>
                 </div>
               </div>
-              
-    <div class="code-blocks">
+              <div class="code-blocks">
     <div>
-      <div class="code-title">Bulkhead annotation</div>
-      <pre>@Bulkhead(name = "inventory", type = Bulkhead.Type.SEMAPHORE)
-public Inventory check(String sku) { ... }</pre>
+      <div class="code-title">Named volume</div>
+      <pre>volumes:
+  dbdata:
+services:
+  db:
+    volumes:
+      - dbdata:/var/lib/postgresql/data</pre>
     </div>
     </div>
-              
             </article>
 
             <article class="card warning">
               <div class="card-label">Warning</div>
-              <h3>Shared pools cause cascades</h3>
-              <p>If all calls share one pool, a slow dependency can exhaust all threads.</p>
+              <h3>No volume means data loss</h3>
+              <p>Containers remove data when deleted.</p>
             </article>
 
             <article class="card technical">
               <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>Bulkheads isolate load.</li><li>Rate limit protects services.</li><li>Separate pools for critical paths.</li>
-              </ul>
+              <ul class="takeaways"><li>Use networks for discovery.</li><li>Use volumes for state.</li><li>Avoid hard-coded IPs.</li></ul>
             </article>
 
             <article class="card quiz-card">
               <div class="card-label">Quiz</div>
-              <h3>What does a bulkhead protect against?</h3>
+              <h3>How do services resolve each other by name?</h3>
               <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. Data inconsistency</button><button class="quiz-option">B. Resource exhaustion</button><button class="quiz-option">C. SQL injection</button><button class="quiz-option">D. Cache misses</button>
+                <button class="quiz-option">A. Host file</button><button class="quiz-option">B. Compose DNS</button><button class="quiz-option">C. Static IPs</button><button class="quiz-option">D. ENV vars only</button>
               </div>
               <div class="quiz-result">
                 <strong>Correct answer: B</strong>
-                <span>Bulkheads limit resource usage so one dependency cannot exhaust all capacity.</span>
+                <span>Compose provides DNS by service name on the network.</span>
               </div>
             </article>
           </div>
@@ -1047,23 +1012,22 @@ public Inventory check(String sku) { ... }</pre>
       <section class="section" data-section="3">
         <div class="section-inner">
           <div class="hero">
-            <div class="section-label">Section 4 of 5 · ~7 mins</div>
-            <h2>Spring Integration and Observability</h2>
-            <p>Resilience4j integrates with Spring Boot through annotations and configuration, with event metrics.</p>
-            
+            <div class="section-label">Section 4 of 4 · ~7 mins</div>
+            <h2>Production-like Workflows</h2>
+            <p>Use Compose profiles, env files, and override files to mimic production.</p>
           </div>
 
           <div class="card-grid">
             <article class="card eli5">
               <div class="card-label">🧒 ELI5</div>
-              <h3>Plug-in safety kit</h3>
-              <p>You add a safety kit to your bike so brakes and lights are always there.</p>
+              <h3>Practice mode</h3>
+              <p>You practice the same play before the big game.</p>
             </article>
 
             <article class="card analogy">
               <div class="card-label">🔗 ANALOGY</div>
-              <h3>Airbag system</h3>
-              <p>Airbags are built in and activate when needed without manual effort.</p>
+              <h3>Dress rehearsal</h3>
+              <p>You rehearse in nearly real conditions.</p>
             </article>
 
             <article class="card technical">
@@ -1071,169 +1035,66 @@ public Inventory check(String sku) { ... }</pre>
               <div class="two-col">
                 <div>
                   <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Resilience4j exposes annotations, config, and events that integrate with Boot and Micrometer.</p>
+                  <p><strong>Definition:</strong> Compose supports profiles and overrides to simulate different environments.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
-                      <ul>
-                        <li>Centralized configuration</li><li>Consistent behavior</li><li>Metrics on resilience events</li>
-                      </ul>
+                      <ul><li>Better testing</li><li>Fewer surprises</li><li>Repeatable setups</li></ul>
                     </div>
                     <div class="mini-panel">
                       <h4>Common pitfall</h4>
-                      <ul>
-                        <li>Hard-coded resilience logic</li><li>No monitoring</li><li>Inconsistent retries</li>
-                      </ul>
+                      <ul><li>Different dev/prod configs</li><li>Manual setup steps</li><li>Configuration drift</li></ul>
                     </div>
                   </div>
-                  <div class="badge-row"><span class="pill good">@CircuitBreaker</span><span class="pill info">@Retry</span><span class="pill caution">Metrics</span></div>
-                  
-                  <div class="flow"><span class="flow-step">Annotate method</span><span class="flow-arrow">→</span><span class="flow-step">Apply policies</span><span class="flow-arrow">→</span><span class="flow-step">Emit events</span><span class="flow-arrow">→</span><span class="flow-step">Monitor</span></div>
+                  <div class="badge-row"><span class="pill good">Profiles</span><span class="pill info">Overrides</span><span class="pill caution">Env files</span></div>
+                  <div class="flow"><span class="flow-step">Define profile</span><span class="flow-arrow">→</span><span class="flow-step">Load env</span><span class="flow-arrow">→</span><span class="flow-step">Run compose</span><span class="flow-arrow">→</span><span class="flow-step">Test stack</span></div>
                 </div>
                 <div>
                   <h3>Interview answer</h3>
-                  <p>“Resilience4j integrates via annotations and exposes metrics so we can monitor circuit states and retries.”</p>
-                  
-                  <table>
-                    <thead><tr><th>Signal</th><th>Value</th></tr></thead>
-                    <tbody><tr><td>State changes</td><td><span class="pill good">Breaker health</span></td></tr><tr><td>Retry count</td><td><span class="pill info">Transient failures</span></td></tr><tr><td>Rejections</td><td><span class="pill caution">Capacity limit</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              
-    <div class="code-blocks">
-    <div>
-      <div class="code-title">Resilience4j config</div>
-      <pre>resilience4j:
-  circuitbreaker:
-    instances:
-      inventory:
-        failure-rate-threshold: 50
-        wait-duration-in-open-state: 10s</pre>
-    </div>
-    </div>
-              
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Silent failures</h3>
-              <p>If you do not monitor resilience events, you may not notice failing dependencies.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>Use annotations for consistency.</li><li>Monitor breaker events.</li><li>Tune thresholds carefully.</li>
-              </ul>
-            </article>
-
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>Why integrate resilience metrics with Micrometer?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. To disable retries</button><button class="quiz-option">B. To monitor breaker and retry behavior</button><button class="quiz-option">C. To reduce latency only</button><button class="quiz-option">D. To avoid backoff</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>Metrics reveal how breakers and retries behave in production.</span>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-      
-      
-      <section class="section" data-section="4">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 5 of 5 · ~7 mins</div>
-            <h2>Deep Dive: Fallbacks and Failure Budgets</h2>
-            <p>Resilience patterns must be paired with sensible fallbacks and SLO budgets.</p>
-          </div>
-
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Have a backup plan</h3>
-              <p>If the toy breaks, you have another game to play.</p>
-            </article>
-
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Emergency exits</h3>
-              <p>Buildings must have exits in case a path fails.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Fallbacks provide degraded responses while circuit breakers and retries protect systems.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul><li>Improves user experience</li><li>Avoids full outages</li><li>Supports graceful degradation</li></ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common pitfall</h4>
-                      <ul><li>No fallback</li><li>Fallback slower than main path</li><li>Retry storms</li></ul>
-                    </div>
-                  </div>
-                  <div class="badge-row"><span class="pill good">Fallback</span><span class="pill info">Budget</span><span class="pill caution">Graceful</span></div>
-                  <div class="flow"><span class="flow-step">Call fails</span><span class="flow-arrow">→</span><span class="flow-step">Breaker opens</span><span class="flow-arrow">→</span><span class="flow-step">Fallback returns</span><span class="flow-arrow">→</span><span class="flow-step">Track budget</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“I combine circuit breakers with safe fallbacks so the system degrades instead of failing hard.”</p>
-                  <table>
-                    <thead><tr><th>Fallback</th><th>Example</th></tr></thead>
-                    <tbody><tr><td>Cached data</td><td><span class="pill good">Stale ok</span></td></tr><tr><td>Partial response</td><td><span class="pill info">Degraded</span></td></tr><tr><td>Error message</td><td><span class="pill caution">Worst-case</span></td></tr></tbody>
-                  </table>
+                  <p>“I use compose overrides and env files to keep dev close to prod.”</p>
+                  <table><thead><tr><th>Feature</th><th>Use</th></tr></thead><tbody><tr><td>Profiles</td><td><span class="pill info">Select services</span></td></tr><tr><td>Overrides</td><td><span class="pill good">Env tweaks</span></td></tr></tbody></table>
                 </div>
               </div>
               <div class="code-blocks">
     <div>
-      <div class="code-title">Fallback method</div>
-      <pre>public Inventory fallback(String sku, Throwable ex) {
-  return Inventory.unavailable();
-}</pre>
+      <div class="code-title">Profile usage</div>
+      <pre>docker compose --profile observability up</pre>
     </div>
     </div>
             </article>
 
             <article class="card warning">
               <div class="card-label">Warning</div>
-              <h3>Fallbacks can hide outages</h3>
-              <p>If you never alert on fallback use, you might miss incidents.</p>
+              <h3>Dev/prod drift is costly</h3>
+              <p>Keep configs aligned to avoid deployment surprises.</p>
             </article>
 
             <article class="card technical">
               <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways"><li>Provide safe fallbacks.</li><li>Monitor fallback rate.</li><li>Tune retry budgets.</li></ul>
+              <ul class="takeaways"><li>Use profiles for optional services.</li><li>Align dev with prod.</li><li>Document env vars.</li></ul>
             </article>
 
             <article class="card quiz-card">
               <div class="card-label">Quiz</div>
-              <h3>Why are fallbacks important?</h3>
+              <h3>What are Compose profiles used for?</h3>
               <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. They increase latency</button><button class="quiz-option">B. They allow graceful degradation</button><button class="quiz-option">C. They replace monitoring</button><button class="quiz-option">D. They remove retries</button>
+                <button class="quiz-option">A. Change Docker engine</button><button class="quiz-option">B. Enable/disable services</button><button class="quiz-option">C. Add containers to swarm</button><button class="quiz-option">D. Build images only</button>
               </div>
               <div class="quiz-result">
                 <strong>Correct answer: B</strong>
-                <span>Fallbacks keep the service usable when dependencies fail.</span>
+                <span>Profiles allow optional service selection.</span>
               </div>
             </article>
           </div>
         </div>
       </section>
-<section class="section" data-section="5">
+      
+      <section class="section" data-section="4">
         <div class="section-inner">
           <div class="hero">
             <div class="section-label">Completion screen · Review mode</div>
-            <h2>🎉 Resilience Patterns (Resilience4j) Cheat Sheet</h2>
-            <p>Use this to recall circuit breakers, retries, bulkheads, and Spring integration.</p>
+            <h2>🎉 Docker Compose Cheat Sheet</h2>
+            <p>Compose basics: multi-service apps, networks, and volumes.</p>
           </div>
 
           <div class="completion-grid">
@@ -1243,20 +1104,20 @@ public Inventory check(String sku) { ... }</pre>
               <h3>1-line interview answers</h3>
               <div class="cheat-list">
     <div class="cheat-item">
-      <h4>Circuit breaker</h4>
-      <p>Opens to stop calling a failing dependency.</p>
+      <h4>services</h4>
+      <p>Define containers.</p>
     </div>
     <div class="cheat-item">
-      <h4>Retry</h4>
-      <p>Retries transient errors with backoff.</p>
+      <h4>networks</h4>
+      <p>Connect services.</p>
     </div>
     <div class="cheat-item">
-      <h4>Bulkhead</h4>
-      <p>Isolates resources to prevent cascading failures.</p>
+      <h4>volumes</h4>
+      <p>Persist data.</p>
     </div>
     <div class="cheat-item">
-      <h4>Rate limiter</h4>
-      <p>Protects services from overload.</p>
+      <h4>depends_on</h4>
+      <p>Startup ordering.</p>
     </div>
               </div>
             </div>
@@ -1264,13 +1125,9 @@ public Inventory check(String sku) { ... }</pre>
             <div class="card analogy">
               <div class="card-label">What to remember</div>
               <h3>Fast mental model</h3>
-              <ul class="takeaways">
-                <li><strong>Circuit breaker</strong>: fail fast.</li><li><strong>Retry</strong>: handle transient errors.</li><li><strong>Bulkhead</strong>: isolate resources.</li><li><strong>Observability</strong>: monitor resilience events.</li>
-              </ul>
+              <ul class="takeaways"><li><strong>Services</strong>: containers defined in YAML.</li><li><strong>Networks</strong>: service discovery.</li><li><strong>Volumes</strong>: persistent state.</li><li><strong>Compose</strong>: local dev workflows.</li></ul>
               <h3 style="margin-top:22px;">Common traps</h3>
-              <div class="badge-row">
-                <span class="pill bad">Retry storms</span><span class="pill bad">No fallbacks</span><span class="pill bad">Shared thread pools</span>
-              </div>
+              <div class="badge-row"><span class="pill bad">depends_on without health</span><span class="pill bad">Hard-coded ports</span><span class="pill bad">Secrets in compose</span></div>
             </div>
           </div>
         </div>
@@ -1393,7 +1250,7 @@ function applySyntaxHighlighting() {
       dot.addEventListener('click', () => showSection(Number(dot.dataset.index)));
     });
 
-    const totalSeconds = 35 * 60;
+    const totalSeconds = 28 * 60;
     let remainingSeconds = totalSeconds;
 
     function formatTime(seconds) {

@@ -35,6 +35,24 @@
 
     a { color: inherit; }
 
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .breadcrumb a {
+      color: var(--muted);
+      text-decoration: none;
+    }
+
+    .breadcrumb a:hover { color: var(--cyan); }
+
+    .breadcrumb span { color: var(--text); font-weight: 600; }
+
     .back-link {
       display: inline-flex;
       margin-top: 12px;
@@ -710,15 +728,24 @@
         <div class="topbar-row">
           <div class="brand">
             <h1>Database Migrations</h1>
-            <small>Interactive 28-minute learning module</small>
+            <small>Interactive 35-minute learning module</small>
           </div>
+                <div class="topbar-row">
+          <div class="breadcrumb">
+            <a href="../index.html">Home</a>
+            <span>›</span>
+            <a href="index.html">Spring Boot</a>
+            <span>›</span>
+            <span>Database Migrations</span>
+          </div>
+        </div>
           <div class="timer-wrap" aria-live="polite">
             <span class="timer-label">Time Left</span>
-            <span class="timer" id="timer">28:00</span>
+            <span class="timer" id="timer">35:00</span>
           </div>
         </div>
         <div class="topbar-row">
-          <nav class="nav-dots" aria-label="Section navigation"><button class="nav-dot active" data-index="0" aria-label="Go to section 1">1</button><button class="nav-dot" data-index="1" aria-label="Go to section 2">2</button><button class="nav-dot" data-index="2" aria-label="Go to section 3">3</button><button class="nav-dot" data-index="3" aria-label="Go to section 4">4</button><button class="nav-dot" data-index="4" aria-label="Go to completion screen">5</button></nav>
+                    <nav class="nav-dots" aria-label="Section navigation"><button class="nav-dot active" data-index="0" aria-label="Go to section 1">1</button><button class="nav-dot" data-index="1" aria-label="Go to section 2">2</button><button class="nav-dot" data-index="2" aria-label="Go to section 3">3</button><button class="nav-dot" data-index="3" aria-label="Go to section 4">4</button><button class="nav-dot" data-index="4" aria-label="Go to section 5">5</button><button class="nav-dot" data-index="5" aria-label="Go to completion screen">6</button></nav>
         </div>
         <div class="progress-shell" aria-hidden="true">
           <div class="progress-bar" id="progressBar"></div>
@@ -731,7 +758,7 @@
       <section class="section active" data-section="0">
         <div class="section-inner">
           <div class="hero">
-            <div class="section-label">Section 1 of 4 · ~7 mins</div>
+            <div class="section-label">Section 1 of 5 · ~7 mins</div>
             <h2>Why Migrations Exist</h2>
             <p>Migrations keep schema changes consistent across environments and teams.</p>
             <a class="back-link" href="index.html">← Back to Spring Boot</a>
@@ -827,7 +854,7 @@
       <section class="section" data-section="1">
         <div class="section-inner">
           <div class="hero">
-            <div class="section-label">Section 2 of 4 · ~7 mins</div>
+            <div class="section-label">Section 2 of 5 · ~7 mins</div>
             <h2>Flyway Basics</h2>
             <p>Flyway runs SQL migrations in version order and tracks them in a schema history table.</p>
             
@@ -921,7 +948,7 @@
       <section class="section" data-section="2">
         <div class="section-inner">
           <div class="hero">
-            <div class="section-label">Section 3 of 4 · ~7 mins</div>
+            <div class="section-label">Section 3 of 5 · ~7 mins</div>
             <h2>Liquibase Basics</h2>
             <p>Liquibase uses changelogs with change sets that can be rolled back and audited.</p>
             
@@ -1025,7 +1052,7 @@
       <section class="section" data-section="3">
         <div class="section-inner">
           <div class="hero">
-            <div class="section-label">Section 4 of 4 · ~7 mins</div>
+            <div class="section-label">Section 4 of 5 · ~7 mins</div>
             <h2>Safe Migration Practices</h2>
             <p>Production migrations need review, backups, and careful rollout strategies.</p>
             
@@ -1118,7 +1145,90 @@
         </div>
       </section>
       
+      
       <section class="section" data-section="4">
+        <div class="section-inner">
+          <div class="hero">
+            <div class="section-label">Section 5 of 5 · ~7 mins</div>
+            <h2>Deep Dive: Zero‑Downtime Migrations</h2>
+            <p>Production migrations must avoid locking and support rolling deployments.</p>
+          </div>
+
+          <div class="card-grid">
+            <article class="card eli5">
+              <div class="card-label">🧒 ELI5</div>
+              <h3>Fix the road while cars drive</h3>
+              <p>You repair one lane at a time so traffic keeps moving.</p>
+            </article>
+
+            <article class="card analogy">
+              <div class="card-label">🔗 ANALOGY</div>
+              <h3>Hotel renovation</h3>
+              <p>You renovate floor by floor so guests can still stay.</p>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Technical</div>
+              <div class="two-col">
+                <div>
+                  <h3>What it means in real code</h3>
+                  <p><strong>Definition:</strong> Use expand/contract patterns: add new columns, deploy code, backfill, then remove old columns.</p>
+                  <div class="mini-grid">
+                    <div class="mini-panel">
+                      <h4>Why it matters</h4>
+                      <ul><li>Avoids downtime</li><li>Supports rollbacks</li><li>Safe deployments</li></ul>
+                    </div>
+                    <div class="mini-panel">
+                      <h4>Common pitfall</h4>
+                      <ul><li>Dropping columns immediately</li><li>Large table locks</li><li>Big-bang migrations</li></ul>
+                    </div>
+                  </div>
+                  <div class="badge-row"><span class="pill good">Expand/contract</span><span class="pill info">Backfill</span><span class="pill caution">Lock risk</span></div>
+                  <div class="flow"><span class="flow-step">Add column</span><span class="flow-arrow">→</span><span class="flow-step">Deploy code</span><span class="flow-arrow">→</span><span class="flow-step">Backfill data</span><span class="flow-arrow">→</span><span class="flow-step">Remove old</span></div>
+                </div>
+                <div>
+                  <h3>Interview answer</h3>
+                  <p>“I use expand/contract so schema changes don’t break running services.”</p>
+                  <table>
+                    <thead><tr><th>Step</th><th>Purpose</th></tr></thead>
+                    <tbody><tr><td>Add nullable column</td><td><span class="pill info">Compatibility</span></td></tr><tr><td>Backfill</td><td><span class="pill good">Data migration</span></td></tr><tr><td>Drop old column</td><td><span class="pill caution">Cleanup</span></td></tr></tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="code-blocks">
+    <div>
+      <div class="code-title">Expand phase migration</div>
+      <pre>ALTER TABLE users ADD COLUMN status varchar(20);</pre>
+    </div>
+    </div>
+            </article>
+
+            <article class="card warning">
+              <div class="card-label">Warning</div>
+              <h3>Large locks cause outages</h3>
+              <p>Avoid schema changes that lock tables for long periods.</p>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Mini takeaway</div>
+              <ul class="takeaways"><li>Use expand/contract.</li><li>Backfill safely.</li><li>Monitor locks.</li></ul>
+            </article>
+
+            <article class="card quiz-card">
+              <div class="card-label">Quiz</div>
+              <h3>Which approach is best for zero-downtime migrations?</h3>
+              <div class="quiz-options" data-answer="1">
+                <button class="quiz-option">A. Drop and recreate</button><button class="quiz-option">B. Expand/contract</button><button class="quiz-option">C. Disable DB</button><button class="quiz-option">D. No migrations</button>
+              </div>
+              <div class="quiz-result">
+                <strong>Correct answer: B</strong>
+                <span>Expand/contract keeps services compatible during rollout.</span>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+<section class="section" data-section="5">
         <div class="section-inner">
           <div class="hero">
             <div class="section-label">Completion screen · Review mode</div>
@@ -1283,7 +1393,7 @@ function applySyntaxHighlighting() {
       dot.addEventListener('click', () => showSection(Number(dot.dataset.index)));
     });
 
-    const totalSeconds = 28 * 60;
+    const totalSeconds = 35 * 60;
     let remainingSeconds = totalSeconds;
 
     function formatTime(seconds) {

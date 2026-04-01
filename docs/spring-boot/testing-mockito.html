@@ -35,6 +35,24 @@
 
     a { color: inherit; }
 
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .breadcrumb a {
+      color: var(--muted);
+      text-decoration: none;
+    }
+
+    .breadcrumb a:hover { color: var(--cyan); }
+
+    .breadcrumb span { color: var(--text); font-weight: 600; }
+
     .app {
       min-height: 100vh;
       display: flex;
@@ -699,15 +717,24 @@
         <div class="topbar-row">
           <div class="brand">
             <h1>Testing with Mockito</h1>
-            <small>Interactive 28-minute learning module</small>
+            <small>Interactive 35-minute learning module</small>
           </div>
+                <div class="topbar-row">
+          <div class="breadcrumb">
+            <a href="../index.html">Home</a>
+            <span>›</span>
+            <a href="index.html">Spring Boot</a>
+            <span>›</span>
+            <span>Testing with Mockito</span>
+          </div>
+        </div>
           <div class="timer-wrap" aria-live="polite">
             <span class="timer-label">Time Left</span>
-            <span class="timer" id="timer">28:00</span>
+            <span class="timer" id="timer">35:00</span>
           </div>
         </div>
         <div class="topbar-row">
-          <nav class="nav-dots" aria-label="Section navigation"><button class="nav-dot active" data-index="0" aria-label="Go to section 1">1</button><button class="nav-dot " data-index="1" aria-label="Go to section 2">2</button><button class="nav-dot " data-index="2" aria-label="Go to section 3">3</button><button class="nav-dot " data-index="3" aria-label="Go to section 4">4</button><button class="nav-dot " data-index="4" aria-label="Go to completion screen">5</button></nav>
+                    <nav class="nav-dots" aria-label="Section navigation"><button class="nav-dot active" data-index="0" aria-label="Go to section 1">1</button><button class="nav-dot" data-index="1" aria-label="Go to section 2">2</button><button class="nav-dot" data-index="2" aria-label="Go to section 3">3</button><button class="nav-dot" data-index="3" aria-label="Go to section 4">4</button><button class="nav-dot" data-index="4" aria-label="Go to section 5">5</button><button class="nav-dot" data-index="5" aria-label="Go to completion screen">6</button></nav>
         </div>
         <div class="progress-shell" aria-hidden="true">
           <div class="progress-bar" id="progressBar"></div>
@@ -720,7 +747,7 @@
       <section class="section active" data-section="0">
         <div class="section-inner">
           <div class="hero">
-            <div class="section-label">Section 1 of 4 · ~7 mins</div>
+            <div class="section-label">Section 1 of 5 · ~7 mins</div>
             <h2>Test Types & Slices</h2>
             <p>Choose the right test type to balance speed and confidence.</p>
           </div>
@@ -816,7 +843,7 @@ class UserControllerTest {
       <section class="section " data-section="1">
         <div class="section-inner">
           <div class="hero">
-            <div class="section-label">Section 2 of 4 · ~7 mins</div>
+            <div class="section-label">Section 2 of 5 · ~7 mins</div>
             <h2>@Mock vs @MockBean</h2>
             <p>Mockito has two common modes in Spring tests: plain mocks and Spring-managed mocks.</p>
           </div>
@@ -912,7 +939,7 @@ class UserControllerTest {
       <section class="section " data-section="2">
         <div class="section-inner">
           <div class="hero">
-            <div class="section-label">Section 3 of 4 · ~7 mins</div>
+            <div class="section-label">Section 3 of 5 · ~7 mins</div>
             <h2>MockMvc Patterns</h2>
             <p>MockMvc lets you test controllers without starting a full server.</p>
           </div>
@@ -1007,7 +1034,7 @@ class UserControllerTest {
       <section class="section " data-section="3">
         <div class="section-inner">
           <div class="hero">
-            <div class="section-label">Section 4 of 4 · ~7 mins</div>
+            <div class="section-label">Section 4 of 5 · ~7 mins</div>
             <h2>Stubbing & Verification</h2>
             <p>Mockito stubbing defines behavior; verification confirms interactions.</p>
           </div>
@@ -1100,7 +1127,99 @@ verify(repo).findById(1L);</span></pre>
         </div>
       </section>
       
+      
       <section class="section" data-section="4">
+        <div class="section-inner">
+          <div class="hero">
+            <div class="section-label">Section 5 of 5 · ~7 mins</div>
+            <h2>Deep Dive: Test Slices & Mocking Strategy</h2>
+            <p>Pick the smallest Spring test slice that still validates the behavior you care about.</p>
+          </div>
+
+          <div class="card-grid">
+            <article class="card eli5">
+              <div class="card-label">🧒 ELI5</div>
+              <h3>Test one room</h3>
+              <p>You don’t test the entire house when checking a light switch.</p>
+            </article>
+
+            <article class="card analogy">
+              <div class="card-label">🔗 ANALOGY</div>
+              <h3>Car diagnostics</h3>
+              <p>Check the brakes without rebuilding the entire car.</p>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Technical</div>
+              <div class="two-col">
+                <div>
+                  <h3>What it means in real code</h3>
+                  <p><strong>Definition:</strong> Use @WebMvcTest for controllers, @DataJpaTest for repositories, and @SpringBootTest for full integration.</p>
+                  <div class="mini-grid">
+                    <div class="mini-panel">
+                      <h4>Why it matters</h4>
+                      <ul><li>Faster tests</li><li>Clearer intent</li><li>Less flaky infra</li></ul>
+                    </div>
+                    <div class="mini-panel">
+                      <h4>Common pitfall</h4>
+                      <ul><li>Using @SpringBootTest everywhere</li><li>Mocking too much</li><li>No assertion of interactions</li></ul>
+                    </div>
+                  </div>
+                  <div class="badge-row"><span class="pill good">Test slice</span><span class="pill info">Mock boundaries</span><span class="pill caution">Integration</span></div>
+                  <div class="flow"><span class="flow-step">Pick slice</span><span class="flow-arrow">→</span><span class="flow-step">Mock dependencies</span><span class="flow-arrow">→</span><span class="flow-step">Run assertions</span><span class="flow-arrow">→</span><span class="flow-step">Verify interactions</span></div>
+                </div>
+                <div>
+                  <h3>Interview answer</h3>
+                  <p>“I use narrow slices for unit-style tests and @SpringBootTest only for end-to-end behavior.”</p>
+                  <table>
+                    <thead><tr><th>Annotation</th><th>Scope</th></tr></thead>
+                    <tbody><tr><td>@WebMvcTest</td><td><span class="pill good">Controller only</span></td></tr><tr><td>@DataJpaTest</td><td><span class="pill info">JPA layer</span></td></tr><tr><td>@SpringBootTest</td><td><span class="pill caution">Full context</span></td></tr></tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="code-blocks">
+    <div>
+      <div class="code-title">Controller slice with MockMvc</div>
+      <pre>@WebMvcTest(OrderController.class)
+class OrderControllerTest {
+  @Autowired MockMvc mvc;
+  @MockBean OrderService service;
+
+  @Test void listOrders() throws Exception {
+    when(service.list()).thenReturn(List.of());
+    mvc.perform(get("/orders")).andExpect(status().isOk());
+  }
+}</pre>
+    </div>
+    </div>
+            </article>
+
+            <article class="card warning">
+              <div class="card-label">Warning</div>
+              <h3>Too many mocks hide real bugs</h3>
+              <p>If you mock everything, you can miss wiring or serialization issues.</p>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Mini takeaway</div>
+              <ul class="takeaways"><li>Use the smallest slice.</li><li>Mock external boundaries.</li><li>Add a few full integration tests.</li></ul>
+            </article>
+
+            <article class="card quiz-card">
+              <div class="card-label">Quiz</div>
+              <h3>Which annotation is best for controller-only tests?</h3>
+              <div class="quiz-options" data-answer="1">
+                <button class="quiz-option">A. @SpringBootTest</button><button class="quiz-option">B. @WebMvcTest</button><button class="quiz-option">C. @DataJpaTest</button><button class="quiz-option">D. @MockBean</button>
+              </div>
+              <div class="quiz-result">
+                <strong>Correct answer: B</strong>
+                <span>@WebMvcTest limits the context to MVC components.</span>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+<section class="section" data-section="5">
         <div class="section-inner">
           <div class="hero">
             <div class="section-label">Completion screen · Review mode</div>
@@ -1264,7 +1383,7 @@ function applySyntaxHighlighting() {
       dot.addEventListener('click', () => showSection(Number(dot.dataset.index)));
     });
 
-    const totalSeconds = 28 * 60;
+    const totalSeconds = 35 * 60;
     let remainingSeconds = totalSeconds;
 
     function formatTime(seconds) {

@@ -534,7 +534,7 @@ const SITE_DATA = {
               time:       '30 min',
               tags:       ['joins', 'querying'],
               file:       'joins.html',
-              status:     'placeholder',
+              status:     'available',
               featured:   true
             },
             {
@@ -544,7 +544,7 @@ const SITE_DATA = {
               time:       '30 min',
               tags:       ['subqueries', 'cte'],
               file:       'subqueries-cte.html',
-              status:     'placeholder'
+              status:     'available'
             }
           ]
         },
@@ -558,7 +558,7 @@ const SITE_DATA = {
               time:       '20 min',
               tags:       ['aggregation', 'group-by'],
               file:       'group-by.html',
-              status:     'placeholder'
+              status:     'available'
             },
             {
               title:      'Window Functions',
@@ -567,7 +567,7 @@ const SITE_DATA = {
               time:       '45 min',
               tags:       ['window-functions', 'analytics'],
               file:       'window-functions.html',
-              status:     'placeholder'
+              status:     'available'
             }
           ]
         },
@@ -581,7 +581,7 @@ const SITE_DATA = {
               time:       '45 min',
               tags:       ['indexes', 'performance'],
               file:       'indexes.html',
-              status:     'placeholder'
+              status:     'available'
             }
           ]
         },
@@ -613,7 +613,7 @@ const SITE_DATA = {
               time:       '30 min',
               tags:       ['normalization', 'design'],
               file:       'normalization.html',
-              status:     'placeholder'
+              status:     'available'
             }
           ]
         },
@@ -1021,7 +1021,7 @@ const SITE_DATA = {
               time:       '45 min',
               tags:       ['docker', 'containers'],
               file:       'docker.html',
-              status:     'placeholder',
+              status:     'available',
               featured:   true
             },
             {
@@ -1031,7 +1031,7 @@ const SITE_DATA = {
               time:       '30 min',
               tags:       ['docker', 'compose'],
               file:       'docker-compose.html',
-              status:     'placeholder'
+              status:     'available'
             }
           ]
         },
@@ -1045,7 +1045,7 @@ const SITE_DATA = {
               time:       '1 hr',
               tags:       ['kubernetes', 'orchestration'],
               file:       'kubernetes.html',
-              status:     'placeholder'
+              status:     'available'
             },
             {
               title:      'K8s Deployments & Scaling',
@@ -1054,7 +1054,7 @@ const SITE_DATA = {
               time:       '45 min',
               tags:       ['kubernetes', 'scaling'],
               file:       'k8s-deployments.html',
-              status:     'placeholder'
+              status:     'available'
             }
           ]
         },
@@ -1068,7 +1068,7 @@ const SITE_DATA = {
               time:       '45 min',
               tags:       ['ci-cd', 'github'],
               file:       'github-actions.html',
-              status:     'placeholder'
+              status:     'available'
             }
           ]
         },
@@ -1082,7 +1082,7 @@ const SITE_DATA = {
               time:       '45 min',
               tags:       ['aws', 'cloud'],
               file:       'aws-basics.html',
-              status:     'placeholder'
+              status:     'available'
             },
             {
               title:      'Lambda & Serverless',
@@ -1091,7 +1091,7 @@ const SITE_DATA = {
               time:       '30 min',
               tags:       ['aws', 'lambda', 'serverless'],
               file:       'lambda.html',
-              status:     'placeholder'
+              status:     'available'
             },
             {
               title:      'Cloud Interview Reference Sheet',

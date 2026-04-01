@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Resilience Patterns (Resilience4j) Learning Module</title>
+  <title>AWS Essentials (EC2, S3, IAM) Learning Module</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -52,17 +52,6 @@
     .breadcrumb a:hover { color: var(--cyan); }
 
     .breadcrumb span { color: var(--text); font-weight: 600; }
-
-    .back-link {
-      display: inline-flex;
-      margin-top: 12px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.78rem;
-      color: var(--muted);
-      text-decoration: none;
-    }
-
-    .back-link:hover { color: var(--cyan); }
 
     .app {
       min-height: 100vh;
@@ -727,16 +716,16 @@
       <div class="topbar-inner">
         <div class="topbar-row">
           <div class="brand">
-            <h1>Resilience Patterns (Resilience4j)</h1>
+            <h1>AWS Essentials (EC2, S3, IAM)</h1>
             <small>Interactive 35-minute learning module</small>
           </div>
                 <div class="topbar-row">
           <div class="breadcrumb">
             <a href="../index.html">Home</a>
             <span>›</span>
-            <a href="index.html">Spring Boot</a>
+            <a href="index.html">Cloud</a>
             <span>›</span>
-            <span>Resilience Patterns (Resilience4j)</span>
+            <span>AWS Essentials (EC2, S3, IAM)</span>
           </div>
         </div>
           <div class="timer-wrap" aria-live="polite">
@@ -754,27 +743,26 @@
     </header>
 
     <main>
-      
+
       <section class="section active" data-section="0">
         <div class="section-inner">
           <div class="hero">
-            <div class="section-label">Section 1 of 5 · ~7 mins</div>
-            <h2>Circuit Breakers</h2>
-            <p>Circuit breakers stop calls to failing dependencies to protect the system and allow recovery.</p>
-            <a class="back-link" href="index.html">← Back to Spring Boot</a>
+            <div class="section-label">Section 1 of 5 · ~6 mins</div>
+            <h2>IAM Fundamentals</h2>
+            <p>IAM is the control plane for who can do what in AWS via users, roles, and policies.</p>
           </div>
 
           <div class="card-grid">
             <article class="card eli5">
               <div class="card-label">🧒 ELI5</div>
-              <h3>A safety fuse</h3>
-              <p>If the power surges, the fuse trips to protect the house.</p>
+              <h3>Keys and doors</h3>
+              <p>You give each person the right key for the right door.</p>
             </article>
 
             <article class="card analogy">
               <div class="card-label">🔗 ANALOGY</div>
-              <h3>Traffic barrier</h3>
-              <p>If a road is closed, you stop cars from entering so it can recover.</p>
+              <h3>Office badges</h3>
+              <p>Badges control which rooms you can enter.</p>
             </article>
 
             <article class="card technical">
@@ -782,68 +770,63 @@
               <div class="two-col">
                 <div>
                   <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> A circuit breaker tracks failures and opens when a threshold is reached, then half-opens to test recovery.</p>
+                  <p><strong>Definition:</strong> IAM policies define permissions; roles are assumed identities; users are human accounts.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
-                      <ul>
-                        <li>Prevents cascading failures</li><li>Fails fast</li><li>Gives dependencies time to recover</li>
-                      </ul>
+                      <ul><li>Least privilege</li><li>Auditability</li><li>Cross-account access</li></ul>
                     </div>
                     <div class="mini-panel">
                       <h4>Common pitfall</h4>
-                      <ul>
-                        <li>Repeated timeouts</li><li>Cascading failures</li><li>No fallback logic</li>
-                      </ul>
+                      <ul><li>Using root account</li><li>Wildcard policies</li><li>Long-lived keys</li></ul>
                     </div>
                   </div>
-                  <div class="badge-row"><span class="pill good">Closed</span><span class="pill caution">Open</span><span class="pill info">Half-open</span></div>
-                  
-                  <div class="flow"><span class="flow-step">Call service</span><span class="flow-arrow">→</span><span class="flow-step">Failures exceed threshold</span><span class="flow-arrow">→</span><span class="flow-step">Open circuit</span><span class="flow-arrow">→</span><span class="flow-step">Half-open trial</span></div>
+                  <div class="badge-row"><span class="pill good">Roles</span><span class="pill info">Policies</span><span class="pill caution">Least privilege</span></div>
+                  <div class="flow"><span class="flow-step">Authenticate</span><span class="flow-arrow">→</span><span class="flow-step">Assume role</span><span class="flow-arrow">→</span><span class="flow-step">Evaluate policy</span><span class="flow-arrow">→</span><span class="flow-step">Grant/deny</span></div>
                 </div>
                 <div>
                   <h3>Interview answer</h3>
-                  <p>“Circuit breakers fail fast when a dependency is unhealthy and periodically test recovery.”</p>
-                  
-                  <table>
-                    <thead><tr><th>State</th><th>Behavior</th></tr></thead>
-                    <tbody><tr><td>Closed</td><td><span class="pill good">Calls allowed</span></td></tr><tr><td>Open</td><td><span class="pill bad">Calls blocked</span></td></tr><tr><td>Half-open</td><td><span class="pill info">Trial requests</span></td></tr></tbody>
-                  </table>
+                  <p>“IAM controls access with policies and roles; use least privilege and short-lived creds.”</p>
+                  <table><thead><tr><th>Identity</th><th>Use</th></tr></thead><tbody><tr><td>User</td><td><span class="pill info">Human login</span></td></tr><tr><td>Role</td><td><span class="pill good">Assumed identity</span></td></tr></tbody></table>
                 </div>
               </div>
-              
-    <div class="code-blocks">
+              <div class="code-blocks">
     <div>
-      <div class="code-title">Resilience4j annotation</div>
-      <pre>@CircuitBreaker(name = "inventory", fallbackMethod = "fallback")
-public Inventory check(String sku) { ... }</pre>
+      <div class="code-title">Policy snippet</div>
+      <pre>{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": ["s3:GetObject"],
+      "Resource": "arn:aws:s3:::my-bucket/*"
+    }
+  ]
+}</pre>
     </div>
     </div>
-              
             </article>
 
             <article class="card warning">
               <div class="card-label">Warning</div>
-              <h3>No fallback = poor UX</h3>
-              <p>If the circuit opens, you need a fallback or you will fail every request.</p>
+              <h3>Avoid wildcard permissions</h3>
+              <p>Use specific actions/resources to reduce blast radius.</p>
             </article>
 
             <article class="card technical">
               <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>Circuit breakers fail fast.</li><li>Use fallback methods.</li><li>Monitor breaker events.</li>
-              </ul>
+              <ul class="takeaways"><li>Use roles for apps.</li><li>Rotate keys.</li><li>Scope policies.</li></ul>
             </article>
 
             <article class="card quiz-card">
               <div class="card-label">Quiz</div>
-              <h3>What is the purpose of the half-open state?</h3>
+              <h3>What is the recommended identity for applications on EC2?</h3>
               <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. Block all traffic</button><button class="quiz-option">B. Allow a few test calls</button><button class="quiz-option">C. Disable metrics</button><button class="quiz-option">D. Force retries</button>
+                <button class="quiz-option">A. IAM user</button><button class="quiz-option">B. IAM role</button><button class="quiz-option">C. Root user</button><button class="quiz-option">D. Access key in code</button>
               </div>
               <div class="quiz-result">
                 <strong>Correct answer: B</strong>
-                <span>Half-open allows limited calls to test recovery.</span>
+                <span>Use IAM roles attached to instances for short-lived credentials.</span>
               </div>
             </article>
           </div>
@@ -853,23 +836,22 @@ public Inventory check(String sku) { ... }</pre>
       <section class="section" data-section="1">
         <div class="section-inner">
           <div class="hero">
-            <div class="section-label">Section 2 of 5 · ~7 mins</div>
-            <h2>Retries and Timeouts</h2>
-            <p>Retries handle transient errors, while timeouts prevent hanging calls.</p>
-            
+            <div class="section-label">Section 2 of 5 · ~6 mins</div>
+            <h2>EC2 Compute Basics</h2>
+            <p>EC2 provides virtual machines with instance types, storage, and autoscaling.</p>
           </div>
 
           <div class="card-grid">
             <article class="card eli5">
               <div class="card-label">🧒 ELI5</div>
-              <h3>Try again, but not forever</h3>
-              <p>If a toy does not work, you try again a couple of times then move on.</p>
+              <h3>Rent a computer</h3>
+              <p>You rent a computer that runs all day and pay for the time.</p>
             </article>
 
             <article class="card analogy">
               <div class="card-label">🔗 ANALOGY</div>
-              <h3>Redial with patience</h3>
-              <p>You redial after a short wait instead of hanging on forever.</p>
+              <h3>Apartment leasing</h3>
+              <p>Choose a size and pay for what you need.</p>
             </article>
 
             <article class="card technical">
@@ -877,72 +859,56 @@ public Inventory check(String sku) { ... }</pre>
               <div class="two-col">
                 <div>
                   <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Retries should use backoff and be applied only to idempotent operations, with timeouts to cap latency.</p>
+                  <p><strong>Definition:</strong> EC2 instances are virtual servers with AMIs, security groups, and EBS volumes.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
-                      <ul>
-                        <li>Improves resilience</li><li>Avoids long waits</li><li>Handles transient faults</li>
-                      </ul>
+                      <ul><li>Flexible compute</li><li>Autoscaling support</li><li>Custom networking</li></ul>
                     </div>
                     <div class="mini-panel">
                       <h4>Common pitfall</h4>
-                      <ul>
-                        <li>Retry storms</li><li>No timeouts</li><li>Retrying writes</li>
-                      </ul>
+                      <ul><li>Always-on instances</li><li>No autoscaling</li><li>Weak security groups</li></ul>
                     </div>
                   </div>
-                  <div class="badge-row"><span class="pill good">Backoff</span><span class="pill info">Timeout</span><span class="pill caution">Idempotent</span></div>
-                  
-                  <div class="flow"><span class="flow-step">Call</span><span class="flow-arrow">→</span><span class="flow-step">Timeout or error</span><span class="flow-arrow">→</span><span class="flow-step">Retry with backoff</span><span class="flow-arrow">→</span><span class="flow-step">Fail or succeed</span></div>
+                  <div class="badge-row"><span class="pill good">AMI</span><span class="pill info">EBS</span><span class="pill caution">ASG</span></div>
+                  <div class="flow"><span class="flow-step">Select AMI</span><span class="flow-arrow">→</span><span class="flow-step">Choose instance type</span><span class="flow-arrow">→</span><span class="flow-step">Attach storage</span><span class="flow-arrow">→</span><span class="flow-step">Launch + secure</span></div>
                 </div>
                 <div>
                   <h3>Interview answer</h3>
-                  <p>“Retries with backoff work for transient errors, but only for idempotent calls and with timeouts.”</p>
-                  
-                  <table>
-                    <thead><tr><th>Rule</th><th>Reason</th></tr></thead>
-                    <tbody><tr><td>Use backoff</td><td><span class="pill good">Reduce load</span></td></tr><tr><td>Limit attempts</td><td><span class="pill info">Avoid storms</span></td></tr><tr><td>Idempotent only</td><td><span class="pill caution">Prevent duplicates</span></td></tr></tbody>
-                  </table>
+                  <p>“EC2 is virtual compute; combine with autoscaling and security groups for resilience.”</p>
+                  <table><thead><tr><th>Component</th><th>Role</th></tr></thead><tbody><tr><td>Security group</td><td><span class="pill good">Firewall</span></td></tr><tr><td>EBS</td><td><span class="pill info">Block storage</span></td></tr></tbody></table>
                 </div>
               </div>
-              
-    <div class="code-blocks">
+              <div class="code-blocks">
     <div>
-      <div class="code-title">Retry config</div>
-      <pre>resilience4j:
-  retry:
-    instances:
-      payments:
-        max-attempts: 3
-        wait-duration: 200ms</pre>
+      <div class="code-title">User data example</div>
+      <pre>#!/bin/bash
+sudo yum update -y
+sudo systemctl start docker</pre>
     </div>
     </div>
-              
             </article>
 
             <article class="card warning">
               <div class="card-label">Warning</div>
-              <h3>Retries can amplify failures</h3>
-              <p>If every caller retries, a failing service can get overwhelmed.</p>
+              <h3>Overprovisioning</h3>
+              <p>Right-size instances and use autoscaling to avoid wasted cost.</p>
             </article>
 
             <article class="card technical">
               <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>Retry only safe calls.</li><li>Add backoff.</li><li>Always use timeouts.</li>
-              </ul>
+              <ul class="takeaways"><li>Use ASGs.</li><li>Lock down security groups.</li><li>Tag resources.</li></ul>
             </article>
 
             <article class="card quiz-card">
               <div class="card-label">Quiz</div>
-              <h3>Why use exponential backoff on retries?</h3>
+              <h3>What provides a virtual firewall for EC2 instances?</h3>
               <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. To increase throughput</button><button class="quiz-option">B. To reduce load on failing services</button><button class="quiz-option">C. To remove timeouts</button><button class="quiz-option">D. To avoid idempotency</button>
+                <button class="quiz-option">A. Route table</button><button class="quiz-option">B. Security group</button><button class="quiz-option">C. NACL</button><button class="quiz-option">D. IAM policy</button>
               </div>
               <div class="quiz-result">
                 <strong>Correct answer: B</strong>
-                <span>Backoff reduces pressure on a failing service.</span>
+                <span>Security groups control inbound/outbound traffic at instance level.</span>
               </div>
             </article>
           </div>
@@ -953,22 +919,21 @@ public Inventory check(String sku) { ... }</pre>
         <div class="section-inner">
           <div class="hero">
             <div class="section-label">Section 3 of 5 · ~7 mins</div>
-            <h2>Bulkheads and Rate Limiting</h2>
-            <p>Bulkheads isolate resources so one failure does not take down the whole system.</p>
-            
+            <h2>S3 Storage Essentials</h2>
+            <p>S3 is durable object storage with buckets, lifecycle rules, encryption, and access policies.</p>
           </div>
 
           <div class="card-grid">
             <article class="card eli5">
               <div class="card-label">🧒 ELI5</div>
-              <h3>Separate rooms</h3>
-              <p>If one room is noisy, the rest of the house stays quiet.</p>
+              <h3>Toy storage</h3>
+              <p>You keep toys in labeled boxes and decide when to move them to the attic.</p>
             </article>
 
             <article class="card analogy">
               <div class="card-label">🔗 ANALOGY</div>
-              <h3>Lifeboats on a ship</h3>
-              <p>Compartments prevent water from flooding the entire ship.</p>
+              <h3>Warehouse shelves</h3>
+              <p>Store items by box and track how long they stay.</p>
             </article>
 
             <article class="card technical">
@@ -976,68 +941,62 @@ public Inventory check(String sku) { ... }</pre>
               <div class="two-col">
                 <div>
                   <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Bulkheads limit concurrent calls via separate thread pools or semaphores, and rate limiters cap traffic.</p>
+                  <p><strong>Definition:</strong> S3 stores objects in buckets, secured with bucket policies, ACLs, and encryption.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
-                      <ul>
-                        <li>Prevents resource exhaustion</li><li>Keeps critical paths alive</li><li>Controls load</li>
-                      </ul>
+                      <ul><li>11 9s durability</li><li>Cheap storage</li><li>Event-driven triggers</li></ul>
                     </div>
                     <div class="mini-panel">
                       <h4>Common pitfall</h4>
-                      <ul>
-                        <li>Shared thread pool for everything</li><li>No rate limits</li><li>Cascading failures</li>
-                      </ul>
+                      <ul><li>Public buckets</li><li>No lifecycle</li><li>No encryption</li></ul>
                     </div>
                   </div>
-                  <div class="badge-row"><span class="pill good">Bulkhead</span><span class="pill info">Semaphore</span><span class="pill caution">Rate limit</span></div>
-                  
-                  <div class="flow"><span class="flow-step">Request enters</span><span class="flow-arrow">→</span><span class="flow-step">Check capacity</span><span class="flow-arrow">→</span><span class="flow-step">Execute or reject</span><span class="flow-arrow">→</span><span class="flow-step">Protect resources</span></div>
+                  <div class="badge-row"><span class="pill good">Buckets</span><span class="pill info">Lifecycle</span><span class="pill caution">Encryption</span></div>
+                  <div class="flow"><span class="flow-step">Put object</span><span class="flow-arrow">→</span><span class="flow-step">Store in bucket</span><span class="flow-arrow">→</span><span class="flow-step">Apply lifecycle</span><span class="flow-arrow">→</span><span class="flow-step">Serve or archive</span></div>
                 </div>
                 <div>
                   <h3>Interview answer</h3>
-                  <p>“Bulkheads isolate expensive calls with their own pools, while rate limiting caps total load.”</p>
-                  
-                  <table>
-                    <thead><tr><th>Pattern</th><th>Goal</th></tr></thead>
-                    <tbody><tr><td>Bulkhead</td><td><span class="pill good">Isolation</span></td></tr><tr><td>Rate limiter</td><td><span class="pill info">Traffic control</span></td></tr><tr><td>Timeout</td><td><span class="pill caution">Bound latency</span></td></tr></tbody>
-                  </table>
+                  <p>“S3 is object storage; secure with bucket policies and lifecycle rules.”</p>
+                  <table><thead><tr><th>Storage class</th><th>Use</th></tr></thead><tbody><tr><td>Standard</td><td><span class="pill good">Frequent access</span></td></tr><tr><td>Glacier</td><td><span class="pill info">Archive</span></td></tr></tbody></table>
                 </div>
               </div>
-              
-    <div class="code-blocks">
+              <div class="code-blocks">
     <div>
-      <div class="code-title">Bulkhead annotation</div>
-      <pre>@Bulkhead(name = "inventory", type = Bulkhead.Type.SEMAPHORE)
-public Inventory check(String sku) { ... }</pre>
+      <div class="code-title">Lifecycle rule</div>
+      <pre>{
+  "Rules": [
+    {
+      "ID": "archive",
+      "Status": "Enabled",
+      "Transitions": [{"Days": 30, "StorageClass": "GLACIER"}]
+    }
+  ]
+}</pre>
     </div>
     </div>
-              
             </article>
 
             <article class="card warning">
               <div class="card-label">Warning</div>
-              <h3>Shared pools cause cascades</h3>
-              <p>If all calls share one pool, a slow dependency can exhaust all threads.</p>
+              <h3>Public access leaks</h3>
+              <p>Use block public access unless you intentionally host static content.</p>
             </article>
 
             <article class="card technical">
               <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>Bulkheads isolate load.</li><li>Rate limit protects services.</li><li>Separate pools for critical paths.</li>
-              </ul>
+              <ul class="takeaways"><li>Use bucket policies.</li><li>Set lifecycle transitions.</li><li>Encrypt by default.</li></ul>
             </article>
 
             <article class="card quiz-card">
               <div class="card-label">Quiz</div>
-              <h3>What does a bulkhead protect against?</h3>
+              <h3>What does S3 store?</h3>
               <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. Data inconsistency</button><button class="quiz-option">B. Resource exhaustion</button><button class="quiz-option">C. SQL injection</button><button class="quiz-option">D. Cache misses</button>
+                <button class="quiz-option">A. Blocks</button><button class="quiz-option">B. Objects</button><button class="quiz-option">C. Filesystems</button><button class="quiz-option">D. Tables</button>
               </div>
               <div class="quiz-result">
                 <strong>Correct answer: B</strong>
-                <span>Bulkheads limit resource usage so one dependency cannot exhaust all capacity.</span>
+                <span>S3 is object storage; data is stored as objects in buckets.</span>
               </div>
             </article>
           </div>
@@ -1047,23 +1006,22 @@ public Inventory check(String sku) { ... }</pre>
       <section class="section" data-section="3">
         <div class="section-inner">
           <div class="hero">
-            <div class="section-label">Section 4 of 5 · ~7 mins</div>
-            <h2>Spring Integration and Observability</h2>
-            <p>Resilience4j integrates with Spring Boot through annotations and configuration, with event metrics.</p>
-            
+            <div class="section-label">Section 4 of 5 · ~6 mins</div>
+            <h2>VPC & Networking Basics</h2>
+            <p>A VPC is your private network in AWS with subnets, route tables, gateways, and security layers.</p>
           </div>
 
           <div class="card-grid">
             <article class="card eli5">
               <div class="card-label">🧒 ELI5</div>
-              <h3>Plug-in safety kit</h3>
-              <p>You add a safety kit to your bike so brakes and lights are always there.</p>
+              <h3>Neighborhood map</h3>
+              <p>You decide which houses are public and which are private.</p>
             </article>
 
             <article class="card analogy">
               <div class="card-label">🔗 ANALOGY</div>
-              <h3>Airbag system</h3>
-              <p>Airbags are built in and activate when needed without manual effort.</p>
+              <h3>Office building</h3>
+              <p>Some floors are public, others need a badge.</p>
             </article>
 
             <article class="card technical">
@@ -1071,169 +1029,148 @@ public Inventory check(String sku) { ... }</pre>
               <div class="two-col">
                 <div>
                   <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Resilience4j exposes annotations, config, and events that integrate with Boot and Micrometer.</p>
+                  <p><strong>Definition:</strong> VPC isolates resources with subnets, route tables, NAT/IGWs, and security groups/NACLs.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
-                      <ul>
-                        <li>Centralized configuration</li><li>Consistent behavior</li><li>Metrics on resilience events</li>
-                      </ul>
+                      <ul><li>Network isolation</li><li>Control ingress/egress</li><li>Multi-tier architecture</li></ul>
                     </div>
                     <div class="mini-panel">
                       <h4>Common pitfall</h4>
-                      <ul>
-                        <li>Hard-coded resilience logic</li><li>No monitoring</li><li>Inconsistent retries</li>
-                      </ul>
+                      <ul><li>Everything in public subnet</li><li>No NAT for private instances</li><li>Open NACLs</li></ul>
                     </div>
                   </div>
-                  <div class="badge-row"><span class="pill good">@CircuitBreaker</span><span class="pill info">@Retry</span><span class="pill caution">Metrics</span></div>
-                  
-                  <div class="flow"><span class="flow-step">Annotate method</span><span class="flow-arrow">→</span><span class="flow-step">Apply policies</span><span class="flow-arrow">→</span><span class="flow-step">Emit events</span><span class="flow-arrow">→</span><span class="flow-step">Monitor</span></div>
+                  <div class="badge-row"><span class="pill good">Subnets</span><span class="pill info">Route tables</span><span class="pill caution">NAT</span></div>
+                  <div class="flow"><span class="flow-step">Create VPC</span><span class="flow-arrow">→</span><span class="flow-step">Add subnets</span><span class="flow-arrow">→</span><span class="flow-step">Attach gateways</span><span class="flow-arrow">→</span><span class="flow-step">Apply security</span></div>
                 </div>
                 <div>
                   <h3>Interview answer</h3>
-                  <p>“Resilience4j integrates via annotations and exposes metrics so we can monitor circuit states and retries.”</p>
-                  
-                  <table>
-                    <thead><tr><th>Signal</th><th>Value</th></tr></thead>
-                    <tbody><tr><td>State changes</td><td><span class="pill good">Breaker health</span></td></tr><tr><td>Retry count</td><td><span class="pill info">Transient failures</span></td></tr><tr><td>Rejections</td><td><span class="pill caution">Capacity limit</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              
-    <div class="code-blocks">
-    <div>
-      <div class="code-title">Resilience4j config</div>
-      <pre>resilience4j:
-  circuitbreaker:
-    instances:
-      inventory:
-        failure-rate-threshold: 50
-        wait-duration-in-open-state: 10s</pre>
-    </div>
-    </div>
-              
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Silent failures</h3>
-              <p>If you do not monitor resilience events, you may not notice failing dependencies.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>Use annotations for consistency.</li><li>Monitor breaker events.</li><li>Tune thresholds carefully.</li>
-              </ul>
-            </article>
-
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>Why integrate resilience metrics with Micrometer?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. To disable retries</button><button class="quiz-option">B. To monitor breaker and retry behavior</button><button class="quiz-option">C. To reduce latency only</button><button class="quiz-option">D. To avoid backoff</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>Metrics reveal how breakers and retries behave in production.</span>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-      
-      
-      <section class="section" data-section="4">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 5 of 5 · ~7 mins</div>
-            <h2>Deep Dive: Fallbacks and Failure Budgets</h2>
-            <p>Resilience patterns must be paired with sensible fallbacks and SLO budgets.</p>
-          </div>
-
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Have a backup plan</h3>
-              <p>If the toy breaks, you have another game to play.</p>
-            </article>
-
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Emergency exits</h3>
-              <p>Buildings must have exits in case a path fails.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Fallbacks provide degraded responses while circuit breakers and retries protect systems.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul><li>Improves user experience</li><li>Avoids full outages</li><li>Supports graceful degradation</li></ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common pitfall</h4>
-                      <ul><li>No fallback</li><li>Fallback slower than main path</li><li>Retry storms</li></ul>
-                    </div>
-                  </div>
-                  <div class="badge-row"><span class="pill good">Fallback</span><span class="pill info">Budget</span><span class="pill caution">Graceful</span></div>
-                  <div class="flow"><span class="flow-step">Call fails</span><span class="flow-arrow">→</span><span class="flow-step">Breaker opens</span><span class="flow-arrow">→</span><span class="flow-step">Fallback returns</span><span class="flow-arrow">→</span><span class="flow-step">Track budget</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“I combine circuit breakers with safe fallbacks so the system degrades instead of failing hard.”</p>
-                  <table>
-                    <thead><tr><th>Fallback</th><th>Example</th></tr></thead>
-                    <tbody><tr><td>Cached data</td><td><span class="pill good">Stale ok</span></td></tr><tr><td>Partial response</td><td><span class="pill info">Degraded</span></td></tr><tr><td>Error message</td><td><span class="pill caution">Worst-case</span></td></tr></tbody>
-                  </table>
+                  <p>“A VPC is isolated networking; use public/private subnets and secure with SGs and NACLs.”</p>
+                  <table><thead><tr><th>Component</th><th>Purpose</th></tr></thead><tbody><tr><td>IGW</td><td><span class="pill good">Public internet</span></td></tr><tr><td>NAT</td><td><span class="pill info">Private outbound</span></td></tr></tbody></table>
                 </div>
               </div>
               <div class="code-blocks">
     <div>
-      <div class="code-title">Fallback method</div>
-      <pre>public Inventory fallback(String sku, Throwable ex) {
-  return Inventory.unavailable();
-}</pre>
+      <div class="code-title">Security group idea</div>
+      <pre>Inbound: 443 from 0.0.0.0/0
+Outbound: 0.0.0.0/0</pre>
     </div>
     </div>
             </article>
 
             <article class="card warning">
               <div class="card-label">Warning</div>
-              <h3>Fallbacks can hide outages</h3>
-              <p>If you never alert on fallback use, you might miss incidents.</p>
+              <h3>Public subnets for everything</h3>
+              <p>Keep databases in private subnets with no direct internet access.</p>
             </article>
 
             <article class="card technical">
               <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways"><li>Provide safe fallbacks.</li><li>Monitor fallback rate.</li><li>Tune retry budgets.</li></ul>
+              <ul class="takeaways"><li>Use public/private split.</li><li>Control routes.</li><li>Avoid 0.0.0.0/0 for sensitive ports.</li></ul>
             </article>
 
             <article class="card quiz-card">
               <div class="card-label">Quiz</div>
-              <h3>Why are fallbacks important?</h3>
+              <h3>Which component provides outbound internet for private subnets?</h3>
               <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. They increase latency</button><button class="quiz-option">B. They allow graceful degradation</button><button class="quiz-option">C. They replace monitoring</button><button class="quiz-option">D. They remove retries</button>
+                <button class="quiz-option">A. IGW</button><button class="quiz-option">B. NAT Gateway</button><button class="quiz-option">C. Route53</button><button class="quiz-option">D. NACL</button>
               </div>
               <div class="quiz-result">
                 <strong>Correct answer: B</strong>
-                <span>Fallbacks keep the service usable when dependencies fail.</span>
+                <span>NAT gateways allow private subnets to access the internet outbound.</span>
               </div>
             </article>
           </div>
         </div>
       </section>
-<section class="section" data-section="5">
+
+      <section class="section" data-section="4">
+        <div class="section-inner">
+          <div class="hero">
+            <div class="section-label">Section 5 of 5 · ~7 mins</div>
+            <h2>Observability & Cost Basics</h2>
+            <p>CloudWatch metrics/logs and cost controls keep systems healthy and affordable.</p>
+          </div>
+
+          <div class="card-grid">
+            <article class="card eli5">
+              <div class="card-label">🧒 ELI5</div>
+              <h3>Dashboard gauges</h3>
+              <p>You watch the speedometer and fuel to know how the car is doing.</p>
+            </article>
+
+            <article class="card analogy">
+              <div class="card-label">🔗 ANALOGY</div>
+              <h3>Utility meters</h3>
+              <p>You monitor usage and set alerts to avoid surprises.</p>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Technical</div>
+              <div class="two-col">
+                <div>
+                  <h3>What it means in real code</h3>
+                  <p><strong>Definition:</strong> CloudWatch captures metrics and logs; budgets/alarms enforce spending awareness.</p>
+                  <div class="mini-grid">
+                    <div class="mini-panel">
+                      <h4>Why it matters</h4>
+                      <ul><li>Detect outages</li><li>Track performance</li><li>Avoid cost spikes</li></ul>
+                    </div>
+                    <div class="mini-panel">
+                      <h4>Common pitfall</h4>
+                      <ul><li>No alarms</li><li>No log retention</li><li>Overprovisioning</li></ul>
+                    </div>
+                  </div>
+                  <div class="badge-row"><span class="pill good">CloudWatch</span><span class="pill info">Alarms</span><span class="pill caution">Budgets</span></div>
+                  <div class="flow"><span class="flow-step">Emit metrics</span><span class="flow-arrow">→</span><span class="flow-step">Create alarms</span><span class="flow-arrow">→</span><span class="flow-step">Investigate logs</span><span class="flow-arrow">→</span><span class="flow-step">Optimize spend</span></div>
+                </div>
+                <div>
+                  <h3>Interview answer</h3>
+                  <p>“Use CloudWatch for metrics/logs and budgets to control cost; tie alerts to SLOs.”</p>
+                  <table><thead><tr><th>Tool</th><th>Use</th></tr></thead><tbody><tr><td>CloudWatch</td><td><span class="pill good">Metrics/logs</span></td></tr><tr><td>Budgets</td><td><span class="pill info">Spend alerts</span></td></tr></tbody></table>
+                </div>
+              </div>
+              <div class="code-blocks">
+    <div>
+      <div class="code-title">Alarm idea</div>
+      <pre>Alarm: CPUUtilization &gt; 80% for 5 minutes
+Action: Notify SNS topic</pre>
+    </div>
+    </div>
+            </article>
+
+            <article class="card warning">
+              <div class="card-label">Warning</div>
+              <h3>Alert fatigue</h3>
+              <p>Too many noisy alerts reduce response quality.</p>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Mini takeaway</div>
+              <ul class="takeaways"><li>Define SLO-based alerts.</li><li>Watch cost anomalies.</li><li>Aggregate logs.</li></ul>
+            </article>
+
+            <article class="card quiz-card">
+              <div class="card-label">Quiz</div>
+              <h3>Which service is used for metrics and logs?</h3>
+              <div class="quiz-options" data-answer="1">
+                <button class="quiz-option">A. CloudFront</button><button class="quiz-option">B. CloudWatch</button><button class="quiz-option">C. SQS</button><button class="quiz-option">D. Route53</button>
+              </div>
+              <div class="quiz-result">
+                <strong>Correct answer: B</strong>
+                <span>CloudWatch provides metrics, logs, and alarms.</span>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" data-section="5">
         <div class="section-inner">
           <div class="hero">
             <div class="section-label">Completion screen · Review mode</div>
-            <h2>🎉 Resilience Patterns (Resilience4j) Cheat Sheet</h2>
-            <p>Use this to recall circuit breakers, retries, bulkheads, and Spring integration.</p>
+            <h2>🎉 AWS Essentials (EC2, S3, IAM) Cheat Sheet</h2>
+            <p>Know the building blocks: identities, compute, storage, and networking basics in AWS.</p>
           </div>
 
           <div class="completion-grid">
@@ -1243,20 +1180,20 @@ public Inventory check(String sku) { ... }</pre>
               <h3>1-line interview answers</h3>
               <div class="cheat-list">
     <div class="cheat-item">
-      <h4>Circuit breaker</h4>
-      <p>Opens to stop calling a failing dependency.</p>
+      <h4>IAM</h4>
+      <p>Identity + access policies with least privilege.</p>
     </div>
     <div class="cheat-item">
-      <h4>Retry</h4>
-      <p>Retries transient errors with backoff.</p>
+      <h4>EC2</h4>
+      <p>Virtual machines with security groups and autoscaling.</p>
     </div>
     <div class="cheat-item">
-      <h4>Bulkhead</h4>
-      <p>Isolates resources to prevent cascading failures.</p>
+      <h4>S3</h4>
+      <p>Durable object storage with lifecycle and encryption.</p>
     </div>
     <div class="cheat-item">
-      <h4>Rate limiter</h4>
-      <p>Protects services from overload.</p>
+      <h4>VPC</h4>
+      <p>Isolated networking with subnets, routes, and gateways.</p>
     </div>
               </div>
             </div>
@@ -1264,13 +1201,9 @@ public Inventory check(String sku) { ... }</pre>
             <div class="card analogy">
               <div class="card-label">What to remember</div>
               <h3>Fast mental model</h3>
-              <ul class="takeaways">
-                <li><strong>Circuit breaker</strong>: fail fast.</li><li><strong>Retry</strong>: handle transient errors.</li><li><strong>Bulkhead</strong>: isolate resources.</li><li><strong>Observability</strong>: monitor resilience events.</li>
-              </ul>
+              <ul class="takeaways"><li><strong>IAM</strong>: users, roles, policies.</li><li><strong>EC2</strong>: instances + autoscaling groups.</li><li><strong>S3</strong>: buckets + lifecycle rules.</li><li><strong>VPC</strong>: private networking.</li></ul>
               <h3 style="margin-top:22px;">Common traps</h3>
-              <div class="badge-row">
-                <span class="pill bad">Retry storms</span><span class="pill bad">No fallbacks</span><span class="pill bad">Shared thread pools</span>
-              </div>
+              <div class="badge-row"><span class="pill bad">Wide-open security groups</span><span class="pill bad">Public S3 buckets</span><span class="pill bad">Overprovisioned EC2</span></div>
             </div>
           </div>
         </div>

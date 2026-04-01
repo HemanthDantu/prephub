@@ -35,6 +35,24 @@
 
     a { color: inherit; }
 
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .breadcrumb a {
+      color: var(--muted);
+      text-decoration: none;
+    }
+
+    .breadcrumb a:hover { color: var(--cyan); }
+
+    .breadcrumb span { color: var(--text); font-weight: 600; }
+
     .app {
       min-height: 100vh;
       display: flex;
@@ -699,15 +717,24 @@
         <div class="topbar-row">
           <div class="brand">
             <h1>Spring Security & JWT</h1>
-            <small>Interactive 28-minute learning module</small>
+            <small>Interactive 35-minute learning module</small>
           </div>
+                <div class="topbar-row">
+          <div class="breadcrumb">
+            <a href="../index.html">Home</a>
+            <span>›</span>
+            <a href="index.html">Spring Boot</a>
+            <span>›</span>
+            <span>Spring Security & JWT</span>
+          </div>
+        </div>
           <div class="timer-wrap" aria-live="polite">
             <span class="timer-label">Time Left</span>
-            <span class="timer" id="timer">28:00</span>
+            <span class="timer" id="timer">35:00</span>
           </div>
         </div>
         <div class="topbar-row">
-          <nav class="nav-dots" aria-label="Section navigation"><button class="nav-dot active" data-index="0" aria-label="Go to section 1">1</button><button class="nav-dot " data-index="1" aria-label="Go to section 2">2</button><button class="nav-dot " data-index="2" aria-label="Go to section 3">3</button><button class="nav-dot " data-index="3" aria-label="Go to section 4">4</button><button class="nav-dot " data-index="4" aria-label="Go to completion screen">5</button></nav>
+                    <nav class="nav-dots" aria-label="Section navigation"><button class="nav-dot active" data-index="0" aria-label="Go to section 1">1</button><button class="nav-dot" data-index="1" aria-label="Go to section 2">2</button><button class="nav-dot" data-index="2" aria-label="Go to section 3">3</button><button class="nav-dot" data-index="3" aria-label="Go to section 4">4</button><button class="nav-dot" data-index="4" aria-label="Go to section 5">5</button><button class="nav-dot" data-index="5" aria-label="Go to completion screen">6</button></nav>
         </div>
         <div class="progress-shell" aria-hidden="true">
           <div class="progress-bar" id="progressBar"></div>
@@ -720,7 +747,7 @@
       <section class="section active" data-section="0">
         <div class="section-inner">
           <div class="hero">
-            <div class="section-label">Section 1 of 4 · ~7 mins</div>
+            <div class="section-label">Section 1 of 5 · ~7 mins</div>
             <h2>Authn, Authz & Filter Chain</h2>
             <p>Spring Security runs requests through a filter chain to authenticate and authorize.</p>
           </div>
@@ -815,7 +842,7 @@
       <section class="section " data-section="1">
         <div class="section-inner">
           <div class="hero">
-            <div class="section-label">Section 2 of 4 · ~7 mins</div>
+            <div class="section-label">Section 2 of 5 · ~7 mins</div>
             <h2>JWT Structure & Validation</h2>
             <p>JWTs are signed tokens that carry claims; validation must happen on every request.</p>
           </div>
@@ -909,7 +936,7 @@ if (jwt.isExpired()) throw new SecurityException();</span></pre>
       <section class="section " data-section="2">
         <div class="section-inner">
           <div class="hero">
-            <div class="section-label">Section 3 of 4 · ~7 mins</div>
+            <div class="section-label">Section 3 of 5 · ~7 mins</div>
             <h2>Access vs Refresh Tokens</h2>
             <p>Access tokens should be short-lived; refresh tokens extend sessions safely.</p>
           </div>
@@ -1003,7 +1030,7 @@ Invalidate old refresh token</span></pre>
       <section class="section " data-section="3">
         <div class="section-inner">
           <div class="hero">
-            <div class="section-label">Section 4 of 4 · ~7 mins</div>
+            <div class="section-label">Section 4 of 5 · ~7 mins</div>
             <h2>Token Storage & CSRF</h2>
             <p>Storage decisions affect XSS/CSRF risks and overall security.</p>
           </div>
@@ -1094,7 +1121,94 @@ Invalidate old refresh token</span></pre>
         </div>
       </section>
       
+      
       <section class="section" data-section="4">
+        <div class="section-inner">
+          <div class="hero">
+            <div class="section-label">Section 5 of 5 · ~7 mins</div>
+            <h2>Deep Dive: Token Validation & Filter Chains</h2>
+            <p>JWT security relies on correct validation, key rotation, and filter ordering.</p>
+          </div>
+
+          <div class="card-grid">
+            <article class="card eli5">
+              <div class="card-label">🧒 ELI5</div>
+              <h3>Check the stamp</h3>
+              <p>You only accept a ticket if the stamp is real and not expired.</p>
+            </article>
+
+            <article class="card analogy">
+              <div class="card-label">🔗 ANALOGY</div>
+              <h3>Airport security</h3>
+              <p>Multiple checkpoints verify your identity and boarding pass.</p>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Technical</div>
+              <div class="two-col">
+                <div>
+                  <h3>What it means in real code</h3>
+                  <p><strong>Definition:</strong> JWT validation must verify signature, issuer, audience, and expiry; filters enforce auth and authz.</p>
+                  <div class="mini-grid">
+                    <div class="mini-panel">
+                      <h4>Why it matters</h4>
+                      <ul><li>Prevents token spoofing</li><li>Protects APIs</li><li>Enforces least privilege</li></ul>
+                    </div>
+                    <div class="mini-panel">
+                      <h4>Common pitfall</h4>
+                      <ul><li>Skipping audience check</li><li>Accepting unsigned tokens</li><li>Overlapping filter chains</li></ul>
+                    </div>
+                  </div>
+                  <div class="badge-row"><span class="pill good">Signature</span><span class="pill info">Audience</span><span class="pill caution">Expiry</span></div>
+                  <div class="flow"><span class="flow-step">Request hits filter</span><span class="flow-arrow">→</span><span class="flow-step">Extract token</span><span class="flow-arrow">→</span><span class="flow-step">Validate claims</span><span class="flow-arrow">→</span><span class="flow-step">Authorize</span></div>
+                </div>
+                <div>
+                  <h3>Interview answer</h3>
+                  <p>“I validate signature, issuer, and audience, then map claims to authorities in the filter chain.”</p>
+                  <table>
+                    <thead><tr><th>Check</th><th>Reason</th></tr></thead>
+                    <tbody><tr><td>Signature</td><td><span class="pill good">Integrity</span></td></tr><tr><td>Issuer</td><td><span class="pill info">Trust</span></td></tr><tr><td>Audience</td><td><span class="pill caution">Scope</span></td></tr></tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="code-blocks">
+    <div>
+      <div class="code-title">Custom JwtAuthenticationConverter</div>
+      <pre>JwtAuthenticationConverter conv = new JwtAuthenticationConverter();
+conv.setJwtGrantedAuthoritiesConverter(jwt -&gt;
+  AuthorityUtils.commaSeparatedStringToAuthorityList(
+    "ROLE_" + jwt.getClaimAsString("role"))
+);</pre>
+    </div>
+    </div>
+            </article>
+
+            <article class="card warning">
+              <div class="card-label">Warning</div>
+              <h3>Do not trust token contents blindly</h3>
+              <p>Always validate signature and issuer before reading claims.</p>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Mini takeaway</div>
+              <ul class="takeaways"><li>Validate all JWT claims.</li><li>Know filter chain order.</li><li>Map claims to authorities safely.</li></ul>
+            </article>
+
+            <article class="card quiz-card">
+              <div class="card-label">Quiz</div>
+              <h3>Which validation prevents accepting a token meant for another API?</h3>
+              <div class="quiz-options" data-answer="1">
+                <button class="quiz-option">A. Issuer check</button><button class="quiz-option">B. Audience check</button><button class="quiz-option">C. Expiry check</button><button class="quiz-option">D. Subject check</button>
+              </div>
+              <div class="quiz-result">
+                <strong>Correct answer: B</strong>
+                <span>Audience validation ensures the token is intended for your API.</span>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+<section class="section" data-section="5">
         <div class="section-inner">
           <div class="hero">
             <div class="section-label">Completion screen · Review mode</div>
@@ -1258,7 +1372,7 @@ function applySyntaxHighlighting() {
       dot.addEventListener('click', () => showSection(Number(dot.dataset.index)));
     });
 
-    const totalSeconds = 28 * 60;
+    const totalSeconds = 35 * 60;
     let remainingSeconds = totalSeconds;
 
     function formatTime(seconds) {

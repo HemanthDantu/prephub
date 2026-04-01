@@ -35,6 +35,24 @@
 
     a { color: inherit; }
 
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .breadcrumb a {
+      color: var(--muted);
+      text-decoration: none;
+    }
+
+    .breadcrumb a:hover { color: var(--cyan); }
+
+    .breadcrumb span { color: var(--text); font-weight: 600; }
+
     .app {
       min-height: 100vh;
       display: flex;
@@ -699,15 +717,24 @@
         <div class="topbar-row">
           <div class="brand">
             <h1>CompletableFuture & Async</h1>
-            <small>Interactive 28-minute learning module</small>
+            <small>Interactive 35-minute learning module</small>
           </div>
+                <div class="topbar-row">
+          <div class="breadcrumb">
+            <a href="../index.html">Home</a>
+            <span>›</span>
+            <a href="index.html">Java</a>
+            <span>›</span>
+            <span>CompletableFuture & Async</span>
+          </div>
+        </div>
           <div class="timer-wrap" aria-live="polite">
             <span class="timer-label">Time Left</span>
-            <span class="timer" id="timer">28:00</span>
+            <span class="timer" id="timer">35:00</span>
           </div>
         </div>
         <div class="topbar-row">
-          <nav class="nav-dots" aria-label="Section navigation"><button class="nav-dot active" data-index="0" aria-label="Go to section 1">1</button><button class="nav-dot " data-index="1" aria-label="Go to section 2">2</button><button class="nav-dot " data-index="2" aria-label="Go to section 3">3</button><button class="nav-dot " data-index="3" aria-label="Go to section 4">4</button><button class="nav-dot " data-index="4" aria-label="Go to completion screen">5</button></nav>
+                    <nav class="nav-dots" aria-label="Section navigation"><button class="nav-dot active" data-index="0" aria-label="Go to section 1">1</button><button class="nav-dot" data-index="1" aria-label="Go to section 2">2</button><button class="nav-dot" data-index="2" aria-label="Go to section 3">3</button><button class="nav-dot" data-index="3" aria-label="Go to section 4">4</button><button class="nav-dot" data-index="4" aria-label="Go to section 5">5</button><button class="nav-dot" data-index="5" aria-label="Go to completion screen">6</button></nav>
         </div>
         <div class="progress-shell" aria-hidden="true">
           <div class="progress-bar" id="progressBar"></div>
@@ -720,7 +747,7 @@
       <section class="section active" data-section="0">
         <div class="section-inner">
           <div class="hero">
-            <div class="section-label">Section 1 of 4 · ~7 mins</div>
+            <div class="section-label">Section 1 of 5 · ~7 mins</div>
             <h2>Chaining Futures</h2>
             <p>Chaining is the core skill — it keeps async flows readable and avoids nested callbacks.</p>
           </div>
@@ -814,7 +841,7 @@ CompletableFuture&lt;Profile&gt; p = u.thenCompose(user -&gt; fetchProfile(user)
       <section class="section " data-section="1">
         <div class="section-inner">
           <div class="hero">
-            <div class="section-label">Section 2 of 4 · ~7 mins</div>
+            <div class="section-label">Section 2 of 5 · ~7 mins</div>
             <h2>Combining Futures</h2>
             <p>Real systems often need to fan out multiple async calls and combine results safely.</p>
           </div>
@@ -908,7 +935,7 @@ List&lt;Result&gt; results = all.thenApply(v -&gt; List.of(a.join(), b.join(), c
       <section class="section " data-section="2">
         <div class="section-inner">
           <div class="hero">
-            <div class="section-label">Section 3 of 4 · ~7 mins</div>
+            <div class="section-label">Section 3 of 5 · ~7 mins</div>
             <h2>Errors & Timeouts</h2>
             <p>Async code fails differently — you must handle exceptions and timeouts explicitly.</p>
           </div>
@@ -1002,7 +1029,7 @@ List&lt;Result&gt; results = all.thenApply(v -&gt; List.of(a.join(), b.join(), c
       <section class="section " data-section="3">
         <div class="section-inner">
           <div class="hero">
-            <div class="section-label">Section 4 of 4 · ~7 mins</div>
+            <div class="section-label">Section 4 of 5 · ~7 mins</div>
             <h2>Threading & Avoiding Blocking</h2>
             <p>Async helps only if you avoid blocking and control which threads do the work.</p>
           </div>
@@ -1094,7 +1121,96 @@ CompletableFuture.supplyAsync(() -&gt; fetch(), ioPool);</span></pre>
         </div>
       </section>
       
+      
       <section class="section" data-section="4">
+        <div class="section-inner">
+          <div class="hero">
+            <div class="section-label">Section 5 of 5 · ~7 mins</div>
+            <h2>Deep Dive: Composition, Timeouts, and Cancellation</h2>
+            <p>CompletableFuture shines when you compose independent calls, apply timeouts, and handle cancellation correctly.</p>
+          </div>
+
+          <div class="card-grid">
+            <article class="card eli5">
+              <div class="card-label">🧒 ELI5</div>
+              <h3>Wait for two deliveries</h3>
+              <p>You can cook dinner only after both ingredients arrive, not just one.</p>
+            </article>
+
+            <article class="card analogy">
+              <div class="card-label">🔗 ANALOGY</div>
+              <h3>Package tracking</h3>
+              <p>If one package is delayed, you can cancel or substitute instead of waiting forever.</p>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Technical</div>
+              <div class="two-col">
+                <div>
+                  <h3>What it means in real code</h3>
+                  <p><strong>Definition:</strong> Compose async tasks with allOf/anyOf, apply timeouts, and propagate cancellations to avoid leaks.</p>
+                  <div class="mini-grid">
+                    <div class="mini-panel">
+                      <h4>Why it matters</h4>
+                      <ul><li>Prevents stuck requests</li><li>Enables parallelism</li><li>Improves responsiveness</li></ul>
+                    </div>
+                    <div class="mini-panel">
+                      <h4>Common pitfall</h4>
+                      <ul><li>Blocking join in the middle</li><li>Ignoring timeouts</li><li>Swallowing exceptions</li></ul>
+                    </div>
+                  </div>
+                  <div class="badge-row"><span class="pill good">allOf</span><span class="pill info">Timeouts</span><span class="pill caution">Cancel</span></div>
+                  <div class="flow"><span class="flow-step">Start tasks</span><span class="flow-arrow">→</span><span class="flow-step">Combine results</span><span class="flow-arrow">→</span><span class="flow-step">Apply timeout</span><span class="flow-arrow">→</span><span class="flow-step">Handle errors</span></div>
+                </div>
+                <div>
+                  <h3>Interview answer</h3>
+                  <p>“I use allOf to combine independent calls, apply timeouts, and return fallbacks on failures.”</p>
+                  <table>
+                    <thead><tr><th>Method</th><th>Use</th></tr></thead>
+                    <tbody><tr><td>allOf</td><td><span class="pill good">Wait for all</span></td></tr><tr><td>anyOf</td><td><span class="pill info">First response wins</span></td></tr><tr><td>orTimeout</td><td><span class="pill caution">Fail fast</span></td></tr></tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="code-blocks">
+    <div>
+      <div class="code-title">Parallel calls with timeout</div>
+      <pre>CompletableFuture&lt;User&gt; user = fetchUser(id);
+CompletableFuture&lt;Account&gt; acct = fetchAccount(id);
+
+return CompletableFuture.allOf(user, acct)
+  .orTimeout(800, TimeUnit.MILLISECONDS)
+  .thenApply(v -&gt; new Profile(user.join(), acct.join()))
+  .exceptionally(ex -&gt; fallbackProfile(id));</pre>
+    </div>
+    </div>
+            </article>
+
+            <article class="card warning">
+              <div class="card-label">Warning</div>
+              <h3>Timeouts need fallbacks</h3>
+              <p>A timeout without a fallback still fails the request, so define a safe default.</p>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Mini takeaway</div>
+              <ul class="takeaways"><li>Compose independent calls.</li><li>Always set timeouts.</li><li>Use exceptionally/handle for recovery.</li></ul>
+            </article>
+
+            <article class="card quiz-card">
+              <div class="card-label">Quiz</div>
+              <h3>Which method waits for all futures to complete?</h3>
+              <div class="quiz-options" data-answer="2">
+                <button class="quiz-option">A. anyOf</button><button class="quiz-option">B. thenApply</button><button class="quiz-option">C. allOf</button><button class="quiz-option">D. supplyAsync</button>
+              </div>
+              <div class="quiz-result">
+                <strong>Correct answer: C</strong>
+                <span>allOf completes only when all futures finish.</span>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+<section class="section" data-section="5">
         <div class="section-inner">
           <div class="hero">
             <div class="section-label">Completion screen · Review mode</div>
@@ -1258,7 +1374,7 @@ function applySyntaxHighlighting() {
       dot.addEventListener('click', () => showSection(Number(dot.dataset.index)));
     });
 
-    const totalSeconds = 28 * 60;
+    const totalSeconds = 35 * 60;
     let remainingSeconds = totalSeconds;
 
     function formatTime(seconds) {

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Resilience Patterns (Resilience4j) Learning Module</title>
+  <title>AWS Lambda & Serverless Learning Module</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -52,17 +52,6 @@
     .breadcrumb a:hover { color: var(--cyan); }
 
     .breadcrumb span { color: var(--text); font-weight: 600; }
-
-    .back-link {
-      display: inline-flex;
-      margin-top: 12px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.78rem;
-      color: var(--muted);
-      text-decoration: none;
-    }
-
-    .back-link:hover { color: var(--cyan); }
 
     .app {
       min-height: 100vh;
@@ -727,16 +716,16 @@
       <div class="topbar-inner">
         <div class="topbar-row">
           <div class="brand">
-            <h1>Resilience Patterns (Resilience4j)</h1>
+            <h1>AWS Lambda & Serverless</h1>
             <small>Interactive 35-minute learning module</small>
           </div>
                 <div class="topbar-row">
           <div class="breadcrumb">
             <a href="../index.html">Home</a>
             <span>›</span>
-            <a href="index.html">Spring Boot</a>
+            <a href="index.html">Cloud</a>
             <span>›</span>
-            <span>Resilience Patterns (Resilience4j)</span>
+            <span>AWS Lambda & Serverless</span>
           </div>
         </div>
           <div class="timer-wrap" aria-live="polite">
@@ -754,27 +743,26 @@
     </header>
 
     <main>
-      
+
       <section class="section active" data-section="0">
         <div class="section-inner">
           <div class="hero">
-            <div class="section-label">Section 1 of 5 · ~7 mins</div>
-            <h2>Circuit Breakers</h2>
-            <p>Circuit breakers stop calls to failing dependencies to protect the system and allow recovery.</p>
-            <a class="back-link" href="index.html">← Back to Spring Boot</a>
+            <div class="section-label">Section 1 of 5 · ~6 mins</div>
+            <h2>Function Model & Runtime</h2>
+            <p>Lambda runs your handler in a managed runtime with configurable memory and timeout.</p>
           </div>
 
           <div class="card-grid">
             <article class="card eli5">
               <div class="card-label">🧒 ELI5</div>
-              <h3>A safety fuse</h3>
-              <p>If the power surges, the fuse trips to protect the house.</p>
+              <h3>Instant helper</h3>
+              <p>A helper appears to do one task, then leaves.</p>
             </article>
 
             <article class="card analogy">
               <div class="card-label">🔗 ANALOGY</div>
-              <h3>Traffic barrier</h3>
-              <p>If a road is closed, you stop cars from entering so it can recover.</p>
+              <h3>Food truck</h3>
+              <p>The kitchen opens when customers arrive, then closes.</p>
             </article>
 
             <article class="card technical">
@@ -782,68 +770,56 @@
               <div class="two-col">
                 <div>
                   <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> A circuit breaker tracks failures and opens when a threshold is reached, then half-opens to test recovery.</p>
+                  <p><strong>Definition:</strong> Lambda executes code in a short-lived environment, scaling by creating more instances.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
-                      <ul>
-                        <li>Prevents cascading failures</li><li>Fails fast</li><li>Gives dependencies time to recover</li>
-                      </ul>
+                      <ul><li>No server management</li><li>Pay per use</li><li>Automatic scaling</li></ul>
                     </div>
                     <div class="mini-panel">
                       <h4>Common pitfall</h4>
-                      <ul>
-                        <li>Repeated timeouts</li><li>Cascading failures</li><li>No fallback logic</li>
-                      </ul>
+                      <ul><li>Long-running tasks</li><li>Stateful logic</li><li>Ignoring timeouts</li></ul>
                     </div>
                   </div>
-                  <div class="badge-row"><span class="pill good">Closed</span><span class="pill caution">Open</span><span class="pill info">Half-open</span></div>
-                  
-                  <div class="flow"><span class="flow-step">Call service</span><span class="flow-arrow">→</span><span class="flow-step">Failures exceed threshold</span><span class="flow-arrow">→</span><span class="flow-step">Open circuit</span><span class="flow-arrow">→</span><span class="flow-step">Half-open trial</span></div>
+                  <div class="badge-row"><span class="pill good">handler</span><span class="pill info">timeout</span><span class="pill caution">memory</span></div>
+                  <div class="flow"><span class="flow-step">Event arrives</span><span class="flow-arrow">→</span><span class="flow-step">Runtime loads</span><span class="flow-arrow">→</span><span class="flow-step">Handler executes</span><span class="flow-arrow">→</span><span class="flow-step">Returns response</span></div>
                 </div>
                 <div>
                   <h3>Interview answer</h3>
-                  <p>“Circuit breakers fail fast when a dependency is unhealthy and periodically test recovery.”</p>
-                  
-                  <table>
-                    <thead><tr><th>State</th><th>Behavior</th></tr></thead>
-                    <tbody><tr><td>Closed</td><td><span class="pill good">Calls allowed</span></td></tr><tr><td>Open</td><td><span class="pill bad">Calls blocked</span></td></tr><tr><td>Half-open</td><td><span class="pill info">Trial requests</span></td></tr></tbody>
-                  </table>
+                  <p>“Lambda runs a handler per event in an ephemeral container with memory/timeout limits.”</p>
+                  <table><thead><tr><th>Setting</th><th>Impact</th></tr></thead><tbody><tr><td>Memory</td><td><span class="pill good">CPU allocation</span></td></tr><tr><td>Timeout</td><td><span class="pill bad">Max runtime</span></td></tr></tbody></table>
                 </div>
               </div>
-              
-    <div class="code-blocks">
+              <div class="code-blocks">
     <div>
-      <div class="code-title">Resilience4j annotation</div>
-      <pre>@CircuitBreaker(name = "inventory", fallbackMethod = "fallback")
-public Inventory check(String sku) { ... }</pre>
+      <div class="code-title">Node.js handler</div>
+      <pre>exports.handler = async (event) =&gt; {
+  return { statusCode: 200, body: "ok" };
+};</pre>
     </div>
     </div>
-              
             </article>
 
             <article class="card warning">
               <div class="card-label">Warning</div>
-              <h3>No fallback = poor UX</h3>
-              <p>If the circuit opens, you need a fallback or you will fail every request.</p>
+              <h3>Not for long jobs</h3>
+              <p>If you need hours-long processing, use ECS or Batch.</p>
             </article>
 
             <article class="card technical">
               <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>Circuit breakers fail fast.</li><li>Use fallback methods.</li><li>Monitor breaker events.</li>
-              </ul>
+              <ul class="takeaways"><li>Keep functions small.</li><li>Tune memory/timeouts.</li><li>Use stateless design.</li></ul>
             </article>
 
             <article class="card quiz-card">
               <div class="card-label">Quiz</div>
-              <h3>What is the purpose of the half-open state?</h3>
+              <h3>Lambda pricing is primarily based on?</h3>
               <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. Block all traffic</button><button class="quiz-option">B. Allow a few test calls</button><button class="quiz-option">C. Disable metrics</button><button class="quiz-option">D. Force retries</button>
+                <button class="quiz-option">A. Instance size only</button><button class="quiz-option">B. Requests + duration</button><button class="quiz-option">C. Storage</button><button class="quiz-option">D. Reserved instances</button>
               </div>
               <div class="quiz-result">
                 <strong>Correct answer: B</strong>
-                <span>Half-open allows limited calls to test recovery.</span>
+                <span>Pricing is based on request count and execution duration.</span>
               </div>
             </article>
           </div>
@@ -853,23 +829,22 @@ public Inventory check(String sku) { ... }</pre>
       <section class="section" data-section="1">
         <div class="section-inner">
           <div class="hero">
-            <div class="section-label">Section 2 of 5 · ~7 mins</div>
-            <h2>Retries and Timeouts</h2>
-            <p>Retries handle transient errors, while timeouts prevent hanging calls.</p>
-            
+            <div class="section-label">Section 2 of 5 · ~6 mins</div>
+            <h2>Event Sources & Triggers</h2>
+            <p>Lambda can be triggered by HTTP, S3 events, queues, streams, and cron schedules.</p>
           </div>
 
           <div class="card-grid">
             <article class="card eli5">
               <div class="card-label">🧒 ELI5</div>
-              <h3>Try again, but not forever</h3>
-              <p>If a toy does not work, you try again a couple of times then move on.</p>
+              <h3>Doorbell events</h3>
+              <p>The bell rings when someone arrives.</p>
             </article>
 
             <article class="card analogy">
               <div class="card-label">🔗 ANALOGY</div>
-              <h3>Redial with patience</h3>
-              <p>You redial after a short wait instead of hanging on forever.</p>
+              <h3>Factory conveyor</h3>
+              <p>Items arriving start the machine.</p>
             </article>
 
             <article class="card technical">
@@ -877,72 +852,57 @@ public Inventory check(String sku) { ... }</pre>
               <div class="two-col">
                 <div>
                   <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Retries should use backoff and be applied only to idempotent operations, with timeouts to cap latency.</p>
+                  <p><strong>Definition:</strong> Event sources invoke Lambda synchronously or asynchronously depending on service.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
-                      <ul>
-                        <li>Improves resilience</li><li>Avoids long waits</li><li>Handles transient faults</li>
-                      </ul>
+                      <ul><li>Event-driven architectures</li><li>Loose coupling</li><li>Automatic scaling</li></ul>
                     </div>
                     <div class="mini-panel">
                       <h4>Common pitfall</h4>
-                      <ul>
-                        <li>Retry storms</li><li>No timeouts</li><li>Retrying writes</li>
-                      </ul>
+                      <ul><li>No idempotency</li><li>Ignoring retry behavior</li><li>Sync when async is enough</li></ul>
                     </div>
                   </div>
-                  <div class="badge-row"><span class="pill good">Backoff</span><span class="pill info">Timeout</span><span class="pill caution">Idempotent</span></div>
-                  
-                  <div class="flow"><span class="flow-step">Call</span><span class="flow-arrow">→</span><span class="flow-step">Timeout or error</span><span class="flow-arrow">→</span><span class="flow-step">Retry with backoff</span><span class="flow-arrow">→</span><span class="flow-step">Fail or succeed</span></div>
+                  <div class="badge-row"><span class="pill good">S3</span><span class="pill info">SQS</span><span class="pill caution">API GW</span></div>
+                  <div class="flow"><span class="flow-step">Event emitted</span><span class="flow-arrow">→</span><span class="flow-step">Lambda invoked</span><span class="flow-arrow">→</span><span class="flow-step">Process payload</span><span class="flow-arrow">→</span><span class="flow-step">Return/ack</span></div>
                 </div>
                 <div>
                   <h3>Interview answer</h3>
-                  <p>“Retries with backoff work for transient errors, but only for idempotent calls and with timeouts.”</p>
-                  
-                  <table>
-                    <thead><tr><th>Rule</th><th>Reason</th></tr></thead>
-                    <tbody><tr><td>Use backoff</td><td><span class="pill good">Reduce load</span></td></tr><tr><td>Limit attempts</td><td><span class="pill info">Avoid storms</span></td></tr><tr><td>Idempotent only</td><td><span class="pill caution">Prevent duplicates</span></td></tr></tbody>
-                  </table>
+                  <p>“Lambda supports synchronous (API Gateway) and async (S3/SQS) triggers with retries.”</p>
+                  <table><thead><tr><th>Source</th><th>Invocation</th></tr></thead><tbody><tr><td>API Gateway</td><td><span class="pill info">Sync</span></td></tr><tr><td>SQS</td><td><span class="pill good">Async</span></td></tr></tbody></table>
                 </div>
               </div>
-              
-    <div class="code-blocks">
+              <div class="code-blocks">
     <div>
-      <div class="code-title">Retry config</div>
-      <pre>resilience4j:
-  retry:
-    instances:
-      payments:
-        max-attempts: 3
-        wait-duration: 200ms</pre>
+      <div class="code-title">S3 trigger example</div>
+      <pre>Events:
+  s3:ObjectCreated:*
+Bucket:
+  my-bucket</pre>
     </div>
     </div>
-              
             </article>
 
             <article class="card warning">
               <div class="card-label">Warning</div>
-              <h3>Retries can amplify failures</h3>
-              <p>If every caller retries, a failing service can get overwhelmed.</p>
+              <h3>Retries can duplicate work</h3>
+              <p>Always make handlers idempotent for async triggers.</p>
             </article>
 
             <article class="card technical">
               <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>Retry only safe calls.</li><li>Add backoff.</li><li>Always use timeouts.</li>
-              </ul>
+              <ul class="takeaways"><li>Know invocation type.</li><li>Design idempotent handlers.</li><li>Handle retries.</li></ul>
             </article>
 
             <article class="card quiz-card">
               <div class="card-label">Quiz</div>
-              <h3>Why use exponential backoff on retries?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. To increase throughput</button><button class="quiz-option">B. To reduce load on failing services</button><button class="quiz-option">C. To remove timeouts</button><button class="quiz-option">D. To avoid idempotency</button>
+              <h3>Which trigger is typically synchronous?</h3>
+              <div class="quiz-options" data-answer="2">
+                <button class="quiz-option">A. S3</button><button class="quiz-option">B. SQS</button><button class="quiz-option">C. API Gateway</button><button class="quiz-option">D. CloudWatch Events</button>
               </div>
               <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>Backoff reduces pressure on a failing service.</span>
+                <strong>Correct answer: C</strong>
+                <span>API Gateway invokes Lambda synchronously.</span>
               </div>
             </article>
           </div>
@@ -952,23 +912,22 @@ public Inventory check(String sku) { ... }</pre>
       <section class="section" data-section="2">
         <div class="section-inner">
           <div class="hero">
-            <div class="section-label">Section 3 of 5 · ~7 mins</div>
-            <h2>Bulkheads and Rate Limiting</h2>
-            <p>Bulkheads isolate resources so one failure does not take down the whole system.</p>
-            
+            <div class="section-label">Section 3 of 5 · ~6 mins</div>
+            <h2>Cold Starts & Performance</h2>
+            <p>Cold starts add latency when a new environment is initialized.</p>
           </div>
 
           <div class="card-grid">
             <article class="card eli5">
               <div class="card-label">🧒 ELI5</div>
-              <h3>Separate rooms</h3>
-              <p>If one room is noisy, the rest of the house stays quiet.</p>
+              <h3>Warming up the oven</h3>
+              <p>The first cookie takes longer because the oven is cold.</p>
             </article>
 
             <article class="card analogy">
               <div class="card-label">🔗 ANALOGY</div>
-              <h3>Lifeboats on a ship</h3>
-              <p>Compartments prevent water from flooding the entire ship.</p>
+              <h3>Starting a car</h3>
+              <p>The first start takes longer on a cold morning.</p>
             </article>
 
             <article class="card technical">
@@ -976,68 +935,54 @@ public Inventory check(String sku) { ... }</pre>
               <div class="two-col">
                 <div>
                   <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Bulkheads limit concurrent calls via separate thread pools or semaphores, and rate limiters cap traffic.</p>
+                  <p><strong>Definition:</strong> Cold starts happen when AWS provisions a new execution environment; warm starts reuse it.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
-                      <ul>
-                        <li>Prevents resource exhaustion</li><li>Keeps critical paths alive</li><li>Controls load</li>
-                      </ul>
+                      <ul><li>Affects latency</li><li>Impacts user experience</li><li>Tunable via memory and provisioned concurrency</li></ul>
                     </div>
                     <div class="mini-panel">
                       <h4>Common pitfall</h4>
-                      <ul>
-                        <li>Shared thread pool for everything</li><li>No rate limits</li><li>Cascading failures</li>
-                      </ul>
+                      <ul><li>Large dependencies</li><li>VPC cold start penalty</li><li>No performance testing</li></ul>
                     </div>
                   </div>
-                  <div class="badge-row"><span class="pill good">Bulkhead</span><span class="pill info">Semaphore</span><span class="pill caution">Rate limit</span></div>
-                  
-                  <div class="flow"><span class="flow-step">Request enters</span><span class="flow-arrow">→</span><span class="flow-step">Check capacity</span><span class="flow-arrow">→</span><span class="flow-step">Execute or reject</span><span class="flow-arrow">→</span><span class="flow-step">Protect resources</span></div>
+                  <div class="badge-row"><span class="pill caution">cold start</span><span class="pill good">provisioned</span><span class="pill info">memory</span></div>
+                  <div class="flow"><span class="flow-step">Provision env</span><span class="flow-arrow">→</span><span class="flow-step">Init runtime</span><span class="flow-arrow">→</span><span class="flow-step">Load code</span><span class="flow-arrow">→</span><span class="flow-step">Handle event</span></div>
                 </div>
                 <div>
                   <h3>Interview answer</h3>
-                  <p>“Bulkheads isolate expensive calls with their own pools, while rate limiting caps total load.”</p>
-                  
-                  <table>
-                    <thead><tr><th>Pattern</th><th>Goal</th></tr></thead>
-                    <tbody><tr><td>Bulkhead</td><td><span class="pill good">Isolation</span></td></tr><tr><td>Rate limiter</td><td><span class="pill info">Traffic control</span></td></tr><tr><td>Timeout</td><td><span class="pill caution">Bound latency</span></td></tr></tbody>
-                  </table>
+                  <p>“Cold starts add latency; reduce by trimming dependencies or using provisioned concurrency.”</p>
+                  <table><thead><tr><th>Tactic</th><th>Effect</th></tr></thead><tbody><tr><td>Provisioned concurrency</td><td><span class="pill good">Warm containers</span></td></tr><tr><td>Smaller package</td><td><span class="pill info">Faster init</span></td></tr></tbody></table>
                 </div>
               </div>
-              
-    <div class="code-blocks">
+              <div class="code-blocks">
     <div>
-      <div class="code-title">Bulkhead annotation</div>
-      <pre>@Bulkhead(name = "inventory", type = Bulkhead.Type.SEMAPHORE)
-public Inventory check(String sku) { ... }</pre>
+      <div class="code-title">Provisioned concurrency (CLI)</div>
+      <pre>aws lambda put-provisioned-concurrency-config   --function-name apiHandler   --qualifier live   --provisioned-concurrent-executions 5</pre>
     </div>
     </div>
-              
             </article>
 
             <article class="card warning">
               <div class="card-label">Warning</div>
-              <h3>Shared pools cause cascades</h3>
-              <p>If all calls share one pool, a slow dependency can exhaust all threads.</p>
+              <h3>Costs for provisioned concurrency</h3>
+              <p>Provisioned concurrency has a cost even when idle.</p>
             </article>
 
             <article class="card technical">
               <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>Bulkheads isolate load.</li><li>Rate limit protects services.</li><li>Separate pools for critical paths.</li>
-              </ul>
+              <ul class="takeaways"><li>Measure cold start latency.</li><li>Reduce package size.</li><li>Use provisioned concurrency if needed.</li></ul>
             </article>
 
             <article class="card quiz-card">
               <div class="card-label">Quiz</div>
-              <h3>What does a bulkhead protect against?</h3>
+              <h3>What primarily causes a cold start?</h3>
               <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. Data inconsistency</button><button class="quiz-option">B. Resource exhaustion</button><button class="quiz-option">C. SQL injection</button><button class="quiz-option">D. Cache misses</button>
+                <button class="quiz-option">A. A function timeout</button><button class="quiz-option">B. New execution environment</button><button class="quiz-option">C. API throttling</button><button class="quiz-option">D. Missing IAM policy</button>
               </div>
               <div class="quiz-result">
                 <strong>Correct answer: B</strong>
-                <span>Bulkheads limit resource usage so one dependency cannot exhaust all capacity.</span>
+                <span>Cold starts occur when AWS initializes a new execution environment.</span>
               </div>
             </article>
           </div>
@@ -1047,23 +992,22 @@ public Inventory check(String sku) { ... }</pre>
       <section class="section" data-section="3">
         <div class="section-inner">
           <div class="hero">
-            <div class="section-label">Section 4 of 5 · ~7 mins</div>
-            <h2>Spring Integration and Observability</h2>
-            <p>Resilience4j integrates with Spring Boot through annotations and configuration, with event metrics.</p>
-            
+            <div class="section-label">Section 4 of 5 · ~6 mins</div>
+            <h2>Security & IAM Roles</h2>
+            <p>Lambda executes with an IAM role; permissions should be minimal and scoped.</p>
           </div>
 
           <div class="card-grid">
             <article class="card eli5">
               <div class="card-label">🧒 ELI5</div>
-              <h3>Plug-in safety kit</h3>
-              <p>You add a safety kit to your bike so brakes and lights are always there.</p>
+              <h3>Limited toolbox</h3>
+              <p>Give the helper only the tools needed for the job.</p>
             </article>
 
             <article class="card analogy">
               <div class="card-label">🔗 ANALOGY</div>
-              <h3>Airbag system</h3>
-              <p>Airbags are built in and activate when needed without manual effort.</p>
+              <h3>Temporary badge</h3>
+              <p>A contractor gets a badge that only opens a few doors.</p>
             </article>
 
             <article class="card technical">
@@ -1071,133 +1015,33 @@ public Inventory check(String sku) { ... }</pre>
               <div class="two-col">
                 <div>
                   <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Resilience4j exposes annotations, config, and events that integrate with Boot and Micrometer.</p>
+                  <p><strong>Definition:</strong> Execution role defines what AWS resources Lambda can access; environment variables store config.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
-                      <ul>
-                        <li>Centralized configuration</li><li>Consistent behavior</li><li>Metrics on resilience events</li>
-                      </ul>
+                      <ul><li>Least privilege</li><li>Auditability</li><li>Reduced blast radius</li></ul>
                     </div>
                     <div class="mini-panel">
                       <h4>Common pitfall</h4>
-                      <ul>
-                        <li>Hard-coded resilience logic</li><li>No monitoring</li><li>Inconsistent retries</li>
-                      </ul>
+                      <ul><li>* permissions</li><li>Hardcoded credentials</li><li>No secrets manager</li></ul>
                     </div>
                   </div>
-                  <div class="badge-row"><span class="pill good">@CircuitBreaker</span><span class="pill info">@Retry</span><span class="pill caution">Metrics</span></div>
-                  
-                  <div class="flow"><span class="flow-step">Annotate method</span><span class="flow-arrow">→</span><span class="flow-step">Apply policies</span><span class="flow-arrow">→</span><span class="flow-step">Emit events</span><span class="flow-arrow">→</span><span class="flow-step">Monitor</span></div>
+                  <div class="badge-row"><span class="pill good">IAM role</span><span class="pill info">Secrets</span><span class="pill caution">Least privilege</span></div>
+                  <div class="flow"><span class="flow-step">Assign role</span><span class="flow-arrow">→</span><span class="flow-step">Evaluate policies</span><span class="flow-arrow">→</span><span class="flow-step">Allow/deny request</span><span class="flow-arrow">→</span><span class="flow-step">Log to CloudTrail</span></div>
                 </div>
                 <div>
                   <h3>Interview answer</h3>
-                  <p>“Resilience4j integrates via annotations and exposes metrics so we can monitor circuit states and retries.”</p>
-                  
-                  <table>
-                    <thead><tr><th>Signal</th><th>Value</th></tr></thead>
-                    <tbody><tr><td>State changes</td><td><span class="pill good">Breaker health</span></td></tr><tr><td>Retry count</td><td><span class="pill info">Transient failures</span></td></tr><tr><td>Rejections</td><td><span class="pill caution">Capacity limit</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              
-    <div class="code-blocks">
-    <div>
-      <div class="code-title">Resilience4j config</div>
-      <pre>resilience4j:
-  circuitbreaker:
-    instances:
-      inventory:
-        failure-rate-threshold: 50
-        wait-duration-in-open-state: 10s</pre>
-    </div>
-    </div>
-              
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Silent failures</h3>
-              <p>If you do not monitor resilience events, you may not notice failing dependencies.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>Use annotations for consistency.</li><li>Monitor breaker events.</li><li>Tune thresholds carefully.</li>
-              </ul>
-            </article>
-
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>Why integrate resilience metrics with Micrometer?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. To disable retries</button><button class="quiz-option">B. To monitor breaker and retry behavior</button><button class="quiz-option">C. To reduce latency only</button><button class="quiz-option">D. To avoid backoff</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>Metrics reveal how breakers and retries behave in production.</span>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-      
-      
-      <section class="section" data-section="4">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 5 of 5 · ~7 mins</div>
-            <h2>Deep Dive: Fallbacks and Failure Budgets</h2>
-            <p>Resilience patterns must be paired with sensible fallbacks and SLO budgets.</p>
-          </div>
-
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Have a backup plan</h3>
-              <p>If the toy breaks, you have another game to play.</p>
-            </article>
-
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Emergency exits</h3>
-              <p>Buildings must have exits in case a path fails.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Fallbacks provide degraded responses while circuit breakers and retries protect systems.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul><li>Improves user experience</li><li>Avoids full outages</li><li>Supports graceful degradation</li></ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common pitfall</h4>
-                      <ul><li>No fallback</li><li>Fallback slower than main path</li><li>Retry storms</li></ul>
-                    </div>
-                  </div>
-                  <div class="badge-row"><span class="pill good">Fallback</span><span class="pill info">Budget</span><span class="pill caution">Graceful</span></div>
-                  <div class="flow"><span class="flow-step">Call fails</span><span class="flow-arrow">→</span><span class="flow-step">Breaker opens</span><span class="flow-arrow">→</span><span class="flow-step">Fallback returns</span><span class="flow-arrow">→</span><span class="flow-step">Track budget</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“I combine circuit breakers with safe fallbacks so the system degrades instead of failing hard.”</p>
-                  <table>
-                    <thead><tr><th>Fallback</th><th>Example</th></tr></thead>
-                    <tbody><tr><td>Cached data</td><td><span class="pill good">Stale ok</span></td></tr><tr><td>Partial response</td><td><span class="pill info">Degraded</span></td></tr><tr><td>Error message</td><td><span class="pill caution">Worst-case</span></td></tr></tbody>
-                  </table>
+                  <p>“Lambda uses an execution role; keep policies narrow and store secrets securely.”</p>
+                  <table><thead><tr><th>Approach</th><th>Best</th></tr></thead><tbody><tr><td>Secrets Manager</td><td><span class="pill good">Managed secrets</span></td></tr><tr><td>Env vars</td><td><span class="pill info">Non-sensitive config</span></td></tr></tbody></table>
                 </div>
               </div>
               <div class="code-blocks">
     <div>
-      <div class="code-title">Fallback method</div>
-      <pre>public Inventory fallback(String sku, Throwable ex) {
-  return Inventory.unavailable();
+      <div class="code-title">Policy for S3 read</div>
+      <pre>{
+  "Effect": "Allow",
+  "Action": ["s3:GetObject"],
+  "Resource": "arn:aws:s3:::my-bucket/*"
 }</pre>
     </div>
     </div>
@@ -1205,35 +1049,116 @@ public Inventory check(String sku) { ... }</pre>
 
             <article class="card warning">
               <div class="card-label">Warning</div>
-              <h3>Fallbacks can hide outages</h3>
-              <p>If you never alert on fallback use, you might miss incidents.</p>
+              <h3>Overly broad roles</h3>
+              <p>Avoid granting full access to S3 or DynamoDB.</p>
             </article>
 
             <article class="card technical">
               <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways"><li>Provide safe fallbacks.</li><li>Monitor fallback rate.</li><li>Tune retry budgets.</li></ul>
+              <ul class="takeaways"><li>Use least privilege.</li><li>Rotate secrets.</li><li>Audit with CloudTrail.</li></ul>
             </article>
 
             <article class="card quiz-card">
               <div class="card-label">Quiz</div>
-              <h3>Why are fallbacks important?</h3>
+              <h3>What should hold database passwords?</h3>
               <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. They increase latency</button><button class="quiz-option">B. They allow graceful degradation</button><button class="quiz-option">C. They replace monitoring</button><button class="quiz-option">D. They remove retries</button>
+                <button class="quiz-option">A. Hardcoded in code</button><button class="quiz-option">B. Secrets Manager</button><button class="quiz-option">C. Public S3 bucket</button><button class="quiz-option">D. README file</button>
               </div>
               <div class="quiz-result">
                 <strong>Correct answer: B</strong>
-                <span>Fallbacks keep the service usable when dependencies fail.</span>
+                <span>Secrets Manager provides secure storage for credentials.</span>
               </div>
             </article>
           </div>
         </div>
       </section>
-<section class="section" data-section="5">
+
+      <section class="section" data-section="4">
+        <div class="section-inner">
+          <div class="hero">
+            <div class="section-label">Section 5 of 5 · ~6 mins</div>
+            <h2>Versioning, Aliases & Layers</h2>
+            <p>Versions make deployments safe; aliases route traffic; layers share dependencies.</p>
+          </div>
+
+          <div class="card-grid">
+            <article class="card eli5">
+              <div class="card-label">🧒 ELI5</div>
+              <h3>Save game slots</h3>
+              <p>You can go back to a previous save if needed.</p>
+            </article>
+
+            <article class="card analogy">
+              <div class="card-label">🔗 ANALOGY</div>
+              <h3>Traffic switchboard</h3>
+              <p>You route calls to the right line.</p>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Technical</div>
+              <div class="two-col">
+                <div>
+                  <h3>What it means in real code</h3>
+                  <p><strong>Definition:</strong> Lambda versions are immutable snapshots; aliases are pointers; layers package shared code.</p>
+                  <div class="mini-grid">
+                    <div class="mini-panel">
+                      <h4>Why it matters</h4>
+                      <ul><li>Safe deploys</li><li>Blue/green releases</li><li>Reusable dependencies</li></ul>
+                    </div>
+                    <div class="mini-panel">
+                      <h4>Common pitfall</h4>
+                      <ul><li>No versioning</li><li>Large layers</li><li>Aliases not updated</li></ul>
+                    </div>
+                  </div>
+                  <div class="badge-row"><span class="pill good">versions</span><span class="pill info">aliases</span><span class="pill caution">layers</span></div>
+                  <div class="flow"><span class="flow-step">Publish version</span><span class="flow-arrow">→</span><span class="flow-step">Update alias</span><span class="flow-arrow">→</span><span class="flow-step">Shift traffic</span><span class="flow-arrow">→</span><span class="flow-step">Roll back if needed</span></div>
+                </div>
+                <div>
+                  <h3>Interview answer</h3>
+                  <p>“Use versions for immutable releases, aliases for routing, and layers for shared libraries.”</p>
+                  <table><thead><tr><th>Item</th><th>Role</th></tr></thead><tbody><tr><td>Alias</td><td><span class="pill good">Traffic pointer</span></td></tr><tr><td>Layer</td><td><span class="pill info">Shared deps</span></td></tr></tbody></table>
+                </div>
+              </div>
+              <div class="code-blocks">
+    <div>
+      <div class="code-title">Alias update (CLI)</div>
+      <pre>aws lambda update-alias   --function-name apiHandler   --name live   --function-version 12</pre>
+    </div>
+    </div>
+            </article>
+
+            <article class="card warning">
+              <div class="card-label">Warning</div>
+              <h3>No version pinning</h3>
+              <p>If you use $LATEST everywhere, rollbacks are risky.</p>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Mini takeaway</div>
+              <ul class="takeaways"><li>Publish versions.</li><li>Use aliases for routing.</li><li>Keep layers small.</li></ul>
+            </article>
+
+            <article class="card quiz-card">
+              <div class="card-label">Quiz</div>
+              <h3>What is the purpose of a Lambda alias?</h3>
+              <div class="quiz-options" data-answer="1">
+                <button class="quiz-option">A. Store logs</button><button class="quiz-option">B. Point to a version</button><button class="quiz-option">C. Encrypt data</button><button class="quiz-option">D. Allocate memory</button>
+              </div>
+              <div class="quiz-result">
+                <strong>Correct answer: B</strong>
+                <span>Aliases point to a specific version and can shift traffic.</span>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" data-section="5">
         <div class="section-inner">
           <div class="hero">
             <div class="section-label">Completion screen · Review mode</div>
-            <h2>🎉 Resilience Patterns (Resilience4j) Cheat Sheet</h2>
-            <p>Use this to recall circuit breakers, retries, bulkheads, and Spring integration.</p>
+            <h2>🎉 AWS Lambda & Serverless Cheat Sheet</h2>
+            <p>Lambda fundamentals: triggers, execution model, performance, and secure permissions.</p>
           </div>
 
           <div class="completion-grid">
@@ -1243,20 +1168,20 @@ public Inventory check(String sku) { ... }</pre>
               <h3>1-line interview answers</h3>
               <div class="cheat-list">
     <div class="cheat-item">
-      <h4>Circuit breaker</h4>
-      <p>Opens to stop calling a failing dependency.</p>
+      <h4>Handler</h4>
+      <p>Entry point for event processing.</p>
     </div>
     <div class="cheat-item">
-      <h4>Retry</h4>
-      <p>Retries transient errors with backoff.</p>
+      <h4>Cold start</h4>
+      <p>Initial latency when container spins up.</p>
     </div>
     <div class="cheat-item">
-      <h4>Bulkhead</h4>
-      <p>Isolates resources to prevent cascading failures.</p>
+      <h4>Event source</h4>
+      <p>Service that triggers the function.</p>
     </div>
     <div class="cheat-item">
-      <h4>Rate limiter</h4>
-      <p>Protects services from overload.</p>
+      <h4>IAM role</h4>
+      <p>Execution identity with permissions.</p>
     </div>
               </div>
             </div>
@@ -1264,13 +1189,9 @@ public Inventory check(String sku) { ... }</pre>
             <div class="card analogy">
               <div class="card-label">What to remember</div>
               <h3>Fast mental model</h3>
-              <ul class="takeaways">
-                <li><strong>Circuit breaker</strong>: fail fast.</li><li><strong>Retry</strong>: handle transient errors.</li><li><strong>Bulkhead</strong>: isolate resources.</li><li><strong>Observability</strong>: monitor resilience events.</li>
-              </ul>
+              <ul class="takeaways"><li><strong>Events</strong>: triggers from API, S3, SQS, etc.</li><li><strong>Execution</strong>: ephemeral container with limits.</li><li><strong>Perf</strong>: cold starts + memory tuning.</li><li><strong>Security</strong>: least-privilege roles.</li></ul>
               <h3 style="margin-top:22px;">Common traps</h3>
-              <div class="badge-row">
-                <span class="pill bad">Retry storms</span><span class="pill bad">No fallbacks</span><span class="pill bad">Shared thread pools</span>
-              </div>
+              <div class="badge-row"><span class="pill bad">Too much logic in one function</span><span class="pill bad">No retries/idempotency</span><span class="pill bad">Long cold starts</span></div>
             </div>
           </div>
         </div>

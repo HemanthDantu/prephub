@@ -35,6 +35,24 @@
 
     a { color: inherit; }
 
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .breadcrumb a {
+      color: var(--muted);
+      text-decoration: none;
+    }
+
+    .breadcrumb a:hover { color: var(--cyan); }
+
+    .breadcrumb span { color: var(--text); font-weight: 600; }
+
     .app {
       min-height: 100vh;
       display: flex;
@@ -699,15 +717,24 @@
         <div class="topbar-row">
           <div class="brand">
             <h1>Spring Transactions</h1>
-            <small>Interactive 28-minute learning module</small>
+            <small>Interactive 35-minute learning module</small>
           </div>
+                <div class="topbar-row">
+          <div class="breadcrumb">
+            <a href="../index.html">Home</a>
+            <span>›</span>
+            <a href="index.html">Spring Boot</a>
+            <span>›</span>
+            <span>Spring Transactions</span>
+          </div>
+        </div>
           <div class="timer-wrap" aria-live="polite">
             <span class="timer-label">Time Left</span>
-            <span class="timer" id="timer">28:00</span>
+            <span class="timer" id="timer">35:00</span>
           </div>
         </div>
         <div class="topbar-row">
-          <nav class="nav-dots" aria-label="Section navigation"><button class="nav-dot active" data-index="0" aria-label="Go to section 1">1</button><button class="nav-dot " data-index="1" aria-label="Go to section 2">2</button><button class="nav-dot " data-index="2" aria-label="Go to section 3">3</button><button class="nav-dot " data-index="3" aria-label="Go to section 4">4</button><button class="nav-dot " data-index="4" aria-label="Go to completion screen">5</button></nav>
+                    <nav class="nav-dots" aria-label="Section navigation"><button class="nav-dot active" data-index="0" aria-label="Go to section 1">1</button><button class="nav-dot" data-index="1" aria-label="Go to section 2">2</button><button class="nav-dot" data-index="2" aria-label="Go to section 3">3</button><button class="nav-dot" data-index="3" aria-label="Go to section 4">4</button><button class="nav-dot" data-index="4" aria-label="Go to section 5">5</button><button class="nav-dot" data-index="5" aria-label="Go to completion screen">6</button></nav>
         </div>
         <div class="progress-shell" aria-hidden="true">
           <div class="progress-bar" id="progressBar"></div>
@@ -720,7 +747,7 @@
       <section class="section active" data-section="0">
         <div class="section-inner">
           <div class="hero">
-            <div class="section-label">Section 1 of 4 · ~7 mins</div>
+            <div class="section-label">Section 1 of 5 · ~7 mins</div>
             <h2>@Transactional Basics</h2>
             <p>Spring transactions are proxy-based and wrap method calls with begin/commit/rollback.</p>
           </div>
@@ -817,7 +844,7 @@ public void transfer(){
       <section class="section " data-section="1">
         <div class="section-inner">
           <div class="hero">
-            <div class="section-label">Section 2 of 4 · ~7 mins</div>
+            <div class="section-label">Section 2 of 5 · ~7 mins</div>
             <h2>Propagation</h2>
             <p>Propagation defines how a method behaves if a transaction already exists.</p>
           </div>
@@ -911,7 +938,7 @@ public void writeAudit(){ ... }</span></pre>
       <section class="section " data-section="2">
         <div class="section-inner">
           <div class="hero">
-            <div class="section-label">Section 3 of 4 · ~7 mins</div>
+            <div class="section-label">Section 3 of 5 · ~7 mins</div>
             <h2>Isolation Levels</h2>
             <p>Isolation controls how concurrent transactions see each other’s data.</p>
           </div>
@@ -1005,7 +1032,7 @@ public void readReport(){ ... }</span></pre>
       <section class="section " data-section="3">
         <div class="section-inner">
           <div class="hero">
-            <div class="section-label">Section 4 of 4 · ~7 mins</div>
+            <div class="section-label">Section 4 of 5 · ~7 mins</div>
             <h2>Rollback Rules & Timeouts</h2>
             <p>Rollback behavior defaults to unchecked exceptions, but you can override it.</p>
           </div>
@@ -1097,7 +1124,91 @@ public void importData(){ ... }</span></pre>
         </div>
       </section>
       
+      
       <section class="section" data-section="4">
+        <div class="section-inner">
+          <div class="hero">
+            <div class="section-label">Section 5 of 5 · ~7 mins</div>
+            <h2>Deep Dive: Propagation & Rollback Rules</h2>
+            <p>Understanding propagation and rollback behavior prevents subtle data bugs.</p>
+          </div>
+
+          <div class="card-grid">
+            <article class="card eli5">
+              <div class="card-label">🧒 ELI5</div>
+              <h3>Shared piggy bank</h3>
+              <p>If everyone uses the same bank, you need clear rules about when money goes in or out.</p>
+            </article>
+
+            <article class="card analogy">
+              <div class="card-label">🔗 ANALOGY</div>
+              <h3>Nested boxes</h3>
+              <p>A box inside a box may open with the outer one or separately depending on the rule.</p>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Technical</div>
+              <div class="two-col">
+                <div>
+                  <h3>What it means in real code</h3>
+                  <p><strong>Definition:</strong> @Transactional propagation decides whether methods join existing transactions or start new ones.</p>
+                  <div class="mini-grid">
+                    <div class="mini-panel">
+                      <h4>Why it matters</h4>
+                      <ul><li>Avoids partial updates</li><li>Controls rollback behavior</li><li>Improves data consistency</li></ul>
+                    </div>
+                    <div class="mini-panel">
+                      <h4>Common pitfall</h4>
+                      <ul><li>Unexpected commits</li><li>Catching exceptions and swallowing rollback</li><li>Self-invocation</li></ul>
+                    </div>
+                  </div>
+                  <div class="badge-row"><span class="pill good">REQUIRED</span><span class="pill info">REQUIRES_NEW</span><span class="pill caution">Rollback rules</span></div>
+                  <div class="flow"><span class="flow-step">Call method</span><span class="flow-arrow">→</span><span class="flow-step">Check existing tx</span><span class="flow-arrow">→</span><span class="flow-step">Join or create</span><span class="flow-arrow">→</span><span class="flow-step">Commit/rollback</span></div>
+                </div>
+                <div>
+                  <h3>Interview answer</h3>
+                  <p>“I use REQUIRED for default joins, REQUIRES_NEW for independent side effects.”</p>
+                  <table>
+                    <thead><tr><th>Propagation</th><th>Behavior</th></tr></thead>
+                    <tbody><tr><td>REQUIRED</td><td><span class="pill good">Join if exists</span></td></tr><tr><td>REQUIRES_NEW</td><td><span class="pill info">Suspend + new</span></td></tr><tr><td>NESTED</td><td><span class="pill caution">Savepoint</span></td></tr></tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="code-blocks">
+    <div>
+      <div class="code-title">Rollback for checked exception</div>
+      <pre>@Transactional(rollbackFor = IOException.class)
+public void importFile() throws IOException { ... }</pre>
+    </div>
+    </div>
+            </article>
+
+            <article class="card warning">
+              <div class="card-label">Warning</div>
+              <h3>Catching exceptions can commit</h3>
+              <p>If you catch and swallow exceptions, Spring may commit instead of rolling back.</p>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Mini takeaway</div>
+              <ul class="takeaways"><li>Know propagation types.</li><li>Configure rollback rules explicitly.</li><li>Avoid self-invocation issues.</li></ul>
+            </article>
+
+            <article class="card quiz-card">
+              <div class="card-label">Quiz</div>
+              <h3>Which propagation always starts a new transaction?</h3>
+              <div class="quiz-options" data-answer="2">
+                <button class="quiz-option">A. REQUIRED</button><button class="quiz-option">B. SUPPORTS</button><button class="quiz-option">C. REQUIRES_NEW</button><button class="quiz-option">D. MANDATORY</button>
+              </div>
+              <div class="quiz-result">
+                <strong>Correct answer: C</strong>
+                <span>REQUIRES_NEW suspends any existing transaction and starts a new one.</span>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+<section class="section" data-section="5">
         <div class="section-inner">
           <div class="hero">
             <div class="section-label">Completion screen · Review mode</div>
@@ -1261,7 +1372,7 @@ function applySyntaxHighlighting() {
       dot.addEventListener('click', () => showSection(Number(dot.dataset.index)));
     });
 
-    const totalSeconds = 28 * 60;
+    const totalSeconds = 35 * 60;
     let remainingSeconds = totalSeconds;
 
     function formatTime(seconds) {

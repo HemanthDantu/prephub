@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Resilience Patterns (Resilience4j) Learning Module</title>
+  <title>SQL Joins Deep Dive Learning Module</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -35,6 +35,17 @@
 
     a { color: inherit; }
 
+    .back-link {
+      display: inline-flex;
+      margin-top: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--muted);
+      text-decoration: none;
+    }
+
+    .back-link:hover { color: var(--cyan); }
+
     .breadcrumb {
       display: flex;
       align-items: center;
@@ -52,17 +63,6 @@
     .breadcrumb a:hover { color: var(--cyan); }
 
     .breadcrumb span { color: var(--text); font-weight: 600; }
-
-    .back-link {
-      display: inline-flex;
-      margin-top: 12px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.78rem;
-      color: var(--muted);
-      text-decoration: none;
-    }
-
-    .back-link:hover { color: var(--cyan); }
 
     .app {
       min-height: 100vh;
@@ -727,25 +727,25 @@
       <div class="topbar-inner">
         <div class="topbar-row">
           <div class="brand">
-            <h1>Resilience Patterns (Resilience4j)</h1>
-            <small>Interactive 35-minute learning module</small>
+            <h1>SQL Joins Deep Dive</h1>
+            <small>Interactive 28-minute learning module</small>
           </div>
                 <div class="topbar-row">
           <div class="breadcrumb">
             <a href="../index.html">Home</a>
             <span>›</span>
-            <a href="index.html">Spring Boot</a>
+            <a href="index.html">SQL</a>
             <span>›</span>
-            <span>Resilience Patterns (Resilience4j)</span>
+            <span>SQL Joins Deep Dive</span>
           </div>
         </div>
           <div class="timer-wrap" aria-live="polite">
             <span class="timer-label">Time Left</span>
-            <span class="timer" id="timer">35:00</span>
+            <span class="timer" id="timer">28:00</span>
           </div>
         </div>
         <div class="topbar-row">
-                    <nav class="nav-dots" aria-label="Section navigation"><button class="nav-dot active" data-index="0" aria-label="Go to section 1">1</button><button class="nav-dot" data-index="1" aria-label="Go to section 2">2</button><button class="nav-dot" data-index="2" aria-label="Go to section 3">3</button><button class="nav-dot" data-index="3" aria-label="Go to section 4">4</button><button class="nav-dot" data-index="4" aria-label="Go to section 5">5</button><button class="nav-dot" data-index="5" aria-label="Go to completion screen">6</button></nav>
+                    <nav class="nav-dots" aria-label="Section navigation"><button class="nav-dot active" data-index="0" aria-label="Go to section 1">1</button><button class="nav-dot" data-index="1" aria-label="Go to section 2">2</button><button class="nav-dot" data-index="2" aria-label="Go to section 3">3</button><button class="nav-dot" data-index="3" aria-label="Go to section 4">4</button><button class="nav-dot" data-index="4" aria-label="Go to completion screen">5</button></nav>
         </div>
         <div class="progress-shell" aria-hidden="true">
           <div class="progress-bar" id="progressBar"></div>
@@ -758,23 +758,22 @@
       <section class="section active" data-section="0">
         <div class="section-inner">
           <div class="hero">
-            <div class="section-label">Section 1 of 5 · ~7 mins</div>
-            <h2>Circuit Breakers</h2>
-            <p>Circuit breakers stop calls to failing dependencies to protect the system and allow recovery.</p>
-            <a class="back-link" href="index.html">← Back to Spring Boot</a>
+            <div class="section-label">Section 1 of 4 · ~7 mins</div>
+            <h2>Join Types and Semantics</h2>
+            <p>Joins combine rows across tables based on predicates; type controls which non-matching rows survive.</p>
           </div>
 
           <div class="card-grid">
             <article class="card eli5">
               <div class="card-label">🧒 ELI5</div>
-              <h3>A safety fuse</h3>
-              <p>If the power surges, the fuse trips to protect the house.</p>
+              <h3>Match your socks</h3>
+              <p>Only the socks that match make a pair; unmatched socks are left behind.</p>
             </article>
 
             <article class="card analogy">
               <div class="card-label">🔗 ANALOGY</div>
-              <h3>Traffic barrier</h3>
-              <p>If a road is closed, you stop cars from entering so it can recover.</p>
+              <h3>Guest lists</h3>
+              <p>An inner join is the overlap of two guest lists.</p>
             </article>
 
             <article class="card technical">
@@ -782,68 +781,56 @@
               <div class="two-col">
                 <div>
                   <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> A circuit breaker tracks failures and opens when a threshold is reached, then half-opens to test recovery.</p>
+                  <p><strong>Definition:</strong> INNER keeps matches; LEFT/RIGHT keep one side; FULL keeps both; CROSS multiplies rows.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
-                      <ul>
-                        <li>Prevents cascading failures</li><li>Fails fast</li><li>Gives dependencies time to recover</li>
-                      </ul>
+                      <ul><li>Correct data relationships</li><li>Avoid missing rows</li><li>Control nulls</li></ul>
                     </div>
                     <div class="mini-panel">
                       <h4>Common pitfall</h4>
-                      <ul>
-                        <li>Repeated timeouts</li><li>Cascading failures</li><li>No fallback logic</li>
-                      </ul>
+                      <ul><li>Unexpected nulls</li><li>Row counts exploding</li><li>Wrong join direction</li></ul>
                     </div>
                   </div>
-                  <div class="badge-row"><span class="pill good">Closed</span><span class="pill caution">Open</span><span class="pill info">Half-open</span></div>
-                  
-                  <div class="flow"><span class="flow-step">Call service</span><span class="flow-arrow">→</span><span class="flow-step">Failures exceed threshold</span><span class="flow-arrow">→</span><span class="flow-step">Open circuit</span><span class="flow-arrow">→</span><span class="flow-step">Half-open trial</span></div>
+                  <div class="badge-row"><span class="pill good">INNER</span><span class="pill info">LEFT</span><span class="pill caution">FULL</span></div>
+                  <div class="flow"><span class="flow-step">Pick join type</span><span class="flow-arrow">→</span><span class="flow-step">Add predicate</span><span class="flow-arrow">→</span><span class="flow-step">Filter results</span><span class="flow-arrow">→</span><span class="flow-step">Check row counts</span></div>
                 </div>
                 <div>
                   <h3>Interview answer</h3>
-                  <p>“Circuit breakers fail fast when a dependency is unhealthy and periodically test recovery.”</p>
-                  
-                  <table>
-                    <thead><tr><th>State</th><th>Behavior</th></tr></thead>
-                    <tbody><tr><td>Closed</td><td><span class="pill good">Calls allowed</span></td></tr><tr><td>Open</td><td><span class="pill bad">Calls blocked</span></td></tr><tr><td>Half-open</td><td><span class="pill info">Trial requests</span></td></tr></tbody>
-                  </table>
+                  <p>“I choose LEFT joins when I must keep all parent rows, and INNER when only matched rows matter.”</p>
+                  <table><thead><tr><th>Join</th><th>Keeps</th></tr></thead><tbody><tr><td>INNER</td><td><span class="pill good">Matches only</span></td></tr><tr><td>LEFT</td><td><span class="pill info">All left</span></td></tr><tr><td>FULL</td><td><span class="pill caution">All rows</span></td></tr></tbody></table>
                 </div>
               </div>
-              
-    <div class="code-blocks">
+              <div class="code-blocks">
     <div>
-      <div class="code-title">Resilience4j annotation</div>
-      <pre>@CircuitBreaker(name = "inventory", fallbackMethod = "fallback")
-public Inventory check(String sku) { ... }</pre>
+      <div class="code-title">Left join example</div>
+      <pre>SELECT u.id, o.id
+FROM users u
+LEFT JOIN orders o ON o.user_id = u.id;</pre>
     </div>
     </div>
-              
             </article>
 
             <article class="card warning">
               <div class="card-label">Warning</div>
-              <h3>No fallback = poor UX</h3>
-              <p>If the circuit opens, you need a fallback or you will fail every request.</p>
+              <h3>Missing ON clause is dangerous</h3>
+              <p>A missing join predicate creates a Cartesian explosion.</p>
             </article>
 
             <article class="card technical">
               <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>Circuit breakers fail fast.</li><li>Use fallback methods.</li><li>Monitor breaker events.</li>
-              </ul>
+              <ul class="takeaways"><li>Pick join type by row retention.</li><li>Always specify predicates.</li><li>Validate row counts.</li></ul>
             </article>
 
             <article class="card quiz-card">
               <div class="card-label">Quiz</div>
-              <h3>What is the purpose of the half-open state?</h3>
+              <h3>Which join keeps all rows from the left table?</h3>
               <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. Block all traffic</button><button class="quiz-option">B. Allow a few test calls</button><button class="quiz-option">C. Disable metrics</button><button class="quiz-option">D. Force retries</button>
+                <button class="quiz-option">A. INNER</button><button class="quiz-option">B. LEFT</button><button class="quiz-option">C. RIGHT</button><button class="quiz-option">D. CROSS</button>
               </div>
               <div class="quiz-result">
                 <strong>Correct answer: B</strong>
-                <span>Half-open allows limited calls to test recovery.</span>
+                <span>LEFT join preserves all rows from the left table.</span>
               </div>
             </article>
           </div>
@@ -853,23 +840,22 @@ public Inventory check(String sku) { ... }</pre>
       <section class="section" data-section="1">
         <div class="section-inner">
           <div class="hero">
-            <div class="section-label">Section 2 of 5 · ~7 mins</div>
-            <h2>Retries and Timeouts</h2>
-            <p>Retries handle transient errors, while timeouts prevent hanging calls.</p>
-            
+            <div class="section-label">Section 2 of 4 · ~7 mins</div>
+            <h2>Join Filters vs WHERE Filters</h2>
+            <p>Filtering in the JOIN clause vs WHERE changes results for outer joins.</p>
           </div>
 
           <div class="card-grid">
             <article class="card eli5">
               <div class="card-label">🧒 ELI5</div>
-              <h3>Try again, but not forever</h3>
-              <p>If a toy does not work, you try again a couple of times then move on.</p>
+              <h3>Filter at the door</h3>
+              <p>If you filter guests at the door, some people never enter.</p>
             </article>
 
             <article class="card analogy">
               <div class="card-label">🔗 ANALOGY</div>
-              <h3>Redial with patience</h3>
-              <p>You redial after a short wait instead of hanging on forever.</p>
+              <h3>Invitation rules</h3>
+              <p>Deciding at the entrance changes who appears in the final list.</p>
             </article>
 
             <article class="card technical">
@@ -877,72 +863,57 @@ public Inventory check(String sku) { ... }</pre>
               <div class="two-col">
                 <div>
                   <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Retries should use backoff and be applied only to idempotent operations, with timeouts to cap latency.</p>
+                  <p><strong>Definition:</strong> WHERE filters apply after the join; ON filters decide which rows join in the first place.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
-                      <ul>
-                        <li>Improves resilience</li><li>Avoids long waits</li><li>Handles transient faults</li>
-                      </ul>
+                      <ul><li>Correct outer join results</li><li>Avoid accidental inner join behavior</li><li>Maintain null rows</li></ul>
                     </div>
                     <div class="mini-panel">
                       <h4>Common pitfall</h4>
-                      <ul>
-                        <li>Retry storms</li><li>No timeouts</li><li>Retrying writes</li>
-                      </ul>
+                      <ul><li>Left join turned into inner join</li><li>Unexpected row loss</li><li>NULL surprises</li></ul>
                     </div>
                   </div>
-                  <div class="badge-row"><span class="pill good">Backoff</span><span class="pill info">Timeout</span><span class="pill caution">Idempotent</span></div>
-                  
-                  <div class="flow"><span class="flow-step">Call</span><span class="flow-arrow">→</span><span class="flow-step">Timeout or error</span><span class="flow-arrow">→</span><span class="flow-step">Retry with backoff</span><span class="flow-arrow">→</span><span class="flow-step">Fail or succeed</span></div>
+                  <div class="badge-row"><span class="pill good">ON filter</span><span class="pill info">WHERE filter</span><span class="pill caution">Outer join</span></div>
+                  <div class="flow"><span class="flow-step">Join rows</span><span class="flow-arrow">→</span><span class="flow-step">Apply ON</span><span class="flow-arrow">→</span><span class="flow-step">Apply WHERE</span><span class="flow-arrow">→</span><span class="flow-step">Return rows</span></div>
                 </div>
                 <div>
                   <h3>Interview answer</h3>
-                  <p>“Retries with backoff work for transient errors, but only for idempotent calls and with timeouts.”</p>
-                  
-                  <table>
-                    <thead><tr><th>Rule</th><th>Reason</th></tr></thead>
-                    <tbody><tr><td>Use backoff</td><td><span class="pill good">Reduce load</span></td></tr><tr><td>Limit attempts</td><td><span class="pill info">Avoid storms</span></td></tr><tr><td>Idempotent only</td><td><span class="pill caution">Prevent duplicates</span></td></tr></tbody>
-                  </table>
+                  <p>“I put filters in ON when I want to preserve outer join rows.”</p>
+                  <table><thead><tr><th>Filter</th><th>Effect</th></tr></thead><tbody><tr><td>ON</td><td><span class="pill good">Preserves outer rows</span></td></tr><tr><td>WHERE</td><td><span class="pill caution">Can drop null rows</span></td></tr></tbody></table>
                 </div>
               </div>
-              
-    <div class="code-blocks">
+              <div class="code-blocks">
     <div>
-      <div class="code-title">Retry config</div>
-      <pre>resilience4j:
-  retry:
-    instances:
-      payments:
-        max-attempts: 3
-        wait-duration: 200ms</pre>
+      <div class="code-title">ON vs WHERE</div>
+      <pre>SELECT u.id, o.id
+FROM users u
+LEFT JOIN orders o ON o.user_id = u.id AND o.status = 'PAID'
+WHERE u.active = true;</pre>
     </div>
     </div>
-              
             </article>
 
             <article class="card warning">
               <div class="card-label">Warning</div>
-              <h3>Retries can amplify failures</h3>
-              <p>If every caller retries, a failing service can get overwhelmed.</p>
+              <h3>WHERE can negate LEFT join</h3>
+              <p>Filtering on the right table in WHERE can remove NULL rows.</p>
             </article>
 
             <article class="card technical">
               <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>Retry only safe calls.</li><li>Add backoff.</li><li>Always use timeouts.</li>
-              </ul>
+              <ul class="takeaways"><li>Use ON for outer join filters.</li><li>Use WHERE for global filters.</li><li>Test null cases.</li></ul>
             </article>
 
             <article class="card quiz-card">
               <div class="card-label">Quiz</div>
-              <h3>Why use exponential backoff on retries?</h3>
+              <h3>Where should you filter right-table columns to preserve LEFT join rows?</h3>
               <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. To increase throughput</button><button class="quiz-option">B. To reduce load on failing services</button><button class="quiz-option">C. To remove timeouts</button><button class="quiz-option">D. To avoid idempotency</button>
+                <button class="quiz-option">A. WHERE</button><button class="quiz-option">B. ON</button><button class="quiz-option">C. SELECT</button><button class="quiz-option">D. HAVING</button>
               </div>
               <div class="quiz-result">
                 <strong>Correct answer: B</strong>
-                <span>Backoff reduces pressure on a failing service.</span>
+                <span>Filtering in ON preserves outer join behavior.</span>
               </div>
             </article>
           </div>
@@ -952,23 +923,22 @@ public Inventory check(String sku) { ... }</pre>
       <section class="section" data-section="2">
         <div class="section-inner">
           <div class="hero">
-            <div class="section-label">Section 3 of 5 · ~7 mins</div>
-            <h2>Bulkheads and Rate Limiting</h2>
-            <p>Bulkheads isolate resources so one failure does not take down the whole system.</p>
-            
+            <div class="section-label">Section 3 of 4 · ~7 mins</div>
+            <h2>Join Performance and Indexes</h2>
+            <p>Join speed depends on indexes and join order. EXPLAIN tells the truth.</p>
           </div>
 
           <div class="card-grid">
             <article class="card eli5">
               <div class="card-label">🧒 ELI5</div>
-              <h3>Separate rooms</h3>
-              <p>If one room is noisy, the rest of the house stays quiet.</p>
+              <h3>Use the index</h3>
+              <p>If the librarian knows where to look, she finds books faster.</p>
             </article>
 
             <article class="card analogy">
               <div class="card-label">🔗 ANALOGY</div>
-              <h3>Lifeboats on a ship</h3>
-              <p>Compartments prevent water from flooding the entire ship.</p>
+              <h3>Fast lookup table</h3>
+              <p>A phonebook makes searches faster than scanning every page.</p>
             </article>
 
             <article class="card technical">
@@ -976,68 +946,56 @@ public Inventory check(String sku) { ... }</pre>
               <div class="two-col">
                 <div>
                   <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Bulkheads limit concurrent calls via separate thread pools or semaphores, and rate limiters cap traffic.</p>
+                  <p><strong>Definition:</strong> Indexes on join keys reduce scans and improve join performance.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
-                      <ul>
-                        <li>Prevents resource exhaustion</li><li>Keeps critical paths alive</li><li>Controls load</li>
-                      </ul>
+                      <ul><li>Faster queries</li><li>Lower CPU usage</li><li>Predictable performance</li></ul>
                     </div>
                     <div class="mini-panel">
                       <h4>Common pitfall</h4>
-                      <ul>
-                        <li>Shared thread pool for everything</li><li>No rate limits</li><li>Cascading failures</li>
-                      </ul>
+                      <ul><li>Full table scans</li><li>Slow joins on large tables</li><li>Missing indexes</li></ul>
                     </div>
                   </div>
-                  <div class="badge-row"><span class="pill good">Bulkhead</span><span class="pill info">Semaphore</span><span class="pill caution">Rate limit</span></div>
-                  
-                  <div class="flow"><span class="flow-step">Request enters</span><span class="flow-arrow">→</span><span class="flow-step">Check capacity</span><span class="flow-arrow">→</span><span class="flow-step">Execute or reject</span><span class="flow-arrow">→</span><span class="flow-step">Protect resources</span></div>
+                  <div class="badge-row"><span class="pill good">Indexes</span><span class="pill info">EXPLAIN</span><span class="pill caution">Join order</span></div>
+                  <div class="flow"><span class="flow-step">Check indexes</span><span class="flow-arrow">→</span><span class="flow-step">Review plan</span><span class="flow-arrow">→</span><span class="flow-step">Adjust query</span><span class="flow-arrow">→</span><span class="flow-step">Re-test</span></div>
                 </div>
                 <div>
                   <h3>Interview answer</h3>
-                  <p>“Bulkheads isolate expensive calls with their own pools, while rate limiting caps total load.”</p>
-                  
-                  <table>
-                    <thead><tr><th>Pattern</th><th>Goal</th></tr></thead>
-                    <tbody><tr><td>Bulkhead</td><td><span class="pill good">Isolation</span></td></tr><tr><td>Rate limiter</td><td><span class="pill info">Traffic control</span></td></tr><tr><td>Timeout</td><td><span class="pill caution">Bound latency</span></td></tr></tbody>
-                  </table>
+                  <p>“I add indexes on join keys and use EXPLAIN to confirm the plan.”</p>
+                  <table><thead><tr><th>Signal</th><th>Action</th></tr></thead><tbody><tr><td>Seq scan</td><td><span class="pill caution">Add index</span></td></tr><tr><td>Hash join</td><td><span class="pill info">Check memory</span></td></tr><tr><td>Nested loop</td><td><span class="pill good">Small dataset</span></td></tr></tbody></table>
                 </div>
               </div>
-              
-    <div class="code-blocks">
+              <div class="code-blocks">
     <div>
-      <div class="code-title">Bulkhead annotation</div>
-      <pre>@Bulkhead(name = "inventory", type = Bulkhead.Type.SEMAPHORE)
-public Inventory check(String sku) { ... }</pre>
+      <div class="code-title">EXPLAIN usage</div>
+      <pre>EXPLAIN ANALYZE
+SELECT * FROM orders o
+JOIN users u ON u.id = o.user_id;</pre>
     </div>
     </div>
-              
             </article>
 
             <article class="card warning">
               <div class="card-label">Warning</div>
-              <h3>Shared pools cause cascades</h3>
-              <p>If all calls share one pool, a slow dependency can exhaust all threads.</p>
+              <h3>Indexes have write cost</h3>
+              <p>More indexes slow inserts and updates.</p>
             </article>
 
             <article class="card technical">
               <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>Bulkheads isolate load.</li><li>Rate limit protects services.</li><li>Separate pools for critical paths.</li>
-              </ul>
+              <ul class="takeaways"><li>Index join keys.</li><li>Inspect EXPLAIN plans.</li><li>Balance reads vs writes.</li></ul>
             </article>
 
             <article class="card quiz-card">
               <div class="card-label">Quiz</div>
-              <h3>What does a bulkhead protect against?</h3>
+              <h3>What is the first tool to inspect join performance?</h3>
               <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. Data inconsistency</button><button class="quiz-option">B. Resource exhaustion</button><button class="quiz-option">C. SQL injection</button><button class="quiz-option">D. Cache misses</button>
+                <button class="quiz-option">A. LIMIT</button><button class="quiz-option">B. EXPLAIN</button><button class="quiz-option">C. DISTINCT</button><button class="quiz-option">D. GROUP BY</button>
               </div>
               <div class="quiz-result">
                 <strong>Correct answer: B</strong>
-                <span>Bulkheads limit resource usage so one dependency cannot exhaust all capacity.</span>
+                <span>EXPLAIN shows the query plan and join strategy.</span>
               </div>
             </article>
           </div>
@@ -1047,23 +1005,22 @@ public Inventory check(String sku) { ... }</pre>
       <section class="section" data-section="3">
         <div class="section-inner">
           <div class="hero">
-            <div class="section-label">Section 4 of 5 · ~7 mins</div>
-            <h2>Spring Integration and Observability</h2>
-            <p>Resilience4j integrates with Spring Boot through annotations and configuration, with event metrics.</p>
-            
+            <div class="section-label">Section 4 of 4 · ~7 mins</div>
+            <h2>Common Join Pitfalls</h2>
+            <p>Join bugs often come from incorrect predicates or wrong join direction.</p>
           </div>
 
           <div class="card-grid">
             <article class="card eli5">
               <div class="card-label">🧒 ELI5</div>
-              <h3>Plug-in safety kit</h3>
-              <p>You add a safety kit to your bike so brakes and lights are always there.</p>
+              <h3>Wrong puzzle piece</h3>
+              <p>If you try to connect the wrong pieces, the puzzle breaks.</p>
             </article>
 
             <article class="card analogy">
               <div class="card-label">🔗 ANALOGY</div>
-              <h3>Airbag system</h3>
-              <p>Airbags are built in and activate when needed without manual effort.</p>
+              <h3>Wrong key</h3>
+              <p>If the key doesn’t fit, the door stays closed.</p>
             </article>
 
             <article class="card technical">
@@ -1071,169 +1028,70 @@ public Inventory check(String sku) { ... }</pre>
               <div class="two-col">
                 <div>
                   <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Resilience4j exposes annotations, config, and events that integrate with Boot and Micrometer.</p>
+                  <p><strong>Definition:</strong> Incorrect join predicates can duplicate or drop rows; validate with counts and small samples.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
-                      <ul>
-                        <li>Centralized configuration</li><li>Consistent behavior</li><li>Metrics on resilience events</li>
-                      </ul>
+                      <ul><li>Prevents data duplication</li><li>Maintains correctness</li><li>Avoids silent bugs</li></ul>
                     </div>
                     <div class="mini-panel">
                       <h4>Common pitfall</h4>
-                      <ul>
-                        <li>Hard-coded resilience logic</li><li>No monitoring</li><li>Inconsistent retries</li>
-                      </ul>
+                      <ul><li>Duplicate rows</li><li>Missing records</li><li>Ambiguous joins</li></ul>
                     </div>
                   </div>
-                  <div class="badge-row"><span class="pill good">@CircuitBreaker</span><span class="pill info">@Retry</span><span class="pill caution">Metrics</span></div>
-                  
-                  <div class="flow"><span class="flow-step">Annotate method</span><span class="flow-arrow">→</span><span class="flow-step">Apply policies</span><span class="flow-arrow">→</span><span class="flow-step">Emit events</span><span class="flow-arrow">→</span><span class="flow-step">Monitor</span></div>
+                  <div class="badge-row"><span class="pill good">Predicate</span><span class="pill info">Row count</span><span class="pill caution">Validation</span></div>
+                  <div class="flow"><span class="flow-step">Check predicate</span><span class="flow-arrow">→</span><span class="flow-step">Compare counts</span><span class="flow-arrow">→</span><span class="flow-step">Sample rows</span><span class="flow-arrow">→</span><span class="flow-step">Fix join</span></div>
                 </div>
                 <div>
                   <h3>Interview answer</h3>
-                  <p>“Resilience4j integrates via annotations and exposes metrics so we can monitor circuit states and retries.”</p>
-                  
-                  <table>
-                    <thead><tr><th>Signal</th><th>Value</th></tr></thead>
-                    <tbody><tr><td>State changes</td><td><span class="pill good">Breaker health</span></td></tr><tr><td>Retry count</td><td><span class="pill info">Transient failures</span></td></tr><tr><td>Rejections</td><td><span class="pill caution">Capacity limit</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              
-    <div class="code-blocks">
-    <div>
-      <div class="code-title">Resilience4j config</div>
-      <pre>resilience4j:
-  circuitbreaker:
-    instances:
-      inventory:
-        failure-rate-threshold: 50
-        wait-duration-in-open-state: 10s</pre>
-    </div>
-    </div>
-              
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Silent failures</h3>
-              <p>If you do not monitor resilience events, you may not notice failing dependencies.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>Use annotations for consistency.</li><li>Monitor breaker events.</li><li>Tune thresholds carefully.</li>
-              </ul>
-            </article>
-
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>Why integrate resilience metrics with Micrometer?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. To disable retries</button><button class="quiz-option">B. To monitor breaker and retry behavior</button><button class="quiz-option">C. To reduce latency only</button><button class="quiz-option">D. To avoid backoff</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>Metrics reveal how breakers and retries behave in production.</span>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-      
-      
-      <section class="section" data-section="4">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 5 of 5 · ~7 mins</div>
-            <h2>Deep Dive: Fallbacks and Failure Budgets</h2>
-            <p>Resilience patterns must be paired with sensible fallbacks and SLO budgets.</p>
-          </div>
-
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Have a backup plan</h3>
-              <p>If the toy breaks, you have another game to play.</p>
-            </article>
-
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Emergency exits</h3>
-              <p>Buildings must have exits in case a path fails.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Fallbacks provide degraded responses while circuit breakers and retries protect systems.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul><li>Improves user experience</li><li>Avoids full outages</li><li>Supports graceful degradation</li></ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common pitfall</h4>
-                      <ul><li>No fallback</li><li>Fallback slower than main path</li><li>Retry storms</li></ul>
-                    </div>
-                  </div>
-                  <div class="badge-row"><span class="pill good">Fallback</span><span class="pill info">Budget</span><span class="pill caution">Graceful</span></div>
-                  <div class="flow"><span class="flow-step">Call fails</span><span class="flow-arrow">→</span><span class="flow-step">Breaker opens</span><span class="flow-arrow">→</span><span class="flow-step">Fallback returns</span><span class="flow-arrow">→</span><span class="flow-step">Track budget</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“I combine circuit breakers with safe fallbacks so the system degrades instead of failing hard.”</p>
-                  <table>
-                    <thead><tr><th>Fallback</th><th>Example</th></tr></thead>
-                    <tbody><tr><td>Cached data</td><td><span class="pill good">Stale ok</span></td></tr><tr><td>Partial response</td><td><span class="pill info">Degraded</span></td></tr><tr><td>Error message</td><td><span class="pill caution">Worst-case</span></td></tr></tbody>
-                  </table>
+                  <p>“I validate joins by comparing row counts and sampling output.”</p>
+                  <table><thead><tr><th>Issue</th><th>Fix</th></tr></thead><tbody><tr><td>Duplicates</td><td><span class="pill info">Add predicate</span></td></tr><tr><td>Missing rows</td><td><span class="pill caution">Use LEFT</span></td></tr></tbody></table>
                 </div>
               </div>
               <div class="code-blocks">
     <div>
-      <div class="code-title">Fallback method</div>
-      <pre>public Inventory fallback(String sku, Throwable ex) {
-  return Inventory.unavailable();
-}</pre>
+      <div class="code-title">Detect duplicates</div>
+      <pre>SELECT o.user_id, COUNT(*)
+FROM orders o
+JOIN users u ON u.id = o.user_id
+GROUP BY o.user_id
+HAVING COUNT(*) &gt; 1;</pre>
     </div>
     </div>
             </article>
 
             <article class="card warning">
               <div class="card-label">Warning</div>
-              <h3>Fallbacks can hide outages</h3>
-              <p>If you never alert on fallback use, you might miss incidents.</p>
+              <h3>Join errors are silent</h3>
+              <p>Bad joins can look correct until you audit counts.</p>
             </article>
 
             <article class="card technical">
               <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways"><li>Provide safe fallbacks.</li><li>Monitor fallback rate.</li><li>Tune retry budgets.</li></ul>
+              <ul class="takeaways"><li>Validate joins with counts.</li><li>Sample output rows.</li><li>Be explicit with predicates.</li></ul>
             </article>
 
             <article class="card quiz-card">
               <div class="card-label">Quiz</div>
-              <h3>Why are fallbacks important?</h3>
+              <h3>What is a common symptom of a bad join predicate?</h3>
               <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. They increase latency</button><button class="quiz-option">B. They allow graceful degradation</button><button class="quiz-option">C. They replace monitoring</button><button class="quiz-option">D. They remove retries</button>
+                <button class="quiz-option">A. Faster query</button><button class="quiz-option">B. Duplicate rows</button><button class="quiz-option">C. Smaller tables</button><button class="quiz-option">D. Better indexes</button>
               </div>
               <div class="quiz-result">
                 <strong>Correct answer: B</strong>
-                <span>Fallbacks keep the service usable when dependencies fail.</span>
+                <span>Bad predicates often multiply rows unexpectedly.</span>
               </div>
             </article>
           </div>
         </div>
       </section>
-<section class="section" data-section="5">
+      
+      <section class="section" data-section="4">
         <div class="section-inner">
           <div class="hero">
             <div class="section-label">Completion screen · Review mode</div>
-            <h2>🎉 Resilience Patterns (Resilience4j) Cheat Sheet</h2>
-            <p>Use this to recall circuit breakers, retries, bulkheads, and Spring integration.</p>
+            <h2>🎉 SQL Joins Deep Dive Cheat Sheet</h2>
+            <p>Quick recap of join types and when to use each.</p>
           </div>
 
           <div class="completion-grid">
@@ -1243,20 +1101,20 @@ public Inventory check(String sku) { ... }</pre>
               <h3>1-line interview answers</h3>
               <div class="cheat-list">
     <div class="cheat-item">
-      <h4>Circuit breaker</h4>
-      <p>Opens to stop calling a failing dependency.</p>
+      <h4>INNER</h4>
+      <p>Only matching rows.</p>
     </div>
     <div class="cheat-item">
-      <h4>Retry</h4>
-      <p>Retries transient errors with backoff.</p>
+      <h4>LEFT</h4>
+      <p>Keep left rows, nulls on right.</p>
     </div>
     <div class="cheat-item">
-      <h4>Bulkhead</h4>
-      <p>Isolates resources to prevent cascading failures.</p>
+      <h4>RIGHT/FULL</h4>
+      <p>Mirror left/full outer.</p>
     </div>
     <div class="cheat-item">
-      <h4>Rate limiter</h4>
-      <p>Protects services from overload.</p>
+      <h4>CROSS</h4>
+      <p>Cartesian product; use carefully.</p>
     </div>
               </div>
             </div>
@@ -1264,12 +1122,10 @@ public Inventory check(String sku) { ... }</pre>
             <div class="card analogy">
               <div class="card-label">What to remember</div>
               <h3>Fast mental model</h3>
-              <ul class="takeaways">
-                <li><strong>Circuit breaker</strong>: fail fast.</li><li><strong>Retry</strong>: handle transient errors.</li><li><strong>Bulkhead</strong>: isolate resources.</li><li><strong>Observability</strong>: monitor resilience events.</li>
-              </ul>
+              <ul class="takeaways"><li><strong>INNER</strong>: matching rows only.</li><li><strong>LEFT</strong>: keep left side.</li><li><strong>FULL</strong>: union of both.</li><li><strong>Join keys</strong>: drive correctness + performance.</li></ul>
               <h3 style="margin-top:22px;">Common traps</h3>
               <div class="badge-row">
-                <span class="pill bad">Retry storms</span><span class="pill bad">No fallbacks</span><span class="pill bad">Shared thread pools</span>
+                <span class="pill bad">Cartesian explosion</span><span class="pill bad">Missing join predicate</span><span class="pill bad">Unindexed join keys</span>
               </div>
             </div>
           </div>
@@ -1393,7 +1249,7 @@ function applySyntaxHighlighting() {
       dot.addEventListener('click', () => showSection(Number(dot.dataset.index)));
     });
 
-    const totalSeconds = 35 * 60;
+    const totalSeconds = 28 * 60;
     let remainingSeconds = totalSeconds;
 
     function formatTime(seconds) {

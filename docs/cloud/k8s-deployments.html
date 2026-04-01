@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Resilience Patterns (Resilience4j) Learning Module</title>
+  <title>Kubernetes Deployments & Scaling Learning Module</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -52,17 +52,6 @@
     .breadcrumb a:hover { color: var(--cyan); }
 
     .breadcrumb span { color: var(--text); font-weight: 600; }
-
-    .back-link {
-      display: inline-flex;
-      margin-top: 12px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.78rem;
-      color: var(--muted);
-      text-decoration: none;
-    }
-
-    .back-link:hover { color: var(--cyan); }
 
     .app {
       min-height: 100vh;
@@ -727,16 +716,16 @@
       <div class="topbar-inner">
         <div class="topbar-row">
           <div class="brand">
-            <h1>Resilience Patterns (Resilience4j)</h1>
+            <h1>Kubernetes Deployments & Scaling</h1>
             <small>Interactive 35-minute learning module</small>
           </div>
                 <div class="topbar-row">
           <div class="breadcrumb">
             <a href="../index.html">Home</a>
             <span>›</span>
-            <a href="index.html">Spring Boot</a>
+            <a href="index.html">Cloud</a>
             <span>›</span>
-            <span>Resilience Patterns (Resilience4j)</span>
+            <span>Kubernetes Deployments & Scaling</span>
           </div>
         </div>
           <div class="timer-wrap" aria-live="polite">
@@ -754,27 +743,26 @@
     </header>
 
     <main>
-      
+
       <section class="section active" data-section="0">
         <div class="section-inner">
           <div class="hero">
-            <div class="section-label">Section 1 of 5 · ~7 mins</div>
-            <h2>Circuit Breakers</h2>
-            <p>Circuit breakers stop calls to failing dependencies to protect the system and allow recovery.</p>
-            <a class="back-link" href="index.html">← Back to Spring Boot</a>
+            <div class="section-label">Section 1 of 5 · ~6 mins</div>
+            <h2>Deployment Core Mechanics</h2>
+            <p>Deployments manage ReplicaSets which in turn manage Pods. You define desired state and Kubernetes reconciles it.</p>
           </div>
 
           <div class="card-grid">
             <article class="card eli5">
               <div class="card-label">🧒 ELI5</div>
-              <h3>A safety fuse</h3>
-              <p>If the power surges, the fuse trips to protect the house.</p>
+              <h3>Robot manager</h3>
+              <p>You tell the robot how many toys you want, and it keeps fixing the shelf if any fall.</p>
             </article>
 
             <article class="card analogy">
               <div class="card-label">🔗 ANALOGY</div>
-              <h3>Traffic barrier</h3>
-              <p>If a road is closed, you stop cars from entering so it can recover.</p>
+              <h3>Factory line</h3>
+              <p>A supervisor ensures the correct number of workers are always on the line.</p>
             </article>
 
             <article class="card technical">
@@ -782,68 +770,72 @@
               <div class="two-col">
                 <div>
                   <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> A circuit breaker tracks failures and opens when a threshold is reached, then half-opens to test recovery.</p>
+                  <p><strong>Definition:</strong> A Deployment is a controller that ensures a desired number of Pod replicas through ReplicaSets.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
-                      <ul>
-                        <li>Prevents cascading failures</li><li>Fails fast</li><li>Gives dependencies time to recover</li>
-                      </ul>
+                      <ul><li>Declarative updates</li><li>Automated rollbacks</li><li>Self-healing pods</li></ul>
                     </div>
                     <div class="mini-panel">
                       <h4>Common pitfall</h4>
-                      <ul>
-                        <li>Repeated timeouts</li><li>Cascading failures</li><li>No fallback logic</li>
-                      </ul>
+                      <ul><li>Imperative kubectl apply without review</li><li>No labels/selector hygiene</li><li>Replica drift</li></ul>
                     </div>
                   </div>
-                  <div class="badge-row"><span class="pill good">Closed</span><span class="pill caution">Open</span><span class="pill info">Half-open</span></div>
-                  
-                  <div class="flow"><span class="flow-step">Call service</span><span class="flow-arrow">→</span><span class="flow-step">Failures exceed threshold</span><span class="flow-arrow">→</span><span class="flow-step">Open circuit</span><span class="flow-arrow">→</span><span class="flow-step">Half-open trial</span></div>
+                  <div class="badge-row"><span class="pill good">Deployment</span><span class="pill info">ReplicaSet</span><span class="pill caution">Pod</span></div>
+                  <div class="flow"><span class="flow-step">Define spec</span><span class="flow-arrow">→</span><span class="flow-step">ReplicaSet created</span><span class="flow-arrow">→</span><span class="flow-step">Pods scheduled</span><span class="flow-arrow">→</span><span class="flow-step">Controller reconciles</span></div>
                 </div>
                 <div>
                   <h3>Interview answer</h3>
-                  <p>“Circuit breakers fail fast when a dependency is unhealthy and periodically test recovery.”</p>
-                  
-                  <table>
-                    <thead><tr><th>State</th><th>Behavior</th></tr></thead>
-                    <tbody><tr><td>Closed</td><td><span class="pill good">Calls allowed</span></td></tr><tr><td>Open</td><td><span class="pill bad">Calls blocked</span></td></tr><tr><td>Half-open</td><td><span class="pill info">Trial requests</span></td></tr></tbody>
-                  </table>
+                  <p>“A Deployment defines desired state and manages ReplicaSets to keep Pods healthy and updated.”</p>
+                  <table><thead><tr><th>Resource</th><th>Purpose</th></tr></thead><tbody><tr><td>Deployment</td><td><span class="pill good">Desired state</span></td></tr><tr><td>ReplicaSet</td><td><span class="pill info">Replica manager</span></td></tr></tbody></table>
                 </div>
               </div>
-              
-    <div class="code-blocks">
+              <div class="code-blocks">
     <div>
-      <div class="code-title">Resilience4j annotation</div>
-      <pre>@CircuitBreaker(name = "inventory", fallbackMethod = "fallback")
-public Inventory check(String sku) { ... }</pre>
+      <div class="code-title">Basic Deployment</div>
+      <pre>apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-service
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: api
+  template:
+    metadata:
+      labels:
+        app: api
+    spec:
+      containers:
+        - name: api
+          image: myrepo/api:1.0.0
+          ports:
+            - containerPort: 8080</pre>
     </div>
     </div>
-              
             </article>
 
             <article class="card warning">
               <div class="card-label">Warning</div>
-              <h3>No fallback = poor UX</h3>
-              <p>If the circuit opens, you need a fallback or you will fail every request.</p>
+              <h3>Selector mismatches</h3>
+              <p>If selectors do not match template labels, rollouts break or orphan Pods.</p>
             </article>
 
             <article class="card technical">
               <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>Circuit breakers fail fast.</li><li>Use fallback methods.</li><li>Monitor breaker events.</li>
-              </ul>
+              <ul class="takeaways"><li>Deployments drive ReplicaSets.</li><li>Label consistency matters.</li><li>Use declarative updates.</li></ul>
             </article>
 
             <article class="card quiz-card">
               <div class="card-label">Quiz</div>
-              <h3>What is the purpose of the half-open state?</h3>
+              <h3>What does a Deployment directly manage?</h3>
               <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. Block all traffic</button><button class="quiz-option">B. Allow a few test calls</button><button class="quiz-option">C. Disable metrics</button><button class="quiz-option">D. Force retries</button>
+                <button class="quiz-option">A. Services</button><button class="quiz-option">B. ReplicaSets</button><button class="quiz-option">C. Nodes</button><button class="quiz-option">D. Ingress</button>
               </div>
               <div class="quiz-result">
                 <strong>Correct answer: B</strong>
-                <span>Half-open allows limited calls to test recovery.</span>
+                <span>Deployments create and manage ReplicaSets, which create Pods.</span>
               </div>
             </article>
           </div>
@@ -853,23 +845,22 @@ public Inventory check(String sku) { ... }</pre>
       <section class="section" data-section="1">
         <div class="section-inner">
           <div class="hero">
-            <div class="section-label">Section 2 of 5 · ~7 mins</div>
-            <h2>Retries and Timeouts</h2>
-            <p>Retries handle transient errors, while timeouts prevent hanging calls.</p>
-            
+            <div class="section-label">Section 2 of 5 · ~6 mins</div>
+            <h2>Rolling Updates & Rollbacks</h2>
+            <p>Rollouts replace old Pods with new ones while maintaining availability through surge and unavailable limits.</p>
           </div>
 
           <div class="card-grid">
             <article class="card eli5">
               <div class="card-label">🧒 ELI5</div>
-              <h3>Try again, but not forever</h3>
-              <p>If a toy does not work, you try again a couple of times then move on.</p>
+              <h3>Change tires while driving</h3>
+              <p>Replace one tire at a time so the car keeps moving.</p>
             </article>
 
             <article class="card analogy">
               <div class="card-label">🔗 ANALOGY</div>
-              <h3>Redial with patience</h3>
-              <p>You redial after a short wait instead of hanging on forever.</p>
+              <h3>Shift handoff</h3>
+              <p>New workers come in before the old shift leaves.</p>
             </article>
 
             <article class="card technical">
@@ -877,72 +868,58 @@ public Inventory check(String sku) { ... }</pre>
               <div class="two-col">
                 <div>
                   <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Retries should use backoff and be applied only to idempotent operations, with timeouts to cap latency.</p>
+                  <p><strong>Definition:</strong> Rolling updates use maxSurge and maxUnavailable to control rollout pace and availability.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
-                      <ul>
-                        <li>Improves resilience</li><li>Avoids long waits</li><li>Handles transient faults</li>
-                      </ul>
+                      <ul><li>Zero/low downtime deploys</li><li>Controlled risk</li><li>Easy rollback</li></ul>
                     </div>
                     <div class="mini-panel">
                       <h4>Common pitfall</h4>
-                      <ul>
-                        <li>Retry storms</li><li>No timeouts</li><li>Retrying writes</li>
-                      </ul>
+                      <ul><li>maxUnavailable too high</li><li>No readiness checks</li><li>No monitoring during rollout</li></ul>
                     </div>
                   </div>
-                  <div class="badge-row"><span class="pill good">Backoff</span><span class="pill info">Timeout</span><span class="pill caution">Idempotent</span></div>
-                  
-                  <div class="flow"><span class="flow-step">Call</span><span class="flow-arrow">→</span><span class="flow-step">Timeout or error</span><span class="flow-arrow">→</span><span class="flow-step">Retry with backoff</span><span class="flow-arrow">→</span><span class="flow-step">Fail or succeed</span></div>
+                  <div class="badge-row"><span class="pill good">maxSurge</span><span class="pill caution">maxUnavailable</span><span class="pill info">rollback</span></div>
+                  <div class="flow"><span class="flow-step">Create new RS</span><span class="flow-arrow">→</span><span class="flow-step">Scale up new Pods</span><span class="flow-arrow">→</span><span class="flow-step">Scale down old Pods</span><span class="flow-arrow">→</span><span class="flow-step">Complete rollout</span></div>
                 </div>
                 <div>
                   <h3>Interview answer</h3>
-                  <p>“Retries with backoff work for transient errors, but only for idempotent calls and with timeouts.”</p>
-                  
-                  <table>
-                    <thead><tr><th>Rule</th><th>Reason</th></tr></thead>
-                    <tbody><tr><td>Use backoff</td><td><span class="pill good">Reduce load</span></td></tr><tr><td>Limit attempts</td><td><span class="pill info">Avoid storms</span></td></tr><tr><td>Idempotent only</td><td><span class="pill caution">Prevent duplicates</span></td></tr></tbody>
-                  </table>
+                  <p>“Rolling updates balance availability and speed using maxSurge/maxUnavailable; rollbacks revert to previous ReplicaSet.”</p>
+                  <table><thead><tr><th>Setting</th><th>Effect</th></tr></thead><tbody><tr><td>maxSurge</td><td><span class="pill good">Extra pods allowed</span></td></tr><tr><td>maxUnavailable</td><td><span class="pill bad">Pods allowed down</span></td></tr></tbody></table>
                 </div>
               </div>
-              
-    <div class="code-blocks">
+              <div class="code-blocks">
     <div>
-      <div class="code-title">Retry config</div>
-      <pre>resilience4j:
-  retry:
-    instances:
-      payments:
-        max-attempts: 3
-        wait-duration: 200ms</pre>
+      <div class="code-title">Rolling update strategy</div>
+      <pre>strategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxSurge: 25%
+    maxUnavailable: 25%</pre>
     </div>
     </div>
-              
             </article>
 
             <article class="card warning">
               <div class="card-label">Warning</div>
-              <h3>Retries can amplify failures</h3>
-              <p>If every caller retries, a failing service can get overwhelmed.</p>
+              <h3>No rollback without history</h3>
+              <p>If you prune ReplicaSet history, rollback targets disappear.</p>
             </article>
 
             <article class="card technical">
               <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>Retry only safe calls.</li><li>Add backoff.</li><li>Always use timeouts.</li>
-              </ul>
+              <ul class="takeaways"><li>Tune maxSurge/maxUnavailable.</li><li>Monitor readiness.</li><li>Keep rollout history.</li></ul>
             </article>
 
             <article class="card quiz-card">
               <div class="card-label">Quiz</div>
-              <h3>Why use exponential backoff on retries?</h3>
+              <h3>What controls how many extra Pods can be created during a rollout?</h3>
               <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. To increase throughput</button><button class="quiz-option">B. To reduce load on failing services</button><button class="quiz-option">C. To remove timeouts</button><button class="quiz-option">D. To avoid idempotency</button>
+                <button class="quiz-option">A. maxUnavailable</button><button class="quiz-option">B. maxSurge</button><button class="quiz-option">C. replicas</button><button class="quiz-option">D. revisionHistoryLimit</button>
               </div>
               <div class="quiz-result">
                 <strong>Correct answer: B</strong>
-                <span>Backoff reduces pressure on a failing service.</span>
+                <span>maxSurge specifies extra Pods above desired replicas.</span>
               </div>
             </article>
           </div>
@@ -953,22 +930,21 @@ public Inventory check(String sku) { ... }</pre>
         <div class="section-inner">
           <div class="hero">
             <div class="section-label">Section 3 of 5 · ~7 mins</div>
-            <h2>Bulkheads and Rate Limiting</h2>
-            <p>Bulkheads isolate resources so one failure does not take down the whole system.</p>
-            
+            <h2>Autoscaling with HPA</h2>
+            <p>Horizontal Pod Autoscaler adjusts replica count based on metrics and resource requests.</p>
           </div>
 
           <div class="card-grid">
             <article class="card eli5">
               <div class="card-label">🧒 ELI5</div>
-              <h3>Separate rooms</h3>
-              <p>If one room is noisy, the rest of the house stays quiet.</p>
+              <h3>More checkout lanes</h3>
+              <p>Open more lanes when the line gets long.</p>
             </article>
 
             <article class="card analogy">
               <div class="card-label">🔗 ANALOGY</div>
-              <h3>Lifeboats on a ship</h3>
-              <p>Compartments prevent water from flooding the entire ship.</p>
+              <h3>Elastic team</h3>
+              <p>You add contractors when demand spikes.</p>
             </article>
 
             <article class="card technical">
@@ -976,68 +952,71 @@ public Inventory check(String sku) { ... }</pre>
               <div class="two-col">
                 <div>
                   <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Bulkheads limit concurrent calls via separate thread pools or semaphores, and rate limiters cap traffic.</p>
+                  <p><strong>Definition:</strong> HPA scales replicas based on metrics (CPU, memory, or custom) relative to requested resources.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
-                      <ul>
-                        <li>Prevents resource exhaustion</li><li>Keeps critical paths alive</li><li>Controls load</li>
-                      </ul>
+                      <ul><li>Keeps latency stable</li><li>Saves cost</li><li>Responds to demand</li></ul>
                     </div>
                     <div class="mini-panel">
                       <h4>Common pitfall</h4>
-                      <ul>
-                        <li>Shared thread pool for everything</li><li>No rate limits</li><li>Cascading failures</li>
-                      </ul>
+                      <ul><li>No requests/limits</li><li>Wrong metrics</li><li>Thundering herd scaling</li></ul>
                     </div>
                   </div>
-                  <div class="badge-row"><span class="pill good">Bulkhead</span><span class="pill info">Semaphore</span><span class="pill caution">Rate limit</span></div>
-                  
-                  <div class="flow"><span class="flow-step">Request enters</span><span class="flow-arrow">→</span><span class="flow-step">Check capacity</span><span class="flow-arrow">→</span><span class="flow-step">Execute or reject</span><span class="flow-arrow">→</span><span class="flow-step">Protect resources</span></div>
+                  <div class="badge-row"><span class="pill good">HPA</span><span class="pill info">metrics</span><span class="pill caution">requests</span></div>
+                  <div class="flow"><span class="flow-step">Collect metrics</span><span class="flow-arrow">→</span><span class="flow-step">Compare to target</span><span class="flow-arrow">→</span><span class="flow-step">Adjust replicas</span><span class="flow-arrow">→</span><span class="flow-step">Stabilize</span></div>
                 </div>
                 <div>
                   <h3>Interview answer</h3>
-                  <p>“Bulkheads isolate expensive calls with their own pools, while rate limiting caps total load.”</p>
-                  
-                  <table>
-                    <thead><tr><th>Pattern</th><th>Goal</th></tr></thead>
-                    <tbody><tr><td>Bulkhead</td><td><span class="pill good">Isolation</span></td></tr><tr><td>Rate limiter</td><td><span class="pill info">Traffic control</span></td></tr><tr><td>Timeout</td><td><span class="pill caution">Bound latency</span></td></tr></tbody>
-                  </table>
+                  <p>“HPA scales Pods based on metrics, relying on resource requests as baseline.”</p>
+                  <table><thead><tr><th>Metric</th><th>Use</th></tr></thead><tbody><tr><td>CPU %</td><td><span class="pill info">Default metric</span></td></tr><tr><td>Custom</td><td><span class="pill good">App-specific</span></td></tr></tbody></table>
                 </div>
               </div>
-              
-    <div class="code-blocks">
+              <div class="code-blocks">
     <div>
-      <div class="code-title">Bulkhead annotation</div>
-      <pre>@Bulkhead(name = "inventory", type = Bulkhead.Type.SEMAPHORE)
-public Inventory check(String sku) { ... }</pre>
+      <div class="code-title">HPA example</div>
+      <pre>apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: api-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: api-service
+  minReplicas: 3
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70</pre>
     </div>
     </div>
-              
             </article>
 
             <article class="card warning">
               <div class="card-label">Warning</div>
-              <h3>Shared pools cause cascades</h3>
-              <p>If all calls share one pool, a slow dependency can exhaust all threads.</p>
+              <h3>Missing resource requests</h3>
+              <p>Without CPU/memory requests, HPA decisions are unreliable.</p>
             </article>
 
             <article class="card technical">
               <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>Bulkheads isolate load.</li><li>Rate limit protects services.</li><li>Separate pools for critical paths.</li>
-              </ul>
+              <ul class="takeaways"><li>Define requests.</li><li>Tune targets.</li><li>Use custom metrics for business KPIs.</li></ul>
             </article>
 
             <article class="card quiz-card">
               <div class="card-label">Quiz</div>
-              <h3>What does a bulkhead protect against?</h3>
+              <h3>HPA uses which baseline to calculate utilization?</h3>
               <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. Data inconsistency</button><button class="quiz-option">B. Resource exhaustion</button><button class="quiz-option">C. SQL injection</button><button class="quiz-option">D. Cache misses</button>
+                <button class="quiz-option">A. Limits</button><button class="quiz-option">B. Requests</button><button class="quiz-option">C. Node capacity</button><button class="quiz-option">D. Pod count</button>
               </div>
               <div class="quiz-result">
                 <strong>Correct answer: B</strong>
-                <span>Bulkheads limit resource usage so one dependency cannot exhaust all capacity.</span>
+                <span>Utilization is based on resource requests, not limits.</span>
               </div>
             </article>
           </div>
@@ -1047,23 +1026,22 @@ public Inventory check(String sku) { ... }</pre>
       <section class="section" data-section="3">
         <div class="section-inner">
           <div class="hero">
-            <div class="section-label">Section 4 of 5 · ~7 mins</div>
-            <h2>Spring Integration and Observability</h2>
-            <p>Resilience4j integrates with Spring Boot through annotations and configuration, with event metrics.</p>
-            
+            <div class="section-label">Section 4 of 5 · ~6 mins</div>
+            <h2>Health Probes & PodDisruptionBudgets</h2>
+            <p>Readiness, liveness, and startup probes gate traffic and restarts. PDBs prevent too many Pods from going down at once.</p>
           </div>
 
           <div class="card-grid">
             <article class="card eli5">
               <div class="card-label">🧒 ELI5</div>
-              <h3>Plug-in safety kit</h3>
-              <p>You add a safety kit to your bike so brakes and lights are always there.</p>
+              <h3>Doctor checkups</h3>
+              <p>You only let healthy kids go to the playground.</p>
             </article>
 
             <article class="card analogy">
               <div class="card-label">🔗 ANALOGY</div>
-              <h3>Airbag system</h3>
-              <p>Airbags are built in and activate when needed without manual effort.</p>
+              <h3>Event safety staff</h3>
+              <p>A minimum number of staff must always stay for safety.</p>
             </article>
 
             <article class="card technical">
@@ -1071,169 +1049,167 @@ public Inventory check(String sku) { ... }</pre>
               <div class="two-col">
                 <div>
                   <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Resilience4j exposes annotations, config, and events that integrate with Boot and Micrometer.</p>
+                  <p><strong>Definition:</strong> Probes signal whether a container is ready/live; PDBs limit voluntary disruptions.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
-                      <ul>
-                        <li>Centralized configuration</li><li>Consistent behavior</li><li>Metrics on resilience events</li>
-                      </ul>
+                      <ul><li>Safe rollouts</li><li>Avoids serving bad pods</li><li>Controls maintenance impact</li></ul>
                     </div>
                     <div class="mini-panel">
                       <h4>Common pitfall</h4>
-                      <ul>
-                        <li>Hard-coded resilience logic</li><li>No monitoring</li><li>Inconsistent retries</li>
-                      </ul>
+                      <ul><li>No readiness probe</li><li>Long liveness timeout</li><li>PDB too strict blocking node drain</li></ul>
                     </div>
                   </div>
-                  <div class="badge-row"><span class="pill good">@CircuitBreaker</span><span class="pill info">@Retry</span><span class="pill caution">Metrics</span></div>
-                  
-                  <div class="flow"><span class="flow-step">Annotate method</span><span class="flow-arrow">→</span><span class="flow-step">Apply policies</span><span class="flow-arrow">→</span><span class="flow-step">Emit events</span><span class="flow-arrow">→</span><span class="flow-step">Monitor</span></div>
+                  <div class="badge-row"><span class="pill good">readiness</span><span class="pill info">liveness</span><span class="pill caution">PDB</span></div>
+                  <div class="flow"><span class="flow-step">Startup probe</span><span class="flow-arrow">→</span><span class="flow-step">Readiness gate</span><span class="flow-arrow">→</span><span class="flow-step">Liveness restarts</span><span class="flow-arrow">→</span><span class="flow-step">PDB protects</span></div>
                 </div>
                 <div>
                   <h3>Interview answer</h3>
-                  <p>“Resilience4j integrates via annotations and exposes metrics so we can monitor circuit states and retries.”</p>
-                  
-                  <table>
-                    <thead><tr><th>Signal</th><th>Value</th></tr></thead>
-                    <tbody><tr><td>State changes</td><td><span class="pill good">Breaker health</span></td></tr><tr><td>Retry count</td><td><span class="pill info">Transient failures</span></td></tr><tr><td>Rejections</td><td><span class="pill caution">Capacity limit</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              
-    <div class="code-blocks">
-    <div>
-      <div class="code-title">Resilience4j config</div>
-      <pre>resilience4j:
-  circuitbreaker:
-    instances:
-      inventory:
-        failure-rate-threshold: 50
-        wait-duration-in-open-state: 10s</pre>
-    </div>
-    </div>
-              
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Silent failures</h3>
-              <p>If you do not monitor resilience events, you may not notice failing dependencies.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>Use annotations for consistency.</li><li>Monitor breaker events.</li><li>Tune thresholds carefully.</li>
-              </ul>
-            </article>
-
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>Why integrate resilience metrics with Micrometer?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. To disable retries</button><button class="quiz-option">B. To monitor breaker and retry behavior</button><button class="quiz-option">C. To reduce latency only</button><button class="quiz-option">D. To avoid backoff</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>Metrics reveal how breakers and retries behave in production.</span>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-      
-      
-      <section class="section" data-section="4">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 5 of 5 · ~7 mins</div>
-            <h2>Deep Dive: Fallbacks and Failure Budgets</h2>
-            <p>Resilience patterns must be paired with sensible fallbacks and SLO budgets.</p>
-          </div>
-
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Have a backup plan</h3>
-              <p>If the toy breaks, you have another game to play.</p>
-            </article>
-
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Emergency exits</h3>
-              <p>Buildings must have exits in case a path fails.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Fallbacks provide degraded responses while circuit breakers and retries protect systems.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul><li>Improves user experience</li><li>Avoids full outages</li><li>Supports graceful degradation</li></ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common pitfall</h4>
-                      <ul><li>No fallback</li><li>Fallback slower than main path</li><li>Retry storms</li></ul>
-                    </div>
-                  </div>
-                  <div class="badge-row"><span class="pill good">Fallback</span><span class="pill info">Budget</span><span class="pill caution">Graceful</span></div>
-                  <div class="flow"><span class="flow-step">Call fails</span><span class="flow-arrow">→</span><span class="flow-step">Breaker opens</span><span class="flow-arrow">→</span><span class="flow-step">Fallback returns</span><span class="flow-arrow">→</span><span class="flow-step">Track budget</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“I combine circuit breakers with safe fallbacks so the system degrades instead of failing hard.”</p>
-                  <table>
-                    <thead><tr><th>Fallback</th><th>Example</th></tr></thead>
-                    <tbody><tr><td>Cached data</td><td><span class="pill good">Stale ok</span></td></tr><tr><td>Partial response</td><td><span class="pill info">Degraded</span></td></tr><tr><td>Error message</td><td><span class="pill caution">Worst-case</span></td></tr></tbody>
-                  </table>
+                  <p>“Readiness gates traffic, liveness restarts stuck pods, PDBs ensure a minimum number stay available.”</p>
+                  <table><thead><tr><th>Probe</th><th>Purpose</th></tr></thead><tbody><tr><td>Readiness</td><td><span class="pill good">Traffic gate</span></td></tr><tr><td>Liveness</td><td><span class="pill bad">Restart stuck pods</span></td></tr></tbody></table>
                 </div>
               </div>
               <div class="code-blocks">
     <div>
-      <div class="code-title">Fallback method</div>
-      <pre>public Inventory fallback(String sku, Throwable ex) {
-  return Inventory.unavailable();
-}</pre>
+      <div class="code-title">Probe + PDB</div>
+      <pre>readinessProbe:
+  httpGet:
+    path: /health/ready
+    port: 8080
+  initialDelaySeconds: 5
+  periodSeconds: 10
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: api-pdb
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: api</pre>
     </div>
     </div>
             </article>
 
             <article class="card warning">
               <div class="card-label">Warning</div>
-              <h3>Fallbacks can hide outages</h3>
-              <p>If you never alert on fallback use, you might miss incidents.</p>
+              <h3>PDBs can block node drains</h3>
+              <p>If minAvailable is too high, nodes cannot be drained during maintenance.</p>
             </article>
 
             <article class="card technical">
               <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways"><li>Provide safe fallbacks.</li><li>Monitor fallback rate.</li><li>Tune retry budgets.</li></ul>
+              <ul class="takeaways"><li>Add readiness probes.</li><li>Use PDBs carefully.</li><li>Separate startup and liveness checks.</li></ul>
             </article>
 
             <article class="card quiz-card">
               <div class="card-label">Quiz</div>
-              <h3>Why are fallbacks important?</h3>
+              <h3>Which probe controls when a Pod can receive traffic?</h3>
               <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. They increase latency</button><button class="quiz-option">B. They allow graceful degradation</button><button class="quiz-option">C. They replace monitoring</button><button class="quiz-option">D. They remove retries</button>
+                <button class="quiz-option">A. Liveness</button><button class="quiz-option">B. Readiness</button><button class="quiz-option">C. Startup</button><button class="quiz-option">D. None</button>
               </div>
               <div class="quiz-result">
                 <strong>Correct answer: B</strong>
-                <span>Fallbacks keep the service usable when dependencies fail.</span>
+                <span>Readiness determines if the Pod is ready to receive traffic.</span>
               </div>
             </article>
           </div>
         </div>
       </section>
-<section class="section" data-section="5">
+
+      <section class="section" data-section="4">
+        <div class="section-inner">
+          <div class="hero">
+            <div class="section-label">Section 5 of 5 · ~7 mins</div>
+            <h2>Requests, Limits & QoS</h2>
+            <p>Resource requests and limits define scheduling and throttling behavior; they also determine QoS classes.</p>
+          </div>
+
+          <div class="card-grid">
+            <article class="card eli5">
+              <div class="card-label">🧒 ELI5</div>
+              <h3>Seat reservations</h3>
+              <p>You reserve seats so everyone fits, and set rules for snacks.</p>
+            </article>
+
+            <article class="card analogy">
+              <div class="card-label">🔗 ANALOGY</div>
+              <h3>Restaurant bookings</h3>
+              <p>Requests guarantee a table; limits stop a party from taking over.</p>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Technical</div>
+              <div class="two-col">
+                <div>
+                  <h3>What it means in real code</h3>
+                  <p><strong>Definition:</strong> Requests guarantee minimum CPU/memory; limits cap usage and influence QoS (Guaranteed/Burstable/BestEffort).</p>
+                  <div class="mini-grid">
+                    <div class="mini-panel">
+                      <h4>Why it matters</h4>
+                      <ul><li>Stable scheduling</li><li>HPA accuracy</li><li>Prevents noisy neighbors</li></ul>
+                    </div>
+                    <div class="mini-panel">
+                      <h4>Common pitfall</h4>
+                      <ul><li>No limits for bursty apps</li><li>Requests too low</li><li>QoS mismatch</li></ul>
+                    </div>
+                  </div>
+                  <div class="badge-row"><span class="pill good">requests</span><span class="pill caution">limits</span><span class="pill info">QoS</span></div>
+                  <div class="flow"><span class="flow-step">Set requests</span><span class="flow-arrow">→</span><span class="flow-step">Scheduler places pod</span><span class="flow-arrow">→</span><span class="flow-step">Limits enforce caps</span><span class="flow-arrow">→</span><span class="flow-step">QoS class assigned</span></div>
+                </div>
+                <div>
+                  <h3>Interview answer</h3>
+                  <p>“Requests drive scheduling and autoscaling; limits cap usage and define QoS.”</p>
+                  <table><thead><tr><th>QoS</th><th>Criteria</th></tr></thead><tbody><tr><td>Guaranteed</td><td><span class="pill good">Requests = limits</span></td></tr><tr><td>Burstable</td><td><span class="pill info">Requests < limits</span></td></tr></tbody></table>
+                </div>
+              </div>
+              <div class="code-blocks">
+    <div>
+      <div class="code-title">Requests and limits</div>
+      <pre>resources:
+  requests:
+    cpu: "500m"
+    memory: "512Mi"
+  limits:
+    cpu: "1"
+    memory: "1Gi"</pre>
+    </div>
+    </div>
+            </article>
+
+            <article class="card warning">
+              <div class="card-label">Warning</div>
+              <h3>Throttling surprises</h3>
+              <p>CPU limits can throttle throughput and increase latency.</p>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Mini takeaway</div>
+              <ul class="takeaways"><li>Set realistic requests.</li><li>Use limits intentionally.</li><li>Know QoS impact.</li></ul>
+            </article>
+
+            <article class="card quiz-card">
+              <div class="card-label">Quiz</div>
+              <h3>Which QoS class requires requests to equal limits?</h3>
+              <div class="quiz-options" data-answer="2">
+                <button class="quiz-option">A. BestEffort</button><button class="quiz-option">B. Burstable</button><button class="quiz-option">C. Guaranteed</button><button class="quiz-option">D. Elastic</button>
+              </div>
+              <div class="quiz-result">
+                <strong>Correct answer: C</strong>
+                <span>Guaranteed QoS requires requests equal limits for CPU/memory.</span>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" data-section="5">
         <div class="section-inner">
           <div class="hero">
             <div class="section-label">Completion screen · Review mode</div>
-            <h2>🎉 Resilience Patterns (Resilience4j) Cheat Sheet</h2>
-            <p>Use this to recall circuit breakers, retries, bulkheads, and Spring integration.</p>
+            <h2>🎉 Kubernetes Deployments & Scaling Cheat Sheet</h2>
+            <p>Master rollouts, autoscaling, and reliability patterns in Kubernetes deployments.</p>
           </div>
 
           <div class="completion-grid">
@@ -1243,20 +1219,20 @@ public Inventory check(String sku) { ... }</pre>
               <h3>1-line interview answers</h3>
               <div class="cheat-list">
     <div class="cheat-item">
-      <h4>Circuit breaker</h4>
-      <p>Opens to stop calling a failing dependency.</p>
+      <h4>Deployment</h4>
+      <p>Declarative desired state for ReplicaSets and Pods.</p>
     </div>
     <div class="cheat-item">
-      <h4>Retry</h4>
-      <p>Retries transient errors with backoff.</p>
+      <h4>Rolling update</h4>
+      <p>Gradually replaces Pods with maxSurge/maxUnavailable.</p>
     </div>
     <div class="cheat-item">
-      <h4>Bulkhead</h4>
-      <p>Isolates resources to prevent cascading failures.</p>
+      <h4>HPA</h4>
+      <p>Scales replicas based on metrics like CPU or custom metrics.</p>
     </div>
     <div class="cheat-item">
-      <h4>Rate limiter</h4>
-      <p>Protects services from overload.</p>
+      <h4>PDB</h4>
+      <p>Protects minimum available Pods during disruptions.</p>
     </div>
               </div>
             </div>
@@ -1264,13 +1240,9 @@ public Inventory check(String sku) { ... }</pre>
             <div class="card analogy">
               <div class="card-label">What to remember</div>
               <h3>Fast mental model</h3>
-              <ul class="takeaways">
-                <li><strong>Circuit breaker</strong>: fail fast.</li><li><strong>Retry</strong>: handle transient errors.</li><li><strong>Bulkhead</strong>: isolate resources.</li><li><strong>Observability</strong>: monitor resilience events.</li>
-              </ul>
+              <ul class="takeaways"><li><strong>Declarative</strong>: you set desired state; controller converges.</li><li><strong>Rollouts</strong>: control speed + safety of updates.</li><li><strong>Autoscale</strong>: HPA + metrics + resource requests.</li><li><strong>Resilience</strong>: probes + PDBs + budgets.</li></ul>
               <h3 style="margin-top:22px;">Common traps</h3>
-              <div class="badge-row">
-                <span class="pill bad">Retry storms</span><span class="pill bad">No fallbacks</span><span class="pill bad">Shared thread pools</span>
-              </div>
+              <div class="badge-row"><span class="pill bad">Missing resource requests</span><span class="pill bad">Aggressive maxUnavailable</span><span class="pill bad">No readiness probes</span></div>
             </div>
           </div>
         </div>

@@ -35,6 +35,24 @@
 
     a { color: inherit; }
 
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .breadcrumb a {
+      color: var(--muted);
+      text-decoration: none;
+    }
+
+    .breadcrumb a:hover { color: var(--cyan); }
+
+    .breadcrumb span { color: var(--text); font-weight: 600; }
+
     .back-link {
       display: inline-flex;
       margin-top: 12px;
@@ -710,15 +728,24 @@
         <div class="topbar-row">
           <div class="brand">
             <h1>OAuth2/OIDC</h1>
-            <small>Interactive 28-minute learning module</small>
+            <small>Interactive 35-minute learning module</small>
           </div>
+                <div class="topbar-row">
+          <div class="breadcrumb">
+            <a href="../index.html">Home</a>
+            <span>›</span>
+            <a href="index.html">Spring Boot</a>
+            <span>›</span>
+            <span>OAuth2/OIDC</span>
+          </div>
+        </div>
           <div class="timer-wrap" aria-live="polite">
             <span class="timer-label">Time Left</span>
-            <span class="timer" id="timer">28:00</span>
+            <span class="timer" id="timer">35:00</span>
           </div>
         </div>
         <div class="topbar-row">
-          <nav class="nav-dots" aria-label="Section navigation"><button class="nav-dot active" data-index="0" aria-label="Go to section 1">1</button><button class="nav-dot" data-index="1" aria-label="Go to section 2">2</button><button class="nav-dot" data-index="2" aria-label="Go to section 3">3</button><button class="nav-dot" data-index="3" aria-label="Go to section 4">4</button><button class="nav-dot" data-index="4" aria-label="Go to completion screen">5</button></nav>
+                    <nav class="nav-dots" aria-label="Section navigation"><button class="nav-dot active" data-index="0" aria-label="Go to section 1">1</button><button class="nav-dot" data-index="1" aria-label="Go to section 2">2</button><button class="nav-dot" data-index="2" aria-label="Go to section 3">3</button><button class="nav-dot" data-index="3" aria-label="Go to section 4">4</button><button class="nav-dot" data-index="4" aria-label="Go to section 5">5</button><button class="nav-dot" data-index="5" aria-label="Go to completion screen">6</button></nav>
         </div>
         <div class="progress-shell" aria-hidden="true">
           <div class="progress-bar" id="progressBar"></div>
@@ -731,7 +758,7 @@
       <section class="section active" data-section="0">
         <div class="section-inner">
           <div class="hero">
-            <div class="section-label">Section 1 of 4 · ~7 mins</div>
+            <div class="section-label">Section 1 of 5 · ~7 mins</div>
             <h2>Roles and Tokens</h2>
             <p>OAuth2 defines roles for clients, authorization servers, and resource servers, while OIDC adds identity.</p>
             <a class="back-link" href="index.html">← Back to Spring Boot</a>
@@ -830,7 +857,7 @@
       <section class="section" data-section="1">
         <div class="section-inner">
           <div class="hero">
-            <div class="section-label">Section 2 of 4 · ~7 mins</div>
+            <div class="section-label">Section 2 of 5 · ~7 mins</div>
             <h2>OAuth2 Flows</h2>
             <p>Authorization Code with PKCE is the standard flow for browser and mobile clients.</p>
             
@@ -930,7 +957,7 @@
       <section class="section" data-section="2">
         <div class="section-inner">
           <div class="hero">
-            <div class="section-label">Section 3 of 4 · ~7 mins</div>
+            <div class="section-label">Section 3 of 5 · ~7 mins</div>
             <h2>Spring Boot Configuration</h2>
             <p>Spring Boot provides starters for OAuth2 client and resource server configuration.</p>
             
@@ -1031,7 +1058,7 @@ SecurityFilterChain security(HttpSecurity http) throws Exception {
       <section class="section" data-section="3">
         <div class="section-inner">
           <div class="hero">
-            <div class="section-label">Section 4 of 4 · ~7 mins</div>
+            <div class="section-label">Section 4 of 5 · ~7 mins</div>
             <h2>Security Pitfalls and Validation</h2>
             <p>Validate issuer, audience, and clock skew to avoid accepting invalid tokens.</p>
             
@@ -1126,7 +1153,95 @@ SecurityFilterChain security(HttpSecurity http) throws Exception {
         </div>
       </section>
       
+      
       <section class="section" data-section="4">
+        <div class="section-inner">
+          <div class="hero">
+            <div class="section-label">Section 5 of 5 · ~7 mins</div>
+            <h2>Deep Dive: Token Lifetimes & Refresh</h2>
+            <p>Correct token lifetimes and refresh strategies prevent security gaps and poor UX.</p>
+          </div>
+
+          <div class="card-grid">
+            <article class="card eli5">
+              <div class="card-label">🧒 ELI5</div>
+              <h3>Short passes</h3>
+              <p>Short passes expire quickly so you check tickets again.</p>
+            </article>
+
+            <article class="card analogy">
+              <div class="card-label">🔗 ANALOGY</div>
+              <h3>Temporary badges</h3>
+              <p>Badges expire and must be renewed.</p>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Technical</div>
+              <div class="two-col">
+                <div>
+                  <h3>What it means in real code</h3>
+                  <p><strong>Definition:</strong> Access tokens should be short-lived; refresh tokens renew them securely.</p>
+                  <div class="mini-grid">
+                    <div class="mini-panel">
+                      <h4>Why it matters</h4>
+                      <ul><li>Limits token leakage impact</li><li>Improves security</li><li>Supports long sessions</li></ul>
+                    </div>
+                    <div class="mini-panel">
+                      <h4>Common pitfall</h4>
+                      <ul><li>Long-lived access tokens</li><li>Refresh tokens in browser storage</li><li>No revocation</li></ul>
+                    </div>
+                  </div>
+                  <div class="badge-row"><span class="pill good">Short TTL</span><span class="pill info">Refresh</span><span class="pill caution">Revocation</span></div>
+                  <div class="flow"><span class="flow-step">Get access token</span><span class="flow-arrow">→</span><span class="flow-step">Use API</span><span class="flow-arrow">→</span><span class="flow-step">Token expires</span><span class="flow-arrow">→</span><span class="flow-step">Refresh token</span></div>
+                </div>
+                <div>
+                  <h3>Interview answer</h3>
+                  <p>“I keep access tokens short-lived and use refresh tokens securely to renew.”</p>
+                  <table>
+                    <thead><tr><th>Token</th><th>Lifetime</th></tr></thead>
+                    <tbody><tr><td>Access</td><td><span class="pill good">Minutes</span></td></tr><tr><td>Refresh</td><td><span class="pill info">Hours/days</span></td></tr><tr><td>ID</td><td><span class="pill caution">Short-lived</span></td></tr></tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="code-blocks">
+    <div>
+      <div class="code-title">Token validation config</div>
+      <pre>spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://issuer.example.com</pre>
+    </div>
+    </div>
+            </article>
+
+            <article class="card warning">
+              <div class="card-label">Warning</div>
+              <h3>Never store refresh tokens in JS</h3>
+              <p>Keep refresh tokens server-side or in secure storage.</p>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Mini takeaway</div>
+              <ul class="takeaways"><li>Short access token TTLs.</li><li>Secure refresh tokens.</li><li>Validate issuer/audience.</li></ul>
+            </article>
+
+            <article class="card quiz-card">
+              <div class="card-label">Quiz</div>
+              <h3>Why keep access tokens short-lived?</h3>
+              <div class="quiz-options" data-answer="1">
+                <button class="quiz-option">A. To speed logins</button><button class="quiz-option">B. To reduce impact if leaked</button><button class="quiz-option">C. To avoid JWT signing</button><button class="quiz-option">D. To disable refresh</button>
+              </div>
+              <div class="quiz-result">
+                <strong>Correct answer: B</strong>
+                <span>Short lifetimes limit exposure if a token leaks.</span>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+<section class="section" data-section="5">
         <div class="section-inner">
           <div class="hero">
             <div class="section-label">Completion screen · Review mode</div>
@@ -1291,7 +1406,7 @@ function applySyntaxHighlighting() {
       dot.addEventListener('click', () => showSection(Number(dot.dataset.index)));
     });
 
-    const totalSeconds = 28 * 60;
+    const totalSeconds = 35 * 60;
     let remainingSeconds = totalSeconds;
 
     function formatTime(seconds) {

@@ -35,6 +35,24 @@
 
     a { color: inherit; }
 
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .breadcrumb a {
+      color: var(--muted);
+      text-decoration: none;
+    }
+
+    .breadcrumb a:hover { color: var(--cyan); }
+
+    .breadcrumb span { color: var(--text); font-weight: 600; }
+
     .app {
       min-height: 100vh;
       display: flex;
@@ -699,15 +717,24 @@
         <div class="topbar-row">
           <div class="brand">
             <h1>Streams API</h1>
-            <small>Interactive 28-minute learning module</small>
+            <small>Interactive 35-minute learning module</small>
           </div>
+                <div class="topbar-row">
+          <div class="breadcrumb">
+            <a href="../index.html">Home</a>
+            <span>›</span>
+            <a href="index.html">Java</a>
+            <span>›</span>
+            <span>Streams API</span>
+          </div>
+        </div>
           <div class="timer-wrap" aria-live="polite">
             <span class="timer-label">Time Left</span>
-            <span class="timer" id="timer">28:00</span>
+            <span class="timer" id="timer">35:00</span>
           </div>
         </div>
         <div class="topbar-row">
-          <nav class="nav-dots" aria-label="Section navigation"><button class="nav-dot active" data-index="0" aria-label="Go to section 1">1</button><button class="nav-dot " data-index="1" aria-label="Go to section 2">2</button><button class="nav-dot " data-index="2" aria-label="Go to section 3">3</button><button class="nav-dot " data-index="3" aria-label="Go to section 4">4</button><button class="nav-dot " data-index="4" aria-label="Go to completion screen">5</button></nav>
+                    <nav class="nav-dots" aria-label="Section navigation"><button class="nav-dot active" data-index="0" aria-label="Go to section 1">1</button><button class="nav-dot" data-index="1" aria-label="Go to section 2">2</button><button class="nav-dot" data-index="2" aria-label="Go to section 3">3</button><button class="nav-dot" data-index="3" aria-label="Go to section 4">4</button><button class="nav-dot" data-index="4" aria-label="Go to section 5">5</button><button class="nav-dot" data-index="5" aria-label="Go to completion screen">6</button></nav>
         </div>
         <div class="progress-shell" aria-hidden="true">
           <div class="progress-bar" id="progressBar"></div>
@@ -720,7 +747,7 @@
       <section class="section active" data-section="0">
         <div class="section-inner">
           <div class="hero">
-            <div class="section-label">Section 1 of 4 · ~7 mins</div>
+            <div class="section-label">Section 1 of 5 · ~7 mins</div>
             <h2>Pipeline & Laziness</h2>
             <p>Streams build a pipeline that doesn’t execute until a terminal operation runs.</p>
           </div>
@@ -816,7 +843,7 @@
       <section class="section " data-section="1">
         <div class="section-inner">
           <div class="hero">
-            <div class="section-label">Section 2 of 4 · ~7 mins</div>
+            <div class="section-label">Section 2 of 5 · ~7 mins</div>
             <h2>Intermediate Operations</h2>
             <p>Intermediate operations transform a stream without producing a final result.</p>
           </div>
@@ -913,7 +940,7 @@
       <section class="section " data-section="2">
         <div class="section-inner">
           <div class="hero">
-            <div class="section-label">Section 3 of 4 · ~7 mins</div>
+            <div class="section-label">Section 3 of 5 · ~7 mins</div>
             <h2>Collectors & Aggregation</h2>
             <p>Collectors shape the final output — lists, maps, grouped data, or aggregates.</p>
           </div>
@@ -1008,7 +1035,7 @@
       <section class="section " data-section="3">
         <div class="section-inner">
           <div class="hero">
-            <div class="section-label">Section 4 of 4 · ~7 mins</div>
+            <div class="section-label">Section 4 of 5 · ~7 mins</div>
             <h2>Parallel Streams & Pitfalls</h2>
             <p>Parallel streams can help for large CPU workloads, but they are not a free speed-up.</p>
           </div>
@@ -1101,7 +1128,94 @@
         </div>
       </section>
       
+      
       <section class="section" data-section="4">
+        <div class="section-inner">
+          <div class="hero">
+            <div class="section-label">Section 5 of 5 · ~7 mins</div>
+            <h2>Deep Dive: Performance & Collector Patterns</h2>
+            <p>Streams are expressive, but you must understand cost, boxing, and collector behavior for performance.</p>
+          </div>
+
+          <div class="card-grid">
+            <article class="card eli5">
+              <div class="card-label">🧒 ELI5</div>
+              <h3>One conveyor belt</h3>
+              <p>If items keep looping around the belt, you waste time. You want a single pass when possible.</p>
+            </article>
+
+            <article class="card analogy">
+              <div class="card-label">🔗 ANALOGY</div>
+              <h3>Factory assembly line</h3>
+              <p>Each station does one job, but too many stations slow the line.</p>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Technical</div>
+              <div class="two-col">
+                <div>
+                  <h3>What it means in real code</h3>
+                  <p><strong>Definition:</strong> Stream pipelines are lazy; terminal ops trigger execution. Collectors determine storage and grouping cost.</p>
+                  <div class="mini-grid">
+                    <div class="mini-panel">
+                      <h4>Why it matters</h4>
+                      <ul><li>Cleaner code</li><li>Optimized single-pass operations</li><li>Parallelization when safe</li></ul>
+                    </div>
+                    <div class="mini-panel">
+                      <h4>Common pitfall</h4>
+                      <ul><li>Multiple passes over data</li><li>Boxing in hot loops</li><li>Parallel streams on small datasets</li></ul>
+                    </div>
+                  </div>
+                  <div class="badge-row"><span class="pill good">Lazy</span><span class="pill info">Collectors</span><span class="pill caution">Boxing</span></div>
+                  <div class="flow"><span class="flow-step">Build pipeline</span><span class="flow-arrow">→</span><span class="flow-step">Terminal op</span><span class="flow-arrow">→</span><span class="flow-step">Collector reduces</span><span class="flow-arrow">→</span><span class="flow-step">Result produced</span></div>
+                </div>
+                <div>
+                  <h3>Interview answer</h3>
+                  <p>“I use streams for clarity but profile hot paths, avoid boxing, and choose collectors carefully.”</p>
+                  <table>
+                    <thead><tr><th>Collector</th><th>Use</th></tr></thead>
+                    <tbody><tr><td>toMap</td><td><span class="pill info">Key/value</span></td></tr><tr><td>groupingBy</td><td><span class="pill good">Buckets</span></td></tr><tr><td>joining</td><td><span class="pill caution">Strings</span></td></tr></tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="code-blocks">
+    <div>
+      <div class="code-title">Grouping with downstream collector</div>
+      <pre>Map&lt;String, Long&gt; counts = orders.stream()
+  .collect(Collectors.groupingBy(
+      Order::status,
+      Collectors.counting()
+  ));</pre>
+    </div>
+    </div>
+            </article>
+
+            <article class="card warning">
+              <div class="card-label">Warning</div>
+              <h3>Parallel streams are not free</h3>
+              <p>Parallelism can hurt performance on small collections or when using non-thread-safe collectors.</p>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Mini takeaway</div>
+              <ul class="takeaways"><li>Prefer primitive streams for hot loops.</li><li>Use downstream collectors.</li><li>Profile before parallelizing.</li></ul>
+            </article>
+
+            <article class="card quiz-card">
+              <div class="card-label">Quiz</div>
+              <h3>What triggers stream execution?</h3>
+              <div class="quiz-options" data-answer="2">
+                <button class="quiz-option">A. map()</button><button class="quiz-option">B. filter()</button><button class="quiz-option">C. terminal operation</button><button class="quiz-option">D. peek()</button>
+              </div>
+              <div class="quiz-result">
+                <strong>Correct answer: C</strong>
+                <span>Streams are lazy; only terminal ops execute the pipeline.</span>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+<section class="section" data-section="5">
         <div class="section-inner">
           <div class="hero">
             <div class="section-label">Completion screen · Review mode</div>
@@ -1265,7 +1379,7 @@ function applySyntaxHighlighting() {
       dot.addEventListener('click', () => showSection(Number(dot.dataset.index)));
     });
 
-    const totalSeconds = 28 * 60;
+    const totalSeconds = 35 * 60;
     let remainingSeconds = totalSeconds;
 
     function formatTime(seconds) {

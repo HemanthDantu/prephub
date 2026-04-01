@@ -35,6 +35,24 @@
 
     a { color: inherit; }
 
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .breadcrumb a {
+      color: var(--muted);
+      text-decoration: none;
+    }
+
+    .breadcrumb a:hover { color: var(--cyan); }
+
+    .breadcrumb span { color: var(--text); font-weight: 600; }
+
     .app {
       min-height: 100vh;
       display: flex;
@@ -699,15 +717,24 @@
         <div class="topbar-row">
           <div class="brand">
             <h1>ExecutorService & Thread Pools</h1>
-            <small>Interactive 28-minute learning module</small>
+            <small>Interactive 35-minute learning module</small>
           </div>
+                <div class="topbar-row">
+          <div class="breadcrumb">
+            <a href="../index.html">Home</a>
+            <span>›</span>
+            <a href="index.html">Java</a>
+            <span>›</span>
+            <span>ExecutorService & Thread Pools</span>
+          </div>
+        </div>
           <div class="timer-wrap" aria-live="polite">
             <span class="timer-label">Time Left</span>
-            <span class="timer" id="timer">28:00</span>
+            <span class="timer" id="timer">35:00</span>
           </div>
         </div>
         <div class="topbar-row">
-          <nav class="nav-dots" aria-label="Section navigation"><button class="nav-dot active" data-index="0" aria-label="Go to section 1">1</button><button class="nav-dot " data-index="1" aria-label="Go to section 2">2</button><button class="nav-dot " data-index="2" aria-label="Go to section 3">3</button><button class="nav-dot " data-index="3" aria-label="Go to section 4">4</button><button class="nav-dot " data-index="4" aria-label="Go to completion screen">5</button></nav>
+                    <nav class="nav-dots" aria-label="Section navigation"><button class="nav-dot active" data-index="0" aria-label="Go to section 1">1</button><button class="nav-dot" data-index="1" aria-label="Go to section 2">2</button><button class="nav-dot" data-index="2" aria-label="Go to section 3">3</button><button class="nav-dot" data-index="3" aria-label="Go to section 4">4</button><button class="nav-dot" data-index="4" aria-label="Go to section 5">5</button><button class="nav-dot" data-index="5" aria-label="Go to completion screen">6</button></nav>
         </div>
         <div class="progress-shell" aria-hidden="true">
           <div class="progress-bar" id="progressBar"></div>
@@ -720,7 +747,7 @@
       <section class="section active" data-section="0">
         <div class="section-inner">
           <div class="hero">
-            <div class="section-label">Section 1 of 4 · ~7 mins</div>
+            <div class="section-label">Section 1 of 5 · ~7 mins</div>
             <h2>ExecutorService Basics</h2>
             <p>ExecutorService is the standard way to manage thread pools and submit work without manually creating threads.</p>
           </div>
@@ -816,7 +843,7 @@ pool.shutdown();</span></pre>
       <section class="section " data-section="1">
         <div class="section-inner">
           <div class="hero">
-            <div class="section-label">Section 2 of 4 · ~7 mins</div>
+            <div class="section-label">Section 2 of 5 · ~7 mins</div>
             <h2>ThreadPoolExecutor Tuning</h2>
             <p>ThreadPoolExecutor gives full control over pool sizing, queues, and rejection policies.</p>
           </div>
@@ -910,7 +937,7 @@ pool.shutdown();</span></pre>
       <section class="section " data-section="2">
         <div class="section-inner">
           <div class="hero">
-            <div class="section-label">Section 3 of 4 · ~7 mins</div>
+            <div class="section-label">Section 3 of 5 · ~7 mins</div>
             <h2>Futures, Callables, and Cancellation</h2>
             <p>Futures represent async results and let you cancel or time out work.</p>
           </div>
@@ -1004,7 +1031,7 @@ String v = f.get(200, TimeUnit.MILLISECONDS);</span></pre>
       <section class="section " data-section="3">
         <div class="section-inner">
           <div class="hero">
-            <div class="section-label">Section 4 of 4 · ~7 mins</div>
+            <div class="section-label">Section 4 of 5 · ~7 mins</div>
             <h2>Sizing & Backpressure</h2>
             <p>Pool sizing should reflect CPU vs I/O workloads, and backpressure protects the system.</p>
           </div>
@@ -1096,7 +1123,95 @@ String v = f.get(200, TimeUnit.MILLISECONDS);</span></pre>
         </div>
       </section>
       
+      
       <section class="section" data-section="4">
+        <div class="section-inner">
+          <div class="hero">
+            <div class="section-label">Section 5 of 5 · ~7 mins</div>
+            <h2>Deep Dive: Thread Pool Tuning & Backpressure</h2>
+            <p>Real systems need careful pool sizing, queue strategy, and rejection policies to prevent overload.</p>
+          </div>
+
+          <div class="card-grid">
+            <article class="card eli5">
+              <div class="card-label">🧒 ELI5</div>
+              <h3>Too many chefs</h3>
+              <p>If you hire too many chefs for one kitchen, they bump into each other and slow everything down.</p>
+            </article>
+
+            <article class="card analogy">
+              <div class="card-label">🔗 ANALOGY</div>
+              <h3>Call center lines</h3>
+              <p>A queue of callers is fine, but if the queue is infinite, you never realize you are overwhelmed.</p>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Technical</div>
+              <div class="two-col">
+                <div>
+                  <h3>What it means in real code</h3>
+                  <p><strong>Definition:</strong> ExecutorService performance depends on pool size, queue capacity, and rejection policy.</p>
+                  <div class="mini-grid">
+                    <div class="mini-panel">
+                      <h4>Why it matters</h4>
+                      <ul><li>Prevents latency spikes</li><li>Protects CPU and memory</li><li>Keeps throughput stable</li></ul>
+                    </div>
+                    <div class="mini-panel">
+                      <h4>Common pitfall</h4>
+                      <ul><li>Unbounded queue</li><li>Fixed pool for IO-heavy workloads</li><li>No monitoring of queue depth</li></ul>
+                    </div>
+                  </div>
+                  <div class="badge-row"><span class="pill good">Pool size</span><span class="pill info">Queue strategy</span><span class="pill caution">Rejection</span></div>
+                  <div class="flow"><span class="flow-step">Submit task</span><span class="flow-arrow">→</span><span class="flow-step">Queue or execute</span><span class="flow-arrow">→</span><span class="flow-step">Worker runs</span><span class="flow-arrow">→</span><span class="flow-step">Reject if saturated</span></div>
+                </div>
+                <div>
+                  <h3>Interview answer</h3>
+                  <p>“I tune pool size based on CPU vs IO, cap queues, and use a rejection policy to apply backpressure.”</p>
+                  <table>
+                    <thead><tr><th>Queue</th><th>Behavior</th></tr></thead>
+                    <tbody><tr><td>Unbounded</td><td><span class="pill bad">Memory risk</span></td></tr><tr><td>Bounded</td><td><span class="pill good">Backpressure</span></td></tr><tr><td>SynchronousQueue</td><td><span class="pill info">Direct handoff</span></td></tr></tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="code-blocks">
+    <div>
+      <div class="code-title">Custom ThreadPoolExecutor</div>
+      <pre>ExecutorService pool = new ThreadPoolExecutor(
+  8, 32,
+  60, TimeUnit.SECONDS,
+  new ArrayBlockingQueue&lt;&gt;(500),
+  new ThreadPoolExecutor.CallerRunsPolicy()
+);</pre>
+    </div>
+    </div>
+            </article>
+
+            <article class="card warning">
+              <div class="card-label">Warning</div>
+              <h3>Unbounded queues hide overload</h3>
+              <p>If you never reject, latency grows until the system falls over.</p>
+            </article>
+
+            <article class="card technical">
+              <div class="card-label">Mini takeaway</div>
+              <ul class="takeaways"><li>Size pools by workload type.</li><li>Use bounded queues.</li><li>Monitor queue length and active threads.</li></ul>
+            </article>
+
+            <article class="card quiz-card">
+              <div class="card-label">Quiz</div>
+              <h3>Which queue choice provides the clearest backpressure?</h3>
+              <div class="quiz-options" data-answer="1">
+                <button class="quiz-option">A. LinkedBlockingQueue (unbounded)</button><button class="quiz-option">B. ArrayBlockingQueue (bounded)</button><button class="quiz-option">C. DelayQueue</button><button class="quiz-option">D. PriorityBlockingQueue</button>
+              </div>
+              <div class="quiz-result">
+                <strong>Correct answer: B</strong>
+                <span>Bounded queues force rejection or caller-runs when saturated.</span>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+<section class="section" data-section="5">
         <div class="section-inner">
           <div class="hero">
             <div class="section-label">Completion screen · Review mode</div>
@@ -1260,7 +1375,7 @@ function applySyntaxHighlighting() {
       dot.addEventListener('click', () => showSection(Number(dot.dataset.index)));
     });
 
-    const totalSeconds = 28 * 60;
+    const totalSeconds = 35 * 60;
     let remainingSeconds = totalSeconds;
 
     function formatTime(seconds) {
