@@ -771,6 +771,8 @@
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> ExecutorService manages a pool of threads and a queue so tasks are executed efficiently.</p>
+                  <p class="deep-note">ExecutorService decouples task submission from execution by placing work on a managed pool, avoiding manual thread creation and reuse problems.</p>
+                  <p class="deep-note">Think of it as a queue plus workers: you submit Runnables or Callables, the pool schedules them, and you control lifecycle via shutdown and awaitTermination.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -867,6 +869,8 @@ pool.shutdown();</span></pre>
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> ThreadPoolExecutor controls core/max threads, queue capacity, keep-alive, and rejection policy.</p>
+                  <p class="deep-note">ThreadPoolExecutor is where you tune throughput and latency: core size keeps warm threads, max size handles bursts, and the queue controls backpressure.</p>
+                  <p class="deep-note">Small queues push pressure upstream, while large queues smooth spikes but can hide overload and increase latency.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -961,6 +965,8 @@ pool.shutdown();</span></pre>
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Callable returns a result, and submit() gives a Future to control that execution.</p>
+                  <p class="deep-note">Futures represent results that complete later, and Callables allow checked exceptions and return values.</p>
+                  <p class="deep-note">Use timeouts to avoid unbounded waits, and remember cancel() relies on interruption so tasks must cooperate.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -1055,6 +1061,8 @@ String v = f.get(200, TimeUnit.MILLISECONDS);</span></pre>
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Backpressure controls how much work enters the system when workers are saturated.</p>
+                  <p class="deep-note">Sizing depends on workload: CPU-bound pools should be near core count, while IO-bound pools can be larger because threads spend time waiting.</p>
+                  <p class="deep-note">Bounded queues plus a rejection policy provide explicit backpressure instead of silently accumulating work.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>

@@ -771,6 +771,8 @@
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Dependency Injection means dependencies are provided by the container rather than created inside the class.</p>
+                  <p class="deep-note">IoC means the container creates and wires objects; DI is the mechanism that supplies dependencies at construction time.</p>
+                  <p class="deep-note">This centralizes configuration and makes components easier to test because collaborators can be swapped without rewriting construction logic.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -868,6 +870,8 @@ public class BillingService {
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Use @Qualifier to choose a bean by name; @Primary marks the default.</p>
+                  <p class="deep-note">When multiple beans match a type, Spring needs a hint; @Primary sets a default while @Qualifier selects an explicit bean.</p>
+                  <p class="deep-note">Qualifiers act like named contracts in larger systems, making ambiguity explicit instead of relying on bean order.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -963,6 +967,8 @@ public class BillingService {
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Singleton is default; request/session create per-request or per-session instances.</p>
+                  <p class="deep-note">Singleton is the default, but prototype creates a new instance per request, and request/session scopes are common in web apps.</p>
+                  <p class="deep-note">Lifecycle hooks like @PostConstruct let you validate wiring or warm caches, but keep them fast to avoid slow startup.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -1058,6 +1064,8 @@ public class RequestContext { }</span></pre>
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> @Profile controls which beans load based on environment; @ConfigurationProperties binds config.</p>
+                  <p class="deep-note">Profiles let you swap beans and properties per environment, keeping configuration clean and explicit.</p>
+                  <p class="deep-note">@Configuration classes and @Bean methods make wiring visible and easier to reason about than field injection.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>

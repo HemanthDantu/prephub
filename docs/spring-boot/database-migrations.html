@@ -783,6 +783,8 @@
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Migrations are ordered, versioned schema changes applied automatically at startup or deploy time.</p>
+                  <p class="deep-note">Migrations give you a versioned history of schema changes so every environment is predictable.</p>
+                  <p class="deep-note">They also provide a reviewable audit trail of how the database evolved over time.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -879,6 +881,8 @@
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Flyway uses versioned files like V1__init.sql and records checksums in flyway_schema_history.</p>
+                  <p class="deep-note">Flyway uses versioned SQL scripts with naming conventions and records applied versions and checksums.</p>
+                  <p class="deep-note">Because checksums are enforced, you must never edit applied scripts in production.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -973,6 +977,8 @@
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Liquibase uses XML/YAML/JSON changelogs with changesets, checksums, and optional rollback rules.</p>
+                  <p class="deep-note">Liquibase uses changelogs with IDs and authors, allowing rollback definitions and structured changes.</p>
+                  <p class="deep-note">It is more verbose than Flyway but useful for teams that need explicit rollback support.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -1077,6 +1083,8 @@
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Safe migrations include validation, backups, and release sequencing to reduce risk.</p>
+                  <p class="deep-note">Safe migrations require discipline: backups, staging tests, and small, reversible changes.</p>
+                  <p class="deep-note">Plan for locks and downtime when altering large tables or hot indexes.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>

@@ -783,6 +783,8 @@
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> @Scheduled runs methods at intervals or cron expressions using a TaskScheduler.</p>
+                  <p class="deep-note">@Scheduled supports fixedRate, fixedDelay, and cron, each with different timing semantics.</p>
+                  <p class="deep-note">Use cron for human-readable schedules and fixedDelay when you must wait for completion before the next run.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -880,6 +882,8 @@ public void refreshCache() {
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> TaskScheduler controls the thread pool used for @Scheduled tasks and avoids blocking.</p>
+                  <p class="deep-note">By default, Spring uses a single-threaded scheduler, so long jobs block other tasks.</p>
+                  <p class="deep-note">A dedicated TaskScheduler with a thread pool allows parallel jobs and isolates slow tasks.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -984,6 +988,8 @@ public class SchedulingConfig {
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Overlapping schedules can cause duplicate work; use locks or adjust delay to fit task duration.</p>
+                  <p class="deep-note">Overlapping runs can corrupt state or overwhelm systems; guard with locks or conditional checks.</p>
+                  <p class="deep-note">Always catch exceptions inside jobs so a single failure does not stop future executions.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -1081,6 +1087,8 @@ public void nightlySync() {
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Distributed locks or external schedulers ensure a job runs once across a cluster.</p>
+                  <p class="deep-note">In distributed deployments, each instance will run the same job unless you coordinate.</p>
+                  <p class="deep-note">Leader election or libraries like ShedLock ensure only one instance runs a scheduled task.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>

@@ -771,6 +771,8 @@
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Authentication proves who you are; authorization decides what you can access.</p>
+                  <p class="deep-note">Spring Security runs a filter chain per request that builds the SecurityContext and enforces authorization rules.</p>
+                  <p class="deep-note">Authentication verifies identity, while authorization decides access based on roles or scopes; mixing them causes confusion.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -866,6 +868,8 @@
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> JWTs have header, payload, signature; servers verify signature and expiry.</p>
+                  <p class="deep-note">A JWT has header, payload, and signature; the signature proves the token was issued by a trusted authority.</p>
+                  <p class="deep-note">Validation must check signature, expiration, issuer, and audience, not just decode the payload.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -960,6 +964,8 @@ if (jwt.isExpired()) throw new SecurityException();</span></pre>
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Access tokens expire quickly; refresh tokens issue new access tokens.</p>
+                  <p class="deep-note">Access tokens are short-lived and used for API calls, while refresh tokens are long-lived and used only to obtain new access tokens.</p>
+                  <p class="deep-note">Rotate refresh tokens and revoke on suspicious activity to limit replay risk.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -1054,6 +1060,8 @@ Invalidate old refresh token</span></pre>
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Authorization headers avoid CSRF, while cookies require CSRF protection.</p>
+                  <p class="deep-note">If you store JWTs in cookies, you must handle CSRF; in-memory storage avoids CSRF but loses tokens on refresh.</p>
+                  <p class="deep-note">A safe pattern is short-lived access tokens with secure storage and proper CSRF defenses when cookies are used.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>

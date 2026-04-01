@@ -783,6 +783,8 @@
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> OAuth2 uses access tokens for resource access; OIDC adds ID tokens to assert user identity.</p>
+                  <p class="deep-note">OAuth2 defines roles and scopes that grant access, while OIDC adds identity so you can authenticate users and get claims.</p>
+                  <p class="deep-note">Understanding the difference prevents misuse of ID tokens for API access.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -882,6 +884,8 @@
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Auth Code + PKCE prevents token interception by using a code challenge and verifier.</p>
+                  <p class="deep-note">Authorization code flow with PKCE is the modern standard for browser and mobile clients.</p>
+                  <p class="deep-note">Client credentials flow is for machine-to-machine access with no user context.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -982,6 +986,8 @@
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Boot auto-configures OAuth2 client and resource server using properties and SecurityFilterChain.</p>
+                  <p class="deep-note">Spring Boot uses client registrations and provider metadata to configure OAuth and OIDC quickly.</p>
+                  <p class="deep-note">Resource servers validate JWTs on every request and map scopes to authorities.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -1083,6 +1089,8 @@ SecurityFilterChain security(HttpSecurity http) throws Exception {
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Token validation checks signature, issuer, audience, and expiration; OIDC adds user claims.</p>
+                  <p class="deep-note">Common pitfalls include skipping audience checks, trusting unsigned tokens, or storing tokens in localStorage.</p>
+                  <p class="deep-note">Always validate issuer and audience, rotate keys, and use secure storage with CSRF protections when cookies are involved.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>

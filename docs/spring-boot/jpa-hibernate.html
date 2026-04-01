@@ -771,6 +771,8 @@
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Relationships like @ManyToOne and @OneToMany map foreign keys between tables.</p>
+                  <p class="deep-note">Entity mapping defines how object graphs translate to tables, including ownership of relationships and join columns.</p>
+                  <p class="deep-note">Choosing the owning side and cascade settings carefully prevents duplicate join tables and unintended deletes.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -869,6 +871,8 @@ class Order {
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Lazy loads related data when accessed; N+1 happens when each access triggers a query.</p>
+                  <p class="deep-note">Lazy loading defers relationship queries, but it can trigger N+1 issues if you iterate without fetch joins.</p>
+                  <p class="deep-note">Eager loading avoids N+1 but can load too much data; entity graphs or fetch joins let you target what you need.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -963,6 +967,8 @@ List&lt;Order&gt; findAllWithCustomer();</span></pre>
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Managed entities are tracked in the persistence context; changes are flushed on commit.</p>
+                  <p class="deep-note">The persistence context is a first-level cache that tracks changes via dirty checking.</p>
+                  <p class="deep-note">Flush writes changes at transaction boundaries, while detach/merge control whether entities remain managed.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -1060,6 +1066,8 @@ public void rename(Long id){
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Use batch size, pagination, and projections to reduce SQL and memory overhead.</p>
+                  <p class="deep-note">Performance tuning focuses on query shape and batching: indexes, pagination, batch size, and limiting fetched associations.</p>
+                  <p class="deep-note">Second-level cache can help read-heavy workloads, but measure consistency needs and invalidation costs.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>

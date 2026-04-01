@@ -783,6 +783,8 @@
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> A circuit breaker tracks failures and opens when a threshold is reached, then half-opens to test recovery.</p>
+                  <p class="deep-note">Circuit breakers stop repeated calls to failing dependencies by opening after a threshold of errors.</p>
+                  <p class="deep-note">They protect the system from cascading failures and give downstreams time to recover.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -878,6 +880,8 @@ public Inventory check(String sku) { ... }</pre>
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Retries should use backoff and be applied only to idempotent operations, with timeouts to cap latency.</p>
+                  <p class="deep-note">Retries can fix transient errors but must be paired with timeouts to avoid infinite waits.</p>
+                  <p class="deep-note">Use exponential backoff with jitter to avoid retry storms during outages.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -977,6 +981,8 @@ public Inventory check(String sku) { ... }</pre>
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Bulkheads limit concurrent calls via separate thread pools or semaphores, and rate limiters cap traffic.</p>
+                  <p class="deep-note">Bulkheads limit resource usage so failures in one area do not starve others.</p>
+                  <p class="deep-note">Rate limiting protects downstreams and enforces fairness under load.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -1072,6 +1078,8 @@ public Inventory check(String sku) { ... }</pre>
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Resilience4j exposes annotations, config, and events that integrate with Boot and Micrometer.</p>
+                  <p class="deep-note">Spring integrates Resilience4j via annotations and configuration, making patterns easy to apply consistently.</p>
+                  <p class="deep-note">Expose metrics for breaker state, retries, and latency so you can tune in production.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>

@@ -783,6 +783,8 @@
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Spring Boot Actuator adds production-ready endpoints under /actuator with configurable exposure.</p>
+                  <p class="deep-note">Actuator exposes operational endpoints like health and info, which are critical for readiness and liveness probes.</p>
+                  <p class="deep-note">Health groups let you separate traffic readiness from basic liveness so you can degrade gracefully.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -881,6 +883,8 @@
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Micrometer provides a vendor-neutral API to record application metrics and export them to backends.</p>
+                  <p class="deep-note">Micrometer is a vendor-neutral metrics facade; you register counters, timers, and gauges then export to your backend.</p>
+                  <p class="deep-note">Keep tag cardinality low because high-cardinality labels can explode storage and cost.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -982,6 +986,8 @@ public class CheckoutMetrics {
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Tracing creates spans for each operation, linking them into a trace and exporting to systems like Zipkin or Tempo.</p>
+                  <p class="deep-note">Tracing connects requests across services with trace and span IDs, making latency bottlenecks visible.</p>
+                  <p class="deep-note">Sampling keeps overhead manageable, and logging trace IDs lets you correlate logs with traces.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -1082,6 +1088,8 @@ public class CheckoutMetrics {
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Secure actuator endpoints, configure health groups, and integrate probes for safe deployments.</p>
+                  <p class="deep-note">In production, limit exposed endpoints and consider a separate management port secured by roles.</p>
+                  <p class="deep-note">Operational data is sensitive; treat it like an API with authentication, authorization, and rate limits.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>

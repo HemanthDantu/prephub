@@ -783,6 +783,8 @@
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> @Cacheable checks the cache before running the method, and stores the result by key.</p>
+                  <p class="deep-note">@Cacheable implements cache-aside: the first request loads from DB and stores the result, later requests hit the cache.</p>
+                  <p class="deep-note">Keys must uniquely represent the query; ambiguous keys cause collisions and subtle bugs.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -880,6 +882,8 @@ public User getUser(String id) {
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> @CachePut always updates the cache after method execution, while @CacheEvict removes entries.</p>
+                  <p class="deep-note">When data changes, you must update or evict cached entries to avoid stale reads.</p>
+                  <p class="deep-note">@CachePut writes through the cache, while @CacheEvict removes entries to force a refresh on next read.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -977,6 +981,8 @@ public User update(User user) {
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Spring uses CacheManager to abstract cache providers like Caffeine, Redis, or Ehcache.</p>
+                  <p class="deep-note">Cache managers define storage and eviction policy; in-memory caches are fast while Redis scales across instances.</p>
+                  <p class="deep-note">Eviction strategies like TTL or LRU should match data churn and consistency requirements.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -1075,6 +1081,8 @@ public User update(User user) {
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Caches can return stale data or cause thundering herd problems if not managed carefully.</p>
+                  <p class="deep-note">Cache consistency is hard: stampedes, stale reads, and race conditions are common in high-traffic systems.</p>
+                  <p class="deep-note">Mitigate with TTLs, locking, and idempotent writes, and monitor hit rate to ensure caching adds value.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>

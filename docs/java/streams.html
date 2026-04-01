@@ -771,6 +771,8 @@
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Streams are lazy; intermediate operations are recorded and executed only at terminal ops.</p>
+                  <p class="deep-note">Streams build a pipeline of operations that only executes when a terminal operation runs, which is why streams are lazy.</p>
+                  <p class="deep-note">This allows fusion and short-circuiting, but it also means side effects can be surprising if you expect eager behavior.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -867,6 +869,8 @@
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Intermediate ops return a new stream; they are lazy and composable.</p>
+                  <p class="deep-note">Intermediate operations are either stateless (map, filter) or stateful (sorted, distinct), and stateful ones may buffer data.</p>
+                  <p class="deep-note">Keep pipelines readable; extract helpers when logic grows so the stream chain stays maintainable.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -964,6 +968,8 @@
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Collectors reduce stream elements into a final structure like lists, maps, or aggregated values.</p>
+                  <p class="deep-note">Collectors perform mutable reduction, which is often more efficient and expressive than reduce for aggregations.</p>
+                  <p class="deep-note">Use groupingBy, mapping, and downstream collectors to build rich aggregates without side effects.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -1059,6 +1065,8 @@
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Parallel streams split work across threads; overhead and contention can erase gains.</p>
+                  <p class="deep-note">Parallel streams can help for CPU-heavy tasks on large datasets, but they can hurt performance for small or IO-bound workloads.</p>
+                  <p class="deep-note">Any shared mutable state inside a parallel stream risks race conditions and nondeterministic results.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>

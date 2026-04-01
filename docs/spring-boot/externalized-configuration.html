@@ -783,6 +783,8 @@
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Boot resolves properties from many sources and applies a strict precedence order for overrides.</p>
+                  <p class="deep-note">Spring Boot loads configuration from multiple sources in a defined order; later sources override earlier ones.</p>
+                  <p class="deep-note">Understanding precedence prevents surprises when values change between local and production environments.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -881,6 +883,8 @@ logging:
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> @ConfigurationProperties binds structured config into POJOs and can be validated with JSR-303.</p>
+                  <p class="deep-note">@ConfigurationProperties binds related settings into a typed object, which makes config explicit and testable.</p>
+                  <p class="deep-note">Validation fails fast on bad config, which is safer than letting invalid values propagate.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -980,6 +984,8 @@ public record PaymentProps(
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Profiles activate different configuration files and beans using spring.profiles.active or activation rules.</p>
+                  <p class="deep-note">Profiles let you define environment-specific settings while keeping shared defaults in application.yml.</p>
+                  <p class="deep-note">Profile groups can activate multiple profiles together, aligning layered environments like prod plus observability.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -1080,6 +1086,8 @@ logging:
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Sensitive values should come from secure sources like environment variables, vaults, or secret managers.</p>
+                  <p class="deep-note">Secrets should live outside the repo in environment variables or a secret manager, not in config files.</p>
+                  <p class="deep-note">If you need dynamic config, use a refresh mechanism or restart strategy instead of ad-hoc overrides.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>

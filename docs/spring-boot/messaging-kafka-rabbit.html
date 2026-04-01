@@ -783,6 +783,8 @@
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> RabbitMQ queues deliver to consumers, Kafka topics partition and broadcast to consumer groups.</p>
+                  <p class="deep-note">Queues are point-to-point while pub/sub broadcasts to multiple consumers, and the choice affects ordering and scaling.</p>
+                  <p class="deep-note">Kafka is a log with partitions and consumer groups; RabbitMQ is a broker with queues and routing keys.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -880,6 +882,8 @@ public void onMessage(OrderEvent event) {
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> KafkaTemplate and RabbitTemplate send messages, while listener annotations receive them.</p>
+                  <p class="deep-note">Producers publish messages and consumers process them; acknowledgments decide when a message is considered handled.</p>
+                  <p class="deep-note">Backpressure shows up as consumer lag or queue depth, which you should monitor and tune.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -978,6 +982,8 @@ public void handle(OrderEvent event, Acknowledgment ack) {
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Most systems provide at-least-once delivery, so consumers must be idempotent and support retries.</p>
+                  <p class="deep-note">Delivery guarantees are tradeoffs: at-least-once can produce duplicates, exactly-once is costly and limited.</p>
+                  <p class="deep-note">Idempotent handlers and DLQs are practical tools for reliability in real systems.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -1076,6 +1082,8 @@ handle(event);</pre>
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Patterns like outbox ensure reliability, while sagas coordinate distributed workflows.</p>
+                  <p class="deep-note">Integration patterns like outbox and saga coordinate state changes across services safely.</p>
+                  <p class="deep-note">Use partition or routing keys to preserve ordering when required.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>

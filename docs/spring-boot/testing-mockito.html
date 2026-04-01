@@ -771,6 +771,8 @@
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Slice tests load only a layer (like web or data), while integration tests load more context.</p>
+                  <p class="deep-note">Test slices verify a focused layer without loading the full context, keeping tests fast and reliable.</p>
+                  <p class="deep-note">Use full integration tests for cross-layer flows, but keep them few and high value.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -867,6 +869,8 @@ class UserControllerTest {
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> @Mock is a plain Mockito mock; @MockBean replaces a Spring bean in the context.</p>
+                  <p class="deep-note">@Mock creates a mock in plain unit tests, while @MockBean replaces a Spring bean inside the application context.</p>
+                  <p class="deep-note">Use @MockBean for slice tests where you want Spring wiring but need to isolate a dependency.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -963,6 +967,8 @@ class UserControllerTest {
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> MockMvc executes controller endpoints in-memory, letting you assert responses.</p>
+                  <p class="deep-note">MockMvc exercises controllers without a full server, letting you test routing, validation, and serialization cheaply.</p>
+                  <p class="deep-note">Keep assertions targeted with JSON path checks instead of brittle full-response comparisons.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -1058,6 +1064,8 @@ class UserControllerTest {
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Stub with when/thenReturn; verify with verify() to confirm interactions.</p>
+                  <p class="deep-note">Stubbing defines mock behavior while verification asserts expected interactions happened.</p>
+                  <p class="deep-note">Avoid over-verification and focus on observable outcomes; use ArgumentCaptor for complex inputs.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>

@@ -771,6 +771,8 @@
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Creational patterns centralize and control object creation so callers do not need to know construction details.</p>
+                  <p class="deep-note">Creational patterns focus on controlling how objects are built so callers depend on interfaces, not construction details or dependency graphs.</p>
+                  <p class="deep-note">In practice you reach for Factory when you have multiple concrete implementations, and Builder when optional parameters would make constructors unreadable.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -874,6 +876,8 @@ public class UserFactory {
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Behavioral patterns separate actions and communication so the same system can behave differently without big rewrites.</p>
+                  <p class="deep-note">Behavioral patterns isolate changing behavior from the objects that use it, which lets you add strategies or subscribers without rewriting core flows.</p>
+                  <p class="deep-note">Strategy fits algorithm variation like pricing or routing, while Observer fits event fan-out where producers should not know who is listening.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -973,6 +977,8 @@ public class SurgePricing implements PricingStrategy {
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Decorator wraps an object to add behavior dynamically without modifying the original class.</p>
+                  <p class="deep-note">Structural patterns change how objects are composed without changing their public API, so clients stay stable as you add functionality.</p>
+                  <p class="deep-note">Decorator is ideal for layering optional behavior at runtime, but ordering and debugging of stacked decorators need care.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -1078,6 +1084,8 @@ public class SmsDecorator implements Notifier {
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Pattern choice is a trade-off between flexibility, complexity, and risk of change.</p>
+                  <p class="deep-note">Pattern selection is about locating likely change points and applying the smallest abstraction that isolates that change.</p>
+                  <p class="deep-note">If the change is hypothetical, start simple and refactor to a pattern when variation is real so complexity tracks value.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
