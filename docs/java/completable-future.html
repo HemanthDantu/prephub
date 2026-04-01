@@ -35,6 +35,12 @@
 
     a { color: inherit; }
 
+    .deep-note {
+      color: var(--muted);
+      line-height: 1.6;
+      margin-top: 10px;
+    }
+
     .breadcrumb {
       display: flex;
       align-items: center;
@@ -771,8 +777,9 @@
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> thenApply maps values, thenCompose flattens async steps to avoid Future<Future<T>>.</p>
-                  <p class="deep-note">Chaining models a workflow as stages where each stage transforms or enriches the previous result.</p>
-                  <p class="deep-note">Use thenApply for synchronous transforms and thenCompose when the next step is async so you avoid nested futures.</p>
+                  <p class="deep-note">Chaining turns async work into a pipeline where each stage transforms the previous result. This makes complex workflows readable and avoids manual thread coordination.</p>
+                  <p class="deep-note">Use thenApply for synchronous transformations and thenCompose when the next step returns a future. thenCompose flattens the chain so you do not end up with nested futures.</p>
+                  <p class="deep-note">As a beginner, think of it like a conveyor belt: each stage adds value, and the pipeline stays clear as long as you keep each stage focused.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -867,8 +874,9 @@ CompletableFuture&lt;Profile&gt; p = u.thenCompose(user -&gt; fetchProfile(user)
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> allOf waits for all futures, anyOf completes when the first completes.</p>
-                  <p class="deep-note">Combining futures models fan-out and fan-in, which is common when you call multiple services in parallel.</p>
-                  <p class="deep-note">allOf waits for all to finish so you can aggregate results, while anyOf returns the first completed result for hedged or fallback requests.</p>
+                  <p class="deep-note">Combining futures models fan-out and fan-in. It is common when you call multiple services in parallel and then assemble a response.</p>
+                  <p class="deep-note">allOf waits for all tasks so you can aggregate results, while anyOf returns the first completed result for hedged requests or fallback strategies.</p>
+                  <p class="deep-note">A typical use case is pricing + inventory + recommendations in parallel. Fan-in lets you merge results into one response without serial latency.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -963,8 +971,9 @@ List&lt;Result&gt; results = all.thenApply(v -&gt; List.of(a.join(), b.join(), c
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> exceptionally and handle provide fallback paths; orTimeout/completeOnTimeout enforce SLAs.</p>
-                  <p class="deep-note">Errors propagate through the chain unless you explicitly handle them with exceptionally or handle.</p>
-                  <p class="deep-note">Timeouts like orTimeout make SLAs explicit, and fallbacks should return safe defaults rather than masking critical failures.</p>
+                  <p class="deep-note">Errors flow through the chain unless you handle them with exceptionally or handle. Try/catch does not work across async boundaries.</p>
+                  <p class="deep-note">Timeouts make SLAs explicit, and fallbacks should return safe defaults rather than hiding critical failures. Treat failures as data in async pipelines.</p>
+                  <p class="deep-note">Use handle when you want to inspect both success and failure, and exceptionally when you only want to map failures. This keeps error flow explicit.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -1059,8 +1068,9 @@ List&lt;Result&gt; results = all.thenApply(v -&gt; List.of(a.join(), b.join(), c
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Use custom executors for heavy work and avoid blocking calls on request threads.</p>
-                  <p class="deep-note">Async stages use the common ForkJoinPool by default, which is shared across the JVM and can be a hidden bottleneck.</p>
-                  <p class="deep-note">Provide a dedicated Executor for IO-heavy work and avoid blocking calls inside async stages to prevent pool starvation.</p>
+                  <p class="deep-note">Async stages default to the ForkJoin common pool, which is shared across the JVM. That can become a bottleneck when many components use it.</p>
+                  <p class="deep-note">Provide a dedicated Executor for IO-heavy work and avoid blocking calls inside async stages, because blocking can starve the pool and slow unrelated work.</p>
+                  <p class="deep-note">A common beginner mistake is calling join() inside async chains. If you need results, compose futures instead of blocking.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>

@@ -35,6 +35,12 @@
 
     a { color: inherit; }
 
+    .deep-note {
+      color: var(--muted);
+      line-height: 1.6;
+      margin-top: 10px;
+    }
+
     .breadcrumb {
       display: flex;
       align-items: center;
@@ -771,8 +777,9 @@
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Streams are lazy; intermediate operations are recorded and executed only at terminal ops.</p>
-                  <p class="deep-note">Streams build a pipeline of operations that only executes when a terminal operation runs, which is why streams are lazy.</p>
-                  <p class="deep-note">This allows fusion and short-circuiting, but it also means side effects can be surprising if you expect eager behavior.</p>
+                  <p class="deep-note">Streams build a pipeline of operations but do not execute until a terminal operation runs. This laziness allows optimizations like fusion and short-circuiting.</p>
+                  <p class="deep-note">Because execution is deferred, side effects can appear in unexpected order. Using peek() for debugging is fine, but relying on side effects in pipelines is risky.</p>
+                  <p class="deep-note">Think of streams as a recipe you describe, not an action you run immediately. The recipe only runs when you ask for a result.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -869,8 +876,9 @@
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Intermediate ops return a new stream; they are lazy and composable.</p>
-                  <p class="deep-note">Intermediate operations are either stateless (map, filter) or stateful (sorted, distinct), and stateful ones may buffer data.</p>
-                  <p class="deep-note">Keep pipelines readable; extract helpers when logic grows so the stream chain stays maintainable.</p>
+                  <p class="deep-note">Intermediate operations are either stateless (map, filter) or stateful (sorted, distinct). Stateful operations may buffer data and can increase memory use.</p>
+                  <p class="deep-note">When chains become long or complex, extract helpers so the stream reads clearly. Readability is more important than squeezing everything into one line.</p>
+                  <p class="deep-note">If your stream starts to look like a paragraph, it is time to name intermediate steps so future readers can follow intent.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -968,8 +976,9 @@
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Collectors reduce stream elements into a final structure like lists, maps, or aggregated values.</p>
-                  <p class="deep-note">Collectors perform mutable reduction, which is often more efficient and expressive than reduce for aggregations.</p>
-                  <p class="deep-note">Use groupingBy, mapping, and downstream collectors to build rich aggregates without side effects.</p>
+                  <p class="deep-note">Collectors perform mutable reduction and are usually more expressive than reduce for aggregation tasks. They also enable advanced grouping and mapping patterns.</p>
+                  <p class="deep-note">Use groupingBy with downstream collectors to build rich summaries without side effects. It keeps your pipeline declarative and easier to test.</p>
+                  <p class="deep-note">A beginner-friendly rule: use collect when you want a container result (list, map, grouping), and use reduce only for simple value folding.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -1065,8 +1074,9 @@
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Parallel streams split work across threads; overhead and contention can erase gains.</p>
-                  <p class="deep-note">Parallel streams can help for CPU-heavy tasks on large datasets, but they can hurt performance for small or IO-bound workloads.</p>
-                  <p class="deep-note">Any shared mutable state inside a parallel stream risks race conditions and nondeterministic results.</p>
+                  <p class="deep-note">Parallel streams can improve CPU-heavy workloads on large datasets, but they can degrade performance for small inputs or IO-bound tasks.</p>
+                  <p class="deep-note">Avoid shared mutable state and non-thread-safe operations in parallel pipelines. If correctness depends on order, consider sequential streams or ordered collectors.</p>
+                  <p class="deep-note">Before using parallel, measure. It is easy to make code slower by parallelizing work that is not actually CPU-bound.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>

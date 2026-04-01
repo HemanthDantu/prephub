@@ -35,6 +35,12 @@
 
     a { color: inherit; }
 
+    .deep-note {
+      color: var(--muted);
+      line-height: 1.6;
+      margin-top: 10px;
+    }
+
     .breadcrumb {
       display: flex;
       align-items: center;
@@ -783,8 +789,9 @@
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> @SpringBootApplication enables auto-configuration, which registers beans when classpath and properties match conditions.</p>
-                  <p class="deep-note">Auto-configuration applies conditional configuration based on the classpath and properties, giving you sensible defaults.</p>
-                  <p class="deep-note">It lets you start fast but still override beans when your app needs custom behavior.</p>
+                  <p class="deep-note">Auto-configuration applies defaults when conditions match, such as the presence of a library on the classpath or a property being enabled.</p>
+                  <p class="deep-note">This gives you a working app quickly, but still allows you to override beans when you need custom behavior.</p>
+                  <p class="deep-note">As a beginner, the key is to know you can always define your own bean to replace the auto-configured one.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -888,7 +895,8 @@ public class DbAutoConfig {
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Spring Boot starters are BOM-backed dependency sets that bring in libraries and their recommended versions.</p>
                   <p class="deep-note">Starters bundle dependencies so you add a feature with one dependency instead of managing versions manually.</p>
-                  <p class="deep-note">They rely on Boot dependency management so transitive versions stay compatible.</p>
+                  <p class="deep-note">They rely on Spring Boot’s dependency management so transitive versions stay compatible and conflicts are avoided.</p>
+                  <p class="deep-note">Think of starters as curated dependency sets that prevent version conflicts for you.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -985,8 +993,9 @@ public class DbAutoConfig {
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Conditional annotations gate bean creation, while @Primary or user-defined beans override defaults.</p>
-                  <p class="deep-note">Conditional annotations decide whether beans are created so user-defined beans can override defaults cleanly.</p>
-                  <p class="deep-note">Think of auto-config as opt-in defaults: you get them only if conditions match and you have not provided your own.</p>
+                  <p class="deep-note">Conditional annotations decide whether beans are created, which lets user-defined beans override defaults cleanly.</p>
+                  <p class="deep-note">Think of auto-config as opt-in defaults: it only activates when conditions match and you have not provided your own bean.</p>
+                  <p class="deep-note">If you see a bean you did not expect, check conditions like @ConditionalOnClass and @ConditionalOnProperty.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -1087,8 +1096,9 @@ public class CustomConfig {
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Custom starters bundle dependencies plus auto-config classes registered through AutoConfiguration.imports.</p>
-                  <p class="deep-note">A custom starter typically has a starter module (dependencies) and an autoconfigure module (conditional beans).</p>
-                  <p class="deep-note">Expose properties, document defaults, and test conditions so users can override predictably.</p>
+                  <p class="deep-note">A custom starter usually has a starter module (dependencies) and an autoconfigure module (conditional beans).</p>
+                  <p class="deep-note">Expose clear properties, document defaults, and test conditions so users can override behavior predictably.</p>
+                  <p class="deep-note">A good starter feels invisible: defaults work out of the box, but customization is straightforward and well documented.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>

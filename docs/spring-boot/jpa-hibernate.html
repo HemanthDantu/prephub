@@ -35,6 +35,12 @@
 
     a { color: inherit; }
 
+    .deep-note {
+      color: var(--muted);
+      line-height: 1.6;
+      margin-top: 10px;
+    }
+
     .breadcrumb {
       display: flex;
       align-items: center;
@@ -771,8 +777,9 @@
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Relationships like @ManyToOne and @OneToMany map foreign keys between tables.</p>
-                  <p class="deep-note">Entity mapping defines how object graphs translate to tables, including ownership of relationships and join columns.</p>
-                  <p class="deep-note">Choosing the owning side and cascade settings carefully prevents duplicate join tables and unintended deletes.</p>
+                  <p class="deep-note">Entity mapping defines how object graphs translate into tables. The owning side of a relationship controls the foreign key and must be chosen carefully.</p>
+                  <p class="deep-note">Cascade options decide how operations propagate. Using cascade without understanding ownership can cause unexpected deletes or inserts.</p>
+                  <p class="deep-note">A simple rule: only cascade from parent to child when it is truly a lifecycle dependency (like Order -&gt; OrderItem).</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -871,8 +878,9 @@ class Order {
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Lazy loads related data when accessed; N+1 happens when each access triggers a query.</p>
-                  <p class="deep-note">Lazy loading defers relationship queries, but it can trigger N+1 issues if you iterate without fetch joins.</p>
-                  <p class="deep-note">Eager loading avoids N+1 but can load too much data; entity graphs or fetch joins let you target what you need.</p>
+                  <p class="deep-note">Lazy loading defers relationship queries until you access the data, which saves work but can create N+1 query problems.</p>
+                  <p class="deep-note">Eager loading can over-fetch. Fetch joins or entity graphs let you specify exactly which relationships you need for a given use case.</p>
+                  <p class="deep-note">If you see many similar queries in logs, it is often a sign of N+1 and a missing fetch join.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -967,8 +975,9 @@ List&lt;Order&gt; findAllWithCustomer();</span></pre>
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Managed entities are tracked in the persistence context; changes are flushed on commit.</p>
-                  <p class="deep-note">The persistence context is a first-level cache that tracks changes via dirty checking.</p>
-                  <p class="deep-note">Flush writes changes at transaction boundaries, while detach/merge control whether entities remain managed.</p>
+                  <p class="deep-note">The persistence context is the first-level cache that tracks entity identity and changes. Dirty checking detects changes and flushes them at transaction boundaries.</p>
+                  <p class="deep-note">Detach and merge control whether entities remain managed. Understanding these states prevents surprise updates or stale data.</p>
+                  <p class="deep-note">For beginners, remember: if the entity is managed, changes are saved automatically. If detached, you must merge or update manually.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -1066,8 +1075,9 @@ public void rename(Long id){
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Use batch size, pagination, and projections to reduce SQL and memory overhead.</p>
-                  <p class="deep-note">Performance tuning focuses on query shape and batching: indexes, pagination, batch size, and limiting fetched associations.</p>
-                  <p class="deep-note">Second-level cache can help read-heavy workloads, but measure consistency needs and invalidation costs.</p>
+                  <p class="deep-note">Performance tuning starts with query shape: use indexes, pagination, and batch size to reduce round-trips and memory usage.</p>
+                  <p class="deep-note">Second-level cache can help read-heavy systems, but you must consider consistency and invalidation costs before enabling it.</p>
+                  <p class="deep-note">Start by fixing slow queries with indexes and proper fetch plans before reaching for caching.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>

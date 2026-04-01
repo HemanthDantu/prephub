@@ -35,6 +35,12 @@
 
     a { color: inherit; }
 
+    .deep-note {
+      color: var(--muted);
+      line-height: 1.6;
+      margin-top: 10px;
+    }
+
     .breadcrumb {
       display: flex;
       align-items: center;
@@ -783,8 +789,9 @@
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Boot resolves properties from many sources and applies a strict precedence order for overrides.</p>
-                  <p class="deep-note">Spring Boot loads configuration from multiple sources in a defined order; later sources override earlier ones.</p>
-                  <p class="deep-note">Understanding precedence prevents surprises when values change between local and production environments.</p>
+                  <p class="deep-note">Spring Boot loads configuration from multiple sources in a defined order, and later sources override earlier ones.</p>
+                  <p class="deep-note">Understanding precedence is critical because it explains why an env var can silently override your application.yml.</p>
+                  <p class="deep-note">When debugging config issues, print the effective configuration or enable the /actuator/env endpoint to see source origins.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -883,8 +890,9 @@ logging:
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> @ConfigurationProperties binds structured config into POJOs and can be validated with JSR-303.</p>
-                  <p class="deep-note">@ConfigurationProperties binds related settings into a typed object, which makes config explicit and testable.</p>
-                  <p class="deep-note">Validation fails fast on bad config, which is safer than letting invalid values propagate.</p>
+                  <p class="deep-note">@ConfigurationProperties binds related settings into a typed object, which is easier to validate and test than scattered @Value strings.</p>
+                  <p class="deep-note">Validation fails fast on bad config, which is safer than letting invalid values slip into production.</p>
+                  <p class="deep-note">Typed config also improves IDE support and documentation because fields are discoverable and centralized.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -984,8 +992,9 @@ public record PaymentProps(
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Profiles activate different configuration files and beans using spring.profiles.active or activation rules.</p>
-                  <p class="deep-note">Profiles let you define environment-specific settings while keeping shared defaults in application.yml.</p>
-                  <p class="deep-note">Profile groups can activate multiple profiles together, aligning layered environments like prod plus observability.</p>
+                  <p class="deep-note">Profiles let you isolate environment-specific settings while keeping shared defaults in application.yml.</p>
+                  <p class="deep-note">Profile groups can activate multiple profiles together, which is helpful for layered environments like prod + observability.</p>
+                  <p class="deep-note">Be explicit about which profiles are active in each environment so you avoid hidden behavior differences.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -1086,8 +1095,9 @@ logging:
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Sensitive values should come from secure sources like environment variables, vaults, or secret managers.</p>
-                  <p class="deep-note">Secrets should live outside the repo in environment variables or a secret manager, not in config files.</p>
-                  <p class="deep-note">If you need dynamic config, use a refresh mechanism or restart strategy instead of ad-hoc overrides.</p>
+                  <p class="deep-note">Secrets should live outside the repo in env vars or a secret manager, not in config files.</p>
+                  <p class="deep-note">If you need runtime config changes, use a refresh mechanism or restart strategy rather than ad-hoc overrides.</p>
+                  <p class="deep-note">A simple rule is: if leaking it would hurt you, it belongs in a secret manager, not in Git.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>

@@ -35,6 +35,12 @@
 
     a { color: inherit; }
 
+    .deep-note {
+      color: var(--muted);
+      line-height: 1.6;
+      margin-top: 10px;
+    }
+
     .breadcrumb {
       display: flex;
       align-items: center;
@@ -783,8 +789,9 @@
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Spring Boot Actuator adds production-ready endpoints under /actuator with configurable exposure.</p>
-                  <p class="deep-note">Actuator exposes operational endpoints like health and info, which are critical for readiness and liveness probes.</p>
-                  <p class="deep-note">Health groups let you separate traffic readiness from basic liveness so you can degrade gracefully.</p>
+                  <p class="deep-note">Actuator exposes operational endpoints like health and info, which are critical for readiness and liveness probes in production.</p>
+                  <p class="deep-note">Health groups let you separate traffic readiness from basic liveness so you can degrade gracefully without full outages.</p>
+                  <p class="deep-note">For beginners, start with health and info only, then add metrics and tracing as you need more visibility.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -883,8 +890,9 @@
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Micrometer provides a vendor-neutral API to record application metrics and export them to backends.</p>
-                  <p class="deep-note">Micrometer is a vendor-neutral metrics facade; you register counters, timers, and gauges then export to your backend.</p>
-                  <p class="deep-note">Keep tag cardinality low because high-cardinality labels can explode storage and cost.</p>
+                  <p class="deep-note">Micrometer is the metrics facade; you register counters, timers, and gauges and then export them to Prometheus, Datadog, or other backends.</p>
+                  <p class="deep-note">Keep tag cardinality low. High-cardinality labels can explode storage costs and make dashboards unusable.</p>
+                  <p class="deep-note">A useful habit is to think of metrics as time-series with a small number of labels you actually query.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -986,8 +994,9 @@ public class CheckoutMetrics {
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Tracing creates spans for each operation, linking them into a trace and exporting to systems like Zipkin or Tempo.</p>
-                  <p class="deep-note">Tracing connects requests across services with trace and span IDs, making latency bottlenecks visible.</p>
-                  <p class="deep-note">Sampling keeps overhead manageable, and logging trace IDs lets you correlate logs with traces.</p>
+                  <p class="deep-note">Tracing connects requests across services with trace and span IDs, which makes latency bottlenecks visible.</p>
+                  <p class="deep-note">Sampling keeps overhead manageable, and logging trace IDs lets you correlate logs with traces for faster debugging.</p>
+                  <p class="deep-note">When you enable tracing, ensure the trace IDs flow through HTTP headers and appear in logs.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -1089,7 +1098,8 @@ public class CheckoutMetrics {
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Secure actuator endpoints, configure health groups, and integrate probes for safe deployments.</p>
                   <p class="deep-note">In production, limit exposed endpoints and consider a separate management port secured by roles.</p>
-                  <p class="deep-note">Operational data is sensitive; treat it like an API with authentication, authorization, and rate limits.</p>
+                  <p class="deep-note">Operational data is sensitive, so treat it like an API with authentication, authorization, and rate limits.</p>
+                  <p class="deep-note">A good practice is to expose only health and metrics publicly, and lock down everything else.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>

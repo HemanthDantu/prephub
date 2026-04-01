@@ -35,6 +35,12 @@
 
     a { color: inherit; }
 
+    .deep-note {
+      color: var(--muted);
+      line-height: 1.6;
+      margin-top: 10px;
+    }
+
     .breadcrumb {
       display: flex;
       align-items: center;
@@ -771,8 +777,9 @@
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Dependency Injection means dependencies are provided by the container rather than created inside the class.</p>
-                  <p class="deep-note">IoC means the container creates and wires objects; DI is the mechanism that supplies dependencies at construction time.</p>
-                  <p class="deep-note">This centralizes configuration and makes components easier to test because collaborators can be swapped without rewriting construction logic.</p>
+                  <p class="deep-note">IoC means the container owns object creation and wiring, while DI is the act of supplying collaborators to those objects. This avoids manual construction in application code.</p>
+                  <p class="deep-note">The biggest win is testability: when dependencies are injected, you can replace them with fakes or mocks in tests without changing production code.</p>
+                  <p class="deep-note">As a beginner, think of Spring as the place where objects are assembled. Your classes should focus on behavior, not on finding or building dependencies.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -870,8 +877,9 @@ public class BillingService {
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Use @Qualifier to choose a bean by name; @Primary marks the default.</p>
-                  <p class="deep-note">When multiple beans match a type, Spring needs a hint; @Primary sets a default while @Qualifier selects an explicit bean.</p>
-                  <p class="deep-note">Qualifiers act like named contracts in larger systems, making ambiguity explicit instead of relying on bean order.</p>
+                  <p class="deep-note">When multiple beans match a type, Spring needs a hint. @Primary sets a default choice, and @Qualifier selects a specific bean explicitly.</p>
+                  <p class="deep-note">Qualifiers are especially valuable in large codebases because they make the intended dependency clear instead of relying on ordering or naming conventions.</p>
+                  <p class="deep-note">If you have EmailNotifier and SmsNotifier, a qualifier makes your intent obvious and prevents ambiguous wiring errors.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -967,8 +975,9 @@ public class BillingService {
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Singleton is default; request/session create per-request or per-session instances.</p>
-                  <p class="deep-note">Singleton is the default, but prototype creates a new instance per request, and request/session scopes are common in web apps.</p>
-                  <p class="deep-note">Lifecycle hooks like @PostConstruct let you validate wiring or warm caches, but keep them fast to avoid slow startup.</p>
+                  <p class="deep-note">Singleton is the default scope, but prototype creates a new instance each time, and request/session scopes are common in web apps.</p>
+                  <p class="deep-note">Lifecycle hooks like @PostConstruct are useful for validation or warm-up, but they should stay fast to avoid increasing startup time.</p>
+                  <p class="deep-note">Scope matters in memory and correctness: a request-scoped bean should not accidentally be shared across users.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -1064,8 +1073,9 @@ public class RequestContext { }</span></pre>
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> @Profile controls which beans load based on environment; @ConfigurationProperties binds config.</p>
-                  <p class="deep-note">Profiles let you swap beans and properties per environment, keeping configuration clean and explicit.</p>
-                  <p class="deep-note">@Configuration classes and @Bean methods make wiring visible and easier to reason about than field injection.</p>
+                  <p class="deep-note">Profiles allow you to swap beans and configuration per environment while keeping shared defaults in one place.</p>
+                  <p class="deep-note">@Configuration classes and @Bean methods make wiring explicit and readable, which helps new team members understand how objects are assembled.</p>
+                  <p class="deep-note">For example, you can use a mock payment gateway in dev and a real one in prod simply by switching profiles.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>

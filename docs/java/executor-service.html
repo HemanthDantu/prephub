@@ -35,6 +35,12 @@
 
     a { color: inherit; }
 
+    .deep-note {
+      color: var(--muted);
+      line-height: 1.6;
+      margin-top: 10px;
+    }
+
     .breadcrumb {
       display: flex;
       align-items: center;
@@ -771,8 +777,9 @@
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> ExecutorService manages a pool of threads and a queue so tasks are executed efficiently.</p>
-                  <p class="deep-note">ExecutorService decouples task submission from execution by placing work on a managed pool, avoiding manual thread creation and reuse problems.</p>
-                  <p class="deep-note">Think of it as a queue plus workers: you submit Runnables or Callables, the pool schedules them, and you control lifecycle via shutdown and awaitTermination.</p>
+                  <p class="deep-note">ExecutorService separates task submission from execution. You submit units of work and let a managed pool decide when and where they run, which avoids manual thread creation and reduces resource churn.</p>
+                  <p class="deep-note">Think of it as a queue with workers: tasks are added, a pool picks them up, and you control lifecycle using shutdown and awaitTermination. This makes concurrency easier to reason about and easier to test.</p>
+                  <p class="deep-note">For beginners, the key takeaway is you rarely want to call new Thread() in application code; you want a managed pool that can be monitored and tuned.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -869,8 +876,9 @@ pool.shutdown();</span></pre>
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> ThreadPoolExecutor controls core/max threads, queue capacity, keep-alive, and rejection policy.</p>
-                  <p class="deep-note">ThreadPoolExecutor is where you tune throughput and latency: core size keeps warm threads, max size handles bursts, and the queue controls backpressure.</p>
-                  <p class="deep-note">Small queues push pressure upstream, while large queues smooth spikes but can hide overload and increase latency.</p>
+                  <p class="deep-note">ThreadPoolExecutor is the tuning surface: core size keeps threads warm, max size handles bursts, and the queue controls how quickly you apply backpressure. Each choice affects latency and throughput.</p>
+                  <p class="deep-note">Small queues push pressure upstream early, while large queues smooth spikes but can hide overload and create long tail latency. Pick a policy that reflects how much delay you can tolerate.</p>
+                  <p class="deep-note">A practical example is API request handling: too large a queue means slow responses during spikes, while too small means rejected work. The right choice depends on SLAs.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -965,8 +973,9 @@ pool.shutdown();</span></pre>
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Callable returns a result, and submit() gives a Future to control that execution.</p>
-                  <p class="deep-note">Futures represent results that complete later, and Callables allow checked exceptions and return values.</p>
-                  <p class="deep-note">Use timeouts to avoid unbounded waits, and remember cancel() relies on interruption so tasks must cooperate.</p>
+                  <p class="deep-note">Futures represent results that arrive later. Callables allow you to return values and throw checked exceptions, which makes them a better fit for real work than Runnable.</p>
+                  <p class="deep-note">Use timeouts on get() to avoid indefinite waits, and remember cancel() is cooperative: tasks must handle interruption to stop. Without that, cancellations often do nothing.</p>
+                  <p class="deep-note">If you need to process tasks as they complete, look at CompletionService. It avoids blocking on the slowest task when you can handle early results.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -1061,8 +1070,9 @@ String v = f.get(200, TimeUnit.MILLISECONDS);</span></pre>
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Backpressure controls how much work enters the system when workers are saturated.</p>
-                  <p class="deep-note">Sizing depends on workload: CPU-bound pools should be near core count, while IO-bound pools can be larger because threads spend time waiting.</p>
-                  <p class="deep-note">Bounded queues plus a rejection policy provide explicit backpressure instead of silently accumulating work.</p>
+                  <p class="deep-note">Sizing depends on workload type: CPU-bound pools should be near the number of cores, while IO-bound pools can be larger because threads spend time waiting on network or disk.</p>
+                  <p class="deep-note">Backpressure matters. Bounded queues and explicit rejection policies make overload visible, so you fail fast instead of slowly degrading the entire system.</p>
+                  <p class="deep-note">A simple rule is: start with cores for CPU, then measure. For IO, multiply by the expected wait ratio and always validate with load tests.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>

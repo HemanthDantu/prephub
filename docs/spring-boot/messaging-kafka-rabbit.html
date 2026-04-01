@@ -35,6 +35,12 @@
 
     a { color: inherit; }
 
+    .deep-note {
+      color: var(--muted);
+      line-height: 1.6;
+      margin-top: 10px;
+    }
+
     .breadcrumb {
       display: flex;
       align-items: center;
@@ -785,6 +791,7 @@
                   <p><strong>Definition:</strong> RabbitMQ queues deliver to consumers, Kafka topics partition and broadcast to consumer groups.</p>
                   <p class="deep-note">Queues are point-to-point while pub/sub broadcasts to multiple consumers, and the choice affects ordering and scaling.</p>
                   <p class="deep-note">Kafka is a log with partitions and consumer groups; RabbitMQ is a broker with queues and routing keys.</p>
+                  <p class="deep-note">For beginners, remember: Kafka shines at replay and streaming, RabbitMQ shines at flexible routing and work queues.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -884,6 +891,7 @@ public void onMessage(OrderEvent event) {
                   <p><strong>Definition:</strong> KafkaTemplate and RabbitTemplate send messages, while listener annotations receive them.</p>
                   <p class="deep-note">Producers publish messages and consumers process them; acknowledgments decide when a message is considered handled.</p>
                   <p class="deep-note">Backpressure shows up as consumer lag or queue depth, which you should monitor and tune.</p>
+                  <p class="deep-note">If lag grows steadily, you need more consumers, faster processing, or a smaller message payload.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -984,6 +992,7 @@ public void handle(OrderEvent event, Acknowledgment ack) {
                   <p><strong>Definition:</strong> Most systems provide at-least-once delivery, so consumers must be idempotent and support retries.</p>
                   <p class="deep-note">Delivery guarantees are tradeoffs: at-least-once can produce duplicates, exactly-once is costly and limited.</p>
                   <p class="deep-note">Idempotent handlers and DLQs are practical tools for reliability in real systems.</p>
+                  <p class="deep-note">A beginner mistake is to assume messages are delivered only once. Design consumers to handle duplicates safely.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -1084,6 +1093,7 @@ handle(event);</pre>
                   <p><strong>Definition:</strong> Patterns like outbox ensure reliability, while sagas coordinate distributed workflows.</p>
                   <p class="deep-note">Integration patterns like outbox and saga coordinate state changes across services safely.</p>
                   <p class="deep-note">Use partition or routing keys to preserve ordering when required.</p>
+                  <p class="deep-note">Outbox is a great first pattern because it makes database writes and message publishing consistent.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>

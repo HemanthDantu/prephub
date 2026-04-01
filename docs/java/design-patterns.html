@@ -35,6 +35,12 @@
 
     a { color: inherit; }
 
+    .deep-note {
+      color: var(--muted);
+      line-height: 1.6;
+      margin-top: 10px;
+    }
+
     .breadcrumb {
       display: flex;
       align-items: center;
@@ -771,8 +777,9 @@
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Creational patterns centralize and control object creation so callers do not need to know construction details.</p>
-                  <p class="deep-note">Creational patterns focus on controlling how objects are built so callers depend on interfaces, not construction details or dependency graphs.</p>
-                  <p class="deep-note">In practice you reach for Factory when you have multiple concrete implementations, and Builder when optional parameters would make constructors unreadable.</p>
+                  <p class="deep-note">Creational patterns solve the problem of object setup becoming scattered and inconsistent. Instead of every caller knowing which constructor parameters, defaults, or collaborators to use, one place owns that knowledge and returns ready-to-use objects.</p>
+                  <p class="deep-note">Factory is for choosing between implementations at runtime, while Builder is for complex objects with optional fields or step-by-step construction. Singleton is about a single instance, but it trades simplicity for testability and should be used only when global state is genuinely required.</p>
+                  <p class="deep-note">A beginner-friendly mental model is to centralize creation so that changes in construction only happen in one file. That is the core value: fewer places to edit when you add a dependency or change defaults.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -876,8 +883,9 @@ public class UserFactory {
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Behavioral patterns separate actions and communication so the same system can behave differently without big rewrites.</p>
-                  <p class="deep-note">Behavioral patterns isolate changing behavior from the objects that use it, which lets you add strategies or subscribers without rewriting core flows.</p>
-                  <p class="deep-note">Strategy fits algorithm variation like pricing or routing, while Observer fits event fan-out where producers should not know who is listening.</p>
+                  <p class="deep-note">Behavioral patterns are about how objects communicate and how behavior changes without rewriting core flows. They keep your code open for extension by letting you plug in new behavior instead of adding more if/else logic.</p>
+                  <p class="deep-note">Strategy is a good fit when you want to swap algorithms like pricing, routing, or validation. Observer works when multiple systems need to react to events (emails, metrics, inventory updates) without the producer knowing each consumer.</p>
+                  <p class="deep-note">If you picture a checkout service, Strategy lets you swap discount rules, and Observer lets you notify analytics and shipping without changing checkout code. That separation is what keeps large systems maintainable.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -977,8 +985,9 @@ public class SurgePricing implements PricingStrategy {
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Decorator wraps an object to add behavior dynamically without modifying the original class.</p>
-                  <p class="deep-note">Structural patterns change how objects are composed without changing their public API, so clients stay stable as you add functionality.</p>
-                  <p class="deep-note">Decorator is ideal for layering optional behavior at runtime, but ordering and debugging of stacked decorators need care.</p>
+                  <p class="deep-note">Structural patterns focus on composition: they let you add features or adapt interfaces without changing what callers expect. That keeps dependencies stable even when internal structure evolves.</p>
+                  <p class="deep-note">Decorator wraps an object to add behavior at runtime, which avoids subclass explosions but introduces ordering and debugging concerns. It is best when features are optional or combinable rather than fixed.</p>
+                  <p class="deep-note">For example, you can wrap a FileStore with encryption and then compression without changing the FileStore interface. The trade-off is that debugging requires understanding the wrapper chain.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -1084,8 +1093,9 @@ public class SmsDecorator implements Notifier {
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Pattern choice is a trade-off between flexibility, complexity, and risk of change.</p>
-                  <p class="deep-note">Pattern selection is about locating likely change points and applying the smallest abstraction that isolates that change.</p>
-                  <p class="deep-note">If the change is hypothetical, start simple and refactor to a pattern when variation is real so complexity tracks value.</p>
+                  <p class="deep-note">Pattern selection should start with the change you expect, not with the pattern name. If a system will add new implementations frequently, prefer Strategy; if construction is messy, use Builder or Factory; if behavior is optional, use Decorator.</p>
+                  <p class="deep-note">If there is no real variation yet, keep it simple. Over-patterned code creates more classes and indirection than value, so it is better to refactor into a pattern when the need is clear.</p>
+                  <p class="deep-note">In interviews, explain the problem first, then the pattern that reduces risk. That shows you are designing for change, not just memorizing patterns.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>

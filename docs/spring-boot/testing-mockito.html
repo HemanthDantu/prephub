@@ -35,6 +35,12 @@
 
     a { color: inherit; }
 
+    .deep-note {
+      color: var(--muted);
+      line-height: 1.6;
+      margin-top: 10px;
+    }
+
     .breadcrumb {
       display: flex;
       align-items: center;
@@ -771,8 +777,9 @@
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Slice tests load only a layer (like web or data), while integration tests load more context.</p>
-                  <p class="deep-note">Test slices verify a focused layer without loading the full context, keeping tests fast and reliable.</p>
-                  <p class="deep-note">Use full integration tests for cross-layer flows, but keep them few and high value.</p>
+                  <p class="deep-note">Test slices verify one layer at a time and keep tests fast. For example, @WebMvcTest focuses on controllers without loading the full context.</p>
+                  <p class="deep-note">Integration tests should be fewer but high value, covering the main user flows and cross-layer behavior.</p>
+                  <p class="deep-note">As a beginner, aim for many small unit/slice tests and a handful of full-stack tests to catch wiring issues.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -869,8 +876,9 @@ class UserControllerTest {
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> @Mock is a plain Mockito mock; @MockBean replaces a Spring bean in the context.</p>
-                  <p class="deep-note">@Mock creates a mock in plain unit tests, while @MockBean replaces a Spring bean inside the application context.</p>
-                  <p class="deep-note">Use @MockBean for slice tests where you want Spring wiring but need to isolate a dependency.</p>
+                  <p class="deep-note">@Mock is for plain unit tests, while @MockBean replaces a Spring-managed bean within a test context.</p>
+                  <p class="deep-note">Use @MockBean when you want Spring wiring but need to isolate an external dependency like a database or API client.</p>
+                  <p class="deep-note">A simple rule: if Spring is creating the object, use @MockBean; otherwise use @Mock.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -967,8 +975,9 @@ class UserControllerTest {
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> MockMvc executes controller endpoints in-memory, letting you assert responses.</p>
-                  <p class="deep-note">MockMvc exercises controllers without a full server, letting you test routing, validation, and serialization cheaply.</p>
-                  <p class="deep-note">Keep assertions targeted with JSON path checks instead of brittle full-response comparisons.</p>
+                  <p class="deep-note">MockMvc tests controllers without running a server, which makes them faster and easier to maintain.</p>
+                  <p class="deep-note">Use JSON path assertions to validate key fields and avoid brittle full-response comparisons.</p>
+                  <p class="deep-note">When endpoints are secured, include authentication in MockMvc tests so you validate both security and behavior.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -1064,8 +1073,9 @@ class UserControllerTest {
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Stub with when/thenReturn; verify with verify() to confirm interactions.</p>
-                  <p class="deep-note">Stubbing defines mock behavior while verification asserts expected interactions happened.</p>
-                  <p class="deep-note">Avoid over-verification and focus on observable outcomes; use ArgumentCaptor for complex inputs.</p>
+                  <p class="deep-note">Stubbing defines behavior, verification checks interactions. Over-verification can make tests fragile by locking in implementation details.</p>
+                  <p class="deep-note">Use ArgumentCaptor when you need to inspect complex inputs rather than duplicating the production logic in test assertions.</p>
+                  <p class="deep-note">A good mindset is to verify outcomes first, and only verify interactions when the interaction itself is the contract.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>

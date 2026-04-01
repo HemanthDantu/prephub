@@ -35,6 +35,12 @@
 
     a { color: inherit; }
 
+    .deep-note {
+      color: var(--muted);
+      line-height: 1.6;
+      margin-top: 10px;
+    }
+
     .breadcrumb {
       display: flex;
       align-items: center;
@@ -771,8 +777,9 @@
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> @Transactional creates a transaction boundary with commit or rollback.</p>
-                  <p class="deep-note">@Transactional defines a unit of work with a single commit or rollback, typically at the service layer.</p>
-                  <p class="deep-note">Because it is proxy-based, self-invocation inside the same class bypasses the proxy and will not apply the transaction.</p>
+                  <p class="deep-note">@Transactional defines a unit of work that either commits or rolls back as a whole. It is usually applied at the service layer where business rules live.</p>
+                  <p class="deep-note">Because it is proxy-based, calls inside the same class bypass the proxy. That is why self-invocation does not start a transaction.</p>
+                  <p class="deep-note">A simple mental model is that a transaction is a safety boundary: either everything succeeds, or everything is undone.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -870,8 +877,9 @@ public void transfer(){
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> REQUIRED joins existing; REQUIRES_NEW suspends and starts new; NESTED uses savepoints.</p>
-                  <p class="deep-note">Propagation controls nested calls: REQUIRED joins an existing transaction, while REQUIRES_NEW suspends and starts a new one.</p>
-                  <p class="deep-note">REQUIRES_NEW is useful for audit logs or side effects that must persist even if the outer transaction fails.</p>
+                  <p class="deep-note">Propagation determines how nested calls behave. REQUIRED joins an existing transaction, while REQUIRES_NEW suspends it and starts a new one.</p>
+                  <p class="deep-note">REQUIRES_NEW is useful for side effects like audit logs that must persist even if the main transaction fails.</p>
+                  <p class="deep-note">NESTED can be used for partial rollbacks with savepoints, but it depends on database support.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -966,8 +974,9 @@ public void writeAudit(){ ... }</span></pre>
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Isolation prevents anomalies like dirty reads, non-repeatable reads, and phantoms.</p>
-                  <p class="deep-note">Isolation levels trade performance for consistency, preventing anomalies like dirty reads or phantom reads.</p>
-                  <p class="deep-note">Choose the lowest level that meets correctness because higher isolation can reduce throughput via locks.</p>
+                  <p class="deep-note">Isolation levels trade performance for consistency. Higher isolation prevents anomalies but reduces concurrency due to locking.</p>
+                  <p class="deep-note">Pick the lowest isolation that still meets correctness so you avoid unnecessary contention in busy systems.</p>
+                  <p class="deep-note">If you do not know which to pick, start with READ_COMMITTED and adjust only when you observe anomalies.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -1062,8 +1071,9 @@ public void readReport(){ ... }</span></pre>
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> By default, Spring rolls back on RuntimeException; use rollbackFor for checked exceptions.</p>
-                  <p class="deep-note">By default, runtime exceptions trigger rollback while checked exceptions do not, which surprises many teams.</p>
-                  <p class="deep-note">Explicit rollbackFor and timeouts make behavior predictable and prevent long-running transactions from holding locks.</p>
+                  <p class="deep-note">By default, only unchecked exceptions trigger rollback. If you expect checked exceptions to roll back, specify rollbackFor explicitly.</p>
+                  <p class="deep-note">Timeouts and readOnly flags make transactional behavior predictable and help avoid long-running locks.</p>
+                  <p class="deep-note">It is also common to split long operations so you avoid holding locks for the entire workflow.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>

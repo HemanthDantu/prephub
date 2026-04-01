@@ -35,6 +35,12 @@
 
     a { color: inherit; }
 
+    .deep-note {
+      color: var(--muted);
+      line-height: 1.6;
+      margin-top: 10px;
+    }
+
     .breadcrumb {
       display: flex;
       align-items: center;
@@ -785,6 +791,7 @@
                   <p><strong>Definition:</strong> A circuit breaker tracks failures and opens when a threshold is reached, then half-opens to test recovery.</p>
                   <p class="deep-note">Circuit breakers stop repeated calls to failing dependencies by opening after a threshold of errors.</p>
                   <p class="deep-note">They protect the system from cascading failures and give downstreams time to recover.</p>
+                  <p class="deep-note">As a beginner, imagine a fuse that trips when a service is unhealthy, preventing more damage.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -882,6 +889,7 @@ public Inventory check(String sku) { ... }</pre>
                   <p><strong>Definition:</strong> Retries should use backoff and be applied only to idempotent operations, with timeouts to cap latency.</p>
                   <p class="deep-note">Retries can fix transient errors but must be paired with timeouts to avoid infinite waits.</p>
                   <p class="deep-note">Use exponential backoff with jitter to avoid retry storms during outages.</p>
+                  <p class="deep-note">A simple rule is to retry only on safe, idempotent calls and keep retry counts small.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -983,6 +991,7 @@ public Inventory check(String sku) { ... }</pre>
                   <p><strong>Definition:</strong> Bulkheads limit concurrent calls via separate thread pools or semaphores, and rate limiters cap traffic.</p>
                   <p class="deep-note">Bulkheads limit resource usage so failures in one area do not starve others.</p>
                   <p class="deep-note">Rate limiting protects downstreams and enforces fairness under load.</p>
+                  <p class="deep-note">Think of bulkheads as separate compartments in a ship: one leak should not sink everything.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -1080,6 +1089,7 @@ public Inventory check(String sku) { ... }</pre>
                   <p><strong>Definition:</strong> Resilience4j exposes annotations, config, and events that integrate with Boot and Micrometer.</p>
                   <p class="deep-note">Spring integrates Resilience4j via annotations and configuration, making patterns easy to apply consistently.</p>
                   <p class="deep-note">Expose metrics for breaker state, retries, and latency so you can tune in production.</p>
+                  <p class="deep-note">If you cannot observe the breaker state, you cannot trust it; monitoring is part of the pattern.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>

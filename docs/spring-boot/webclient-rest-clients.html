@@ -35,6 +35,12 @@
 
     a { color: inherit; }
 
+    .deep-note {
+      color: var(--muted);
+      line-height: 1.6;
+      margin-top: 10px;
+    }
+
     .breadcrumb {
       display: flex;
       align-items: center;
@@ -785,6 +791,7 @@
                   <p><strong>Definition:</strong> WebClient builds reactive HTTP requests using Reactor and supports filters and codecs.</p>
                   <p class="deep-note">WebClient is non-blocking and designed for reactive pipelines, returning Mono or Flux for async composition.</p>
                   <p class="deep-note">It shines in high-concurrency IO because threads are not blocked on network waits.</p>
+                  <p class="deep-note">If you are new to reactive, start with simple single-call flows and build up to combining requests.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -887,7 +894,8 @@ Mono&lt;User&gt; user = client.get()
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> retrieve() assumes a 2xx success path, while exchangeToMono gives access to status codes and headers.</p>
                   <p class="deep-note">retrieve() is convenient for happy-path responses, while exchangeToMono gives access to status codes and headers.</p>
-                  <p class="deep-note">Use exchangeToMono for custom error mapping or conditional handling based on response metadata.</p>
+                  <p class="deep-note">Use exchangeToMono when you need custom error mapping or conditional handling based on response metadata.</p>
+                  <p class="deep-note">A good beginner rule: use retrieve for simple APIs and exchangeToMono when you need to inspect the response.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -989,7 +997,8 @@ Mono&lt;User&gt; user = client.get()
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Timeouts cut off slow calls, and retries with backoff handle transient failures safely.</p>
                   <p class="deep-note">Timeouts prevent slow dependencies from tying up resources, and retries should be bounded with backoff.</p>
-                  <p class="deep-note">Only retry idempotent requests; otherwise you can duplicate side effects under failure.</p>
+                  <p class="deep-note">Only retry idempotent requests; otherwise you can duplicate side effects during failures.</p>
+                  <p class="deep-note">Tie timeouts to your user-facing SLA so your system fails fast rather than waiting too long.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -1089,8 +1098,9 @@ WebClient client = WebClient.builder()
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Reactor Netty provides connection pooling, while filters add logging, metrics, and tracing to WebClient.</p>
-                  <p class="deep-note">Connection pooling reduces socket churn and improves latency, especially under high throughput.</p>
-                  <p class="deep-note">Enable metrics and logs to observe latency, error rates, and pool saturation.</p>
+                  <p class="deep-note">Connection pooling reduces socket churn and improves latency under load.</p>
+                  <p class="deep-note">Enable metrics and logs to observe latency, error rates, and pool saturation so you can tune safely.</p>
+                  <p class="deep-note">If you see timeouts under load, check pool sizes and connection limits before increasing retries.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>

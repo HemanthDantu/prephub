@@ -35,6 +35,12 @@
 
     a { color: inherit; }
 
+    .deep-note {
+      color: var(--muted);
+      line-height: 1.6;
+      margin-top: 10px;
+    }
+
     .breadcrumb {
       display: flex;
       align-items: center;
@@ -783,8 +789,9 @@
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> AOP wraps method calls with advice through proxies so cross-cutting logic is centralized.</p>
-                  <p class="deep-note">AOP isolates cross-cutting concerns like logging, security, and transactions from business logic.</p>
-                  <p class="deep-note">This keeps core code focused and avoids repetitive boilerplate across services.</p>
+                  <p class="deep-note">AOP isolates cross-cutting concerns like logging, security, and transactions from business logic, so core code stays clean.</p>
+                  <p class="deep-note">Instead of repeating the same logic in every service method, AOP applies it in one place through advice.</p>
+                  <p class="deep-note">A beginner-friendly way to think about AOP is as "invisible wrappers" around methods that add extra behavior.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -890,6 +897,7 @@ public class TimingAspect {
                   <p><strong>Definition:</strong> JDK proxies implement interfaces; CGLIB creates subclasses to proxy concrete classes.</p>
                   <p class="deep-note">JDK proxies wrap interfaces while CGLIB proxies subclass classes; both affect how methods are intercepted.</p>
                   <p class="deep-note">Knowing the proxy type matters for final classes, equals/hashCode behavior, and performance.</p>
+                  <p class="deep-note">If your class does not implement an interface, Spring will likely use CGLIB and create a subclass at runtime.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -988,6 +996,7 @@ public class TimingAspect {
                   <p><strong>Definition:</strong> Spring AOP works through proxies, so only external calls go through the proxy and trigger advice.</p>
                   <p class="deep-note">Self-invocation bypasses the proxy because the call stays inside the target object.</p>
                   <p class="deep-note">To apply advice, calls must go through the proxy or use AspectJ for compile-time weaving.</p>
+                  <p class="deep-note">A simple fix is to move the advised method to another bean, so calls naturally go through the proxy.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -1092,6 +1101,7 @@ public class BillingService {
                   <p><strong>Definition:</strong> Spring uses AOP to wrap methods with concerns like transaction boundaries, caching, and security.</p>
                   <p class="deep-note">Common AOP use cases include transaction boundaries, auditing, retries, and metrics.</p>
                   <p class="deep-note">Avoid putting business decisions in aspects; keep them focused on cross-cutting behavior.</p>
+                  <p class="deep-note">If an aspect becomes large or complex, it is often a sign that the concern belongs in normal code, not in AOP.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>

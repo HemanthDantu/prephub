@@ -35,6 +35,12 @@
 
     a { color: inherit; }
 
+    .deep-note {
+      color: var(--muted);
+      line-height: 1.6;
+      margin-top: 10px;
+    }
+
     .breadcrumb {
       display: flex;
       align-items: center;
@@ -784,7 +790,8 @@
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> @Scheduled runs methods at intervals or cron expressions using a TaskScheduler.</p>
                   <p class="deep-note">@Scheduled supports fixedRate, fixedDelay, and cron, each with different timing semantics.</p>
-                  <p class="deep-note">Use cron for human-readable schedules and fixedDelay when you must wait for completion before the next run.</p>
+                  <p class="deep-note">Use cron for predictable schedules and fixedDelay when you must wait for completion before the next run.</p>
+                  <p class="deep-note">Beginners often choose fixedRate by default, but fixedDelay is safer when tasks can run longer than expected.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -884,6 +891,7 @@ public void refreshCache() {
                   <p><strong>Definition:</strong> TaskScheduler controls the thread pool used for @Scheduled tasks and avoids blocking.</p>
                   <p class="deep-note">By default, Spring uses a single-threaded scheduler, so long jobs block other tasks.</p>
                   <p class="deep-note">A dedicated TaskScheduler with a thread pool allows parallel jobs and isolates slow tasks.</p>
+                  <p class="deep-note">If you see one job delaying another, that is a signal to add a pool and separate workloads.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -990,6 +998,7 @@ public class SchedulingConfig {
                   <p><strong>Definition:</strong> Overlapping schedules can cause duplicate work; use locks or adjust delay to fit task duration.</p>
                   <p class="deep-note">Overlapping runs can corrupt state or overwhelm systems; guard with locks or conditional checks.</p>
                   <p class="deep-note">Always catch exceptions inside jobs so a single failure does not stop future executions.</p>
+                  <p class="deep-note">Monitoring job duration helps you detect drift and adjust schedules before failures happen.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -1089,6 +1098,7 @@ public void nightlySync() {
                   <p><strong>Definition:</strong> Distributed locks or external schedulers ensure a job runs once across a cluster.</p>
                   <p class="deep-note">In distributed deployments, each instance will run the same job unless you coordinate.</p>
                   <p class="deep-note">Leader election or libraries like ShedLock ensure only one instance runs a scheduled task.</p>
+                  <p class="deep-note">Design scheduled work to be idempotent so duplicates are safe if coordination fails.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>

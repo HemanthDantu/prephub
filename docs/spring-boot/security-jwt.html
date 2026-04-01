@@ -35,6 +35,12 @@
 
     a { color: inherit; }
 
+    .deep-note {
+      color: var(--muted);
+      line-height: 1.6;
+      margin-top: 10px;
+    }
+
     .breadcrumb {
       display: flex;
       align-items: center;
@@ -771,8 +777,9 @@
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Authentication proves who you are; authorization decides what you can access.</p>
-                  <p class="deep-note">Spring Security runs a filter chain per request that builds the SecurityContext and enforces authorization rules.</p>
-                  <p class="deep-note">Authentication verifies identity, while authorization decides access based on roles or scopes; mixing them causes confusion.</p>
+                  <p class="deep-note">Spring Security runs a filter chain per request that builds the SecurityContext and applies access rules. Authentication verifies identity; authorization decides access.</p>
+                  <p class="deep-note">Separating those two concerns keeps code clear. A common beginner mistake is mixing them and losing track of where access decisions happen.</p>
+                  <p class="deep-note">Filters are ordered, so mistakes in ordering can break authentication or allow requests through unexpectedly.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -868,8 +875,9 @@
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> JWTs have header, payload, signature; servers verify signature and expiry.</p>
-                  <p class="deep-note">A JWT has header, payload, and signature; the signature proves the token was issued by a trusted authority.</p>
-                  <p class="deep-note">Validation must check signature, expiration, issuer, and audience, not just decode the payload.</p>
+                  <p class="deep-note">A JWT is made of header, payload, and signature. The signature proves the token came from a trusted issuer.</p>
+                  <p class="deep-note">Validation must check signature, expiration, issuer, and audience. Simply decoding the payload without verification is insecure.</p>
+                  <p class="deep-note">If key rotation is supported, make sure you validate against JWKS and cache keys carefully.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -964,8 +972,9 @@ if (jwt.isExpired()) throw new SecurityException();</span></pre>
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Access tokens expire quickly; refresh tokens issue new access tokens.</p>
-                  <p class="deep-note">Access tokens are short-lived and used for API calls, while refresh tokens are long-lived and used only to obtain new access tokens.</p>
-                  <p class="deep-note">Rotate refresh tokens and revoke on suspicious activity to limit replay risk.</p>
+                  <p class="deep-note">Access tokens are short-lived and used on API requests, while refresh tokens are long-lived and used only to obtain new access tokens.</p>
+                  <p class="deep-note">Rotate refresh tokens and revoke them on suspicious activity to reduce replay risk.</p>
+                  <p class="deep-note">A safe beginner pattern is short access tokens plus refresh token rotation with server-side revocation checks.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
@@ -1060,8 +1069,9 @@ Invalidate old refresh token</span></pre>
                 <div>
                   <h3>What it means in real code</h3>
                   <p><strong>Definition:</strong> Authorization headers avoid CSRF, while cookies require CSRF protection.</p>
-                  <p class="deep-note">If you store JWTs in cookies, you must handle CSRF; in-memory storage avoids CSRF but loses tokens on refresh.</p>
-                  <p class="deep-note">A safe pattern is short-lived access tokens with secure storage and proper CSRF defenses when cookies are used.</p>
+                  <p class="deep-note">Token storage matters. Cookies require CSRF defenses, while in-memory storage avoids CSRF but loses tokens on refresh.</p>
+                  <p class="deep-note">A safe beginner-friendly pattern is short-lived access tokens plus secure storage, combined with SameSite cookies when cookies are used.</p>
+                  <p class="deep-note">Never put sensitive data inside the JWT payload; it is only base64-encoded, not encrypted.</p>
                   <div class="mini-grid">
                     <div class="mini-panel">
                       <h4>Why it matters</h4>
