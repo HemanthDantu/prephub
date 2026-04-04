@@ -1,13 +1,14 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Caching Learning Module</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Caching Learning Module</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&amp;family=Syne:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<style>
 :root {
       --bg: #0a0e1a;
       --surface-1: #111827;
@@ -728,624 +729,213 @@
   </style>
 </head>
 <body>
-  <div class="app">
-    <header class="topbar">
-      <div class="topbar-inner">
-        <div class="topbar-row">
-          <div class="brand">
-            <h1>Caching</h1>
-            <small>Interactive 35-minute learning module</small>
-          </div>
-                <div class="topbar-row">
-          <div class="breadcrumb">
-            <a href="../index.html">Home</a>
-            <span>›</span>
-            <a href="index.html">Spring Boot</a>
-            <span>›</span>
-            <span>Caching</span>
-          </div>
-        </div>
-          <div class="timer-wrap" aria-live="polite">
-            <span class="timer-label">Time Left</span>
-            <span class="timer" id="timer">35:00</span>
-          </div>
-        </div>
-        <div class="topbar-row">
-                    <nav class="nav-dots" aria-label="Section navigation"><button class="nav-dot active" data-index="0" aria-label="Go to section 1">1</button><button class="nav-dot" data-index="1" aria-label="Go to section 2">2</button><button class="nav-dot" data-index="2" aria-label="Go to section 3">3</button><button class="nav-dot" data-index="3" aria-label="Go to section 4">4</button><button class="nav-dot" data-index="4" aria-label="Go to section 5">5</button><button class="nav-dot" data-index="5" aria-label="Go to completion screen">6</button></nav>
-        </div>
-        <div class="progress-shell" aria-hidden="true">
-          <div class="progress-bar" id="progressBar"></div>
-        </div>
-      </div>
-    </header>
+<div class="app">
+<header class="topbar">
+<div class="topbar-inner">
+<div class="topbar-row">
+<div class="brand">
+<h1>Caching</h1>
+<small>Interactive 35-minute learning module</small>
+</div>
+<div class="topbar-row">
+<div class="breadcrumb">
+<a href="../index.html">Home</a>
+<span>›</span>
+<a href="index.html">Spring Boot</a>
+<span>›</span>
+<span>Caching</span>
+</div>
+</div>
+<div aria-live="polite" class="timer-wrap">
+<span class="timer-label">Time Left</span>
+<span class="timer" id="timer">35:00</span>
+</div>
+</div>
+<div class="topbar-row">
+<nav aria-label="Section navigation" class="nav-dots"><button aria-label="Go to section 1" class="nav-dot active" data-index="0">1</button><button aria-label="Go to section 2" class="nav-dot" data-index="1">2</button><button aria-label="Go to section 3" class="nav-dot" data-index="2">3</button><button aria-label="Go to section 4" class="nav-dot" data-index="3">4</button><button aria-label="Go to section 5" class="nav-dot" data-index="4">5</button><button aria-label="Go to completion screen" class="nav-dot" data-index="5">6</button></nav>
+</div>
+<div aria-hidden="true" class="progress-shell">
+<div class="progress-bar" id="progressBar"></div>
+</div>
+</div>
+</header>
+<main>
 
-    <main>
-      
-      <section class="section active" data-section="0">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 1 of 5 · ~7 mins</div>
-            <h2>Caching Basics with @Cacheable</h2>
-            <p>Spring cache abstraction wraps method calls and stores results by key.</p>
-            <a class="back-link" href="index.html">← Back to Spring Boot</a>
-          </div>
 
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Keep snacks nearby</h3>
-              <p>Instead of walking to the pantry every time, you keep snacks on your desk.</p>
-            </article>
 
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Sticky note reminders</h3>
-              <p>If you already looked up a fact, you keep the sticky note so you do not search again.</p>
-            </article>
 
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> @Cacheable checks the cache before running the method, and stores the result by key.</p>
-                  <p class="deep-note">@Cacheable implements cache-aside: the first request loads from DB and stores the result, later requests hit the cache.</p>
-                  <p class="deep-note">Keys must uniquely represent the query; ambiguous keys lead to collisions and subtle bugs that are hard to trace.</p>
-                  <p class="deep-note">As a beginner, start with a small cache and simple keys, then add TTLs and eviction as you observe usage.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul>
-                        <li>Faster responses</li><li>Less database load</li><li>Simple read optimization</li>
-                      </ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common pitfall</h4>
-                      <ul>
-                        <li>Repeated heavy queries</li><li>Expensive API calls</li><li>No memoization</li>
-                      </ul>
-                    </div>
-                  </div>
-                  <div class="badge-row"><span class="pill good">Cache hit</span><span class="pill info">Cache miss</span><span class="pill caution">Key</span></div>
-                  
-                  <div class="flow"><span class="flow-step">Call method</span><span class="flow-arrow">→</span><span class="flow-step">Check cache</span><span class="flow-arrow">→</span><span class="flow-step">Return cached</span><span class="flow-arrow">→</span><span class="flow-step">Or compute + store</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“@Cacheable wraps a method so it returns cached data when a key exists, otherwise it computes and stores.”</p>
-                  <p class="deep-note">Caching trades freshness for speed. The key decisions are cache keys, eviction rules, and what happens on write so you don't serve stale data.</p>
-                  
-                  <table>
-                    <thead><tr><th>Step</th><th>Result</th></tr></thead>
-                    <tbody><tr><td>Hit</td><td><span class="pill good">Fast return</span></td></tr><tr><td>Miss</td><td><span class="pill info">Compute then store</span></td></tr><tr><td>Evict</td><td><span class="pill caution">Remove stale</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              
-    <div class="code-blocks">
-    <div>
-      <div class="code-title">Cacheable example</div>
-      <pre>@Cacheable(value = "users", key = "#id")
-public User getUser(String id) {
-  return userRepo.findById(id).orElseThrow();
-}</pre>
-    </div>
-    </div>
-              
-            </article>
 
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Cache keys must be stable</h3>
-              <p>If keys are inconsistent, you can miss caches and waste memory.</p>
-            </article>
 
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>@Cacheable caches method results.</li><li>Keys define cache entries.</li><li>Enable caching once per app.</li>
-              </ul>
-            </article>
+</main>
+<section class="section" data-section="0">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Section 1 · Core concept</div>
+<h2>Caching Basics with @Cacheable</h2>
+<p>Caching Basics with @Cacheable is a high-value senior interview topic because it reveals whether you understand the underlying mechanism, the default behavior, and the trade-offs in production.</p>
+</div>
+<div class="card-grid">
+<article class="card eli5"><div class="card-label">🧒 ELI5</div><h3>A simple mental picture</h3><p>Imagine a busy workplace where one small rule determines whether the whole team moves smoothly or keeps stepping on each other. @Cacheable stores the result of a method call under a key so repeated calls can reuse the cached value instead of hitting the expensive source again. works like that kind of rule: it tells the system how to behave before small mistakes turn into bigger production problems.</p><p>It matters because it reduces repeated latency and load for read-heavy paths. Without that rule, engineers often discover the problem only after the app is under load, when the bug is expensive and confusing.</p><p>The useful mental shortcut is to ask: “What is the system trying to coordinate here, and what breaks when that coordination is missing?” That question usually reveals why this feature exists.</p></article><article class="card analogy"><div class="card-label">🔗 ANALOGY</div><h3>Why the rule exists</h3><p>Think of caching basics with @cacheable as a piece of operating policy, not just a syntax feature. The policy exists to make decisions repeatable across the whole system instead of relying on every individual class to remember the rule.</p><p>If you ignore that policy, the most common smell is caching the wrong method or assuming cached data is always fresh. In real applications, that smell usually shows up as flaky behavior, hidden coupling, or painful debugging.</p></article><article class="card technical"><div class="card-label">Technical</div><div class="two-col"><div><h3>How it works under the hood</h3><p><strong>Definition:</strong> @Cacheable stores the result of a method call under a key so repeated calls can reuse the cached value instead of hitting the expensive source again.</p><p class="deep-note">@Cacheable stores the result of a method call under a key so repeated calls can reuse the cached value instead of hitting the expensive source again. Under the hood, Spring or the underlying infrastructure usually applies the behavior around your code rather than by changing your business logic directly.</p><p class="deep-note">The production question is not “can I enable it?” but “where is the right boundary and what problem am I actually solving?”</p><p class="deep-note">Good engineering here comes from matching the mechanism to the use case, then watching the trade-off instead of blindly turning the feature on everywhere.</p><div class="mini-grid"><div class="mini-panel"><h4>Why it matters in production</h4><ul><li>it reduces repeated latency and load for read-heavy paths</li><li>Makes caching behavior explicit</li><li>Gives you a clearer story in debugging and interviews</li></ul></div><div class="mini-panel"><h4>Common smell</h4><ul><li>caching the wrong method or assuming cached data is always fresh</li><li>Using the mechanism as a band-aid for design issues</li><li>Forgetting what the default behavior actually is</li></ul></div></div><div class="badge-row"><span class="pill good">Explicit intent</span><span class="pill info">Know the default</span><span class="pill caution">Trade-offs matter</span></div><div class="flow"><span class="flow-step">Call enters boundary</span><span class="flow-arrow">→</span><span class="flow-step">Framework applies rule</span><span class="flow-arrow">→</span><span class="flow-step">Your code runs</span><span class="flow-arrow">→</span><span class="flow-step">Outcome follows configured behavior</span></div></div><div><h3>💬 Model Interview Answer</h3><p>“Caching Basics with @Cacheable in Caching is really about @cacheable stores the result of a method call under a key so repeated calls can reuse the cached value instead of hitting the expensive source again. I explain it as a mechanism that enforces a policy around my code so the application behaves consistently. The important trade-off is caching the wrong method or assuming cached data is always fresh, so I use it deliberately and I make the boundary clear instead of relying on accidental defaults.”</p><table><thead><tr><th>Scenario</th><th>What to watch</th></tr></thead><tbody><tr><td>Cache hit</td><td>Return stored value</td></tr><tr><td>Cache miss</td><td>Run method and store result</td></tr><tr><td>Key</td><td>Must represent the lookup identity</td></tr></tbody></table></div></div><div class="code-blocks"><div><div class="code-title">❌ Wrong</div><pre>@Service
+public class UserService {
 
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>What happens on a cache hit with @Cacheable?</h3>
-              <div class="quiz-options" data-answer="2">
-                <button class="quiz-option">A. Method runs anyway</button><button class="quiz-option">B. Cache is cleared</button><button class="quiz-option">C. Cached value is returned</button><button class="quiz-option">D. A new key is generated</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: C</strong>
-                <span>On a cache hit, the cached value is returned and the method body is skipped.</span>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
+    public User getUser(Long id) {
+        return userRepository.findById(id).orElseThrow();
+    }
+}</pre></div><div><div class="code-title">✅ Right</div><pre>@Service
+public class UserService {
 
-      <section class="section" data-section="1">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 2 of 5 · ~7 mins</div>
-            <h2>Writing, Updating, and Evicting</h2>
-            <p>Use @CachePut to update caches and @CacheEvict to remove stale entries.</p>
-            
-          </div>
+    @Cacheable(cacheNames = "users", key = "#id")
+    public User getUser(Long id) {
+        return userRepository.findById(id).orElseThrow();
+    }
+}</pre></div></div><p>Use caching basics with @cacheable where the rule belongs in architecture, not just where it happens to fix one failing test or one bug report.</p><p class="deep-note">The safest mental model is that Spring gives you a framework feature only when your call crosses the Spring-managed boundary and the surrounding infrastructure can participate.</p></article><article class="card warning"><div class="card-label">Warning</div><h3>Common misunderstanding</h3><p>The dangerous misunderstanding is treating caching basics with @cacheable like a magic switch instead of a mechanism with boundaries and defaults. That is how teams end up with caching the wrong method or assuming cached data is always fresh.</p><p>A safer pattern is to make the intent explicit, keep the scope narrow, and choose the smallest mechanism that actually solves the problem.</p><div class="code-blocks"><div><div class="code-title">Broken pattern</div><pre>@Service
+public class UserService {
 
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Replace old notes</h3>
-              <p>If the phone number changes, you update the sticky note so it stays correct.</p>
-            </article>
+    public User getUser(Long id) {
+        return userRepository.findById(id).orElseThrow();
+    }
+}</pre></div><div><div class="code-title">Safer pattern</div><pre>@Service
+public class UserService {
 
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Fridge cleanup</h3>
-              <p>When food expires, you throw it away so no one eats it later.</p>
-            </article>
+    @Cacheable(cacheNames = "users", key = "#id")
+    public User getUser(Long id) {
+        return userRepository.findById(id).orElseThrow();
+    }
+}</pre></div></div></article><article class="card technical"><div class="card-label">Mini takeaway</div><ul class="takeaways"><li>Caching Basics with @Cacheable exists to make a policy explicit</li><li>Defaults are useful, but interviews reward knowing the boundary and trade-off</li><li>If you see caching the wrong method or assuming cached data is always fresh, revisit the design before adding more framework annotations</li></ul></article><article class="card quiz-card"><div class="card-label">Quiz</div><h3>What does @Cacheable mainly optimize?</h3><div class="quiz-options" data-answer="0"><button class="quiz-option">A. Repeated expensive reads with the same key</button><button class="quiz-option">B. Transaction isolation</button><button class="quiz-option">C. Bean creation order</button><button class="quiz-option">D. SQL schema migration</button></div><div class="quiz-result"><strong>Correct answer: A</strong><span>A is correct because it matches how caching basics with @cacheable is intended to work in a production-grade Spring application. The wrong choices are plausible because they sound framework-ish, but they either ignore the real boundary, confuse this feature with another one, or assume a stronger guarantee than the mechanism actually provides. In an interview, tie your answer back to the concrete failure mode you are preventing.</span></div></article></div></div></section><section class="section" data-section="1">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Section 2 · Write behavior</div>
+<h2>Writing, Updating, and Evicting</h2>
+<p>Writing, Updating, and Evicting is a high-value senior interview topic because it reveals whether you understand the underlying mechanism, the default behavior, and the trade-offs in production.</p>
+</div>
+<div class="card-grid">
+<article class="card eli5"><div class="card-label">🧒 ELI5</div><h3>A simple mental picture</h3><p>Imagine a busy workplace where one small rule determines whether the whole team moves smoothly or keeps stepping on each other. Caching is not just about reads; you also need a strategy for updating or evicting entries when underlying data changes. works like that kind of rule: it tells the system how to behave before small mistakes turn into bigger production problems.</p><p>It matters because stale cache entries can be worse than no cache at all. Without that rule, engineers often discover the problem only after the app is under load, when the bug is expensive and confusing.</p><p>The useful mental shortcut is to ask: “What is the system trying to coordinate here, and what breaks when that coordination is missing?” That question usually reveals why this feature exists.</p></article><article class="card analogy"><div class="card-label">🔗 ANALOGY</div><h3>Why the rule exists</h3><p>Think of writing, updating, and evicting as a piece of operating policy, not just a syntax feature. The policy exists to make decisions repeatable across the whole system instead of relying on every individual class to remember the rule.</p><p>If you ignore that policy, the most common smell is updating the database but forgetting the cache. In real applications, that smell usually shows up as flaky behavior, hidden coupling, or painful debugging.</p></article><article class="card technical"><div class="card-label">Technical</div><div class="two-col"><div><h3>How it works under the hood</h3><p><strong>Definition:</strong> Caching is not just about reads; you also need a strategy for updating or evicting entries when underlying data changes.</p><p class="deep-note">Caching is not just about reads; you also need a strategy for updating or evicting entries when underlying data changes. Under the hood, Spring or the underlying infrastructure usually applies the behavior around your code rather than by changing your business logic directly.</p><p class="deep-note">The production question is not “can I enable it?” but “where is the right boundary and what problem am I actually solving?”</p><p class="deep-note">Good engineering here comes from matching the mechanism to the use case, then watching the trade-off instead of blindly turning the feature on everywhere.</p><div class="mini-grid"><div class="mini-panel"><h4>Why it matters in production</h4><ul><li>stale cache entries can be worse than no cache at all</li><li>Makes caching behavior explicit</li><li>Gives you a clearer story in debugging and interviews</li></ul></div><div class="mini-panel"><h4>Common smell</h4><ul><li>updating the database but forgetting the cache</li><li>Using the mechanism as a band-aid for design issues</li><li>Forgetting what the default behavior actually is</li></ul></div></div><div class="badge-row"><span class="pill good">Explicit intent</span><span class="pill info">Know the default</span><span class="pill caution">Trade-offs matter</span></div><div class="flow"><span class="flow-step">Call enters boundary</span><span class="flow-arrow">→</span><span class="flow-step">Framework applies rule</span><span class="flow-arrow">→</span><span class="flow-step">Your code runs</span><span class="flow-arrow">→</span><span class="flow-step">Outcome follows configured behavior</span></div></div><div><h3>💬 Model Interview Answer</h3><p>“Writing, Updating, and Evicting in Caching is really about caching is not just about reads; you also need a strategy for updating or evicting entries when underlying data changes. I explain it as a mechanism that enforces a policy around my code so the application behaves consistently. The important trade-off is updating the database but forgetting the cache, so I use it deliberately and I make the boundary clear instead of relying on accidental defaults.”</p><table><thead><tr><th>Scenario</th><th>What to watch</th></tr></thead><tbody><tr><td>@CachePut</td><td>Refresh cache with new value</td></tr><tr><td>@CacheEvict</td><td>Remove stale entry</td></tr><tr><td>Forgotten invalidation</td><td>Classic stale-data bug</td></tr></tbody></table></div></div><div class="code-blocks"><div><div class="code-title">❌ Wrong</div><pre>@Transactional
+public User updateUser(Long id, UpdateUserRequest request) {
+    User user = userRepository.findById(id).orElseThrow();
+    user.setName(request.name());
+    return user;
+    // cache entry for id is now stale
+}</pre></div><div><div class="code-title">✅ Right</div><pre>@CachePut(cacheNames = "users", key = "#id")
+@Transactional
+public User updateUser(Long id, UpdateUserRequest request) {
+    User user = userRepository.findById(id).orElseThrow();
+    user.setName(request.name());
+    return user;
+}
 
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> @CachePut always updates the cache after method execution, while @CacheEvict removes entries.</p>
-                  <p class="deep-note">When data changes, you must update or evict cached entries to avoid stale reads.</p>
-                  <p class="deep-note">@CachePut writes through the cache, while @CacheEvict removes entries so the next read refreshes from source.</p>
-                  <p class="deep-note">If you only cache reads but never evict on writes, you will eventually serve outdated data.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul>
-                        <li>Keeps cache aligned with writes</li><li>Prevents stale reads</li><li>Supports explicit invalidation</li>
-                      </ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common pitfall</h4>
-                      <ul>
-                        <li>Never evicting</li><li>Updates without cache updates</li><li>Multiple caches out of sync</li>
-                      </ul>
-                    </div>
-                  </div>
-                  <div class="badge-row"><span class="pill good">@CachePut</span><span class="pill info">@CacheEvict</span><span class="pill caution">Eviction</span></div>
-                  
-                  <div class="flow"><span class="flow-step">Write request</span><span class="flow-arrow">→</span><span class="flow-step">Persist change</span><span class="flow-arrow">→</span><span class="flow-step">Update cache</span><span class="flow-arrow">→</span><span class="flow-step">Evict stale entries</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“I use @CachePut for write-through updates and @CacheEvict for invalidation when data changes.”</p>
-                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
-                  
-                  <table>
-                    <thead><tr><th>Annotation</th><th>Behavior</th></tr></thead>
-                    <tbody><tr><td>@Cacheable</td><td><span class="pill info">Read-through</span></td></tr><tr><td>@CachePut</td><td><span class="pill good">Write-through</span></td></tr><tr><td>@CacheEvict</td><td><span class="pill caution">Invalidate</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              
-    <div class="code-blocks">
-    <div>
-      <div class="code-title">Evict after update</div>
-      <pre>@CacheEvict(value = "users", key = "#user.id")
-public User update(User user) {
-  return userRepo.save(user);
-}</pre>
-    </div>
-    </div>
-              
-            </article>
+@CacheEvict(cacheNames = "users", key = "#id")
+public void deleteUser(Long id) {}</pre></div></div><p>Use writing, updating, and evicting where the rule belongs in architecture, not just where it happens to fix one failing test or one bug report.</p><p class="deep-note">The safest mental model is that Spring gives you a framework feature only when your call crosses the Spring-managed boundary and the surrounding infrastructure can participate.</p></article><article class="card warning"><div class="card-label">Warning</div><h3>Common misunderstanding</h3><p>The dangerous misunderstanding is treating writing, updating, and evicting like a magic switch instead of a mechanism with boundaries and defaults. That is how teams end up with updating the database but forgetting the cache.</p><p>A safer pattern is to make the intent explicit, keep the scope narrow, and choose the smallest mechanism that actually solves the problem.</p><div class="code-blocks"><div><div class="code-title">Broken pattern</div><pre>@Transactional
+public User updateUser(Long id, UpdateUserRequest request) {
+    User user = userRepository.findById(id).orElseThrow();
+    user.setName(request.name());
+    return user;
+    // cache entry for id is now stale
+}</pre></div><div><div class="code-title">Safer pattern</div><pre>@CachePut(cacheNames = "users", key = "#id")
+@Transactional
+public User updateUser(Long id, UpdateUserRequest request) {
+    User user = userRepository.findById(id).orElseThrow();
+    user.setName(request.name());
+    return user;
+}
 
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Do not forget evictions</h3>
-              <p>If you update data without evicting caches, readers will see stale results.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>Use @CachePut for updates.</li><li>Evict after mutations.</li><li>Keep cache coherent with DB.</li>
-              </ul>
-            </article>
-
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>Which annotation forces the cache to update even on a cache hit?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. @Cacheable</button><button class="quiz-option">B. @CachePut</button><button class="quiz-option">C. @CacheEvict</button><button class="quiz-option">D. @CacheConfig</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>@CachePut always executes the method and updates the cache.</span>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section class="section" data-section="2">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 3 of 5 · ~7 mins</div>
-            <h2>Cache Managers and Eviction Strategies</h2>
-            <p>Choose the right cache manager and eviction policy for your latency and consistency goals.</p>
-            
-          </div>
-
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Different fridges</h3>
-              <p>A small fridge keeps food close, but you might need a big shared fridge for the whole family.</p>
-            </article>
-
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Local notes vs shared notebook</h3>
-              <p>Personal sticky notes are fast, but a shared notebook keeps everyone in sync.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Spring uses CacheManager to abstract cache providers like Caffeine, Redis, or Ehcache.</p>
-                  <p class="deep-note">Cache managers define storage and eviction policy: in-memory caches are fast but local, while Redis scales across instances.</p>
-                  <p class="deep-note">Eviction strategies like TTL or LRU should match data churn and consistency requirements.</p>
-                  <p class="deep-note">Choose the simplest manager first; distributed caches add complexity and should be justified by scale needs.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul>
-                        <li>Pick memory vs distributed</li><li>Control TTL and LRU</li><li>Match scalability needs</li>
-                      </ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common pitfall</h4>
-                      <ul>
-                        <li>Using local cache in a distributed system</li><li>No eviction strategy</li><li>Huge cache growth</li>
-                      </ul>
-                    </div>
-                  </div>
-                  <div class="badge-row"><span class="pill good">Caffeine</span><span class="pill info">Redis</span><span class="pill caution">TTL/LRU</span></div>
-                  
-                  <div class="flow"><span class="flow-step">Choose provider</span><span class="flow-arrow">→</span><span class="flow-step">Configure TTL</span><span class="flow-arrow">→</span><span class="flow-step">Bind CacheManager</span><span class="flow-arrow">→</span><span class="flow-step">Monitor hit ratio</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“I pick Caffeine for in-memory speed and Redis when multiple instances need shared caches.”</p>
-                  <p class="deep-note">Caching trades freshness for speed. The key decisions are cache keys, eviction rules, and what happens on write so you don't serve stale data.</p>
-                  
-                  <table>
-                    <thead><tr><th>Provider</th><th>Best for</th></tr></thead>
-                    <tbody><tr><td>Caffeine</td><td><span class="pill good">Single instance speed</span></td></tr><tr><td>Redis</td><td><span class="pill info">Distributed cache</span></td></tr><tr><td>Ehcache</td><td><span class="pill caution">Legacy setups</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              
-    <div class="code-blocks">
-    <div>
-      <div class="code-title">Caffeine cache config</div>
-      <pre>spring:
-  cache:
-    type: caffeine
-    caffeine:
-      spec: maximumSize=1000,expireAfterWrite=10m</pre>
-    </div>
-    </div>
-              
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Local cache on multiple nodes</h3>
-              <p>Each node will have a different view of data if you do not use a shared cache.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>CacheManager selects provider.</li><li>Use TTL/LRU eviction.</li><li>Match cache type to topology.</li>
-              </ul>
-            </article>
-
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>Which cache is best for multiple app instances?</h3>
-              <div class="quiz-options" data-answer="2">
-                <button class="quiz-option">A. In-memory HashMap</button><button class="quiz-option">B. Caffeine only</button><button class="quiz-option">C. Redis</button><button class="quiz-option">D. ThreadLocal</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: C</strong>
-                <span>Redis provides a shared distributed cache across instances.</span>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section class="section" data-section="3">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 4 of 5 · ~7 mins</div>
-            <h2>Consistency and Pitfalls</h2>
-            <p>Caching introduces consistency challenges like stampedes, stale data, and self-invocation issues.</p>
-            
-          </div>
-
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Outdated map</h3>
-              <p>If your map is old, you can take the wrong road and get lost.</p>
-            </article>
-
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Library checkout list</h3>
-              <p>If the list is not updated, you might think a book is available when it is not.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Caches can return stale data or cause thundering herd problems if not managed carefully.</p>
-                  <p class="deep-note">Cache consistency is hard: stampedes, stale reads, and race conditions are common at scale.</p>
-                  <p class="deep-note">Mitigate with TTLs, locking, and idempotent writes, and monitor hit rate to confirm caching is worthwhile.</p>
-                  <p class="deep-note">A cache that never misses is usually a sign you are caching the wrong thing or not evicting.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul>
-                        <li>Avoids stale reads</li><li>Protects backing stores</li><li>Ensures consistency</li>
-                      </ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common pitfall</h4>
-                      <ul>
-                        <li>Cache stampedes</li><li>No TTLs</li><li>Self-invocation bypassing cache</li>
-                      </ul>
-                    </div>
-                  </div>
-                  <div class="badge-row"><span class="pill bad">Stampede</span><span class="pill caution">Stale data</span><span class="pill good">Consistency</span></div>
-                  
-                  <div class="flow"><span class="flow-step">Cache miss</span><span class="flow-arrow">→</span><span class="flow-step">Many requests</span><span class="flow-arrow">→</span><span class="flow-step">DB overload</span><span class="flow-arrow">→</span><span class="flow-step">Slow response</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“Caching speeds reads but I mitigate stampedes, handle eviction, and avoid self-invocation bypassing the proxy.”</p>
-                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
-                  
-                  <table>
-                    <thead><tr><th>Risk</th><th>Mitigation</th></tr></thead>
-                    <tbody><tr><td>Stampede</td><td><span class="pill info">Request coalescing</span></td></tr><tr><td>Stale data</td><td><span class="pill caution">TTL + evict</span></td></tr><tr><td>Self-call</td><td><span class="pill bad">Use proxy aware calls</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              
-    <div class="code-blocks">
-    <div>
-      <div class="code-title">Self-invocation pitfall</div>
-      <pre>public class UserService {
-  @Cacheable("users")
-  public User getUser(String id) { ... }
-
-  public User getUserInternal(String id) {
-    return getUser(id); // bypasses proxy
-  }
-}</pre>
-    </div>
-    </div>
-              
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Cache bypass in self-calls</h3>
-              <p>Calling a @Cacheable method from the same class bypasses the proxy and skips caching.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>Caching needs eviction strategy.</li><li>Avoid stampedes.</li><li>Proxy rules still apply.</li>
-              </ul>
-            </article>
-
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>Why might @Cacheable not work on a self-invocation?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. Caches require XML</button><button class="quiz-option">B. Proxy is bypassed</button><button class="quiz-option">C. Cache key is missing</button><button class="quiz-option">D. It only works with Redis</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>Spring cache uses proxies, and self-invocation bypasses them.</span>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-      
-      
-      <section class="section" data-section="4">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 5 of 5 · ~7 mins</div>
-            <h2>Deep Dive: Cache Keys & Consistency</h2>
-            <p>Good caching depends on key design, invalidation, and consistency strategy.</p>
-          </div>
-
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Use the right label</h3>
-              <p>If you label the wrong box, you get the wrong toy.</p>
-            </article>
-
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Library index cards</h3>
-              <p>A bad index makes books hard to find or duplicates entries.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Cache keys must uniquely represent inputs; invalidation strategy controls consistency.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul><li>Avoids stale data</li><li>Prevents cache misses</li><li>Keeps memory stable</li></ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common pitfall</h4>
-                      <ul><li>Non-deterministic keys</li><li>No TTLs</li><li>Cache stampede</li></ul>
-                    </div>
-                  </div>
-                  <div class="badge-row"><span class="pill good">Key design</span><span class="pill info">Eviction</span><span class="pill caution">Consistency</span></div>
-                  <div class="flow"><span class="flow-step">Build key</span><span class="flow-arrow">→</span><span class="flow-step">Check cache</span><span class="flow-arrow">→</span><span class="flow-step">Compute on miss</span><span class="flow-arrow">→</span><span class="flow-step">Invalidate on change</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“I design stable keys and choose invalidation based on consistency requirements.”</p>
-                  <p class="deep-note">Caching trades freshness for speed. The key decisions are cache keys, eviction rules, and what happens on write so you don't serve stale data.</p>
-                  <table>
-                    <thead><tr><th>Strategy</th><th>When</th></tr></thead>
-                    <tbody><tr><td>TTL</td><td><span class="pill info">Eventually stale ok</span></td></tr><tr><td>Explicit evict</td><td><span class="pill good">Strong consistency</span></td></tr><tr><td>Write-through</td><td><span class="pill caution">High write load</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              <div class="code-blocks">
-    <div>
-      <div class="code-title">Custom cache key</div>
-      <pre>@Cacheable(value = "pricing", key = "#sku + ':' + #region")
-public Price price(String sku, String region) { ... }</pre>
-    </div>
-    </div>
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Bad keys cause incorrect data</h3>
-              <p>If two different requests map to one key, you serve wrong results.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways"><li>Design keys carefully.</li><li>Pick invalidation strategy.</li><li>Monitor hit ratios.</li></ul>
-            </article>
-
-            
-          
-            <article class="card technical">
-              <div class="card-label">Edge cases</div>
-              <h3>Edge Cases & Tradeoffs</h3>
-              <ul class="takeaways"><li>Stale data if eviction is forgotten.</li><li>Cache stampede under high load.</li><li>Incorrect keys lead to collisions.</li><li>Serialization costs can dominate.</li><li>Caching nulls can mask data fixes.</li></ul>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Checklist</div>
-              <h3>Production Checklist</h3>
-              <ul class="takeaways"><li>Define cache TTLs and eviction strategy.</li><li>Use @CacheEvict on writes.</li><li>Include relevant fields in cache keys.</li><li>Protect hot keys with locking or refresh.</li><li>Monitor hit ratio and latency.</li></ul>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Interview</div>
-              <h3>Interview Hooks</h3>
-              <p>Explain cache-aside and invalidation strategies.</p>
-              <ul class="takeaways"><li>@Cacheable caches reads, @CachePut updates, @CacheEvict invalidates.</li><li>Write-through vs write-behind tradeoffs.</li><li>When not to cache (high churn or sensitive data).</li></ul>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Advanced Example</div>
-              <div class="code-blocks">
-        <div>
-          <div class="code-title">Cacheable + Evict</div>
-          <pre>@Cacheable(value = "users", key = "#id")
-public User getUser(String id){ ... }
-
-@CacheEvict(value = "users", key = "#user.id")
-public void updateUser(User user){ ... }</pre>
-        </div>
-      </div>
-      <p>Make invalidation part of write paths.</p>
-            </article><article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>What is the safest invalidation when consistency is critical?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. TTL only</button><button class="quiz-option">B. Explicit evict on write</button><button class="quiz-option">C. Never evict</button><button class="quiz-option">D. Random eviction</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>Explicit eviction on writes keeps cache consistent with source of truth.</span>
-              </div>
-            </article></div>
-        </div>
-      </section>
-<section class="section" data-section="5">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Completion screen · Review mode</div>
-            <h2>🎉 Caching Cheat Sheet</h2>
-            <p>Use this to recall caching annotations, cache managers, and eviction strategy basics.</p>
-          </div>
-
-          <div class="completion-grid">
-            <div class="card technical">
-              <div class="card-label">Cheat sheet</div>
-              <div class="celebrate">🚀</div>
-              <h3>1-line interview answers</h3>
-              <div class="cheat-list">
-    <div class="cheat-item">
-      <h4>Cacheable</h4>
-      <p>@Cacheable caches the result by key.</p>
-    </div>
-    <div class="cheat-item">
-      <h4>Write/Evict</h4>
-      <p>@CachePut updates and @CacheEvict removes entries.</p>
-    </div>
-    <div class="cheat-item">
-      <h4>Providers</h4>
-      <p>Caffeine is in-memory; Redis is distributed.</p>
-    </div>
-    <div class="cheat-item">
-      <h4>Pitfalls</h4>
-      <p>Beware stampedes, stale data, and self-invocation.</p>
-    </div>
-              </div>
-            </div>
-
-            <div class="card analogy">
-              <div class="card-label">What to remember</div>
-              <h3>Fast mental model</h3>
-              <ul class="takeaways">
-                <li><strong>@EnableCaching</strong>: turns on cache interception.</li><li><strong>Key strategy</strong>: define stable keys.</li><li><strong>Eviction</strong>: TTL, LRU, explicit evict.</li><li><strong>Consistency</strong>: handle stale data carefully.</li>
-              </ul>
-              <h3 style="margin-top:22px;">Common traps</h3>
-              <div class="badge-row">
-                <span class="pill bad">Cache stampede</span><span class="pill bad">Stale reads</span><span class="pill bad">Self-invocation</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    </main>
-
-    <footer class="footer-nav">
-      <div class="footer-nav-inner">
-        <button class="btn" id="prevBtn">← Back</button>
-        <button class="btn primary" id="nextBtn">Next →</button>
-      </div>
-    </footer>
-  </div>
-
-  <script>
+@CacheEvict(cacheNames = "users", key = "#id")
+public void deleteUser(Long id) {}</pre></div></div></article><article class="card technical"><div class="card-label">Mini takeaway</div><ul class="takeaways"><li>Writing, Updating, and Evicting exists to make a policy explicit</li><li>Defaults are useful, but interviews reward knowing the boundary and trade-off</li><li>If you see updating the database but forgetting the cache, revisit the design before adding more framework annotations</li></ul></article><article class="card quiz-card"><div class="card-label">Quiz</div><h3>When underlying data changes, what is the main cache design question?</h3><div class="quiz-options" data-answer="0"><button class="quiz-option">A. How to keep cached entries consistent enough for the use case</button><button class="quiz-option">B. How to make every entry permanent</button><button class="quiz-option">C. How to avoid keys entirely</button><button class="quiz-option">D. How to force all reads to miss</button></div><div class="quiz-result"><strong>Correct answer: A</strong><span>A is correct because it matches how writing, updating, and evicting is intended to work in a production-grade Spring application. The wrong choices are plausible because they sound framework-ish, but they either ignore the real boundary, confuse this feature with another one, or assume a stronger guarantee than the mechanism actually provides. In an interview, tie your answer back to the concrete failure mode you are preventing.</span></div></article></div></div></section><section class="section" data-section="2">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Section 3 · Storage choices</div>
+<h2>Cache Managers and Eviction Strategies</h2>
+<p>Cache Managers and Eviction Strategies is a high-value senior interview topic because it reveals whether you understand the underlying mechanism, the default behavior, and the trade-offs in production.</p>
+</div>
+<div class="card-grid">
+<article class="card eli5"><div class="card-label">🧒 ELI5</div><h3>A simple mental picture</h3><p>Imagine a busy workplace where one small rule determines whether the whole team moves smoothly or keeps stepping on each other. A cache manager controls where entries live and how they expire, whether in-memory locally or in a distributed cache like Redis. works like that kind of rule: it tells the system how to behave before small mistakes turn into bigger production problems.</p><p>It matters because expiration policy and cache topology strongly affect correctness and performance. Without that rule, engineers often discover the problem only after the app is under load, when the bug is expensive and confusing.</p><p>The useful mental shortcut is to ask: “What is the system trying to coordinate here, and what breaks when that coordination is missing?” That question usually reveals why this feature exists.</p></article><article class="card analogy"><div class="card-label">🔗 ANALOGY</div><h3>Why the rule exists</h3><p>Think of cache managers and eviction strategies as a piece of operating policy, not just a syntax feature. The policy exists to make decisions repeatable across the whole system instead of relying on every individual class to remember the rule.</p><p>If you ignore that policy, the most common smell is using one global cache policy for all data shapes. In real applications, that smell usually shows up as flaky behavior, hidden coupling, or painful debugging.</p></article><article class="card technical"><div class="card-label">Technical</div><div class="two-col"><div><h3>How it works under the hood</h3><p><strong>Definition:</strong> A cache manager controls where entries live and how they expire, whether in-memory locally or in a distributed cache like Redis.</p><p class="deep-note">A cache manager controls where entries live and how they expire, whether in-memory locally or in a distributed cache like Redis. Under the hood, Spring or the underlying infrastructure usually applies the behavior around your code rather than by changing your business logic directly.</p><p class="deep-note">The production question is not “can I enable it?” but “where is the right boundary and what problem am I actually solving?”</p><p class="deep-note">Good engineering here comes from matching the mechanism to the use case, then watching the trade-off instead of blindly turning the feature on everywhere.</p><div class="mini-grid"><div class="mini-panel"><h4>Why it matters in production</h4><ul><li>expiration policy and cache topology strongly affect correctness and performance</li><li>Makes caching behavior explicit</li><li>Gives you a clearer story in debugging and interviews</li></ul></div><div class="mini-panel"><h4>Common smell</h4><ul><li>using one global cache policy for all data shapes</li><li>Using the mechanism as a band-aid for design issues</li><li>Forgetting what the default behavior actually is</li></ul></div></div><div class="badge-row"><span class="pill good">Explicit intent</span><span class="pill info">Know the default</span><span class="pill caution">Trade-offs matter</span></div><div class="flow"><span class="flow-step">Call enters boundary</span><span class="flow-arrow">→</span><span class="flow-step">Framework applies rule</span><span class="flow-arrow">→</span><span class="flow-step">Your code runs</span><span class="flow-arrow">→</span><span class="flow-step">Outcome follows configured behavior</span></div></div><div><h3>💬 Model Interview Answer</h3><p>“Cache Managers and Eviction Strategies in Caching is really about a cache manager controls where entries live and how they expire, whether in-memory locally or in a distributed cache like redis. I explain it as a mechanism that enforces a policy around my code so the application behaves consistently. The important trade-off is using one global cache policy for all data shapes, so I use it deliberately and I make the boundary clear instead of relying on accidental defaults.”</p><table><thead><tr><th>Scenario</th><th>What to watch</th></tr></thead><tbody><tr><td>Local in-memory cache</td><td>Fast, node-local</td></tr><tr><td>Distributed cache</td><td>Shared across nodes</td></tr><tr><td>TTL / max size</td><td>Prevents unbounded staleness or memory growth</td></tr></tbody></table></div></div><div class="code-blocks"><div><div class="code-title">❌ Wrong</div><pre>// Huge product catalog and tiny feature flags both share one cache with no TTL strategy.</pre></div><div><div class="code-title">✅ Right</div><pre>@Bean
+public CaffeineCacheManager cacheManager() {
+    CaffeineCacheManager manager = new CaffeineCacheManager("users", "products");
+    manager.setCaffeine(Caffeine.newBuilder()
+            .maximumSize(10_000)
+            .expireAfterWrite(Duration.ofMinutes(5)));
+    return manager;
+}</pre></div></div><p>Use cache managers and eviction strategies where the rule belongs in architecture, not just where it happens to fix one failing test or one bug report.</p><p class="deep-note">The safest mental model is that Spring gives you a framework feature only when your call crosses the Spring-managed boundary and the surrounding infrastructure can participate.</p></article><article class="card warning"><div class="card-label">Warning</div><h3>Common misunderstanding</h3><p>The dangerous misunderstanding is treating cache managers and eviction strategies like a magic switch instead of a mechanism with boundaries and defaults. That is how teams end up with using one global cache policy for all data shapes.</p><p>A safer pattern is to make the intent explicit, keep the scope narrow, and choose the smallest mechanism that actually solves the problem.</p><div class="code-blocks"><div><div class="code-title">Broken pattern</div><pre>// Huge product catalog and tiny feature flags both share one cache with no TTL strategy.</pre></div><div><div class="code-title">Safer pattern</div><pre>@Bean
+public CaffeineCacheManager cacheManager() {
+    CaffeineCacheManager manager = new CaffeineCacheManager("users", "products");
+    manager.setCaffeine(Caffeine.newBuilder()
+            .maximumSize(10_000)
+            .expireAfterWrite(Duration.ofMinutes(5)));
+    return manager;
+}</pre></div></div></article><article class="card technical"><div class="card-label">Mini takeaway</div><ul class="takeaways"><li>Cache Managers and Eviction Strategies exists to make a policy explicit</li><li>Defaults are useful, but interviews reward knowing the boundary and trade-off</li><li>If you see using one global cache policy for all data shapes, revisit the design before adding more framework annotations</li></ul></article><article class="card quiz-card"><div class="card-label">Quiz</div><h3>Why do eviction and TTL strategy matter so much?</h3><div class="quiz-options" data-answer="1"><button class="quiz-option">A. Because cache entries should never expire</button><button class="quiz-option">B. Because different data has different freshness and memory needs</button><button class="quiz-option">C. Because TTL controls SQL transaction boundaries</button><button class="quiz-option">D. Because Boot requires one TTL for all caches</button></div><div class="quiz-result"><strong>Correct answer: B</strong><span>B is correct because it matches how cache managers and eviction strategies is intended to work in a production-grade Spring application. The wrong choices are plausible because they sound framework-ish, but they either ignore the real boundary, confuse this feature with another one, or assume a stronger guarantee than the mechanism actually provides. In an interview, tie your answer back to the concrete failure mode you are preventing.</span></div></article></div></div></section><section class="section" data-section="3">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Section 4 · Correctness trade-offs</div>
+<h2>Consistency and Pitfalls</h2>
+<p>Consistency and Pitfalls is a high-value senior interview topic because it reveals whether you understand the underlying mechanism, the default behavior, and the trade-offs in production.</p>
+</div>
+<div class="card-grid">
+<article class="card eli5"><div class="card-label">🧒 ELI5</div><h3>A simple mental picture</h3><p>Imagine a busy workplace where one small rule determines whether the whole team moves smoothly or keeps stepping on each other. Caching is always a consistency trade-off: you are choosing when stale data is acceptable in exchange for speed and reduced load. works like that kind of rule: it tells the system how to behave before small mistakes turn into bigger production problems.</p><p>It matters because that trade-off should be explicit and use-case-driven. Without that rule, engineers often discover the problem only after the app is under load, when the bug is expensive and confusing.</p><p>The useful mental shortcut is to ask: “What is the system trying to coordinate here, and what breaks when that coordination is missing?” That question usually reveals why this feature exists.</p></article><article class="card analogy"><div class="card-label">🔗 ANALOGY</div><h3>Why the rule exists</h3><p>Think of consistency and pitfalls as a piece of operating policy, not just a syntax feature. The policy exists to make decisions repeatable across the whole system instead of relying on every individual class to remember the rule.</p><p>If you ignore that policy, the most common smell is adding a cache before defining acceptable staleness. In real applications, that smell usually shows up as flaky behavior, hidden coupling, or painful debugging.</p></article><article class="card technical"><div class="card-label">Technical</div><div class="two-col"><div><h3>How it works under the hood</h3><p><strong>Definition:</strong> Caching is always a consistency trade-off: you are choosing when stale data is acceptable in exchange for speed and reduced load.</p><p class="deep-note">Caching is always a consistency trade-off: you are choosing when stale data is acceptable in exchange for speed and reduced load. Under the hood, Spring or the underlying infrastructure usually applies the behavior around your code rather than by changing your business logic directly.</p><p class="deep-note">The production question is not “can I enable it?” but “where is the right boundary and what problem am I actually solving?”</p><p class="deep-note">Good engineering here comes from matching the mechanism to the use case, then watching the trade-off instead of blindly turning the feature on everywhere.</p><div class="mini-grid"><div class="mini-panel"><h4>Why it matters in production</h4><ul><li>that trade-off should be explicit and use-case-driven</li><li>Makes caching behavior explicit</li><li>Gives you a clearer story in debugging and interviews</li></ul></div><div class="mini-panel"><h4>Common smell</h4><ul><li>adding a cache before defining acceptable staleness</li><li>Using the mechanism as a band-aid for design issues</li><li>Forgetting what the default behavior actually is</li></ul></div></div><div class="badge-row"><span class="pill good">Explicit intent</span><span class="pill info">Know the default</span><span class="pill caution">Trade-offs matter</span></div><div class="flow"><span class="flow-step">Call enters boundary</span><span class="flow-arrow">→</span><span class="flow-step">Framework applies rule</span><span class="flow-arrow">→</span><span class="flow-step">Your code runs</span><span class="flow-arrow">→</span><span class="flow-step">Outcome follows configured behavior</span></div></div><div><h3>💬 Model Interview Answer</h3><p>“Consistency and Pitfalls in Caching is really about caching is always a consistency trade-off: you are choosing when stale data is acceptable in exchange for speed and reduced load. I explain it as a mechanism that enforces a policy around my code so the application behaves consistently. The important trade-off is adding a cache before defining acceptable staleness, so I use it deliberately and I make the boundary clear instead of relying on accidental defaults.”</p><table><thead><tr><th>Scenario</th><th>What to watch</th></tr></thead><tbody><tr><td>Metadata read</td><td>Often cache-friendly</td></tr><tr><td>Exact stock reservation</td><td>Usually not cache-first</td></tr><tr><td>Trade-off</td><td>Freshness vs speed</td></tr></tbody></table></div></div><div class="code-blocks"><div><div class="code-title">❌ Wrong</div><pre>@Cacheable("inventory")
+public Inventory getInventory(Long skuId) {
+    return inventoryRepository.fetchLiveInventory(skuId);
+}
+// no TTL, no invalidation, business assumes exact real-time inventory</pre></div><div><div class="code-title">✅ Right</div><pre>// For exact inventory reservation, prefer direct read + lock or version check.
+// Cache better-suited read models such as product metadata or read-only lookups.</pre></div></div><p>Use consistency and pitfalls where the rule belongs in architecture, not just where it happens to fix one failing test or one bug report.</p><p class="deep-note">The safest mental model is that Spring gives you a framework feature only when your call crosses the Spring-managed boundary and the surrounding infrastructure can participate.</p></article><article class="card warning"><div class="card-label">Warning</div><h3>Common misunderstanding</h3><p>The dangerous misunderstanding is treating consistency and pitfalls like a magic switch instead of a mechanism with boundaries and defaults. That is how teams end up with adding a cache before defining acceptable staleness.</p><p>A safer pattern is to make the intent explicit, keep the scope narrow, and choose the smallest mechanism that actually solves the problem.</p><div class="code-blocks"><div><div class="code-title">Broken pattern</div><pre>@Cacheable("inventory")
+public Inventory getInventory(Long skuId) {
+    return inventoryRepository.fetchLiveInventory(skuId);
+}
+// no TTL, no invalidation, business assumes exact real-time inventory</pre></div><div><div class="code-title">Safer pattern</div><pre>// For exact inventory reservation, prefer direct read + lock or version check.
+// Cache better-suited read models such as product metadata or read-only lookups.</pre></div></div></article><article class="card technical"><div class="card-label">Mini takeaway</div><ul class="takeaways"><li>Consistency and Pitfalls exists to make a policy explicit</li><li>Defaults are useful, but interviews reward knowing the boundary and trade-off</li><li>If you see adding a cache before defining acceptable staleness, revisit the design before adding more framework annotations</li></ul></article><article class="card quiz-card"><div class="card-label">Quiz</div><h3>What is the healthiest first question before adding a cache?</h3><div class="quiz-options" data-answer="0"><button class="quiz-option">A. How much stale data can this use case tolerate?</button><button class="quiz-option">B. How can I cache every method?</button><button class="quiz-option">C. Which annotation looks shortest?</button><button class="quiz-option">D. Can I remove database indexes now?</button></div><div class="quiz-result"><strong>Correct answer: A</strong><span>A is correct because it matches how consistency and pitfalls is intended to work in a production-grade Spring application. The wrong choices are plausible because they sound framework-ish, but they either ignore the real boundary, confuse this feature with another one, or assume a stronger guarantee than the mechanism actually provides. In an interview, tie your answer back to the concrete failure mode you are preventing.</span></div></article></div></div></section><section class="section" data-section="4">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Section 5 · Interview deep dive</div>
+<h2>Deep Dive: Cache Keys &amp; Consistency</h2>
+<p>This deep dive connects the mechanics of caching with the production decisions senior engineers are expected to explain clearly.</p>
+</div>
+<div class="card-grid">
+<article class="card eli5"><div class="card-label">🧒 ELI5</div><h3>A bigger real-world picture</h3><p>In a larger system, the hard part is not knowing the vocabulary. The hard part is deciding which rule belongs where so the whole operation still makes sense when something unexpected happens.</p><p>That is why choosing stable cache keys, defining freshness expectations, and avoiding correctness bugs caused by stale or mismatched entries. The mechanism has to support the story your system tells under stress, not just the happy path.</p><p>This is where interviewers are listening for judgment: not just what the feature does, but how you would keep the design honest when multiple moving parts are involved.</p></article><article class="card analogy"><div class="card-label">🔗 ANALOGY</div><h3>Why senior engineers care</h3><p>choosing stable cache keys, defining freshness expectations, and avoiding correctness bugs caused by stale or mismatched entries usually sits at the intersection of framework behavior, business requirements, and operational trade-offs.</p><p>When teams get this wrong, the system may still compile and even pass local tests, but production behavior becomes surprising.</p></article><article class="card technical"><div class="card-label">Technical</div><div class="two-col"><div><h3>What to optimize for</h3><p><strong>Definition:</strong> choosing stable cache keys, defining freshness expectations, and avoiding correctness bugs caused by stale or mismatched entries</p><p class="deep-note">Senior-level answers usually mention boundaries, defaults, observability, and trade-offs in the same breath.</p><p class="deep-note">The safest pattern is usually to keep the mechanism narrow, explicit, and easy to reason about.</p><p class="deep-note">If a framework feature starts compensating for unclear ownership, unclear state, or unclear flow, the real problem is probably design, not syntax.</p><div class="mini-grid"><div class="mini-panel"><h4>What senior engineers optimize for</h4><ul><li>Optimize for clarity of boundary</li><li>Prefer explicit over accidental behavior</li><li>Choose the smallest mechanism that solves the real problem</li></ul></div><div class="mini-panel"><h4>Trade-offs</h4><ul><li>Magic defaults can hide surprises</li><li>Cross-cutting features can mask weak design</li><li>More power usually means more room for misuse</li></ul></div></div><div class="badge-row"><span class="pill good">Clear boundary</span><span class="pill info">Explain the why</span><span class="pill bad">Framework cargo-culting</span></div><div class="flow"><span class="flow-step">Requirement appears</span><span class="flow-arrow">→</span><span class="flow-step">Choose boundary</span><span class="flow-arrow">→</span><span class="flow-step">Apply mechanism</span><span class="flow-arrow">→</span><span class="flow-step">Observe real outcome</span></div></div><div><h3>💬 Model Interview Answer</h3><p>“When I talk about caching at a senior level, I focus on the boundary, the default behavior, and the production trade-off. I want the design to make the intent obvious even to the next engineer reading the code. The smell I watch for is using framework features to hide a design problem instead of clarifying one.”</p><table><thead><tr><th>Decision point</th><th>Senior answer</th></tr></thead><tbody><tr><td>Boundary</td><td>State it explicitly</td></tr><tr><td>Default behavior</td><td>Know it by memory</td></tr><tr><td>Trade-off</td><td>Say what you pay for the guarantee</td></tr></tbody></table></div></div><div class="code-blocks"><div><div class="code-title">❌ Wrong: implicit or leaky design</div><pre>@Cacheable(cacheNames = "search")
+public Page&lt;Product&gt; searchProducts(SearchRequest request) {
+    return productRepository.search(request);
+    // unstable request object may produce surprising cache key behavior
+}</pre></div><div><div class="code-title">✅ Right: explicit design</div><pre>@Cacheable(cacheNames = "search", key = "T(java.lang.String).format('%s|%s|%s', #request.category(), #request.page(), #request.sort())")
+public Page&lt;Product&gt; searchProducts(SearchRequest request) {
+    return productRepository.search(request);
+}</pre></div></div></article><article class="card warning"><div class="card-label">Warning</div><h3>The biggest trap</h3><p>The hardest bugs here come from systems that “mostly work” until traffic, retries, concurrency, or environment differences expose the hidden assumption.</p><p>A good fix usually makes the intent more explicit instead of adding one more annotation and hoping the framework figures it out.</p><div class="code-blocks"><div><div class="code-title">Broken pattern</div><pre>@Cacheable(cacheNames = "search")
+public Page&lt;Product&gt; searchProducts(SearchRequest request) {
+    return productRepository.search(request);
+    // unstable request object may produce surprising cache key behavior
+}</pre></div><div><div class="code-title">Safer pattern</div><pre>@Cacheable(cacheNames = "search", key = "T(java.lang.String).format('%s|%s|%s', #request.category(), #request.page(), #request.sort())")
+public Page&lt;Product&gt; searchProducts(SearchRequest request) {
+    return productRepository.search(request);
+}</pre></div></div></article><article class="card technical"><div class="card-label">Edge cases</div><h3>Edge Cases &amp; Tradeoffs</h3><ul class="takeaways"><li>Defaults can differ across libraries or underlying infrastructure.</li><li>A passing unit test does not prove the boundary is correct in production.</li><li>Observability is often what reveals misuse first.</li><li>Keep side effects and lifetime of state in view when designing the boundary.</li><li>Explain what would happen under failure, not just success.</li></ul></article><article class="card technical"><div class="card-label">Checklist</div><h3>Production Checklist</h3><ul class="takeaways"><li>Name the real invariant or guarantee you care about</li><li>Choose the narrowest boundary that enforces it</li><li>Know the default behavior and the override you would use</li><li>Keep the design easy to test and easy to observe</li><li>Call out one concrete gotcha in interviews</li></ul></article><article class="card technical"><div class="card-label">Interview</div><h3>Interview Hooks</h3><ul class="takeaways"><li>What is the default behavior?</li><li>What is the most common production mistake?</li><li>What trade-off are you accepting for the guarantee?</li></ul></article><article class="card technical"><div class="card-label">Advanced Example</div><h3>Advanced example</h3><div class="code-blocks"><div><div class="code-title">Advanced example</div><pre>@Caching(
+    put = @CachePut(cacheNames = "users", key = "#result.id"),
+    evict = @CacheEvict(cacheNames = "userSearch", allEntries = true)
+)
+public User save(User user) { return userRepository.save(user); }</pre></div></div></article><article class="card quiz-card"><div class="card-label">Quiz</div><h3>What makes a good cache key?</h3><div class="quiz-options" data-answer="1"><button class="quiz-option">A. Anything that happens to compile</button><button class="quiz-option">B. A stable representation of the lookup identity</button><button class="quiz-option">C. The current timestamp</button><button class="quiz-option">D. The bean name</button></div><div class="quiz-result"><strong>Correct answer: B</strong><span>B is correct because it reflects the mature design choice for this kind of boundary. The distractors all represent common mistakes: pushing responsibility to the wrong layer, assuming defaults are stronger than they are, or using a framework feature as a substitute for clear design. In an interview, explain not only which answer is right, but what failure mode the wrong answers would create.</span></div></article></div></div></section><section class="section" data-section="5">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Completion screen · Review mode</div>
+<h2>🎉 Caching Cheat Sheet</h2>
+<p>Use this cheat sheet to recall the core mental model for caching and the most common traps.</p>
+</div>
+<div class="completion-grid">
+<div class="card technical">
+<div class="card-label">Cheat sheet</div>
+<div class="celebrate">🚀</div>
+<h3>1-line interview answers</h3>
+<div class="cheat-list"><div class="cheat-item"><h4>@Cacheable</h4><p>Great for repeated expensive reads with stable keys.</p></div><div class="cheat-item"><h4>Invalidation</h4><p>Always decide how writes refresh or evict cached entries.</p></div><div class="cheat-item"><h4>TTL</h4><p>Freshness policy is part of the design, not an afterthought.</p></div><div class="cheat-item"><h4>Trade-off</h4><p>Caching buys speed by accepting some consistency risk.</p></div></div>
+</div>
+<div class="card analogy">
+<div class="card-label">What to remember</div>
+<h3>Fast mental model</h3>
+<ul class="takeaways"><li><strong>@Cacheable:</strong> Great for repeated expensive reads with stable keys.</li><li><strong>Invalidation:</strong> Always decide how writes refresh or evict cached entries.</li><li><strong>TTL:</strong> Freshness policy is part of the design, not an afterthought.</li><li><strong>Trade-off:</strong> Caching buys speed by accepting some consistency risk.</li></ul>
+<h3 style="margin-top:22px;">Common traps</h3>
+<div class="badge-row"><span class="pill bad">No invalidation plan</span><span class="pill bad">Bad keys</span><span class="pill bad">Caching exact real-time invariants</span></div>
+</div>
+</div>
+</div>
+</section><footer class="footer-nav">
+<div class="footer-nav-inner">
+<button class="btn" id="prevBtn">← Back</button>
+<button class="btn primary" id="nextBtn">Next →</button>
+</div>
+</footer>
+</div>
+<script>
 const sections = Array.from(document.querySelectorAll('.section'));
     const dots = Array.from(document.querySelectorAll('.nav-dot'));
     const prevBtn = document.getElementById('prevBtn');

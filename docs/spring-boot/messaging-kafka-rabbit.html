@@ -1,13 +1,14 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Messaging (Kafka/RabbitMQ) Learning Module</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Messaging (Kafka/RabbitMQ) Learning Module</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&amp;family=Syne:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<style>
 :root {
       --bg: #0a0e1a;
       --surface-1: #111827;
@@ -728,618 +729,172 @@
   </style>
 </head>
 <body>
-  <div class="app">
-    <header class="topbar">
-      <div class="topbar-inner">
-        <div class="topbar-row">
-          <div class="brand">
-            <h1>Messaging (Kafka/RabbitMQ)</h1>
-            <small>Interactive 35-minute learning module</small>
-          </div>
-                <div class="topbar-row">
-          <div class="breadcrumb">
-            <a href="../index.html">Home</a>
-            <span>›</span>
-            <a href="index.html">Spring Boot</a>
-            <span>›</span>
-            <span>Messaging (Kafka/RabbitMQ)</span>
-          </div>
-        </div>
-          <div class="timer-wrap" aria-live="polite">
-            <span class="timer-label">Time Left</span>
-            <span class="timer" id="timer">35:00</span>
-          </div>
-        </div>
-        <div class="topbar-row">
-                    <nav class="nav-dots" aria-label="Section navigation"><button class="nav-dot active" data-index="0" aria-label="Go to section 1">1</button><button class="nav-dot" data-index="1" aria-label="Go to section 2">2</button><button class="nav-dot" data-index="2" aria-label="Go to section 3">3</button><button class="nav-dot" data-index="3" aria-label="Go to section 4">4</button><button class="nav-dot" data-index="4" aria-label="Go to section 5">5</button><button class="nav-dot" data-index="5" aria-label="Go to completion screen">6</button></nav>
-        </div>
-        <div class="progress-shell" aria-hidden="true">
-          <div class="progress-bar" id="progressBar"></div>
-        </div>
-      </div>
-    </header>
+<div class="app">
+<header class="topbar">
+<div class="topbar-inner">
+<div class="topbar-row">
+<div class="brand">
+<h1>Messaging (Kafka/RabbitMQ)</h1>
+<small>Interactive 35-minute learning module</small>
+</div>
+<div class="topbar-row">
+<div class="breadcrumb">
+<a href="../index.html">Home</a>
+<span>›</span>
+<a href="index.html">Spring Boot</a>
+<span>›</span>
+<span>Messaging (Kafka/RabbitMQ)</span>
+</div>
+</div>
+<div aria-live="polite" class="timer-wrap">
+<span class="timer-label">Time Left</span>
+<span class="timer" id="timer">35:00</span>
+</div>
+</div>
+<div class="topbar-row">
+<nav aria-label="Section navigation" class="nav-dots"><button aria-label="Go to section 1" class="nav-dot active" data-index="0">1</button><button aria-label="Go to section 2" class="nav-dot" data-index="1">2</button><button aria-label="Go to section 3" class="nav-dot" data-index="2">3</button><button aria-label="Go to section 4" class="nav-dot" data-index="3">4</button><button aria-label="Go to section 5" class="nav-dot" data-index="4">5</button><button aria-label="Go to completion screen" class="nav-dot" data-index="5">6</button></nav>
+</div>
+<div aria-hidden="true" class="progress-shell">
+<div class="progress-bar" id="progressBar"></div>
+</div>
+</div>
+</header>
+<main>
 
-    <main>
-      
-      <section class="section active" data-section="0">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 1 of 5 · ~7 mins</div>
-            <h2>Queues vs Pub/Sub</h2>
-            <p>Kafka and RabbitMQ differ in how messages are distributed and retained.</p>
-            <a class="back-link" href="index.html">← Back to Spring Boot</a>
-          </div>
 
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Mailbox vs group chat</h3>
-              <p>A mailbox delivers to one person, a group chat delivers to everyone.</p>
-            </article>
 
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Mailroom vs broadcast</h3>
-              <p>Mailroom routes a package to one desk, while a broadcast announcement goes to all teams.</p>
-            </article>
 
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> RabbitMQ queues deliver to consumers, Kafka topics partition and broadcast to consumer groups.</p>
-                  <p class="deep-note">Queues are point-to-point while pub/sub broadcasts to multiple consumers, and the choice affects ordering and scaling.</p>
-                  <p class="deep-note">Kafka is a log with partitions and consumer groups; RabbitMQ is a broker with queues and routing keys.</p>
-                  <p class="deep-note">For beginners, remember: Kafka shines at replay and streaming, RabbitMQ shines at flexible routing and work queues.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul>
-                        <li>Pick the right delivery model</li><li>Scale consumers</li><li>Control ordering</li>
-                      </ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common pitfall</h4>
-                      <ul>
-                        <li>Using Kafka for request/reply</li><li>Ignoring partition strategy</li><li>No DLQ</li>
-                      </ul>
-                    </div>
-                  </div>
-                  <div class="badge-row"><span class="pill good">Queue</span><span class="pill info">Topic</span><span class="pill caution">Partition</span></div>
-                  
-                  <div class="flow"><span class="flow-step">Producer</span><span class="flow-arrow">→</span><span class="flow-step">Broker</span><span class="flow-arrow">→</span><span class="flow-step">Consumer group</span><span class="flow-arrow">→</span><span class="flow-step">Process</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“RabbitMQ is queue-based for work distribution; Kafka is log-based with consumer groups.”</p>
-                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
-                  
-                  <table>
-                    <thead><tr><th>System</th><th>Characteristic</th></tr></thead>
-                    <tbody><tr><td>Kafka</td><td><span class="pill info">Partitioned log</span></td></tr><tr><td>RabbitMQ</td><td><span class="pill good">Queue routing</span></td></tr><tr><td>SQS</td><td><span class="pill caution">Managed queue</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              
-    <div class="code-blocks">
-    <div>
-      <div class="code-title">Rabbit listener</div>
-      <pre>@RabbitListener(queues = "orders")
-public void onMessage(OrderEvent event) {
-  handler.handle(event);
-}</pre>
-    </div>
-    </div>
-              
-            </article>
 
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Wrong model, wrong guarantees</h3>
-              <p>Use queues for work distribution and topics for streaming/log-based processing.</p>
-            </article>
 
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>Queues distribute work.</li><li>Kafka topics broadcast to groups.</li><li>Partitioning impacts ordering.</li>
-              </ul>
-            </article>
-
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>What is a Kafka consumer group used for?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. Encrypting messages</button><button class="quiz-option">B. Distributing partitions among consumers</button><button class="quiz-option">C. Creating exchanges</button><button class="quiz-option">D. Backing up queues</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>Consumer groups distribute partitions so each message is processed once per group.</span>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section class="section" data-section="1">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 2 of 5 · ~7 mins</div>
-            <h2>Producers and Consumers</h2>
-            <p>Spring Boot provides listeners and templates to produce and consume messages.</p>
-            
-          </div>
-
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Sending letters</h3>
-              <p>You drop letters into a mailbox and a mail carrier delivers them.</p>
-            </article>
-
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Radio station</h3>
-              <p>A radio station broadcasts, and listeners tune in.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> KafkaTemplate and RabbitTemplate send messages, while listener annotations receive them.</p>
-                  <p class="deep-note">Producers publish messages and consumers process them; acknowledgments decide when a message is considered handled.</p>
-                  <p class="deep-note">Backpressure shows up as consumer lag or queue depth, which you should monitor and tune.</p>
-                  <p class="deep-note">If lag grows steadily, you need more consumers, faster processing, or a smaller message payload.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul>
-                        <li>Consistent programming model</li><li>Simple message handling</li><li>Configurable serialization</li>
-                      </ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common pitfall</h4>
-                      <ul>
-                        <li>Manual polling loops</li><li>No serializer config</li><li>Hard-coded topics</li>
-                      </ul>
-                    </div>
-                  </div>
-                  <div class="badge-row"><span class="pill good">KafkaTemplate</span><span class="pill info">@KafkaListener</span><span class="pill caution">Serializer</span></div>
-                  
-                  <div class="flow"><span class="flow-step">Serialize</span><span class="flow-arrow">→</span><span class="flow-step">Send to broker</span><span class="flow-arrow">→</span><span class="flow-step">Consume</span><span class="flow-arrow">→</span><span class="flow-step">Acknowledge</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“I use KafkaTemplate to publish and @KafkaListener to consume with a configured serializer.”</p>
-                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
-                  
-                  <table>
-                    <thead><tr><th>Component</th><th>Role</th></tr></thead>
-                    <tbody><tr><td>KafkaTemplate</td><td><span class="pill good">Producer</span></td></tr><tr><td>@KafkaListener</td><td><span class="pill info">Consumer</span></td></tr><tr><td>MessageConverter</td><td><span class="pill caution">Serialization</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              
-    <div class="code-blocks">
-    <div>
-      <div class="code-title">Kafka listener with ack</div>
-      <pre>@KafkaListener(topics = "orders")
-public void handle(OrderEvent event, Acknowledgment ack) {
-  processor.process(event);
-  ack.acknowledge();
-}</pre>
-    </div>
-    </div>
-              
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Serialization mismatches</h3>
-              <p>If producer and consumer serializers differ, messages will fail to parse.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>Use templates to publish.</li><li>Use listeners to consume.</li><li>Keep serialization consistent.</li>
-              </ul>
-            </article>
-
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>What does KafkaTemplate provide?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. Scheduling</button><button class="quiz-option">B. Producing messages</button><button class="quiz-option">C. Caching</button><button class="quiz-option">D. Bean validation</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>KafkaTemplate is the main producer client for publishing messages.</span>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section class="section" data-section="2">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 3 of 5 · ~7 mins</div>
-            <h2>Reliability and Delivery Guarantees</h2>
-            <p>Messaging systems trade off delivery guarantees and ordering. Plan for duplicates and retries.</p>
-            
-          </div>
-
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Delivery receipts</h3>
-              <p>You want a receipt to know if the package arrived.</p>
-            </article>
-
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Package insurance</h3>
-              <p>Insurance helps when packages are lost or delivered twice.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Most systems provide at-least-once delivery, so consumers must be idempotent and support retries.</p>
-                  <p class="deep-note">Delivery guarantees are tradeoffs: at-least-once can produce duplicates, exactly-once is costly and limited.</p>
-                  <p class="deep-note">Idempotent handlers and DLQs are practical tools for reliability in real systems.</p>
-                  <p class="deep-note">A beginner mistake is to assume messages are delivered only once. Design consumers to handle duplicates safely.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul>
-                        <li>Avoid lost messages</li><li>Recover from failures</li><li>Handle duplicates safely</li>
-                      </ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common pitfall</h4>
-                      <ul>
-                        <li>No idempotency</li><li>Infinite retries</li><li>No DLQ</li>
-                      </ul>
-                    </div>
-                  </div>
-                  <div class="badge-row"><span class="pill info">At-least-once</span><span class="pill good">Idempotent</span><span class="pill caution">DLQ</span></div>
-                  
-                  <div class="flow"><span class="flow-step">Process</span><span class="flow-arrow">→</span><span class="flow-step">Failure</span><span class="flow-arrow">→</span><span class="flow-step">Retry</span><span class="flow-arrow">→</span><span class="flow-step">DLQ if needed</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“I assume duplicates and make consumers idempotent, with retries and a dead-letter queue.”</p>
-                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
-                  
-                  <table>
-                    <thead><tr><th>Guarantee</th><th>Meaning</th></tr></thead>
-                    <tbody><tr><td>At-most-once</td><td><span class="pill bad">Possible loss</span></td></tr><tr><td>At-least-once</td><td><span class="pill info">Possible duplicates</span></td></tr><tr><td>Exactly-once</td><td><span class="pill caution">Complex and costly</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              
-    <div class="code-blocks">
-    <div>
-      <div class="code-title">Idempotent handler</div>
-      <pre>if (processedIds.contains(event.id())) {
-  return;
-}
-processedIds.add(event.id());
-handle(event);</pre>
-    </div>
-    </div>
-              
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Duplicate messages are normal</h3>
-              <p>Do not assume exactly-once delivery unless you build for it explicitly.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>Design idempotent consumers.</li><li>Use retries and DLQs.</li><li>Expect duplicates.</li>
-              </ul>
-            </article>
-
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>What does at-least-once delivery imply?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. No duplicates</button><button class="quiz-option">B. Possible duplicates</button><button class="quiz-option">C. Guaranteed ordering</button><button class="quiz-option">D. Zero retries</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>At-least-once means messages can be delivered more than once.</span>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section class="section" data-section="3">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 4 of 5 · ~7 mins</div>
-            <h2>Integration Patterns</h2>
-            <p>Design messaging workflows with patterns like outbox, saga, and event-driven integration.</p>
-            
-          </div>
-
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Assembly line</h3>
-              <p>Each station does one step and passes the item forward.</p>
-            </article>
-
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Relay race</h3>
-              <p>Each runner completes a leg and hands off the baton.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Patterns like outbox ensure reliability, while sagas coordinate distributed workflows.</p>
-                  <p class="deep-note">Integration patterns like outbox and saga coordinate state changes across services safely.</p>
-                  <p class="deep-note">Use partition or routing keys to preserve ordering when required.</p>
-                  <p class="deep-note">Outbox is a great first pattern because it makes database writes and message publishing consistent.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul>
-                        <li>Avoid dual writes</li><li>Handle distributed workflows</li><li>Reduce coupling</li>
-                      </ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common pitfall</h4>
-                      <ul>
-                        <li>Direct DB writes + publish</li><li>Tight coupling between services</li><li>Missing transaction boundaries</li>
-                      </ul>
-                    </div>
-                  </div>
-                  <div class="badge-row"><span class="pill good">Outbox</span><span class="pill info">Saga</span><span class="pill caution">Idempotency</span></div>
-                  
-                  <div class="flow"><span class="flow-step">Write DB</span><span class="flow-arrow">→</span><span class="flow-step">Write outbox</span><span class="flow-arrow">→</span><span class="flow-step">Publish event</span><span class="flow-arrow">→</span><span class="flow-step">Consume</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“I use the outbox pattern to avoid dual-write issues and sagas to coordinate multi-step workflows.”</p>
-                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
-                  
-                  <table>
-                    <thead><tr><th>Pattern</th><th>Goal</th></tr></thead>
-                    <tbody><tr><td>Outbox</td><td><span class="pill good">Reliable publishing</span></td></tr><tr><td>Saga</td><td><span class="pill info">Distributed workflow</span></td></tr><tr><td>CDC</td><td><span class="pill caution">Event streaming</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              
-    <div class="code-blocks">
-    <div>
-      <div class="code-title">Outbox table write</div>
-      <pre>insert into outbox(event_id, payload, status)
-values (?, ?, 'NEW');</pre>
-    </div>
-    </div>
-              
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Transactional boundaries matter</h3>
-              <p>Without a reliable outbox, you can publish events without committing data.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>Outbox prevents dual writes.</li><li>Sagas coordinate steps.</li><li>Design for idempotency.</li>
-              </ul>
-            </article>
-
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>What problem does the outbox pattern solve?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. Slow queries</button><button class="quiz-option">B. Dual-write consistency</button><button class="quiz-option">C. Cache eviction</button><button class="quiz-option">D. Bean scanning</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>Outbox ensures events are published reliably with database writes.</span>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-      
-      
-      <section class="section" data-section="4">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 5 of 5 · ~7 mins</div>
-            <h2>Deep Dive: Ordering, Keys, and DLQs</h2>
-            <p>Correct partition keys and dead-letter handling prevent data loss and ordering bugs.</p>
-          </div>
-
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Line up the toys</h3>
-              <p>If you mix the order, the story does not make sense.</p>
-            </article>
-
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Mail sorting bins</h3>
-              <p>Sort mail by zip code so each bin stays in order.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Kafka ordering is guaranteed per partition; choose keys carefully and route failures to DLQs.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul><li>Preserves ordering</li><li>Avoids poison messages</li><li>Improves reliability</li></ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common pitfall</h4>
-                      <ul><li>No DLQ</li><li>Random keys</li><li>Infinite retries</li></ul>
-                    </div>
-                  </div>
-                  <div class="badge-row"><span class="pill good">Partition key</span><span class="pill info">Ordering</span><span class="pill caution">DLQ</span></div>
-                  <div class="flow"><span class="flow-step">Key by entity</span><span class="flow-arrow">→</span><span class="flow-step">Partition routing</span><span class="flow-arrow">→</span><span class="flow-step">Consume in order</span><span class="flow-arrow">→</span><span class="flow-step">DLQ on failure</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“Kafka ordering is per partition, so I choose keys like orderId and send failures to a DLQ.”</p>
-                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
-                  <table>
-                    <thead><tr><th>Concern</th><th>Practice</th></tr></thead>
-                    <tbody><tr><td>Ordering</td><td><span class="pill good">Stable key</span></td></tr><tr><td>Failures</td><td><span class="pill info">DLQ</span></td></tr><tr><td>Retries</td><td><span class="pill caution">Backoff + limit</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              <div class="code-blocks">
-    <div>
-      <div class="code-title">Kafka producer key</div>
-      <pre>kafkaTemplate.send("orders", orderId, event);</pre>
-    </div>
-    </div>
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>No key = no ordering</h3>
-              <p>Without a key, events can land in any partition.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways"><li>Key by entity for order.</li><li>Use DLQs.</li><li>Limit retries to avoid poison loops.</li></ul>
-            </article>
-
-            
-          
-            <article class="card technical">
-              <div class="card-label">Edge cases</div>
-              <h3>Edge Cases & Tradeoffs</h3>
-              <ul class="takeaways"><li>At-least-once delivery causes duplicates.</li><li>Ordering is per partition/queue, not global.</li><li>Retries can create poison message loops.</li><li>Consumer lag builds if processing is slow.</li><li>Idempotency is required for safety.</li></ul>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Checklist</div>
-              <h3>Production Checklist</h3>
-              <ul class="takeaways"><li>Pick partition keys for ordering needs.</li><li>Use DLQ for poison messages.</li><li>Tune consumer concurrency and fetch size.</li><li>Make handlers idempotent.</li><li>Monitor lag and retry counts.</li></ul>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Interview</div>
-              <h3>Interview Hooks</h3>
-              <p>Contrast Kafka (log) vs Rabbit (queue) semantics.</p>
-              <ul class="takeaways"><li>Kafka uses consumer groups and partitions.</li><li>Ack mode controls delivery guarantees.</li><li>Idempotent producers reduce duplicates.</li></ul>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Advanced Example</div>
-              <div class="code-blocks">
-        <div>
-          <div class="code-title">Kafka listener with manual ack</div>
-          <pre>@KafkaListener(topics = "orders")
-public void onMessage(ConsumerRecord&lt;String, String&gt; rec, Acknowledgment ack){
-  process(rec.value());
-  ack.acknowledge();
-}</pre>
-        </div>
-      </div>
-      <p>Manual ack helps control retry and duplicate handling.</p>
-            </article><article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>Kafka guarantees ordering within what scope?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. Whole topic</button><button class="quiz-option">B. Partition</button><button class="quiz-option">C. All consumer groups</button><button class="quiz-option">D. Cluster</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>Kafka ordering is only guaranteed within a partition.</span>
-              </div>
-            </article></div>
-        </div>
-      </section>
-<section class="section" data-section="5">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Completion screen · Review mode</div>
-            <h2>🎉 Messaging (Kafka/RabbitMQ) Cheat Sheet</h2>
-            <p>Use this to recall messaging patterns, consumer groups, and delivery guarantees.</p>
-          </div>
-
-          <div class="completion-grid">
-            <div class="card technical">
-              <div class="card-label">Cheat sheet</div>
-              <div class="celebrate">🚀</div>
-              <h3>1-line interview answers</h3>
-              <div class="cheat-list">
-    <div class="cheat-item">
-      <h4>Queue vs Pub/Sub</h4>
-      <p>Rabbit uses queues, Kafka uses topics + partitions.</p>
-    </div>
-    <div class="cheat-item">
-      <h4>Listeners</h4>
-      <p>@KafkaListener and @RabbitListener receive messages.</p>
-    </div>
-    <div class="cheat-item">
-      <h4>Delivery</h4>
-      <p>At-least-once needs idempotent consumers.</p>
-    </div>
-    <div class="cheat-item">
-      <h4>Retries/DLQ</h4>
-      <p>Use retry topics or dead-letter queues.</p>
-    </div>
-              </div>
-            </div>
-
-            <div class="card analogy">
-              <div class="card-label">What to remember</div>
-              <h3>Fast mental model</h3>
-              <ul class="takeaways">
-                <li><strong>Kafka</strong>: partitions + consumer groups.</li><li><strong>RabbitMQ</strong>: queues + exchanges.</li><li><strong>Reliability</strong>: acknowledgments and retries.</li><li><strong>Idempotency</strong>: handle duplicates.</li>
-              </ul>
-              <h3 style="margin-top:22px;">Common traps</h3>
-              <div class="badge-row">
-                <span class="pill bad">No idempotency</span><span class="pill bad">Unbounded retries</span><span class="pill bad">Wrong partition keys</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    </main>
-
-    <footer class="footer-nav">
-      <div class="footer-nav-inner">
-        <button class="btn" id="prevBtn">← Back</button>
-        <button class="btn primary" id="nextBtn">Next →</button>
-      </div>
-    </footer>
-  </div>
-
-  <script>
+</main>
+<section class="section" data-section="0">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Section 1 · Core concept</div>
+<h2>Queues vs Pub/Sub</h2>
+<p>Queues vs Pub/Sub is a high-value senior interview topic because it reveals whether you understand the underlying mechanism, the default behavior, and the trade-offs in production.</p>
+</div>
+<div class="card-grid">
+<article class="card eli5"><div class="card-label">🧒 ELI5</div><h3>A simple mental picture</h3><p>Imagine a busy workplace where one small rule determines whether the whole team moves smoothly or keeps stepping on each other. Queues deliver work to consumers, while pub/sub lets one event fan out to multiple interested subscribers. works like that kind of rule: it tells the system how to behave before small mistakes turn into bigger production problems.</p><p>It matters because the shape of message delivery should match whether the problem is work distribution or event broadcast. Without that rule, engineers often discover the problem only after the app is under load, when the bug is expensive and confusing.</p><p>The useful mental shortcut is to ask: “What is the system trying to coordinate here, and what breaks when that coordination is missing?” That question usually reveals why this feature exists.</p></article><article class="card analogy"><div class="card-label">🔗 ANALOGY</div><h3>Why the rule exists</h3><p>Think of queues vs pub/sub as a piece of operating policy, not just a syntax feature. The policy exists to make decisions repeatable across the whole system instead of relying on every individual class to remember the rule.</p><p>If you ignore that policy, the most common smell is using one messaging pattern for every use case without thinking about consumption semantics. In real applications, that smell usually shows up as flaky behavior, hidden coupling, or painful debugging.</p></article><article class="card technical"><div class="card-label">Technical</div><div class="two-col"><div><h3>How it works under the hood</h3><p><strong>Definition:</strong> Queues deliver work to consumers, while pub/sub lets one event fan out to multiple interested subscribers.</p><p class="deep-note">Queues deliver work to consumers, while pub/sub lets one event fan out to multiple interested subscribers. Under the hood, Spring or the underlying infrastructure usually applies the behavior around your code rather than by changing your business logic directly.</p><p class="deep-note">The production question is not “can I enable it?” but “where is the right boundary and what problem am I actually solving?”</p><p class="deep-note">Good engineering here comes from matching the mechanism to the use case, then watching the trade-off instead of blindly turning the feature on everywhere.</p><div class="mini-grid"><div class="mini-panel"><h4>Why it matters in production</h4><ul><li>the shape of message delivery should match whether the problem is work distribution or event broadcast</li><li>Makes messaging (kafka/rabbitmq) behavior explicit</li><li>Gives you a clearer story in debugging and interviews</li></ul></div><div class="mini-panel"><h4>Common smell</h4><ul><li>using one messaging pattern for every use case without thinking about consumption semantics</li><li>Using the mechanism as a band-aid for design issues</li><li>Forgetting what the default behavior actually is</li></ul></div></div><div class="badge-row"><span class="pill good">Explicit intent</span><span class="pill info">Know the default</span><span class="pill caution">Trade-offs matter</span></div><div class="flow"><span class="flow-step">Call enters boundary</span><span class="flow-arrow">→</span><span class="flow-step">Framework applies rule</span><span class="flow-arrow">→</span><span class="flow-step">Your code runs</span><span class="flow-arrow">→</span><span class="flow-step">Outcome follows configured behavior</span></div></div><div><h3>💬 Model Interview Answer</h3><p>“Queues vs Pub/Sub in Messaging (Kafka/RabbitMQ) is really about queues deliver work to consumers, while pub/sub lets one event fan out to multiple interested subscribers. I explain it as a mechanism that enforces a policy around my code so the application behaves consistently. The important trade-off is using one messaging pattern for every use case without thinking about consumption semantics, so I use it deliberately and I make the boundary clear instead of relying on accidental defaults.”</p><table><thead><tr><th>Scenario</th><th>What to watch</th></tr></thead><tbody><tr><td>Queue</td><td>One consumer claims work</td></tr><tr><td>Pub/Sub</td><td>Many consumers can react</td></tr><tr><td>Design question</td><td>Task distribution or event broadcast?</td></tr></tbody></table></div></div><div class="code-blocks"><div><div class="code-title">❌ Wrong</div><pre>// Team sends "order-created" into a queue expecting analytics,
+// email, and fraud services all to receive the same message exactly once.</pre></div><div><div class="code-title">✅ Right</div><pre>// Use pub/sub for domain events that multiple services care about.
+// Use a queue when one worker should claim and process a task.</pre></div></div><p>Use queues vs pub/sub where the rule belongs in architecture, not just where it happens to fix one failing test or one bug report.</p><p class="deep-note">The safest mental model is that Spring gives you a framework feature only when your call crosses the Spring-managed boundary and the surrounding infrastructure can participate.</p></article><article class="card warning"><div class="card-label">Warning</div><h3>Common misunderstanding</h3><p>The dangerous misunderstanding is treating queues vs pub/sub like a magic switch instead of a mechanism with boundaries and defaults. That is how teams end up with using one messaging pattern for every use case without thinking about consumption semantics.</p><p>A safer pattern is to make the intent explicit, keep the scope narrow, and choose the smallest mechanism that actually solves the problem.</p><div class="code-blocks"><div><div class="code-title">Broken pattern</div><pre>// Team sends "order-created" into a queue expecting analytics,
+// email, and fraud services all to receive the same message exactly once.</pre></div><div><div class="code-title">Safer pattern</div><pre>// Use pub/sub for domain events that multiple services care about.
+// Use a queue when one worker should claim and process a task.</pre></div></div></article><article class="card technical"><div class="card-label">Mini takeaway</div><ul class="takeaways"><li>Queues vs Pub/Sub exists to make a policy explicit</li><li>Defaults are useful, but interviews reward knowing the boundary and trade-off</li><li>If you see using one messaging pattern for every use case without thinking about consumption semantics, revisit the design before adding more framework annotations</li></ul></article><article class="card quiz-card"><div class="card-label">Quiz</div><h3>When is pub/sub usually a better fit than a single work queue?</h3><div class="quiz-options" data-answer="0"><button class="quiz-option">A. When multiple independent consumers should react to the same event</button><button class="quiz-option">B. When exactly one worker must claim a job</button><button class="quiz-option">C. When there is no message broker</button><button class="quiz-option">D. When you want to avoid retries</button></div><div class="quiz-result"><strong>Correct answer: A</strong><span>A is correct because it matches how queues vs pub/sub is intended to work in a production-grade Spring application. The wrong choices are plausible because they sound framework-ish, but they either ignore the real boundary, confuse this feature with another one, or assume a stronger guarantee than the mechanism actually provides. In an interview, tie your answer back to the concrete failure mode you are preventing.</span></div></article></div></div></section><section class="section" data-section="1">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Section 2 · Producers and Consumers</div>
+<h2>Producers and Consumers</h2>
+<p>Producers and Consumers is a high-value senior interview topic because it reveals whether you understand the underlying mechanism, the default behavior, and the trade-offs in production.</p>
+</div>
+<div class="card-grid">
+<article class="card eli5"><div class="card-label">🧒 ELI5</div><h3>A simple mental picture</h3><p>Imagine a busy workplace where one small rule determines whether the whole team moves smoothly or keeps stepping on each other. Producers publish messages and consumers process them asynchronously, so you gain decoupling but must now reason about retries, idempotency, and lag. works like that kind of rule: it tells the system how to behave before small mistakes turn into bigger production problems.</p><p>It matters because async boundaries change failure handling and visibility. Without that rule, engineers often discover the problem only after the app is under load, when the bug is expensive and confusing.</p><p>The useful mental shortcut is to ask: “What is the system trying to coordinate here, and what breaks when that coordination is missing?” That question usually reveals why this feature exists.</p></article><article class="card analogy"><div class="card-label">🔗 ANALOGY</div><h3>Why the rule exists</h3><p>Think of producers and consumers as a piece of operating policy, not just a syntax feature. The policy exists to make decisions repeatable across the whole system instead of relying on every individual class to remember the rule.</p><p>If you ignore that policy, the most common smell is assuming the producer can know exactly when downstream processing finished. In real applications, that smell usually shows up as flaky behavior, hidden coupling, or painful debugging.</p></article><article class="card technical"><div class="card-label">Technical</div><div class="two-col"><div><h3>How it works under the hood</h3><p><strong>Definition:</strong> Producers publish messages and consumers process them asynchronously, so you gain decoupling but must now reason about retries, idempotency, and lag.</p><p class="deep-note">Producers publish messages and consumers process them asynchronously, so you gain decoupling but must now reason about retries, idempotency, and lag. Under the hood, Spring or the underlying infrastructure usually applies the behavior around your code rather than by changing your business logic directly.</p><p class="deep-note">The production question is not “can I enable it?” but “where is the right boundary and what problem am I actually solving?”</p><p class="deep-note">Good engineering here comes from matching the mechanism to the use case, then watching the trade-off instead of blindly turning the feature on everywhere.</p><div class="mini-grid"><div class="mini-panel"><h4>Why it matters in production</h4><ul><li>async boundaries change failure handling and visibility</li><li>Makes messaging (kafka/rabbitmq) behavior explicit</li><li>Gives you a clearer story in debugging and interviews</li></ul></div><div class="mini-panel"><h4>Common smell</h4><ul><li>assuming the producer can know exactly when downstream processing finished</li><li>Using the mechanism as a band-aid for design issues</li><li>Forgetting what the default behavior actually is</li></ul></div></div><div class="badge-row"><span class="pill good">Explicit intent</span><span class="pill info">Know the default</span><span class="pill caution">Trade-offs matter</span></div><div class="flow"><span class="flow-step">Call enters boundary</span><span class="flow-arrow">→</span><span class="flow-step">Framework applies rule</span><span class="flow-arrow">→</span><span class="flow-step">Your code runs</span><span class="flow-arrow">→</span><span class="flow-step">Outcome follows configured behavior</span></div></div><div><h3>💬 Model Interview Answer</h3><p>“Producers and Consumers in Messaging (Kafka/RabbitMQ) is really about producers publish messages and consumers process them asynchronously, so you gain decoupling but must now reason about retries, idempotency, and lag. I explain it as a mechanism that enforces a policy around my code so the application behaves consistently. The important trade-off is assuming the producer can know exactly when downstream processing finished, so I use it deliberately and I make the boundary clear instead of relying on accidental defaults.”</p><table><thead><tr><th>Scenario</th><th>What to watch</th></tr></thead><tbody><tr><td>Producer</td><td>Publishes message</td></tr><tr><td>Broker</td><td>Buffers and routes</td></tr><tr><td>Consumer</td><td>Processes later, possibly with retries</td></tr></tbody></table></div></div><div class="code-blocks"><div><div class="code-title">❌ Wrong</div><pre>producer.send(event);
+return "order completed everywhere"; // not actually guaranteed</pre></div><div><div class="code-title">✅ Right</div><pre>producer.send(event);
+return "order accepted for asynchronous processing";</pre></div></div><p>Use producers and consumers where the rule belongs in architecture, not just where it happens to fix one failing test or one bug report.</p><p class="deep-note">The safest mental model is that Spring gives you a framework feature only when your call crosses the Spring-managed boundary and the surrounding infrastructure can participate.</p></article><article class="card warning"><div class="card-label">Warning</div><h3>Common misunderstanding</h3><p>The dangerous misunderstanding is treating producers and consumers like a magic switch instead of a mechanism with boundaries and defaults. That is how teams end up with assuming the producer can know exactly when downstream processing finished.</p><p>A safer pattern is to make the intent explicit, keep the scope narrow, and choose the smallest mechanism that actually solves the problem.</p><div class="code-blocks"><div><div class="code-title">Broken pattern</div><pre>producer.send(event);
+return "order completed everywhere"; // not actually guaranteed</pre></div><div><div class="code-title">Safer pattern</div><pre>producer.send(event);
+return "order accepted for asynchronous processing";</pre></div></div></article><article class="card technical"><div class="card-label">Mini takeaway</div><ul class="takeaways"><li>Producers and Consumers exists to make a policy explicit</li><li>Defaults are useful, but interviews reward knowing the boundary and trade-off</li><li>If you see assuming the producer can know exactly when downstream processing finished, revisit the design before adding more framework annotations</li></ul></article><article class="card quiz-card"><div class="card-label">Quiz</div><h3>What is one of the biggest mindset changes when moving from synchronous calls to messaging?</h3><div class="quiz-options" data-answer="1"><button class="quiz-option">A. The producer no longer needs contracts</button><button class="quiz-option">B. Acceptance and downstream completion are different moments</button><button class="quiz-option">C. Consumers never need retries</button><button class="quiz-option">D. Ordering becomes irrelevant</button></div><div class="quiz-result"><strong>Correct answer: B</strong><span>B is correct because it matches how producers and consumers is intended to work in a production-grade Spring application. The wrong choices are plausible because they sound framework-ish, but they either ignore the real boundary, confuse this feature with another one, or assume a stronger guarantee than the mechanism actually provides. In an interview, tie your answer back to the concrete failure mode you are preventing.</span></div></article></div></div></section><section class="section" data-section="2">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Section 3 · Reliability</div>
+<h2>Reliability and Delivery Guarantees</h2>
+<p>Reliability and Delivery Guarantees is a high-value senior interview topic because it reveals whether you understand the underlying mechanism, the default behavior, and the trade-offs in production.</p>
+</div>
+<div class="card-grid">
+<article class="card eli5"><div class="card-label">🧒 ELI5</div><h3>A simple mental picture</h3><p>Imagine a busy workplace where one small rule determines whether the whole team moves smoothly or keeps stepping on each other. Messaging systems usually offer at-least-once delivery by default, which means duplicates are possible and consumers should be idempotent. works like that kind of rule: it tells the system how to behave before small mistakes turn into bigger production problems.</p><p>It matters because reliability guarantees shape application behavior far more than broker marketing language. Without that rule, engineers often discover the problem only after the app is under load, when the bug is expensive and confusing.</p><p>The useful mental shortcut is to ask: “What is the system trying to coordinate here, and what breaks when that coordination is missing?” That question usually reveals why this feature exists.</p></article><article class="card analogy"><div class="card-label">🔗 ANALOGY</div><h3>Why the rule exists</h3><p>Think of reliability and delivery guarantees as a piece of operating policy, not just a syntax feature. The policy exists to make decisions repeatable across the whole system instead of relying on every individual class to remember the rule.</p><p>If you ignore that policy, the most common smell is assuming exactly-once end-to-end behavior without designing for duplicates. In real applications, that smell usually shows up as flaky behavior, hidden coupling, or painful debugging.</p></article><article class="card technical"><div class="card-label">Technical</div><div class="two-col"><div><h3>How it works under the hood</h3><p><strong>Definition:</strong> Messaging systems usually offer at-least-once delivery by default, which means duplicates are possible and consumers should be idempotent.</p><p class="deep-note">Messaging systems usually offer at-least-once delivery by default, which means duplicates are possible and consumers should be idempotent. Under the hood, Spring or the underlying infrastructure usually applies the behavior around your code rather than by changing your business logic directly.</p><p class="deep-note">The production question is not “can I enable it?” but “where is the right boundary and what problem am I actually solving?”</p><p class="deep-note">Good engineering here comes from matching the mechanism to the use case, then watching the trade-off instead of blindly turning the feature on everywhere.</p><div class="mini-grid"><div class="mini-panel"><h4>Why it matters in production</h4><ul><li>reliability guarantees shape application behavior far more than broker marketing language</li><li>Makes messaging (kafka/rabbitmq) behavior explicit</li><li>Gives you a clearer story in debugging and interviews</li></ul></div><div class="mini-panel"><h4>Common smell</h4><ul><li>assuming exactly-once end-to-end behavior without designing for duplicates</li><li>Using the mechanism as a band-aid for design issues</li><li>Forgetting what the default behavior actually is</li></ul></div></div><div class="badge-row"><span class="pill good">Explicit intent</span><span class="pill info">Know the default</span><span class="pill caution">Trade-offs matter</span></div><div class="flow"><span class="flow-step">Call enters boundary</span><span class="flow-arrow">→</span><span class="flow-step">Framework applies rule</span><span class="flow-arrow">→</span><span class="flow-step">Your code runs</span><span class="flow-arrow">→</span><span class="flow-step">Outcome follows configured behavior</span></div></div><div><h3>💬 Model Interview Answer</h3><p>“Reliability and Delivery Guarantees in Messaging (Kafka/RabbitMQ) is really about messaging systems usually offer at-least-once delivery by default, which means duplicates are possible and consumers should be idempotent. I explain it as a mechanism that enforces a policy around my code so the application behaves consistently. The important trade-off is assuming exactly-once end-to-end behavior without designing for duplicates, so I use it deliberately and I make the boundary clear instead of relying on accidental defaults.”</p><table><thead><tr><th>Scenario</th><th>What to watch</th></tr></thead><tbody><tr><td>At-least-once</td><td>Duplicates possible</td></tr><tr><td>Idempotent consumer</td><td>Safe repeated processing</td></tr><tr><td>Exactly-once claim</td><td>Usually narrower than people think</td></tr></tbody></table></div></div><div class="code-blocks"><div><div class="code-title">❌ Wrong</div><pre>@KafkaListener(topics = "payments")
+public void onPayment(PaymentEvent event) {
+    paymentRepository.markSettled(event.id()); // duplicate event could double-apply business effect
+}</pre></div><div><div class="code-title">✅ Right</div><pre>@KafkaListener(topics = "payments")
+public void onPayment(PaymentEvent event) {
+    if (processedEventRepository.existsById(event.id())) {
+        return;
+    }
+    paymentRepository.markSettled(event.id());
+    processedEventRepository.save(new ProcessedEvent(event.id()));
+}</pre></div></div><p>Use reliability and delivery guarantees where the rule belongs in architecture, not just where it happens to fix one failing test or one bug report.</p><p class="deep-note">The safest mental model is that Spring gives you a framework feature only when your call crosses the Spring-managed boundary and the surrounding infrastructure can participate.</p></article><article class="card warning"><div class="card-label">Warning</div><h3>Common misunderstanding</h3><p>The dangerous misunderstanding is treating reliability and delivery guarantees like a magic switch instead of a mechanism with boundaries and defaults. That is how teams end up with assuming exactly-once end-to-end behavior without designing for duplicates.</p><p>A safer pattern is to make the intent explicit, keep the scope narrow, and choose the smallest mechanism that actually solves the problem.</p><div class="code-blocks"><div><div class="code-title">Broken pattern</div><pre>@KafkaListener(topics = "payments")
+public void onPayment(PaymentEvent event) {
+    paymentRepository.markSettled(event.id()); // duplicate event could double-apply business effect
+}</pre></div><div><div class="code-title">Safer pattern</div><pre>@KafkaListener(topics = "payments")
+public void onPayment(PaymentEvent event) {
+    if (processedEventRepository.existsById(event.id())) {
+        return;
+    }
+    paymentRepository.markSettled(event.id());
+    processedEventRepository.save(new ProcessedEvent(event.id()));
+}</pre></div></div></article><article class="card technical"><div class="card-label">Mini takeaway</div><ul class="takeaways"><li>Reliability and Delivery Guarantees exists to make a policy explicit</li><li>Defaults are useful, but interviews reward knowing the boundary and trade-off</li><li>If you see assuming exactly-once end-to-end behavior without designing for duplicates, revisit the design before adding more framework annotations</li></ul></article><article class="card quiz-card"><div class="card-label">Quiz</div><h3>Why is idempotency so important in message consumers?</h3><div class="quiz-options" data-answer="0"><button class="quiz-option">A. Because brokers often deliver duplicates under retry or reprocessing scenarios</button><button class="quiz-option">B. Because idempotency makes messages smaller</button><button class="quiz-option">C. Because it removes the need for schemas</button><button class="quiz-option">D. Because it guarantees ordering</button></div><div class="quiz-result"><strong>Correct answer: A</strong><span>A is correct because it matches how reliability and delivery guarantees is intended to work in a production-grade Spring application. The wrong choices are plausible because they sound framework-ish, but they either ignore the real boundary, confuse this feature with another one, or assume a stronger guarantee than the mechanism actually provides. In an interview, tie your answer back to the concrete failure mode you are preventing.</span></div></article></div></div></section><section class="section" data-section="3">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Section 4 · Design patterns</div>
+<h2>Integration Patterns</h2>
+<p>Integration Patterns is a high-value senior interview topic because it reveals whether you understand the underlying mechanism, the default behavior, and the trade-offs in production.</p>
+</div>
+<div class="card-grid">
+<article class="card eli5"><div class="card-label">🧒 ELI5</div><h3>A simple mental picture</h3><p>Imagine a busy workplace where one small rule determines whether the whole team moves smoothly or keeps stepping on each other. Patterns like outbox, saga choreography, retry topics, and dead-letter queues help you integrate messaging with real business workflows safely. works like that kind of rule: it tells the system how to behave before small mistakes turn into bigger production problems.</p><p>It matters because naive async design breaks down quickly once failures, duplicates, and cross-service coordination appear. Without that rule, engineers often discover the problem only after the app is under load, when the bug is expensive and confusing.</p><p>The useful mental shortcut is to ask: “What is the system trying to coordinate here, and what breaks when that coordination is missing?” That question usually reveals why this feature exists.</p></article><article class="card analogy"><div class="card-label">🔗 ANALOGY</div><h3>Why the rule exists</h3><p>Think of integration patterns as a piece of operating policy, not just a syntax feature. The policy exists to make decisions repeatable across the whole system instead of relying on every individual class to remember the rule.</p><p>If you ignore that policy, the most common smell is publishing events directly from business code with no durable handoff or retry strategy. In real applications, that smell usually shows up as flaky behavior, hidden coupling, or painful debugging.</p></article><article class="card technical"><div class="card-label">Technical</div><div class="two-col"><div><h3>How it works under the hood</h3><p><strong>Definition:</strong> Patterns like outbox, saga choreography, retry topics, and dead-letter queues help you integrate messaging with real business workflows safely.</p><p class="deep-note">Patterns like outbox, saga choreography, retry topics, and dead-letter queues help you integrate messaging with real business workflows safely. Under the hood, Spring or the underlying infrastructure usually applies the behavior around your code rather than by changing your business logic directly.</p><p class="deep-note">The production question is not “can I enable it?” but “where is the right boundary and what problem am I actually solving?”</p><p class="deep-note">Good engineering here comes from matching the mechanism to the use case, then watching the trade-off instead of blindly turning the feature on everywhere.</p><div class="mini-grid"><div class="mini-panel"><h4>Why it matters in production</h4><ul><li>naive async design breaks down quickly once failures, duplicates, and cross-service coordination appear</li><li>Makes messaging (kafka/rabbitmq) behavior explicit</li><li>Gives you a clearer story in debugging and interviews</li></ul></div><div class="mini-panel"><h4>Common smell</h4><ul><li>publishing events directly from business code with no durable handoff or retry strategy</li><li>Using the mechanism as a band-aid for design issues</li><li>Forgetting what the default behavior actually is</li></ul></div></div><div class="badge-row"><span class="pill good">Explicit intent</span><span class="pill info">Know the default</span><span class="pill caution">Trade-offs matter</span></div><div class="flow"><span class="flow-step">Call enters boundary</span><span class="flow-arrow">→</span><span class="flow-step">Framework applies rule</span><span class="flow-arrow">→</span><span class="flow-step">Your code runs</span><span class="flow-arrow">→</span><span class="flow-step">Outcome follows configured behavior</span></div></div><div><h3>💬 Model Interview Answer</h3><p>“Integration Patterns in Messaging (Kafka/RabbitMQ) is really about patterns like outbox, saga choreography, retry topics, and dead-letter queues help you integrate messaging with real business workflows safely. I explain it as a mechanism that enforces a policy around my code so the application behaves consistently. The important trade-off is publishing events directly from business code with no durable handoff or retry strategy, so I use it deliberately and I make the boundary clear instead of relying on accidental defaults.”</p><table><thead><tr><th>Scenario</th><th>What to watch</th></tr></thead><tbody><tr><td>Direct publish in tx flow</td><td>Can create dual-write risk</td></tr><tr><td>Outbox</td><td>Durable handoff pattern</td></tr><tr><td>DLQ</td><td>Holds poison messages for inspection</td></tr></tbody></table></div></div><div class="code-blocks"><div><div class="code-title">❌ Wrong</div><pre>@Transactional
+public void placeOrder(Order order) {
+    orderRepository.save(order);
+    kafkaTemplate.send("orders", order.getId().toString()); // what if DB commits and send fails?
+}</pre></div><div><div class="code-title">✅ Right</div><pre>@Transactional
+public void placeOrder(Order order) {
+    orderRepository.save(order);
+    outboxRepository.save(new OutboxEvent("order-created", order.getId().toString()));
+}</pre></div></div><p>Use integration patterns where the rule belongs in architecture, not just where it happens to fix one failing test or one bug report.</p><p class="deep-note">The safest mental model is that Spring gives you a framework feature only when your call crosses the Spring-managed boundary and the surrounding infrastructure can participate.</p></article><article class="card warning"><div class="card-label">Warning</div><h3>Common misunderstanding</h3><p>The dangerous misunderstanding is treating integration patterns like a magic switch instead of a mechanism with boundaries and defaults. That is how teams end up with publishing events directly from business code with no durable handoff or retry strategy.</p><p>A safer pattern is to make the intent explicit, keep the scope narrow, and choose the smallest mechanism that actually solves the problem.</p><div class="code-blocks"><div><div class="code-title">Broken pattern</div><pre>@Transactional
+public void placeOrder(Order order) {
+    orderRepository.save(order);
+    kafkaTemplate.send("orders", order.getId().toString()); // what if DB commits and send fails?
+}</pre></div><div><div class="code-title">Safer pattern</div><pre>@Transactional
+public void placeOrder(Order order) {
+    orderRepository.save(order);
+    outboxRepository.save(new OutboxEvent("order-created", order.getId().toString()));
+}</pre></div></div></article><article class="card technical"><div class="card-label">Mini takeaway</div><ul class="takeaways"><li>Integration Patterns exists to make a policy explicit</li><li>Defaults are useful, but interviews reward knowing the boundary and trade-off</li><li>If you see publishing events directly from business code with no durable handoff or retry strategy, revisit the design before adding more framework annotations</li></ul></article><article class="card quiz-card"><div class="card-label">Quiz</div><h3>Why is the outbox pattern popular with messaging?</h3><div class="quiz-options" data-answer="1"><button class="quiz-option">A. It avoids needing a broker</button><button class="quiz-option">B. It makes DB change and event publication more reliable together</button><button class="quiz-option">C. It guarantees zero duplicates forever</button><button class="quiz-option">D. It is required by Kafka</button></div><div class="quiz-result"><strong>Correct answer: B</strong><span>B is correct because it matches how integration patterns is intended to work in a production-grade Spring application. The wrong choices are plausible because they sound framework-ish, but they either ignore the real boundary, confuse this feature with another one, or assume a stronger guarantee than the mechanism actually provides. In an interview, tie your answer back to the concrete failure mode you are preventing.</span></div></article></div></div></section><section class="section" data-section="4">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Section 5 · Interview deep dive</div>
+<h2>Deep Dive: Ordering, Keys, and DLQs</h2>
+<p>This deep dive connects the mechanics of messaging (kafka/rabbitmq) with the production decisions senior engineers are expected to explain clearly.</p>
+</div>
+<div class="card-grid">
+<article class="card eli5"><div class="card-label">🧒 ELI5</div><h3>A bigger real-world picture</h3><p>In a larger system, the hard part is not knowing the vocabulary. The hard part is deciding which rule belongs where so the whole operation still makes sense when something unexpected happens.</p><p>That is why understanding when ordering is guaranteed, what partition keys really do, and how dead-letter queues fit into a safe retry story. The mechanism has to support the story your system tells under stress, not just the happy path.</p><p>This is where interviewers are listening for judgment: not just what the feature does, but how you would keep the design honest when multiple moving parts are involved.</p></article><article class="card analogy"><div class="card-label">🔗 ANALOGY</div><h3>Why senior engineers care</h3><p>understanding when ordering is guaranteed, what partition keys really do, and how dead-letter queues fit into a safe retry story usually sits at the intersection of framework behavior, business requirements, and operational trade-offs.</p><p>When teams get this wrong, the system may still compile and even pass local tests, but production behavior becomes surprising.</p></article><article class="card technical"><div class="card-label">Technical</div><div class="two-col"><div><h3>What to optimize for</h3><p><strong>Definition:</strong> understanding when ordering is guaranteed, what partition keys really do, and how dead-letter queues fit into a safe retry story</p><p class="deep-note">Senior-level answers usually mention boundaries, defaults, observability, and trade-offs in the same breath.</p><p class="deep-note">The safest pattern is usually to keep the mechanism narrow, explicit, and easy to reason about.</p><p class="deep-note">If a framework feature starts compensating for unclear ownership, unclear state, or unclear flow, the real problem is probably design, not syntax.</p><div class="mini-grid"><div class="mini-panel"><h4>What senior engineers optimize for</h4><ul><li>Optimize for clarity of boundary</li><li>Prefer explicit over accidental behavior</li><li>Choose the smallest mechanism that solves the real problem</li></ul></div><div class="mini-panel"><h4>Trade-offs</h4><ul><li>Magic defaults can hide surprises</li><li>Cross-cutting features can mask weak design</li><li>More power usually means more room for misuse</li></ul></div></div><div class="badge-row"><span class="pill good">Clear boundary</span><span class="pill info">Explain the why</span><span class="pill bad">Framework cargo-culting</span></div><div class="flow"><span class="flow-step">Requirement appears</span><span class="flow-arrow">→</span><span class="flow-step">Choose boundary</span><span class="flow-arrow">→</span><span class="flow-step">Apply mechanism</span><span class="flow-arrow">→</span><span class="flow-step">Observe real outcome</span></div></div><div><h3>💬 Model Interview Answer</h3><p>“When I talk about messaging (kafka/rabbitmq) at a senior level, I focus on the boundary, the default behavior, and the production trade-off. I want the design to make the intent obvious even to the next engineer reading the code. The smell I watch for is using framework features to hide a design problem instead of clarifying one.”</p><table><thead><tr><th>Decision point</th><th>Senior answer</th></tr></thead><tbody><tr><td>Boundary</td><td>State it explicitly</td></tr><tr><td>Default behavior</td><td>Know it by memory</td></tr><tr><td>Trade-off</td><td>Say what you pay for the guarantee</td></tr></tbody></table></div></div><div class="code-blocks"><div><div class="code-title">❌ Wrong: implicit or leaky design</div><pre>// Every message uses a random key, but the business assumes
+// all events for one order will be processed in strict order.</pre></div><div><div class="code-title">✅ Right: explicit design</div><pre>// Use a stable key like orderId so events for the same order
+// land on the same partition and preserve per-key order.</pre></div></div></article><article class="card warning"><div class="card-label">Warning</div><h3>The biggest trap</h3><p>The hardest bugs here come from systems that “mostly work” until traffic, retries, concurrency, or environment differences expose the hidden assumption.</p><p>A good fix usually makes the intent more explicit instead of adding one more annotation and hoping the framework figures it out.</p><div class="code-blocks"><div><div class="code-title">Broken pattern</div><pre>// Every message uses a random key, but the business assumes
+// all events for one order will be processed in strict order.</pre></div><div><div class="code-title">Safer pattern</div><pre>// Use a stable key like orderId so events for the same order
+// land on the same partition and preserve per-key order.</pre></div></div></article><article class="card technical"><div class="card-label">Edge cases</div><h3>Edge Cases &amp; Tradeoffs</h3><ul class="takeaways"><li>Defaults can differ across libraries or underlying infrastructure.</li><li>A passing unit test does not prove the boundary is correct in production.</li><li>Observability is often what reveals misuse first.</li><li>Keep side effects and lifetime of state in view when designing the boundary.</li><li>Explain what would happen under failure, not just success.</li></ul></article><article class="card technical"><div class="card-label">Checklist</div><h3>Production Checklist</h3><ul class="takeaways"><li>Name the real invariant or guarantee you care about</li><li>Choose the narrowest boundary that enforces it</li><li>Know the default behavior and the override you would use</li><li>Keep the design easy to test and easy to observe</li><li>Call out one concrete gotcha in interviews</li></ul></article><article class="card technical"><div class="card-label">Interview</div><h3>Interview Hooks</h3><ul class="takeaways"><li>What is the default behavior?</li><li>What is the most common production mistake?</li><li>What trade-off are you accepting for the guarantee?</li></ul></article><article class="card technical"><div class="card-label">Advanced Example</div><h3>Advanced example</h3><div class="code-blocks"><div><div class="code-title">Advanced example</div><pre>@KafkaListener(topics = "orders")
+public void onOrderEvent(OrderEvent event) {
+    try {
+        handler.handle(event);
+    } catch (RetryableBusinessException ex) {
+        throw ex; // send to retry topic
+    } catch (Exception ex) {
+        deadLetterPublisher.publish(event, ex.getMessage());
+    }
+}</pre></div></div></article><article class="card quiz-card"><div class="card-label">Quiz</div><h3>What is a strong reason to use a stable partition key such as orderId?</h3><div class="quiz-options" data-answer="0"><button class="quiz-option">A. It can preserve ordering for related events within the same key scope</button><button class="quiz-option">B. It removes the need for idempotency</button><button class="quiz-option">C. It guarantees global ordering across the topic</button><button class="quiz-option">D. It prevents all consumer lag</button></div><div class="quiz-result"><strong>Correct answer: A</strong><span>A is correct because it reflects the mature design choice for this kind of boundary. The distractors all represent common mistakes: pushing responsibility to the wrong layer, assuming defaults are stronger than they are, or using a framework feature as a substitute for clear design. In an interview, explain not only which answer is right, but what failure mode the wrong answers would create.</span></div></article></div></div></section><section class="section" data-section="5">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Completion screen · Review mode</div>
+<h2>🎉 Messaging (Kafka/RabbitMQ) Cheat Sheet</h2>
+<p>Use this cheat sheet to recall the core mental model for messaging (kafka/rabbitmq) and the most common traps.</p>
+</div>
+<div class="completion-grid">
+<div class="card technical">
+<div class="card-label">Cheat sheet</div>
+<div class="celebrate">🚀</div>
+<h3>1-line interview answers</h3>
+<div class="cheat-list"><div class="cheat-item"><h4>Queue vs pub/sub</h4><p>Choose work distribution vs event broadcast intentionally.</p></div><div class="cheat-item"><h4>Async mindset</h4><p>Producer acceptance is not the same as downstream completion.</p></div><div class="cheat-item"><h4>Reliability</h4><p>Design consumers for duplicates and retries.</p></div><div class="cheat-item"><h4>Patterns</h4><p>Outbox, retry topics, and DLQs are architectural tools, not extras.</p></div></div>
+</div>
+<div class="card analogy">
+<div class="card-label">What to remember</div>
+<h3>Fast mental model</h3>
+<ul class="takeaways"><li><strong>Queue vs pub/sub:</strong> Choose work distribution vs event broadcast intentionally.</li><li><strong>Async mindset:</strong> Producer acceptance is not the same as downstream completion.</li><li><strong>Reliability:</strong> Design consumers for duplicates and retries.</li><li><strong>Patterns:</strong> Outbox, retry topics, and DLQs are architectural tools, not extras.</li></ul>
+<h3 style="margin-top:22px;">Common traps</h3>
+<div class="badge-row"><span class="pill bad">Assumed exactly-once</span><span class="pill bad">No idempotency</span><span class="pill bad">No retry/DLQ plan</span></div>
+</div>
+</div>
+</div>
+</section><footer class="footer-nav">
+<div class="footer-nav-inner">
+<button class="btn" id="prevBtn">← Back</button>
+<button class="btn primary" id="nextBtn">Next →</button>
+</div>
+</footer>
+</div>
+<script>
 const sections = Array.from(document.querySelectorAll('.section'));
     const dots = Array.from(document.querySelectorAll('.nav-dot'));
     const prevBtn = document.getElementById('prevBtn');

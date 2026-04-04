@@ -1,13 +1,14 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Spring Security & JWT Learning Module</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Spring Security &amp; JWT Learning Module</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&amp;family=Syne:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<style>
 :root {
       --bg: #0a0e1a;
       --surface-1: #111827;
@@ -717,609 +718,169 @@
   </style>
 </head>
 <body>
-  <div class="app">
-    <header class="topbar">
-      <div class="topbar-inner">
-        <div class="topbar-row">
-          <div class="brand">
-            <h1>Spring Security & JWT</h1>
-            <small>Interactive 35-minute learning module</small>
-          </div>
-                <div class="topbar-row">
-          <div class="breadcrumb">
-            <a href="../index.html">Home</a>
-            <span>›</span>
-            <a href="index.html">Spring Boot</a>
-            <span>›</span>
-            <span>Spring Security & JWT</span>
-          </div>
-        </div>
-          <div class="timer-wrap" aria-live="polite">
-            <span class="timer-label">Time Left</span>
-            <span class="timer" id="timer">35:00</span>
-          </div>
-        </div>
-        <div class="topbar-row">
-                    <nav class="nav-dots" aria-label="Section navigation"><button class="nav-dot active" data-index="0" aria-label="Go to section 1">1</button><button class="nav-dot" data-index="1" aria-label="Go to section 2">2</button><button class="nav-dot" data-index="2" aria-label="Go to section 3">3</button><button class="nav-dot" data-index="3" aria-label="Go to section 4">4</button><button class="nav-dot" data-index="4" aria-label="Go to section 5">5</button><button class="nav-dot" data-index="5" aria-label="Go to completion screen">6</button></nav>
-        </div>
-        <div class="progress-shell" aria-hidden="true">
-          <div class="progress-bar" id="progressBar"></div>
-        </div>
-      </div>
-    </header>
+<div class="app">
+<header class="topbar">
+<div class="topbar-inner">
+<div class="topbar-row">
+<div class="brand">
+<h1>Spring Security &amp; JWT</h1>
+<small>Interactive 35-minute learning module</small>
+</div>
+<div class="topbar-row">
+<div class="breadcrumb">
+<a href="../index.html">Home</a>
+<span>›</span>
+<a href="index.html">Spring Boot</a>
+<span>›</span>
+<span>Spring Security &amp; JWT</span>
+</div>
+</div>
+<div aria-live="polite" class="timer-wrap">
+<span class="timer-label">Time Left</span>
+<span class="timer" id="timer">35:00</span>
+</div>
+</div>
+<div class="topbar-row">
+<nav aria-label="Section navigation" class="nav-dots"><button aria-label="Go to section 1" class="nav-dot active" data-index="0">1</button><button aria-label="Go to section 2" class="nav-dot" data-index="1">2</button><button aria-label="Go to section 3" class="nav-dot" data-index="2">3</button><button aria-label="Go to section 4" class="nav-dot" data-index="3">4</button><button aria-label="Go to section 5" class="nav-dot" data-index="4">5</button><button aria-label="Go to completion screen" class="nav-dot" data-index="5">6</button></nav>
+</div>
+<div aria-hidden="true" class="progress-shell">
+<div class="progress-bar" id="progressBar"></div>
+</div>
+</div>
+</header>
+<main>
 
-    <main>
-      
-      <section class="section active" data-section="0">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 1 of 5 · ~7 mins</div>
-            <h2>Authn, Authz & Filter Chain</h2>
-            <p>Spring Security runs requests through a filter chain to authenticate and authorize.</p>
-          </div>
 
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Club entry rules</h3>
-              <p>You show your ID at the door, then the bouncer checks if you can enter the VIP area.</p>
-            </article>
 
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Airport security</h3>
-              <p>You pass identity checks first, then your boarding permissions decide where you go.</p>
-            </article>
 
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Authentication proves who you are; authorization decides what you can access.</p>
-                  <p class="deep-note">Spring Security runs a filter chain per request that builds the SecurityContext and applies access rules. Authentication verifies identity; authorization decides access.</p>
-                  <p class="deep-note">Separating those two concerns keeps code clear. A common beginner mistake is mixing them and losing track of where access decisions happen.</p>
-                  <p class="deep-note">Filters are ordered, so mistakes in ordering can break authentication or allow requests through unexpectedly.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul>
-                        <li>Clear security boundaries</li><li>Defense in depth</li><li>Consistent access control</li>
-                      </ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common smell</h4>
-                      <ul>
-                        <li>Mixing authn and authz</li><li>Skipping filters for some routes</li><li>Hard-coded roles</li>
-                      </ul>
-                    </div>
-                  </div>
-                  <div class="badge-row">
-                    <span class="pill good">Filter chain</span><span class="pill info">Role-based access</span><span class="pill bad">Skip auth</span>
-                  </div>
-                  <div class="flow"><span class="flow-step">Request</span><span class="flow-arrow">→</span><span class="flow-step">Authenticate</span><span class="flow-arrow">→</span><span class="flow-step">Authorize</span><span class="flow-arrow">→</span><span class="flow-step">Handle response</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“Spring Security authenticates first, then authorizes through the filter chain based on roles and rules.”</p>
-                  <table>
-                    <thead><tr><th>Step</th><th>Purpose</th></tr></thead>
-                    <tbody><tr><td>Authentication</td><td><span class="pill good">Identity</span></td></tr><tr><td>Authorization</td><td><span class="pill info">Permissions</span></td></tr><tr><td>CSRF</td><td><span class="pill caution">Stateful forms</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              
-    <div class="code-blocks">
-      
-    <div>
-      <div class="code-title">Filter chain snippet</div>
-      <pre>http.authorizeHttpRequests(auth -&gt; auth
-  .requestMatchers("example").hasRole("example")
-  .anyRequest().authenticated());</pre>
-    </div>
-    </div>
-              <p>The filter chain enforces authentication and authorization consistently.</p>
-                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
-            </article>
 
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Avoid public endpoints by accident</h3>
-              <p>Be explicit about which paths are public; default to secure.</p>
-            </article>
 
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>Authn before authz.</li><li>Filter chain is the pipeline.</li><li>Least privilege.</li>
-              </ul>
-            </article>
-
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>What does authorization decide?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. Who you are</button><button class="quiz-option">B. What you can access</button><button class="quiz-option">C. How tokens are signed</button><button class="quiz-option">D. How passwords are stored</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>Authorization decides what resources you can access.</span>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-      <section class="section " data-section="1">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 2 of 5 · ~7 mins</div>
-            <h2>JWT Structure & Validation</h2>
-            <p>JWTs are signed tokens that carry claims; validation must happen on every request.</p>
-          </div>
-
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Signed permission slip</h3>
-              <p>A signed note says you’re allowed to do something, and the signature proves it’s real.</p>
-            </article>
-
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Stamped passport</h3>
-              <p>Border officers verify the stamp to ensure it’s authentic.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> JWTs have header, payload, signature; servers verify signature and expiry.</p>
-                  <p class="deep-note">A JWT is made of header, payload, and signature. The signature proves the token came from a trusted issuer.</p>
-                  <p class="deep-note">Validation must check signature, expiration, issuer, and audience. Simply decoding the payload without verification is insecure.</p>
-                  <p class="deep-note">If key rotation is supported, make sure you validate against JWKS and cache keys carefully.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul>
-                        <li>Stateless authentication</li><li>Portable claims</li><li>Scalable APIs</li>
-                      </ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common smell</h4>
-                      <ul>
-                        <li>Skipping signature checks</li><li>Long-lived access tokens</li><li>No clock skew handling</li>
-                      </ul>
-                    </div>
-                  </div>
-                  <div class="badge-row">
-                    <span class="pill good">Verify signature</span><span class="pill info">Short-lived tokens</span><span class="pill bad">Trust payload blindly</span>
-                  </div>
-                  <div class="flow"><span class="flow-step">Receive token</span><span class="flow-arrow">→</span><span class="flow-step">Verify signature</span><span class="flow-arrow">→</span><span class="flow-step">Check exp</span><span class="flow-arrow">→</span><span class="flow-step">Build auth</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“I verify JWT signature and expiry on every request; I never trust payload without validation.”</p>
-                  <table>
-                    <thead><tr><th>Part</th><th>Purpose</th></tr></thead>
-                    <tbody><tr><td>Header</td><td><span class="pill info">Alg + type</span></td></tr><tr><td>Payload</td><td><span class="pill good">Claims</span></td></tr><tr><td>Signature</td><td><span class="pill good">Integrity</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              
-    <div class="code-blocks">
-      
-    <div>
-      <div class="code-title">JWT validation (conceptual)</div>
-      <pre><span class="token-comment">if (!jwt.verifySignature(key)) throw new SecurityException();
-if (jwt.isExpired()) throw new SecurityException();</span></pre>
-    </div>
-    </div>
-              <p>Validation happens on every request; no server session required.</p>
-                  <p class="deep-note">Security is a filter-chain problem: authentication establishes identity, authorization decides access. In interviews, call out where tokens are validated and how you map claims to authorities.</p>
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Never trust unsigned tokens</h3>
-              <p>A token without a verified signature is not trustworthy.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>Validate signature & expiry.</li><li>JWTs are stateless.</li><li>Claims are only trusted after verification.</li>
-              </ul>
-            </article>
-
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>What must be checked on every request?</h3>
-              <div class="quiz-options" data-answer="0">
-                <button class="quiz-option">A. Signature and expiry</button><button class="quiz-option">B. Only payload</button><button class="quiz-option">C. Only issuer name</button><button class="quiz-option">D. Only token length</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: A</strong>
-                <span>Signature and expiry must be validated for every request.</span>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-      <section class="section " data-section="2">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 3 of 5 · ~7 mins</div>
-            <h2>Access vs Refresh Tokens</h2>
-            <p>Access tokens should be short-lived; refresh tokens extend sessions safely.</p>
-          </div>
-
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Short pass + long ticket</h3>
-              <p>You use a short pass for entry and a longer ticket to get a new pass.</p>
-            </article>
-
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Concert wristband</h3>
-              <p>Your wristband gets you in, but you can replace it at the booth with your ticket.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Access tokens expire quickly; refresh tokens issue new access tokens.</p>
-                  <p class="deep-note">Access tokens are short-lived and used on API requests, while refresh tokens are long-lived and used only to obtain new access tokens.</p>
-                  <p class="deep-note">Rotate refresh tokens and revoke them on suspicious activity to reduce replay risk.</p>
-                  <p class="deep-note">A safe beginner pattern is short access tokens plus refresh token rotation with server-side revocation checks.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul>
-                        <li>Limit damage if stolen</li><li>Allow session continuity</li><li>Support rotation</li>
-                      </ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common smell</h4>
-                      <ul>
-                        <li>Long-lived access tokens</li><li>No rotation</li><li>Storing refresh in localStorage</li>
-                      </ul>
-                    </div>
-                  </div>
-                  <div class="badge-row">
-                    <span class="pill good">Short access</span><span class="pill info">Refresh rotation</span><span class="pill bad">Long-lived access</span>
-                  </div>
-                  <div class="flow"><span class="flow-step">Login</span><span class="flow-arrow">→</span><span class="flow-step">Access token</span><span class="flow-arrow">→</span><span class="flow-step">Expires</span><span class="flow-arrow">→</span><span class="flow-step">Refresh → new access</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“I keep access tokens short-lived and use refresh tokens with rotation to reduce risk.”</p>
-                  <table>
-                    <thead><tr><th>Token</th><th>Lifetime</th></tr></thead>
-                    <tbody><tr><td>Access</td><td><span class="pill good">Minutes</span></td></tr><tr><td>Refresh</td><td><span class="pill info">Days/Weeks</span></td></tr><tr><td>Session</td><td><span class="pill caution">Depends</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              
-    <div class="code-blocks">
-      
-    <div>
-      <div class="code-title">Refresh flow (conceptual)</div>
-      <pre><span class="token-comment">POST /auth/refresh -&gt; new access token
-Invalidate old refresh token</span></pre>
-    </div>
-    </div>
-              <p>Rotate refresh tokens to reduce replay risk.</p>
-                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Don’t store refresh tokens in JS-accessible storage</h3>
-              <p>Prefer HttpOnly cookies to reduce XSS risk.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>Access short-lived.</li><li>Refresh rotates.</li><li>Storage matters.</li>
-              </ul>
-            </article>
-
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>Why keep access tokens short-lived?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. Faster login</button><button class="quiz-option">B. Reduce damage if stolen</button><button class="quiz-option">C. Easier to debug</button><button class="quiz-option">D. Required by Spring</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>Short-lived tokens limit exposure if compromised.</span>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-      <section class="section " data-section="3">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 4 of 5 · ~7 mins</div>
-            <h2>Token Storage & CSRF</h2>
-            <p>Storage decisions affect XSS/CSRF risks and overall security.</p>
-          </div>
-
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Where you keep your key</h3>
-              <p>If you leave a key on the table, anyone can grab it. If you lock it, it’s safer.</p>
-            </article>
-
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Mailbox vs pocket</h3>
-              <p>A mailbox is protected; a note left outside isn’t.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Authorization headers avoid CSRF, while cookies require CSRF protection.</p>
-                  <p class="deep-note">Token storage matters. Cookies require CSRF defenses, while in-memory storage avoids CSRF but loses tokens on refresh.</p>
-                  <p class="deep-note">A safe beginner-friendly pattern is short-lived access tokens plus secure storage, combined with SameSite cookies when cookies are used.</p>
-                  <p class="deep-note">Never put sensitive data inside the JWT payload; it is only base64-encoded, not encrypted.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul>
-                        <li>Reduce XSS/CSRF risk</li><li>Prevent token theft</li><li>Comply with best practices</li>
-                      </ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common smell</h4>
-                      <ul>
-                        <li>Storing access token in localStorage</li><li>Disabling CSRF blindly</li><li>No secure cookie flags</li>
-                      </ul>
-                    </div>
-                  </div>
-                  <div class="badge-row">
-                    <span class="pill good">HttpOnly cookies</span><span class="pill info">Authorization header</span><span class="pill bad">localStorage tokens</span>
-                  </div>
-                  <div class="flow"><span class="flow-step">Token stored</span><span class="flow-arrow">→</span><span class="flow-step">Browser sends</span><span class="flow-arrow">→</span><span class="flow-step">Server validates</span><span class="flow-arrow">→</span><span class="flow-step">Allow/deny</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“If I use cookies, I keep CSRF enabled. If I use Authorization headers, CSRF is less relevant.”</p>
-                  <table>
-                    <thead><tr><th>Storage</th><th>Risk</th></tr></thead>
-                    <tbody><tr><td>HttpOnly cookie</td><td><span class="pill good">Lower XSS</span></td></tr><tr><td>localStorage</td><td><span class="pill bad">XSS risk</span></td></tr><tr><td>Authorization header</td><td><span class="pill info">No CSRF</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              
-    <div class="code-blocks">
-      
-    <div>
-      <div class="code-title">Cookie flags</div>
-      <pre><span class="token-comment">Set-Cookie: refresh=...; HttpOnly; Secure; SameSite=Strict</span></pre>
-    </div>
-    </div>
-              <p>Security is a system — token storage matters as much as validation.</p>
-                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Don’t disable CSRF blindly</h3>
-              <p>If you use cookies, CSRF protection is still important.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>Storage affects risk.</li><li>Cookies need CSRF.</li><li>Prefer secure flags.</li>
-              </ul>
-            </article>
-
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>Which storage option reduces XSS exposure?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. localStorage</button><button class="quiz-option">B. HttpOnly cookie</button><button class="quiz-option">C. URL param</button><button class="quiz-option">D. SessionStorage</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>HttpOnly cookies are not accessible to JavaScript and reduce XSS risk.</span>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-      
-      
-      <section class="section" data-section="4">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 5 of 5 · ~7 mins</div>
-            <h2>Deep Dive: Token Validation & Filter Chains</h2>
-            <p>JWT security relies on correct validation, key rotation, and filter ordering.</p>
-          </div>
-
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Check the stamp</h3>
-              <p>You only accept a ticket if the stamp is real and not expired.</p>
-            </article>
-
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Airport security</h3>
-              <p>Multiple checkpoints verify your identity and boarding pass.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> JWT validation must verify signature, issuer, audience, and expiry; filters enforce auth and authz.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul><li>Prevents token spoofing</li><li>Protects APIs</li><li>Enforces least privilege</li></ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common pitfall</h4>
-                      <ul><li>Skipping audience check</li><li>Accepting unsigned tokens</li><li>Overlapping filter chains</li></ul>
-                    </div>
-                  </div>
-                  <div class="badge-row"><span class="pill good">Signature</span><span class="pill info">Audience</span><span class="pill caution">Expiry</span></div>
-                  <div class="flow"><span class="flow-step">Request hits filter</span><span class="flow-arrow">→</span><span class="flow-step">Extract token</span><span class="flow-arrow">→</span><span class="flow-step">Validate claims</span><span class="flow-arrow">→</span><span class="flow-step">Authorize</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“I validate signature, issuer, and audience, then map claims to authorities in the filter chain.”</p>
-                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
-                  <table>
-                    <thead><tr><th>Check</th><th>Reason</th></tr></thead>
-                    <tbody><tr><td>Signature</td><td><span class="pill good">Integrity</span></td></tr><tr><td>Issuer</td><td><span class="pill info">Trust</span></td></tr><tr><td>Audience</td><td><span class="pill caution">Scope</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              <div class="code-blocks">
-    <div>
-      <div class="code-title">Custom JwtAuthenticationConverter</div>
-      <pre>JwtAuthenticationConverter conv = new JwtAuthenticationConverter();
-conv.setJwtGrantedAuthoritiesConverter(jwt -&gt;
-  AuthorityUtils.commaSeparatedStringToAuthorityList(
-    "ROLE_" + jwt.getClaimAsString("role"))
-);</pre>
-    </div>
-    </div>
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Do not trust token contents blindly</h3>
-              <p>Always validate signature and issuer before reading claims.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways"><li>Validate all JWT claims.</li><li>Know filter chain order.</li><li>Map claims to authorities safely.</li></ul>
-            </article>
-
-            
-          
-            <article class="card technical">
-              <div class="card-label">Edge cases</div>
-              <h3>Edge Cases & Tradeoffs</h3>
-              <ul class="takeaways"><li>Clock skew causes token rejection.</li><li>JWT is not encrypted; do not store secrets inside.</li><li>Key rotation must be supported (kid + JWKS).</li><li>Refresh tokens need secure storage.</li><li>CSRF still matters if tokens are in cookies.</li></ul>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Checklist</div>
-              <h3>Production Checklist</h3>
-              <ul class="takeaways"><li>Validate issuer, audience, and signature.</li><li>Use short-lived access tokens.</li><li>Rotate signing keys and cache JWKS.</li><li>Use httpOnly cookies or secure storage.</li><li>Log auth failures with correlation IDs.</li></ul>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Interview</div>
-              <h3>Interview Hooks</h3>
-              <p>Explain stateless auth, validation, and rotation clearly.</p>
-              <ul class="takeaways"><li>JWT is a format, OAuth is a protocol.</li><li>Access vs refresh token roles.</li><li>Verification vs decoding without validation.</li></ul>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Advanced Example</div>
-              <div class="code-blocks">
-        <div>
-          <div class="code-title">Resource server config snippet</div>
-          <pre>http
-  .oauth2ResourceServer(o -&gt; o
-    .jwt(j -&gt; j.jwkSetUri(jwksUri))
-  );</pre>
-        </div>
-      </div>
-      <p>Always validate tokens using trusted JWKS.</p>
-            </article><article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>Which validation prevents accepting a token meant for another API?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. Issuer check</button><button class="quiz-option">B. Audience check</button><button class="quiz-option">C. Expiry check</button><button class="quiz-option">D. Subject check</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>Audience validation ensures the token is intended for your API.</span>
-              </div>
-            </article></div>
-        </div>
-      </section>
-<section class="section" data-section="5">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Completion screen · Review mode</div>
-            <h2>🎉 Spring Security & JWT Cheat Sheet</h2>
-            <p>Use this to recall filter flow, JWT structure, and security pitfalls.</p>
-          </div>
-
-          <div class="completion-grid">
-            <div class="card technical">
-              <div class="card-label">Cheat sheet</div>
-              <div class="celebrate">🚀</div>
-              <h3>1-line interview answers</h3>
-              <div class="cheat-list">
-    <div class="cheat-item">
-      <h4>Filter chain</h4>
-      <p>SecurityFilterChain defines the pipeline of checks.</p>
-    </div>
-    <div class="cheat-item">
-      <h4>JWT</h4>
-      <p>Always verify signature + expiry.</p>
-    </div>
-    <div class="cheat-item">
-      <h4>Refresh</h4>
-      <p>Use short-lived access tokens with refresh rotation.</p>
-    </div>
-    <div class="cheat-item">
-      <h4>Storage</h4>
-      <p>Prefer HttpOnly cookies for refresh tokens.</p>
-    </div></div>
-            </div>
-
-            <div class="card analogy">
-              <div class="card-label">What to remember</div>
-              <h3>Fast mental model</h3>
-              <ul class="takeaways">
-                <li><strong>Authn vs Authz:</strong> identity then permissions.</li><li><strong>JWT:</strong> signed claims, stateless validation.</li><li><strong>Refresh tokens:</strong> short access, long refresh.</li><li><strong>Storage:</strong> avoid XSS risk.</li>
-              </ul>
-              <h3 style="margin-top:22px;">Common traps</h3>
-              <div class="badge-row">
-                <span class="pill bad">Storing tokens in localStorage</span><span class="pill bad">Skipping signature verification</span><span class="pill bad">No token rotation</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    </main>
-
-    <footer class="footer-nav">
-      <div class="footer-nav-inner">
-        <button class="btn" id="prevBtn">← Back</button>
-        <button class="btn primary" id="nextBtn">Next →</button>
-      </div>
-    </footer>
-  </div>
-
-  <script>
+</main>
+<section class="section" data-section="0">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Section 1 · Core concept</div>
+<h2>Authn, Authz &amp; Filter Chain</h2>
+<p>Authn, Authz &amp; Filter Chain is a high-value senior interview topic because it reveals whether you understand the underlying mechanism, the default behavior, and the trade-offs in production.</p>
+</div>
+<div class="card-grid">
+<article class="card eli5"><div class="card-label">🧒 ELI5</div><h3>A simple mental picture</h3><p>Imagine a busy workplace where one small rule determines whether the whole team moves smoothly or keeps stepping on each other. Spring Security processes requests through a filter chain that authenticates the caller, builds a security context, and then applies authorization rules. works like that kind of rule: it tells the system how to behave before small mistakes turn into bigger production problems.</p><p>It matters because security decisions must happen before business logic sees the request. Without that rule, engineers often discover the problem only after the app is under load, when the bug is expensive and confusing.</p><p>The useful mental shortcut is to ask: “What is the system trying to coordinate here, and what breaks when that coordination is missing?” That question usually reveals why this feature exists.</p></article><article class="card analogy"><div class="card-label">🔗 ANALOGY</div><h3>Why the rule exists</h3><p>Think of authn, authz &amp; filter chain as a piece of operating policy, not just a syntax feature. The policy exists to make decisions repeatable across the whole system instead of relying on every individual class to remember the rule.</p><p>If you ignore that policy, the most common smell is confusing “who are you?” with “what are you allowed to do?”. In real applications, that smell usually shows up as flaky behavior, hidden coupling, or painful debugging.</p></article><article class="card technical"><div class="card-label">Technical</div><div class="two-col"><div><h3>How it works under the hood</h3><p><strong>Definition:</strong> Spring Security processes requests through a filter chain that authenticates the caller, builds a security context, and then applies authorization rules.</p><p class="deep-note">Spring Security processes requests through a filter chain that authenticates the caller, builds a security context, and then applies authorization rules. Under the hood, Spring or the underlying infrastructure usually applies the behavior around your code rather than by changing your business logic directly.</p><p class="deep-note">The production question is not “can I enable it?” but “where is the right boundary and what problem am I actually solving?”</p><p class="deep-note">Good engineering here comes from matching the mechanism to the use case, then watching the trade-off instead of blindly turning the feature on everywhere.</p><div class="mini-grid"><div class="mini-panel"><h4>Why it matters in production</h4><ul><li>security decisions must happen before business logic sees the request</li><li>Makes spring security &amp; jwt behavior explicit</li><li>Gives you a clearer story in debugging and interviews</li></ul></div><div class="mini-panel"><h4>Common smell</h4><ul><li>confusing “who are you?” with “what are you allowed to do?”</li><li>Using the mechanism as a band-aid for design issues</li><li>Forgetting what the default behavior actually is</li></ul></div></div><div class="badge-row"><span class="pill good">Explicit intent</span><span class="pill info">Know the default</span><span class="pill caution">Trade-offs matter</span></div><div class="flow"><span class="flow-step">Call enters boundary</span><span class="flow-arrow">→</span><span class="flow-step">Framework applies rule</span><span class="flow-arrow">→</span><span class="flow-step">Your code runs</span><span class="flow-arrow">→</span><span class="flow-step">Outcome follows configured behavior</span></div></div><div><h3>💬 Model Interview Answer</h3><p>“Authn, Authz &amp; Filter Chain in Spring Security &amp; JWT is really about spring security processes requests through a filter chain that authenticates the caller, builds a security context, and then applies authorization rules. I explain it as a mechanism that enforces a policy around my code so the application behaves consistently. The important trade-off is confusing “who are you?” with “what are you allowed to do?”, so I use it deliberately and I make the boundary clear instead of relying on accidental defaults.”</p><table><thead><tr><th>Scenario</th><th>What to watch</th></tr></thead><tbody><tr><td>Authentication</td><td>Establish identity</td></tr><tr><td>Authorization</td><td>Enforce allowed actions</td></tr><tr><td>Filter chain</td><td>Where policy gets applied</td></tr></tbody></table></div></div><div class="code-blocks"><div><div class="code-title">❌ Wrong</div><pre>@GetMapping("/admin")
+public String admin(Authentication authentication) {
+    // controller manually checks role with ad hoc if/else logic
+    return "ok";
+}</pre></div><div><div class="code-title">✅ Right</div><pre>@Bean
+SecurityFilterChain security(HttpSecurity http) throws Exception {
+    http
+        .authorizeHttpRequests(auth -&gt; auth
+            .requestMatchers("/admin/**").hasRole("ADMIN")
+            .anyRequest().authenticated()
+        );
+    return http.build();
+}</pre></div></div><p>Use authn, authz &amp; filter chain where the rule belongs in architecture, not just where it happens to fix one failing test or one bug report.</p><p class="deep-note">The safest mental model is that Spring gives you a framework feature only when your call crosses the Spring-managed boundary and the surrounding infrastructure can participate.</p></article><article class="card warning"><div class="card-label">Warning</div><h3>Common misunderstanding</h3><p>The dangerous misunderstanding is treating authn, authz &amp; filter chain like a magic switch instead of a mechanism with boundaries and defaults. That is how teams end up with confusing “who are you?” with “what are you allowed to do?”.</p><p>A safer pattern is to make the intent explicit, keep the scope narrow, and choose the smallest mechanism that actually solves the problem.</p><div class="code-blocks"><div><div class="code-title">Broken pattern</div><pre>@GetMapping("/admin")
+public String admin(Authentication authentication) {
+    // controller manually checks role with ad hoc if/else logic
+    return "ok";
+}</pre></div><div><div class="code-title">Safer pattern</div><pre>@Bean
+SecurityFilterChain security(HttpSecurity http) throws Exception {
+    http
+        .authorizeHttpRequests(auth -&gt; auth
+            .requestMatchers("/admin/**").hasRole("ADMIN")
+            .anyRequest().authenticated()
+        );
+    return http.build();
+}</pre></div></div></article><article class="card technical"><div class="card-label">Mini takeaway</div><ul class="takeaways"><li>Authn, Authz &amp; Filter Chain exists to make a policy explicit</li><li>Defaults are useful, but interviews reward knowing the boundary and trade-off</li><li>If you see confusing “who are you?” with “what are you allowed to do?”, revisit the design before adding more framework annotations</li></ul></article><article class="card quiz-card"><div class="card-label">Quiz</div><h3>What is one big advantage of letting Spring Security handle authorization in the filter chain?</h3><div class="quiz-options" data-answer="0"><button class="quiz-option">A. It keeps security policy centralized and applied before controller logic</button><button class="quiz-option">B. It disables the need for testing</button><button class="quiz-option">C. It removes the need for TLS</button><button class="quiz-option">D. It stores passwords in JWTs</button></div><div class="quiz-result"><strong>Correct answer: A</strong><span>A is correct because it matches how authn, authz &amp; filter chain is intended to work in a production-grade Spring application. The wrong choices are plausible because they sound framework-ish, but they either ignore the real boundary, confuse this feature with another one, or assume a stronger guarantee than the mechanism actually provides. In an interview, tie your answer back to the concrete failure mode you are preventing.</span></div></article></div></div></section><section class="section" data-section="1">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Section 2 · Token structure</div>
+<h2>JWT Structure &amp; Validation</h2>
+<p>JWT Structure &amp; Validation is a high-value senior interview topic because it reveals whether you understand the underlying mechanism, the default behavior, and the trade-offs in production.</p>
+</div>
+<div class="card-grid">
+<article class="card eli5"><div class="card-label">🧒 ELI5</div><h3>A simple mental picture</h3><p>Imagine a busy workplace where one small rule determines whether the whole team moves smoothly or keeps stepping on each other. A JWT is a signed token containing claims, but safe validation requires checking signature, issuer, audience, expiry, and intended use—not just decoding base64. works like that kind of rule: it tells the system how to behave before small mistakes turn into bigger production problems.</p><p>It matters because a parseable token is not automatically a trustworthy token. Without that rule, engineers often discover the problem only after the app is under load, when the bug is expensive and confusing.</p><p>The useful mental shortcut is to ask: “What is the system trying to coordinate here, and what breaks when that coordination is missing?” That question usually reveals why this feature exists.</p></article><article class="card analogy"><div class="card-label">🔗 ANALOGY</div><h3>Why the rule exists</h3><p>Think of jwt structure &amp; validation as a piece of operating policy, not just a syntax feature. The policy exists to make decisions repeatable across the whole system instead of relying on every individual class to remember the rule.</p><p>If you ignore that policy, the most common smell is decoding jwt claims in code without proper validation. In real applications, that smell usually shows up as flaky behavior, hidden coupling, or painful debugging.</p></article><article class="card technical"><div class="card-label">Technical</div><div class="two-col"><div><h3>How it works under the hood</h3><p><strong>Definition:</strong> A JWT is a signed token containing claims, but safe validation requires checking signature, issuer, audience, expiry, and intended use—not just decoding base64.</p><p class="deep-note">A JWT is a signed token containing claims, but safe validation requires checking signature, issuer, audience, expiry, and intended use—not just decoding base64. Under the hood, Spring or the underlying infrastructure usually applies the behavior around your code rather than by changing your business logic directly.</p><p class="deep-note">The production question is not “can I enable it?” but “where is the right boundary and what problem am I actually solving?”</p><p class="deep-note">Good engineering here comes from matching the mechanism to the use case, then watching the trade-off instead of blindly turning the feature on everywhere.</p><div class="mini-grid"><div class="mini-panel"><h4>Why it matters in production</h4><ul><li>a parseable token is not automatically a trustworthy token</li><li>Makes spring security &amp; jwt behavior explicit</li><li>Gives you a clearer story in debugging and interviews</li></ul></div><div class="mini-panel"><h4>Common smell</h4><ul><li>decoding JWT claims in code without proper validation</li><li>Using the mechanism as a band-aid for design issues</li><li>Forgetting what the default behavior actually is</li></ul></div></div><div class="badge-row"><span class="pill good">Explicit intent</span><span class="pill info">Know the default</span><span class="pill caution">Trade-offs matter</span></div><div class="flow"><span class="flow-step">Call enters boundary</span><span class="flow-arrow">→</span><span class="flow-step">Framework applies rule</span><span class="flow-arrow">→</span><span class="flow-step">Your code runs</span><span class="flow-arrow">→</span><span class="flow-step">Outcome follows configured behavior</span></div></div><div><h3>💬 Model Interview Answer</h3><p>“JWT Structure &amp; Validation in Spring Security &amp; JWT is really about a jwt is a signed token containing claims, but safe validation requires checking signature, issuer, audience, expiry, and intended use—not just decoding base64. I explain it as a mechanism that enforces a policy around my code so the application behaves consistently. The important trade-off is decoding jwt claims in code without proper validation, so I use it deliberately and I make the boundary clear instead of relying on accidental defaults.”</p><table><thead><tr><th>Scenario</th><th>What to watch</th></tr></thead><tbody><tr><td>Decode</td><td>Read claims</td></tr><tr><td>Validate</td><td>Check trust + constraints</td></tr><tr><td>Audience/issuer</td><td>Confirm token belongs here</td></tr></tbody></table></div></div><div class="code-blocks"><div><div class="code-title">❌ Wrong</div><pre>String[] parts = token.split("\.");
+String payload = new String(Base64.getDecoder().decode(parts[1]));
+// trust payload directly</pre></div><div><div class="code-title">✅ Right</div><pre>@Bean
+JwtDecoder jwtDecoder() {
+    NimbusJwtDecoder decoder = NimbusJwtDecoder.withJwkSetUri(jwkSetUri).build();
+    decoder.setJwtValidator(JwtValidators.createDefaultWithIssuer("https://auth.example.com"));
+    return decoder;
+}</pre></div></div><p>Use jwt structure &amp; validation where the rule belongs in architecture, not just where it happens to fix one failing test or one bug report.</p><p class="deep-note">The safest mental model is that Spring gives you a framework feature only when your call crosses the Spring-managed boundary and the surrounding infrastructure can participate.</p></article><article class="card warning"><div class="card-label">Warning</div><h3>Common misunderstanding</h3><p>The dangerous misunderstanding is treating jwt structure &amp; validation like a magic switch instead of a mechanism with boundaries and defaults. That is how teams end up with decoding jwt claims in code without proper validation.</p><p>A safer pattern is to make the intent explicit, keep the scope narrow, and choose the smallest mechanism that actually solves the problem.</p><div class="code-blocks"><div><div class="code-title">Broken pattern</div><pre>String[] parts = token.split("\.");
+String payload = new String(Base64.getDecoder().decode(parts[1]));
+// trust payload directly</pre></div><div><div class="code-title">Safer pattern</div><pre>@Bean
+JwtDecoder jwtDecoder() {
+    NimbusJwtDecoder decoder = NimbusJwtDecoder.withJwkSetUri(jwkSetUri).build();
+    decoder.setJwtValidator(JwtValidators.createDefaultWithIssuer("https://auth.example.com"));
+    return decoder;
+}</pre></div></div></article><article class="card technical"><div class="card-label">Mini takeaway</div><ul class="takeaways"><li>JWT Structure &amp; Validation exists to make a policy explicit</li><li>Defaults are useful, but interviews reward knowing the boundary and trade-off</li><li>If you see decoding jwt claims in code without proper validation, revisit the design before adding more framework annotations</li></ul></article><article class="card quiz-card"><div class="card-label">Quiz</div><h3>Why is decoding a JWT not the same as validating it?</h3><div class="quiz-options" data-answer="1"><button class="quiz-option">A. Because base64 decoding proves signature trust</button><button class="quiz-option">B. Because validation must check trust and intended audience, not just readability</button><button class="quiz-option">C. Because JWTs are encrypted by default</button><button class="quiz-option">D. Because Spring never validates JWTs</button></div><div class="quiz-result"><strong>Correct answer: B</strong><span>B is correct because it matches how jwt structure &amp; validation is intended to work in a production-grade Spring application. The wrong choices are plausible because they sound framework-ish, but they either ignore the real boundary, confuse this feature with another one, or assume a stronger guarantee than the mechanism actually provides. In an interview, tie your answer back to the concrete failure mode you are preventing.</span></div></article></div></div></section><section class="section" data-section="2">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Section 3 · Session model</div>
+<h2>Access vs Refresh Tokens</h2>
+<p>Access vs Refresh Tokens is a high-value senior interview topic because it reveals whether you understand the underlying mechanism, the default behavior, and the trade-offs in production.</p>
+</div>
+<div class="card-grid">
+<article class="card eli5"><div class="card-label">🧒 ELI5</div><h3>A simple mental picture</h3><p>Imagine a busy workplace where one small rule determines whether the whole team moves smoothly or keeps stepping on each other. Access tokens are short-lived credentials for API access, while refresh tokens are longer-lived artifacts used to obtain new access tokens. works like that kind of rule: it tells the system how to behave before small mistakes turn into bigger production problems.</p><p>It matters because shorter-lived access reduces leakage risk while preserving user experience. Without that rule, engineers often discover the problem only after the app is under load, when the bug is expensive and confusing.</p><p>The useful mental shortcut is to ask: “What is the system trying to coordinate here, and what breaks when that coordination is missing?” That question usually reveals why this feature exists.</p></article><article class="card analogy"><div class="card-label">🔗 ANALOGY</div><h3>Why the rule exists</h3><p>Think of access vs refresh tokens as a piece of operating policy, not just a syntax feature. The policy exists to make decisions repeatable across the whole system instead of relying on every individual class to remember the rule.</p><p>If you ignore that policy, the most common smell is treating refresh tokens like ordinary api bearer tokens. In real applications, that smell usually shows up as flaky behavior, hidden coupling, or painful debugging.</p></article><article class="card technical"><div class="card-label">Technical</div><div class="two-col"><div><h3>How it works under the hood</h3><p><strong>Definition:</strong> Access tokens are short-lived credentials for API access, while refresh tokens are longer-lived artifacts used to obtain new access tokens.</p><p class="deep-note">Access tokens are short-lived credentials for API access, while refresh tokens are longer-lived artifacts used to obtain new access tokens. Under the hood, Spring or the underlying infrastructure usually applies the behavior around your code rather than by changing your business logic directly.</p><p class="deep-note">The production question is not “can I enable it?” but “where is the right boundary and what problem am I actually solving?”</p><p class="deep-note">Good engineering here comes from matching the mechanism to the use case, then watching the trade-off instead of blindly turning the feature on everywhere.</p><div class="mini-grid"><div class="mini-panel"><h4>Why it matters in production</h4><ul><li>shorter-lived access reduces leakage risk while preserving user experience</li><li>Makes spring security &amp; jwt behavior explicit</li><li>Gives you a clearer story in debugging and interviews</li></ul></div><div class="mini-panel"><h4>Common smell</h4><ul><li>treating refresh tokens like ordinary API bearer tokens</li><li>Using the mechanism as a band-aid for design issues</li><li>Forgetting what the default behavior actually is</li></ul></div></div><div class="badge-row"><span class="pill good">Explicit intent</span><span class="pill info">Know the default</span><span class="pill caution">Trade-offs matter</span></div><div class="flow"><span class="flow-step">Call enters boundary</span><span class="flow-arrow">→</span><span class="flow-step">Framework applies rule</span><span class="flow-arrow">→</span><span class="flow-step">Your code runs</span><span class="flow-arrow">→</span><span class="flow-step">Outcome follows configured behavior</span></div></div><div><h3>💬 Model Interview Answer</h3><p>“Access vs Refresh Tokens in Spring Security &amp; JWT is really about access tokens are short-lived credentials for api access, while refresh tokens are longer-lived artifacts used to obtain new access tokens. I explain it as a mechanism that enforces a policy around my code so the application behaves consistently. The important trade-off is treating refresh tokens like ordinary api bearer tokens, so I use it deliberately and I make the boundary clear instead of relying on accidental defaults.”</p><table><thead><tr><th>Scenario</th><th>What to watch</th></tr></thead><tbody><tr><td>Access token</td><td>Short-lived API credential</td></tr><tr><td>Refresh token</td><td>Used to obtain new access token</td></tr><tr><td>Boundary</td><td>Do not mix their roles</td></tr></tbody></table></div></div><div class="code-blocks"><div><div class="code-title">❌ Wrong</div><pre>// frontend sends refresh token to every downstream API call</pre></div><div><div class="code-title">✅ Right</div><pre>// client uses access token for APIs
+// refresh token stays in the refresh flow with the auth server</pre></div></div><p>Use access vs refresh tokens where the rule belongs in architecture, not just where it happens to fix one failing test or one bug report.</p><p class="deep-note">The safest mental model is that Spring gives you a framework feature only when your call crosses the Spring-managed boundary and the surrounding infrastructure can participate.</p></article><article class="card warning"><div class="card-label">Warning</div><h3>Common misunderstanding</h3><p>The dangerous misunderstanding is treating access vs refresh tokens like a magic switch instead of a mechanism with boundaries and defaults. That is how teams end up with treating refresh tokens like ordinary api bearer tokens.</p><p>A safer pattern is to make the intent explicit, keep the scope narrow, and choose the smallest mechanism that actually solves the problem.</p><div class="code-blocks"><div><div class="code-title">Broken pattern</div><pre>// frontend sends refresh token to every downstream API call</pre></div><div><div class="code-title">Safer pattern</div><pre>// client uses access token for APIs
+// refresh token stays in the refresh flow with the auth server</pre></div></div></article><article class="card technical"><div class="card-label">Mini takeaway</div><ul class="takeaways"><li>Access vs Refresh Tokens exists to make a policy explicit</li><li>Defaults are useful, but interviews reward knowing the boundary and trade-off</li><li>If you see treating refresh tokens like ordinary api bearer tokens, revisit the design before adding more framework annotations</li></ul></article><article class="card quiz-card"><div class="card-label">Quiz</div><h3>Why are access tokens usually shorter-lived than refresh tokens?</h3><div class="quiz-options" data-answer="0"><button class="quiz-option">A. To reduce blast radius if an access token leaks</button><button class="quiz-option">B. Because refresh tokens must be sent to every API request</button><button class="quiz-option">C. Because access tokens cannot carry claims</button><button class="quiz-option">D. Because short-lived tokens remove the need for validation</button></div><div class="quiz-result"><strong>Correct answer: A</strong><span>A is correct because it matches how access vs refresh tokens is intended to work in a production-grade Spring application. The wrong choices are plausible because they sound framework-ish, but they either ignore the real boundary, confuse this feature with another one, or assume a stronger guarantee than the mechanism actually provides. In an interview, tie your answer back to the concrete failure mode you are preventing.</span></div></article></div></div></section><section class="section" data-section="3">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Section 4 · Browser security</div>
+<h2>Token Storage &amp; CSRF</h2>
+<p>Token Storage &amp; CSRF is a high-value senior interview topic because it reveals whether you understand the underlying mechanism, the default behavior, and the trade-offs in production.</p>
+</div>
+<div class="card-grid">
+<article class="card eli5"><div class="card-label">🧒 ELI5</div><h3>A simple mental picture</h3><p>Imagine a busy workplace where one small rule determines whether the whole team moves smoothly or keeps stepping on each other. Where tokens are stored and how requests are sent changes the attack surface, especially around XSS and CSRF in browser-based clients. works like that kind of rule: it tells the system how to behave before small mistakes turn into bigger production problems.</p><p>It matters because auth design is not just backend validation; client storage choices matter too. Without that rule, engineers often discover the problem only after the app is under load, when the bug is expensive and confusing.</p><p>The useful mental shortcut is to ask: “What is the system trying to coordinate here, and what breaks when that coordination is missing?” That question usually reveals why this feature exists.</p></article><article class="card analogy"><div class="card-label">🔗 ANALOGY</div><h3>Why the rule exists</h3><p>Think of token storage &amp; csrf as a piece of operating policy, not just a syntax feature. The policy exists to make decisions repeatable across the whole system instead of relying on every individual class to remember the rule.</p><p>If you ignore that policy, the most common smell is pretending every frontend token-storage choice has the same security profile. In real applications, that smell usually shows up as flaky behavior, hidden coupling, or painful debugging.</p></article><article class="card technical"><div class="card-label">Technical</div><div class="two-col"><div><h3>How it works under the hood</h3><p><strong>Definition:</strong> Where tokens are stored and how requests are sent changes the attack surface, especially around XSS and CSRF in browser-based clients.</p><p class="deep-note">Where tokens are stored and how requests are sent changes the attack surface, especially around XSS and CSRF in browser-based clients. Under the hood, Spring or the underlying infrastructure usually applies the behavior around your code rather than by changing your business logic directly.</p><p class="deep-note">The production question is not “can I enable it?” but “where is the right boundary and what problem am I actually solving?”</p><p class="deep-note">Good engineering here comes from matching the mechanism to the use case, then watching the trade-off instead of blindly turning the feature on everywhere.</p><div class="mini-grid"><div class="mini-panel"><h4>Why it matters in production</h4><ul><li>auth design is not just backend validation; client storage choices matter too</li><li>Makes spring security &amp; jwt behavior explicit</li><li>Gives you a clearer story in debugging and interviews</li></ul></div><div class="mini-panel"><h4>Common smell</h4><ul><li>pretending every frontend token-storage choice has the same security profile</li><li>Using the mechanism as a band-aid for design issues</li><li>Forgetting what the default behavior actually is</li></ul></div></div><div class="badge-row"><span class="pill good">Explicit intent</span><span class="pill info">Know the default</span><span class="pill caution">Trade-offs matter</span></div><div class="flow"><span class="flow-step">Call enters boundary</span><span class="flow-arrow">→</span><span class="flow-step">Framework applies rule</span><span class="flow-arrow">→</span><span class="flow-step">Your code runs</span><span class="flow-arrow">→</span><span class="flow-step">Outcome follows configured behavior</span></div></div><div><h3>💬 Model Interview Answer</h3><p>“Token Storage &amp; CSRF in Spring Security &amp; JWT is really about where tokens are stored and how requests are sent changes the attack surface, especially around xss and csrf in browser-based clients. I explain it as a mechanism that enforces a policy around my code so the application behaves consistently. The important trade-off is pretending every frontend token-storage choice has the same security profile, so I use it deliberately and I make the boundary clear instead of relying on accidental defaults.”</p><table><thead><tr><th>Scenario</th><th>What to watch</th></tr></thead><tbody><tr><td>Bearer in JS-managed storage</td><td>Think hard about XSS</td></tr><tr><td>Cookie-based session/token</td><td>Think hard about CSRF and cookie settings</td></tr><tr><td>Threat model</td><td>Drives the right choice</td></tr></tbody></table></div></div><div class="code-blocks"><div><div class="code-title">❌ Wrong</div><pre>// store long-lived token in localStorage and never think about XSS risk</pre></div><div><div class="code-title">✅ Right</div><pre>// choose storage and request pattern deliberately based on client type,
+// threat model, and whether cookies or bearer headers are being used</pre></div></div><p>Use token storage &amp; csrf where the rule belongs in architecture, not just where it happens to fix one failing test or one bug report.</p><p class="deep-note">The safest mental model is that Spring gives you a framework feature only when your call crosses the Spring-managed boundary and the surrounding infrastructure can participate.</p></article><article class="card warning"><div class="card-label">Warning</div><h3>Common misunderstanding</h3><p>The dangerous misunderstanding is treating token storage &amp; csrf like a magic switch instead of a mechanism with boundaries and defaults. That is how teams end up with pretending every frontend token-storage choice has the same security profile.</p><p>A safer pattern is to make the intent explicit, keep the scope narrow, and choose the smallest mechanism that actually solves the problem.</p><div class="code-blocks"><div><div class="code-title">Broken pattern</div><pre>// store long-lived token in localStorage and never think about XSS risk</pre></div><div><div class="code-title">Safer pattern</div><pre>// choose storage and request pattern deliberately based on client type,
+// threat model, and whether cookies or bearer headers are being used</pre></div></div></article><article class="card technical"><div class="card-label">Mini takeaway</div><ul class="takeaways"><li>Token Storage &amp; CSRF exists to make a policy explicit</li><li>Defaults are useful, but interviews reward knowing the boundary and trade-off</li><li>If you see pretending every frontend token-storage choice has the same security profile, revisit the design before adding more framework annotations</li></ul></article><article class="card quiz-card"><div class="card-label">Quiz</div><h3>Why is token storage strategy a real security design choice?</h3><div class="quiz-options" data-answer="0"><button class="quiz-option">A. Because browser storage and cookie flows have different XSS/CSRF trade-offs</button><button class="quiz-option">B. Because storage location changes JWT signature math</button><button class="quiz-option">C. Because localStorage prevents all attacks</button><button class="quiz-option">D. Because cookies cannot be secured</button></div><div class="quiz-result"><strong>Correct answer: A</strong><span>A is correct because it matches how token storage &amp; csrf is intended to work in a production-grade Spring application. The wrong choices are plausible because they sound framework-ish, but they either ignore the real boundary, confuse this feature with another one, or assume a stronger guarantee than the mechanism actually provides. In an interview, tie your answer back to the concrete failure mode you are preventing.</span></div></article></div></div></section><section class="section" data-section="4">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Section 5 · Interview deep dive</div>
+<h2>Deep Dive: Token Validation &amp; Filter Chains</h2>
+<p>This deep dive connects the mechanics of spring security &amp; jwt with the production decisions senior engineers are expected to explain clearly.</p>
+</div>
+<div class="card-grid">
+<article class="card eli5"><div class="card-label">🧒 ELI5</div><h3>A bigger real-world picture</h3><p>In a larger system, the hard part is not knowing the vocabulary. The hard part is deciding which rule belongs where so the whole operation still makes sense when something unexpected happens.</p><p>That is why understanding where authentication is established, where authorization happens, and why trusting claims without full validation creates security holes. The mechanism has to support the story your system tells under stress, not just the happy path.</p><p>This is where interviewers are listening for judgment: not just what the feature does, but how you would keep the design honest when multiple moving parts are involved.</p></article><article class="card analogy"><div class="card-label">🔗 ANALOGY</div><h3>Why senior engineers care</h3><p>understanding where authentication is established, where authorization happens, and why trusting claims without full validation creates security holes usually sits at the intersection of framework behavior, business requirements, and operational trade-offs.</p><p>When teams get this wrong, the system may still compile and even pass local tests, but production behavior becomes surprising.</p></article><article class="card technical"><div class="card-label">Technical</div><div class="two-col"><div><h3>What to optimize for</h3><p><strong>Definition:</strong> understanding where authentication is established, where authorization happens, and why trusting claims without full validation creates security holes</p><p class="deep-note">Senior-level answers usually mention boundaries, defaults, observability, and trade-offs in the same breath.</p><p class="deep-note">The safest pattern is usually to keep the mechanism narrow, explicit, and easy to reason about.</p><p class="deep-note">If a framework feature starts compensating for unclear ownership, unclear state, or unclear flow, the real problem is probably design, not syntax.</p><div class="mini-grid"><div class="mini-panel"><h4>What senior engineers optimize for</h4><ul><li>Optimize for clarity of boundary</li><li>Prefer explicit over accidental behavior</li><li>Choose the smallest mechanism that solves the real problem</li></ul></div><div class="mini-panel"><h4>Trade-offs</h4><ul><li>Magic defaults can hide surprises</li><li>Cross-cutting features can mask weak design</li><li>More power usually means more room for misuse</li></ul></div></div><div class="badge-row"><span class="pill good">Clear boundary</span><span class="pill info">Explain the why</span><span class="pill bad">Framework cargo-culting</span></div><div class="flow"><span class="flow-step">Requirement appears</span><span class="flow-arrow">→</span><span class="flow-step">Choose boundary</span><span class="flow-arrow">→</span><span class="flow-step">Apply mechanism</span><span class="flow-arrow">→</span><span class="flow-step">Observe real outcome</span></div></div><div><h3>💬 Model Interview Answer</h3><p>“When I talk about spring security &amp; jwt at a senior level, I focus on the boundary, the default behavior, and the production trade-off. I want the design to make the intent obvious even to the next engineer reading the code. The smell I watch for is using framework features to hide a design problem instead of clarifying one.”</p><table><thead><tr><th>Decision point</th><th>Senior answer</th></tr></thead><tbody><tr><td>Boundary</td><td>State it explicitly</td></tr><tr><td>Default behavior</td><td>Know it by memory</td></tr><tr><td>Trade-off</td><td>Say what you pay for the guarantee</td></tr></tbody></table></div></div><div class="code-blocks"><div><div class="code-title">❌ Wrong: implicit or leaky design</div><pre>// Custom filter reads Authorization header, parses JWT payload,
+// and sets authentication without checking issuer or signature.</pre></div><div><div class="code-title">✅ Right: explicit design</div><pre>// Prefer Spring Security resource-server support so token parsing,
+// signature verification, and validator chain are handled correctly.</pre></div></div></article><article class="card warning"><div class="card-label">Warning</div><h3>The biggest trap</h3><p>The hardest bugs here come from systems that “mostly work” until traffic, retries, concurrency, or environment differences expose the hidden assumption.</p><p>A good fix usually makes the intent more explicit instead of adding one more annotation and hoping the framework figures it out.</p><div class="code-blocks"><div><div class="code-title">Broken pattern</div><pre>// Custom filter reads Authorization header, parses JWT payload,
+// and sets authentication without checking issuer or signature.</pre></div><div><div class="code-title">Safer pattern</div><pre>// Prefer Spring Security resource-server support so token parsing,
+// signature verification, and validator chain are handled correctly.</pre></div></div></article><article class="card technical"><div class="card-label">Edge cases</div><h3>Edge Cases &amp; Tradeoffs</h3><ul class="takeaways"><li>Defaults can differ across libraries or underlying infrastructure.</li><li>A passing unit test does not prove the boundary is correct in production.</li><li>Observability is often what reveals misuse first.</li><li>Keep side effects and lifetime of state in view when designing the boundary.</li><li>Explain what would happen under failure, not just success.</li></ul></article><article class="card technical"><div class="card-label">Checklist</div><h3>Production Checklist</h3><ul class="takeaways"><li>Name the real invariant or guarantee you care about</li><li>Choose the narrowest boundary that enforces it</li><li>Know the default behavior and the override you would use</li><li>Keep the design easy to test and easy to observe</li><li>Call out one concrete gotcha in interviews</li></ul></article><article class="card technical"><div class="card-label">Interview</div><h3>Interview Hooks</h3><ul class="takeaways"><li>What is the default behavior?</li><li>What is the most common production mistake?</li><li>What trade-off are you accepting for the guarantee?</li></ul></article><article class="card technical"><div class="card-label">Advanced Example</div><h3>Advanced example</h3><div class="code-blocks"><div><div class="code-title">Advanced example</div><pre>@Bean
+SecurityFilterChain security(HttpSecurity http) throws Exception {
+    http
+        .authorizeHttpRequests(auth -&gt; auth
+            .requestMatchers("/admin/**").hasAuthority("SCOPE_admin")
+            .anyRequest().authenticated())
+        .oauth2ResourceServer(oauth2 -&gt; oauth2.jwt());
+    return http.build();
+}</pre></div></div></article><article class="card quiz-card"><div class="card-label">Quiz</div><h3>What is the strongest reason to prefer built-in resource-server support over ad hoc JWT parsing?</h3><div class="quiz-options" data-answer="0"><button class="quiz-option">A. It centralizes authentication and validation in the security chain</button><button class="quiz-option">B. It makes tokens permanent</button><button class="quiz-option">C. It removes the need for issuer checks</button><button class="quiz-option">D. It bypasses authorization rules</button></div><div class="quiz-result"><strong>Correct answer: A</strong><span>A is correct because it reflects the mature design choice for this kind of boundary. The distractors all represent common mistakes: pushing responsibility to the wrong layer, assuming defaults are stronger than they are, or using a framework feature as a substitute for clear design. In an interview, explain not only which answer is right, but what failure mode the wrong answers would create.</span></div></article></div></div></section><section class="section" data-section="5">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Completion screen · Review mode</div>
+<h2>🎉 Spring Security &amp; JWT Cheat Sheet</h2>
+<p>Use this cheat sheet to recall the core mental model for spring security &amp; jwt and the most common traps.</p>
+</div>
+<div class="completion-grid">
+<div class="card technical">
+<div class="card-label">Cheat sheet</div>
+<div class="celebrate">🚀</div>
+<h3>1-line interview answers</h3>
+<div class="cheat-list"><div class="cheat-item"><h4>Filter chain</h4><p>Authentication and authorization happen before business logic.</p></div><div class="cheat-item"><h4>JWT validation</h4><p>Decode is not enough; validate trust and intent.</p></div><div class="cheat-item"><h4>Access vs refresh</h4><p>Do not confuse their roles.</p></div><div class="cheat-item"><h4>Client storage</h4><p>Security trade-offs depend on XSS/CSRF context.</p></div></div>
+</div>
+<div class="card analogy">
+<div class="card-label">What to remember</div>
+<h3>Fast mental model</h3>
+<ul class="takeaways"><li><strong>Filter chain:</strong> Authentication and authorization happen before business logic.</li><li><strong>JWT validation:</strong> Decode is not enough; validate trust and intent.</li><li><strong>Access vs refresh:</strong> Do not confuse their roles.</li><li><strong>Client storage:</strong> Security trade-offs depend on XSS/CSRF context.</li></ul>
+<h3 style="margin-top:22px;">Common traps</h3>
+<div class="badge-row"><span class="pill bad">Ad hoc JWT parsing</span><span class="pill bad">Audience not checked</span><span class="pill bad">Role checks buried in controllers</span></div>
+</div>
+</div>
+</div>
+</section><footer class="footer-nav">
+<div class="footer-nav-inner">
+<button class="btn" id="prevBtn">← Back</button>
+<button class="btn primary" id="nextBtn">Next →</button>
+</div>
+</footer>
+</div>
+<script>
 const sections = Array.from(document.querySelectorAll('.section'));
     const dots = Array.from(document.querySelectorAll('.nav-dot'));
     const prevBtn = document.getElementById('prevBtn');

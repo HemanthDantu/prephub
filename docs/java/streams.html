@@ -749,574 +749,315 @@
     </header>
 
     <main>
-      
       <section class="section active" data-section="0">
         <div class="section-inner">
           <div class="hero">
             <div class="section-label">Section 1 of 5 · ~7 mins</div>
             <h2>Pipeline & Laziness</h2>
-            <p>Streams build a pipeline that doesn’t execute until a terminal operation runs.</p>
+            <p>Streams are not loops with prettier syntax. They build a pipeline description first and only execute when a terminal operation asks for a result.</p>
           </div>
-
           <div class="card-grid">
             <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Building a sandwich</h3>
-              <p>You line up ingredients but don’t eat until the end. Until then, it’s just a plan.</p>
-            </article>
+      <div class="card-label">🧒 ELI5</div>
+      <h3>Planning a grocery trip before leaving home</h3>
+      <p>Imagine writing a shopping plan on paper: first skip junk food, then pick only fruits, then buy just the first five ripe ones. Nothing in the store changes while you write that plan. The actual walking, picking, and paying only happen when you finally leave home and go to checkout. Streams work the same way: most of the chain is only a plan until the final step forces real work.</p>
+    </article><article class="card analogy">
+      <div class="card-label">🔗 ANALOGY</div>
+      <h3>A restaurant ticket that fires only when the waiter places the order</h3>
+      <p>The kitchen does not start cooking when the waiter thinks about a dish. It starts when the ticket is actually sent. That delay matters because the kitchen can skip unnecessary work, combine steps efficiently, and stop early if the order changes. Streams exist for the same reason: describe work first, execute late, and let the runtime optimize how values flow through the pipeline.</p>
+    </article><article class="card technical">
+      <div class="card-label">Technical</div>
+      <h3>How stream laziness actually works</h3>
+      <div class="two-col"><div><p><strong>Definition:</strong> Intermediate stream operations such as <code>filter</code>, <code>map</code>, and <code>limit</code> are lazy; only a terminal operation such as <code>collect</code>, <code>count</code>, or <code>findFirst</code> triggers traversal.</p><p class="deep-note">Under the hood, a stream pipeline stores operations as stages. When a terminal operation runs, elements are pulled from the source one at a time through the chain, which means operations can be fused together instead of materializing intermediate collections.</p><p class="deep-note">That is why short-circuiting is powerful: if <code>findFirst()</code> gets its answer, the pipeline stops. It also explains why relying on side effects inside <code>map()</code> or <code>filter()</code> is fragile — execution timing is driven by the terminal operation, not by where the code appears.</p><div class="mini-grid"><div class="mini-panel"><h4>Why it matters in production</h4><p>Lazy pipelines reduce wasted work, keep code declarative, and combine nicely with short-circuiting for low-latency lookups.</p></div><div class="mini-panel"><h4>Mental model</h4><p>A stream is a data conveyor, not a container. Values move through when the final consumer asks for them.</p></div></div><table><thead><tr><th>Concept</th><th>What to remember</th></tr></thead><tbody><tr><td>Intermediate op</td><td>Builds the plan; no traversal yet.</td></tr><tr><td>Terminal op</td><td>Starts traversal and produces a result or side effect.</td></tr><tr><td>Short-circuit</td><td>May stop early, for example <code>findAny</code> or <code>limit</code>.</td></tr></tbody></table><div class="mini-panel" style="background: rgba(124,58,237,0.12); border-color: rgba(124,58,237,0.35); margin-top: 16px;">
+      <h4>💬 Model Interview Answer</h4>
+      <p>A Java Stream is a lazy pipeline over a data source. Intermediate operations just describe transformations, and the real traversal starts only when a terminal operation runs. That matters because it enables short-circuiting and avoids building temporary collections. The main gotcha is assuming side effects run immediately — they do not.</p>
+    </div></div><div><div class="diagram"><div class="diagram-title">Pipeline flow</div><div class="flow"><span class="flow-step">Source</span><span class="flow-arrow">→</span><span class="flow-step">filter</span><span class="flow-arrow">→</span><span class="flow-step">map</span><span class="flow-arrow">→</span><span class="flow-step">limit</span><span class="flow-arrow">→</span><span class="flow-step">collect</span></div></div></div></div><div class="code-blocks"><div>
+      <div class="code-title">❌ Wrong: expecting work before a terminal operation</div>
+      <pre>List&lt;String&gt; emails = users.stream()
+    .filter(user -&gt; {
+        System.out.println(&quot;Filtering &quot; + user.getId());
+        return user.isActive();
+    })
+    .map(User::getEmail);
 
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Assembly line that starts at the end</h3>
-              <p>The line only turns on when someone actually orders the finished product.</p>
-            </article>
+// Compilation fails here because stream() chain returns Stream&lt;String&gt;, not List&lt;String&gt;.
+// Even if we fixed the type, nothing would traverse until a terminal operation ran.</pre>
+    </div><div>
+      <div class="code-title">✅ Right: trigger the pipeline with a terminal operation</div>
+      <pre>List&lt;String&gt; emails = users.stream()
+    .filter(User::isActive)          // lazy intermediate step
+    .map(User::getEmail)             // lazy intermediate step
+    .limit(100)                      // short-circuits once 100 emails are found
+    .toList();                       // terminal operation starts traversal</pre>
+    </div></div>
+    </article><article class="card warning">
+      <div class="card-label">Warning</div>
+      <h3>The most common bug: side effects hidden in intermediate operations</h3>
+      <p>Placing logging, mutation, database writes, or metrics increments inside <code>map()</code> often creates confusing behavior because those operations run only when traversal happens, and they may not run for every element if the stream short-circuits. Keep transformations pure, and do effects at the boundary.</p><div class="code-blocks"><div>
+      <div class="code-title">Broken pattern</div>
+      <pre>List&lt;Order&gt; approved = new ArrayList&lt;&gt;();
+orders.stream()
+    .filter(order -&gt; order.total() &gt; 100)
+    .map(order -&gt; {
+        approved.add(order); // hidden side effect
+        return order;
+    })
+    .findFirst();            // only one order may be processed</pre>
+    </div><div>
+      <div class="code-title">Safer fix</div>
+      <pre>List&lt;Order&gt; approved = orders.stream()
+    .filter(order -&gt; order.total() &gt; 100)
+    .toList();
 
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Streams are lazy; intermediate operations are recorded and executed only at terminal ops.</p>
-                  <p class="deep-note">Streams build a pipeline of operations but do not execute until a terminal operation runs. This laziness allows optimizations like fusion and short-circuiting.</p>
-                  <p class="deep-note">Because execution is deferred, side effects can appear in unexpected order. Using peek() for debugging is fine, but relying on side effects in pipelines is risky.</p>
-                  <p class="deep-note">Think of streams as a recipe you describe, not an action you run immediately. The recipe only runs when you ask for a result.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul>
-                        <li>Enables short-circuiting</li><li>Avoids unnecessary work</li><li>Keeps pipelines readable</li>
-                      </ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common smell</h4>
-                      <ul>
-                        <li>Expecting side effects before terminal op</li><li>Using streams for effects only</li><li>Reusing a stream twice</li>
-                      </ul>
-                    </div>
-                  </div>
-                  <div class="badge-row">
-                    <span class="pill good">Lazy evaluation</span><span class="pill info">Short-circuit</span><span class="pill bad">Side-effect misuse</span>
-                  </div>
-                  <div class="flow"><span class="flow-step">Source</span><span class="flow-arrow">→</span><span class="flow-step">Intermediate ops</span><span class="flow-arrow">→</span><span class="flow-step">Terminal op</span><span class="flow-arrow">→</span><span class="flow-step">Result</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“Streams are lazy; the pipeline runs only when a terminal operation executes.”</p>
-                  <table>
-                    <thead><tr><th>Operation</th><th>Type</th></tr></thead>
-                    <tbody><tr><td>map/filter</td><td><span class="pill info">Intermediate</span></td></tr><tr><td>collect/reduce</td><td><span class="pill good">Terminal</span></td></tr><tr><td>peek</td><td><span class="pill caution">Debug only</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              
-    <div class="code-blocks">
-      
-    <div>
-      <div class="code-title">Lazy pipeline</div>
-      <pre><span class="token-comment">List&lt;String&gt; emails = users.stream()
-  .filter(u -&gt; u.isActive())
-  .map(User::getEmail)
-  .collect(Collectors.toList());</span></pre>
-    </div>
-    </div>
-              <p>Nothing executes until collect() runs.</p>
-                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Avoid side effects in map()</h3>
-              <p>Side effects make stream behavior unpredictable and hard to test.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>Streams are lazy.</li><li>Terminal ops trigger execution.</li><li>Prefer pure transformations.</li>
-              </ul>
-            </article>
-
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>Which is a terminal operation?</h3>
-              <div class="quiz-options" data-answer="2">
-                <button class="quiz-option">A. filter</button><button class="quiz-option">B. map</button><button class="quiz-option">C. collect</button><button class="quiz-option">D. peek</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: C</strong>
-                <span>collect is terminal and triggers execution.</span>
-              </div>
-            </article>
+approved.forEach(order -&gt; auditService.recordApprovalCandidate(order.id()));</pre>
+    </div></div>
+    </article><article class="card quiz-card">
+      <div class="card-label">Quiz</div>
+      <h3>Which statement is correct about stream laziness?</h3>
+      <div class="quiz-options" data-answer="1"><button class="quiz-option">A. map() executes immediately for every element.</button><button class="quiz-option">B. A stream pipeline traverses only when a terminal operation runs.</button><button class="quiz-option">C. peek() makes the whole stream eager.</button><button class="quiz-option">D. Streams always create intermediate lists between stages.</button></div>
+      <div class="quiz-result"><strong>Answer</strong><span>The correct answer is B. Intermediate operations only register stages, and traversal begins when a terminal operation like <code>collect</code> or <code>count</code> asks for a result. A is wrong because <code>map</code> is lazy. C is wrong because <code>peek</code> is still intermediate. D is wrong because stream fusion avoids intermediate lists in the normal case. In interviews, emphasize “pipeline description first, traversal later.”</span></div>
+    </article>
           </div>
         </div>
       </section>
-      <section class="section " data-section="1">
+      <section class="section" data-section="1">
         <div class="section-inner">
           <div class="hero">
             <div class="section-label">Section 2 of 5 · ~7 mins</div>
             <h2>Intermediate Operations</h2>
-            <p>Intermediate operations transform a stream without producing a final result.</p>
+            <p>Intermediate operations define how elements are filtered, transformed, sorted, or sliced before the terminal result is produced.</p>
           </div>
-
           <div class="card-grid">
             <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Sorting your cards</h3>
-              <p>You rearrange the cards, but you haven’t played the hand yet.</p>
-            </article>
+      <div class="card-label">🧒 ELI5</div>
+      <h3>Sorting letters before mailing them</h3>
+      <p>Suppose you have a pile of letters. First you throw away junk mail, then you sort the rest by city, then you keep only the first ten urgent ones. You are still preparing the pile; you have not mailed anything yet. Intermediate operations are those preparation steps.</p>
+    </article><article class="card analogy">
+      <div class="card-label">🔗 ANALOGY</div>
+      <h3>A water treatment line with several filters</h3>
+      <p>Water passes through multiple filters, each removing or changing something. The value of the system is that each filter does one small job, and the final output is clean because of the chain. Ignoring that separation leads to giant loops where filtering, mutation, grouping, and counting are all tangled together.</p>
+    </article><article class="card technical">
+      <div class="card-label">Technical</div>
+      <h3>Stateless vs stateful intermediate operations</h3>
+      <div class="two-col"><div><p><strong>Definition:</strong> Intermediate operations return another stream; some are stateless like <code>map</code> and <code>filter</code>, while others are stateful like <code>sorted</code> and <code>distinct</code>.</p><p class="deep-note">Stateless operations process each element independently, so they are cheap and pipeline-friendly. Stateful operations need to remember previously seen elements or the whole dataset, which can increase memory usage and delay output.</p><p class="deep-note">That distinction matters in performance-sensitive code. For example, <code>distinct()</code> usually tracks a set of seen values, and <code>sorted()</code> typically needs all data before producing the final order.</p><div class="mini-grid"><div class="mini-panel"><h4>Production impact</h4><p>Choose stateful operators carefully on large datasets. They are expressive, but they are not free.</p></div><div class="mini-panel"><h4>Good habit</h4><p>Keep each stage small and readable. If a chain becomes long, extract predicate and mapper methods with strong names.</p></div></div><table><thead><tr><th>Operation</th><th>Nature</th></tr></thead><tbody><tr><td><code>filter</code>, <code>map</code></td><td>Stateless; element-by-element.</td></tr><tr><td><code>distinct</code></td><td>Stateful; tracks seen elements.</td></tr><tr><td><code>sorted</code></td><td>Stateful; usually buffers whole stream.</td></tr><tr><td><code>limit</code></td><td>Short-circuiting; can stop early.</td></tr></tbody></table><div class="mini-panel" style="background: rgba(124,58,237,0.12); border-color: rgba(124,58,237,0.35); margin-top: 16px;">
+      <h4>💬 Model Interview Answer</h4>
+      <p>Intermediate operations are the pipeline-building steps in a Stream. I usually explain them in two buckets: stateless operations like filter and map, and stateful ones like sorted or distinct. That difference matters because stateful operations can buffer data and change performance characteristics. A good senior-level answer mentions both readability and cost.</p>
+    </div></div><div></div></div><div class="code-blocks"><div>
+      <div class="code-title">❌ Wrong: one giant, hard-to-read chain with hidden logic</div>
+      <pre>List&lt;String&gt; names = orders.stream()
+    .filter(order -&gt; order.status() == Status.PAID &amp;&amp; order.customer() != null &amp;&amp; order.customer().isActive())
+    .map(order -&gt; order.customer().name().trim().toUpperCase())
+    .filter(name -&gt; !name.isBlank() &amp;&amp; name.length() &gt; 2)
+    .distinct()
+    .sorted()
+    .toList();</pre>
+    </div><div>
+      <div class="code-title">✅ Right: extracted pieces keep intent readable</div>
+      <pre>Predicate&lt;Order&gt; isEligible = order -&gt; order.status() == Status.PAID
+    &amp;&amp; order.customer() != null
+    &amp;&amp; order.customer().isActive();
 
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Prepping ingredients</h3>
-              <p>You chop and season before you actually cook.</p>
-            </article>
+Function&lt;Order, String&gt; customerName = order -&gt; order.customer().name().trim().toUpperCase();
+Predicate&lt;String&gt; validName = name -&gt; !name.isBlank() &amp;&amp; name.length() &gt; 2;
 
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Intermediate ops return a new stream; they are lazy and composable.</p>
-                  <p class="deep-note">Intermediate operations are either stateless (map, filter) or stateful (sorted, distinct). Stateful operations may buffer data and can increase memory use.</p>
-                  <p class="deep-note">When chains become long or complex, extract helpers so the stream reads clearly. Readability is more important than squeezing everything into one line.</p>
-                  <p class="deep-note">If your stream starts to look like a paragraph, it is time to name intermediate steps so future readers can follow intent.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul>
-                        <li>Composable transformations</li><li>Readable pipeline</li><li>Can short-circuit</li>
-                      </ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common smell</h4>
-                      <ul>
-                        <li>Huge chains without readability</li><li>Stateful lambdas</li><li>Using distinct/sorted blindly</li>
-                      </ul>
-                    </div>
-                  </div>
-                  <div class="badge-row">
-                    <span class="pill good">Composable</span><span class="pill info">Lazy</span><span class="pill caution">Stateful ops</span>
-                  </div>
-                  <div class="flow"><span class="flow-step">Filter</span><span class="flow-arrow">→</span><span class="flow-step">Map</span><span class="flow-arrow">→</span><span class="flow-step">Distinct</span><span class="flow-arrow">→</span><span class="flow-step">Limit</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“Intermediate operations build the pipeline; they don’t execute until a terminal op.”</p>
-                  <table>
-                    <thead><tr><th>Op</th><th>Note</th></tr></thead>
-                    <tbody><tr><td>distinct</td><td><span class="pill caution">Stateful</span></td></tr><tr><td>sorted</td><td><span class="pill caution">Stateful</span></td></tr><tr><td>limit</td><td><span class="pill good">Short-circuit</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              
-    <div class="code-blocks">
-      
-    <div>
-      <div class="code-title">Intermediate chain</div>
-      <pre><span class="token-comment">users.stream()
-  .filter(u -&gt; u.isActive())
-  .map(User::getRole)
-  .distinct()
-  .limit(5);</span></pre>
-    </div>
-    </div>
-              <p>distinct and sorted can be expensive; use only when needed.</p>
-                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Beware stateful ops</h3>
-              <p>sorted/distinct may require buffering and increase memory use.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>Intermediate ops are lazy.</li><li>Stateful ops cost memory.</li><li>Limit helps short-circuit.</li>
-              </ul>
-            </article>
-
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>Which op is stateful and may require buffering?</h3>
-              <div class="quiz-options" data-answer="2">
-                <button class="quiz-option">A. map</button><button class="quiz-option">B. filter</button><button class="quiz-option">C. distinct</button><button class="quiz-option">D. peek</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: C</strong>
-                <span>distinct is stateful and may store seen elements.</span>
-              </div>
-            </article>
+List&lt;String&gt; names = orders.stream()
+    .filter(isEligible)
+    .map(customerName)
+    .filter(validName)
+    .distinct()
+    .sorted()
+    .toList();</pre>
+    </div></div>
+    </article><article class="card warning">
+      <div class="card-label">Warning</div>
+      <h3>Stateful operations can surprise you on large inputs</h3>
+      <p><code>distinct()</code> and <code>sorted()</code> are elegant, but they can hold large amounts of data in memory. If you only need the top N after sorting, consider whether the data can be pre-filtered earlier or delegated to the database before streaming in Java.</p>
+    </article><article class="card quiz-card">
+      <div class="card-label">Quiz</div>
+      <h3>Which intermediate operation is most likely to require buffering many elements?</h3>
+      <div class="quiz-options" data-answer="2"><button class="quiz-option">A. filter()</button><button class="quiz-option">B. map()</button><button class="quiz-option">C. sorted()</button><button class="quiz-option">D. peek()</button></div>
+      <div class="quiz-result"><strong>Answer</strong><span>C is correct because sorting normally needs to see the full set before it can guarantee order. A and B are stateless and can process items one by one. D is also intermediate and lazy; it does not by itself require full buffering. In interviews, mentioning “stateful vs stateless ops” is a strong signal that you understand Stream performance.</span></div>
+    </article>
           </div>
         </div>
       </section>
-      <section class="section " data-section="2">
+      <section class="section" data-section="2">
         <div class="section-inner">
           <div class="hero">
             <div class="section-label">Section 3 of 5 · ~7 mins</div>
             <h2>Collectors & Aggregation</h2>
-            <p>Collectors shape the final output — lists, maps, grouped data, or aggregates.</p>
+            <p>Collectors turn a lazy pipeline into useful structures such as lists, maps, grouped summaries, and aggregate metrics.</p>
           </div>
-
           <div class="card-grid">
             <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Sorting candy into bowls</h3>
-              <p>You put each candy in the right bowl, then count how many are in each.</p>
-            </article>
+      <div class="card-label">🧒 ELI5</div>
+      <h3>Putting school forms into labeled folders</h3>
+      <p>At the end of the day, a principal might sort forms by grade, then count how many came from each class, then build one report. The important part is that the final result is not just a pile of papers — it is organized output. Collectors do that organizing step for Stream results.</p>
+    </article><article class="card analogy">
+      <div class="card-label">🔗 ANALOGY</div>
+      <h3>A warehouse sorting station</h3>
+      <p>Boxes arrive from one belt and are placed into lanes based on destination, weight, or category. The sorting station decides the final shape of the output. Without a good collector, teams often fall back to manual loops, mutable maps, and repeated passes over the same data.</p>
+    </article><article class="card technical">
+      <div class="card-label">Technical</div>
+      <h3>Choosing the right collector</h3>
+      <div class="two-col"><div><p><strong>Definition:</strong> A collector defines how a stream’s elements are accumulated into a final result such as a list, map, grouping, or summary value.</p><p class="deep-note">Most business code uses collectors rather than <code>reduce()</code> because collectors are purpose-built for mutable accumulation. For example, <code>groupingBy</code> is clearer and safer than writing a manual loop with nested <code>Map.computeIfAbsent()</code> calls.</p><p class="deep-note">Be careful with <code>toMap()</code>: duplicate keys will throw unless you provide a merge function. That is a classic interview gotcha, and it also appears in production when data quality assumptions turn out to be wrong.</p><div class="mini-grid"><div class="mini-panel"><h4>Why it matters</h4><p>Collectors make aggregation declarative and reduce mutable shared state.</p></div><div class="mini-panel"><h4>When to pause</h4><p>If you are collecting millions of rows that could have been grouped in SQL, it may be better to aggregate before data reaches Java.</p></div></div><table><thead><tr><th>Collector</th><th>Best use</th></tr></thead><tbody><tr><td><code>toList()</code></td><td>Simple collection output.</td></tr><tr><td><code>groupingBy()</code></td><td>Bucket values by key.</td></tr><tr><td><code>mapping()</code></td><td>Transform values inside a downstream collector.</td></tr><tr><td><code>partitioningBy()</code></td><td>Split into true/false buckets.</td></tr><tr><td><code>toMap()</code></td><td>Build a map when keys are unique or mergeable.</td></tr></tbody></table><div class="mini-panel" style="background: rgba(124,58,237,0.12); border-color: rgba(124,58,237,0.35); margin-top: 16px;">
+      <h4>💬 Model Interview Answer</h4>
+      <p>Collectors are the final shaping mechanism for a Stream. In practice I use groupingBy, mapping, partitioningBy, and toMap depending on the output shape I need. The big trade-off is correctness around duplicate keys and memory usage on very large datasets. A solid answer mentions that toMap needs a merge strategy when collisions are possible.</p>
+    </div></div><div></div></div><div class="code-blocks"><div>
+      <div class="code-title">❌ Wrong: toMap without collision handling</div>
+      <pre>Map&lt;String, Order&gt; ordersByEmail = orders.stream()
+    .collect(Collectors.toMap(
+        order -&gt; order.customerEmail(),
+        order -&gt; order
+    ));
+// Throws IllegalStateException if two orders share the same email.</pre>
+    </div><div>
+      <div class="code-title">✅ Right: supply a merge function for duplicates</div>
+      <pre>Map&lt;String, Order&gt; newestOrderByEmail = orders.stream()
+    .collect(Collectors.toMap(
+        Order::customerEmail,
+        order -&gt; order,
+        (left, right) -&gt; left.createdAt().isAfter(right.createdAt()) ? left : right
+    ));
 
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Organizing a bookshelf</h3>
-              <p>Group books by genre, then list titles within each genre.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Collectors reduce stream elements into a final structure like lists, maps, or aggregated values.</p>
-                  <p class="deep-note">Collectors perform mutable reduction and are usually more expressive than reduce for aggregation tasks. They also enable advanced grouping and mapping patterns.</p>
-                  <p class="deep-note">Use groupingBy with downstream collectors to build rich summaries without side effects. It keeps your pipeline declarative and easier to test.</p>
-                  <p class="deep-note">A beginner-friendly rule: use collect when you want a container result (list, map, grouping), and use reduce only for simple value folding.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul>
-                        <li>Build grouped results</li><li>Summarize data</li><li>Return domain-friendly structures</li>
-                      </ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common smell</h4>
-                      <ul>
-                        <li>Manual loops for grouping</li><li>Multiple passes for aggregation</li><li>Mutable shared state</li>
-                      </ul>
-                    </div>
-                  </div>
-                  <div class="badge-row">
-                    <span class="pill good">groupingBy</span><span class="pill info">mapping</span><span class="pill caution">toMap collisions</span>
-                  </div>
-                  <div class="flow"><span class="flow-step">Stream elements</span><span class="flow-arrow">→</span><span class="flow-step">Group/Map</span><span class="flow-arrow">→</span><span class="flow-step">Aggregate</span><span class="flow-arrow">→</span><span class="flow-step">Return result</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“I use groupingBy/mapping to build aggregate structures without manual loops.”</p>
-                  <table>
-                    <thead><tr><th>Collector</th><th>Use</th></tr></thead>
-                    <tbody><tr><td>groupingBy</td><td><span class="pill good">Group elements</span></td></tr><tr><td>mapping</td><td><span class="pill info">Transform within groups</span></td></tr><tr><td>joining</td><td><span class="pill info">Concatenate</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              
-    <div class="code-blocks">
-      
-    <div>
-      <div class="code-title">Grouping example</div>
-      <pre><span class="token-comment">Map&lt;Role, List&lt;String&gt;&gt; byRole = users.stream()
-  .collect(Collectors.groupingBy(User::getRole,
-    Collectors.mapping(User::getEmail, Collectors.toList())));</span></pre>
-    </div>
-    </div>
-              <p>Collectors help you express intent without boilerplate loops.</p>
-                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Handle key collisions</h3>
-              <p>toMap requires a merge function if keys can repeat.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>Collectors build final structures.</li><li>groupingBy is powerful.</li><li>Watch for collisions.</li>
-              </ul>
-            </article>
-
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>Which collector groups elements by a key?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. mapping</button><button class="quiz-option">B. groupingBy</button><button class="quiz-option">C. joining</button><button class="quiz-option">D. reducing</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>groupingBy groups elements by a classifier key.</span>
-              </div>
-            </article>
+Map&lt;Status, List&lt;String&gt;&gt; emailsByStatus = orders.stream()
+    .collect(Collectors.groupingBy(
+        Order::status,
+        Collectors.mapping(Order::customerEmail, Collectors.toList())
+    ));</pre>
+    </div></div>
+    </article><article class="card warning">
+      <div class="card-label">Warning</div>
+      <h3>Do not use reduce() when collect() says your intent more clearly</h3>
+      <p><code>reduce()</code> is powerful, but many developers use it for map-building or list accumulation when a collector is safer and easier to read. In interviews, prefer collectors for structural aggregation and reserve reduce for true folding into one value.</p>
+    </article><article class="card quiz-card">
+      <div class="card-label">Quiz</div>
+      <h3>Why does <code>Collectors.toMap()</code> often need a merge function?</h3>
+      <div class="quiz-options" data-answer="1"><button class="quiz-option">A. Because Streams are parallel by default.</button><button class="quiz-option">B. Because keys may collide at runtime.</button><button class="quiz-option">C. Because values must always be immutable.</button><button class="quiz-option">D. Because map collectors cannot handle functions.</button></div>
+      <div class="quiz-result"><strong>Answer</strong><span>B is correct. <code>toMap()</code> throws an <code>IllegalStateException</code> if duplicate keys appear and no merge function is provided. A is false because streams are sequential unless you choose parallelStream or parallel. C and D are unrelated. The interview takeaway is simple: if there is any chance of key duplication, define merge behavior explicitly.</span></div>
+    </article>
           </div>
         </div>
       </section>
-      <section class="section " data-section="3">
+      <section class="section" data-section="3">
         <div class="section-inner">
           <div class="hero">
             <div class="section-label">Section 4 of 5 · ~7 mins</div>
             <h2>Parallel Streams & Pitfalls</h2>
-            <p>Parallel streams can help for large CPU workloads, but they are not a free speed-up.</p>
+            <p>Parallel streams can speed up certain CPU-bound workloads, but they are not a free performance boost and are often the wrong tool for I/O.</p>
           </div>
-
           <div class="card-grid">
             <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>More cooks only help if there is enough food</h3>
-              <p>If there’s only one sandwich, adding ten cooks won’t make it faster.</p>
-            </article>
-
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Traffic with too many cars</h3>
-              <p>Adding more cars to a small road slows everything down.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Parallel streams split work across threads; overhead and contention can erase gains.</p>
-                  <p class="deep-note">Parallel streams can improve CPU-heavy workloads on large datasets, but they can degrade performance for small inputs or IO-bound tasks.</p>
-                  <p class="deep-note">Avoid shared mutable state and non-thread-safe operations in parallel pipelines. If correctness depends on order, consider sequential streams or ordered collectors.</p>
-                  <p class="deep-note">Before using parallel, measure. It is easy to make code slower by parallelizing work that is not actually CPU-bound.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul>
-                        <li>Speed up CPU-heavy tasks</li><li>Use multicore hardware</li><li>Simple parallelization</li>
-                      </ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common smell</h4>
-                      <ul>
-                        <li>Parallel for small lists</li><li>I/O in parallel streams</li><li>Shared mutable state</li>
-                      </ul>
-                    </div>
-                  </div>
-                  <div class="badge-row">
-                    <span class="pill good">Large CPU tasks</span><span class="pill caution">Small collections</span><span class="pill bad">Shared state</span>
-                  </div>
-                  <div class="flow"><span class="flow-step">Split</span><span class="flow-arrow">→</span><span class="flow-step">Process in parallel</span><span class="flow-arrow">→</span><span class="flow-step">Combine</span><span class="flow-arrow">→</span><span class="flow-step">Return</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“I use parallel streams only for large CPU-heavy workloads and avoid I/O or shared state.”</p>
-                  <table>
-                    <thead><tr><th>Scenario</th><th>Recommendation</th></tr></thead>
-                    <tbody><tr><td>Large CPU list</td><td><span class="pill good">Parallel ok</span></td></tr><tr><td>Small list</td><td><span class="pill bad">Sequential</span></td></tr><tr><td>I/O bound</td><td><span class="pill bad">Avoid parallel</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              
-    <div class="code-blocks">
-      
-    <div>
-      <div class="code-title">Parallel usage</div>
-      <pre><span class="token-comment">long sum = values.parallelStream()
-  .mapToLong(v -&gt; v * v)
-  .sum();</span></pre>
-    </div>
-    </div>
-              <p>Measure before and after — parallel is not always faster.</p>
-                  <p class="deep-note">Streams are lazy until a terminal operation. Avoid side effects, and remember that parallel streams can hurt more than help without careful tuning.</p>
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Shared state breaks safety</h3>
-              <p>Parallel streams require stateless lambdas; shared state can corrupt results.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>Parallel only when it helps.</li><li>Avoid I/O in parallel streams.</li><li>Measure gains.</li>
-              </ul>
-            </article>
-
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>Which workload best fits parallel streams?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. Small list of 10 items</button><button class="quiz-option">B. Large CPU-heavy calculation</button><button class="quiz-option">C. HTTP calls</button><button class="quiz-option">D. Writing to a shared map</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>Parallel streams help most with large CPU-bound tasks.</span>
-              </div>
-            </article>
+      <div class="card-label">🧒 ELI5</div>
+      <h3>Adding more cooks to one tiny cutting board</h3>
+      <p>If you have a huge banquet to prepare, multiple cooks help. But if the kitchen is tiny or everyone must use the same cutting board, adding more people just creates collisions and confusion. Parallel streams are like that: they help only when the work is large enough and independent enough.</p>
+    </article><article class="card analogy">
+      <div class="card-label">🔗 ANALOGY</div>
+      <h3>A multi-lane toll plaza</h3>
+      <p>More lanes help when cars can flow independently. If every driver must stop at the same desk for paperwork, the extra lanes do not solve the bottleneck. Parallel streams exist for independent, CPU-heavy work — not for blocking network calls or shared mutable state.</p>
+    </article><article class="card technical">
+      <div class="card-label">Technical</div>
+      <h3>When parallel streams help — and when they hurt</h3>
+      <div class="two-col"><div><p><strong>Definition:</strong> A parallel stream partitions work across multiple threads, usually using the ForkJoin common pool, and combines results at the end.</p><p class="deep-note">That design is good for large, CPU-bound, stateless computations. It is usually bad for I/O-heavy work such as database calls, HTTP calls, or anything touching synchronized shared state, because the overhead and blocking can erase the gains or even make things worse.</p><p class="deep-note">Parallel streams also inherit the properties of your pipeline. If your collector or lambda mutates shared data, you can get race conditions or incorrect results. Use them only when the work is independent and measurable.</p><div class="mini-grid"><div class="mini-panel"><h4>Good candidates</h4><p>Large in-memory computations, pure transformations, numeric aggregations over big datasets.</p></div><div class="mini-panel"><h4>Bad candidates</h4><p>HTTP calls, DB queries, logging-heavy pipelines, or anything with shared mutable state.</p></div></div><table><thead><tr><th>Scenario</th><th>Recommendation</th></tr></thead><tbody><tr><td>Large CPU-heavy list transform</td><td>Measure; parallel may help.</td></tr><tr><td>Small collection</td><td>Usually stay sequential.</td></tr><tr><td>I/O-bound work</td><td>Prefer explicit async or dedicated executors.</td></tr></tbody></table><div class="mini-panel" style="background: rgba(124,58,237,0.12); border-color: rgba(124,58,237,0.35); margin-top: 16px;">
+      <h4>💬 Model Interview Answer</h4>
+      <p>I treat parallel streams as an optimization, not as a default. They are best for large, independent, CPU-bound work where each element can be processed safely without shared mutable state. I avoid them for I/O because the common pool can be blocked and throughput can actually drop. The gotcha is assuming “parallel” automatically means “faster.”</p>
+    </div></div><div></div></div><div class="code-blocks"><div>
+      <div class="code-title">❌ Wrong: shared mutable state inside a parallel stream</div>
+      <pre>List&lt;String&gt; emails = new ArrayList&lt;&gt;();
+users.parallelStream()
+    .filter(User::isActive)
+    .map(User::getEmail)
+    .forEach(emails::add); // race condition: ArrayList is not thread-safe</pre>
+    </div><div>
+      <div class="code-title">✅ Right: keep the pipeline functional and collect safely</div>
+      <pre>List&lt;String&gt; emails = users.parallelStream()
+    .filter(User::isActive)
+    .map(User::getEmail)
+    .toList();</pre>
+    </div></div>
+    </article><article class="card warning">
+      <div class="card-label">Warning</div>
+      <h3>The common pool is shared across the JVM</h3>
+      <p>Parallel streams typically run on the ForkJoin common pool. If other parts of the app also use it, blocking or overloading that pool can create surprising cross-feature contention. That is one reason senior engineers often prefer explicit executors for important workloads.</p>
+    </article><article class="card quiz-card">
+      <div class="card-label">Quiz</div>
+      <h3>Which workload is the best fit for a parallel stream?</h3>
+      <div class="quiz-options" data-answer="2"><button class="quiz-option">A. 20 HTTP calls to external services.</button><button class="quiz-option">B. Writing to a shared ArrayList from multiple threads.</button><button class="quiz-option">C. Computing a large numeric summary over millions of in-memory records.</button><button class="quiz-option">D. A tiny list of 12 items with logging in each stage.</button></div>
+      <div class="quiz-result"><strong>Answer</strong><span>C is the best answer because the work is large, CPU-bound, and can usually be partitioned safely. A is I/O-bound and better handled with explicit async patterns. B is unsafe because of shared mutation. D is too small and overhead will likely dominate. The interview memory hook is: “parallel helps most when work is large, pure, and CPU-heavy.”</span></div>
+    </article>
           </div>
         </div>
       </section>
-      
-      
       <section class="section" data-section="4">
         <div class="section-inner">
           <div class="hero">
             <div class="section-label">Section 5 of 5 · ~7 mins</div>
             <h2>Deep Dive: Performance & Collector Patterns</h2>
-            <p>Streams are expressive, but you must understand cost, boxing, and collector behavior for performance.</p>
+            <p>Senior interviews often move past syntax and ask when Streams improve clarity, when they hurt performance, and when you should drop back to a plain loop.</p>
           </div>
-
           <div class="card-grid">
             <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>One conveyor belt</h3>
-              <p>If items keep looping around the belt, you waste time. You want a single pass when possible.</p>
-            </article>
-
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Factory assembly line</h3>
-              <p>Each station does one job, but too many stations slow the line.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Stream pipelines are lazy; terminal ops trigger execution. Collectors determine storage and grouping cost.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul><li>Cleaner code</li><li>Optimized single-pass operations</li><li>Parallelization when safe</li></ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common pitfall</h4>
-                      <ul><li>Multiple passes over data</li><li>Boxing in hot loops</li><li>Parallel streams on small datasets</li></ul>
-                    </div>
-                  </div>
-                  <div class="badge-row"><span class="pill good">Lazy</span><span class="pill info">Collectors</span><span class="pill caution">Boxing</span></div>
-                  <div class="flow"><span class="flow-step">Build pipeline</span><span class="flow-arrow">→</span><span class="flow-step">Terminal op</span><span class="flow-arrow">→</span><span class="flow-step">Collector reduces</span><span class="flow-arrow">→</span><span class="flow-step">Result produced</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“I use streams for clarity but profile hot paths, avoid boxing, and choose collectors carefully.”</p>
-                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
-                  <table>
-                    <thead><tr><th>Collector</th><th>Use</th></tr></thead>
-                    <tbody><tr><td>toMap</td><td><span class="pill info">Key/value</span></td></tr><tr><td>groupingBy</td><td><span class="pill good">Buckets</span></td></tr><tr><td>joining</td><td><span class="pill caution">Strings</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              <div class="code-blocks">
-    <div>
-      <div class="code-title">Grouping with downstream collector</div>
-      <pre>Map&lt;String, Long&gt; counts = orders.stream()
-  .collect(Collectors.groupingBy(
-      Order::status,
-      Collectors.counting()
-  ));</pre>
-    </div>
-    </div>
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Parallel streams are not free</h3>
-              <p>Parallelism can hurt performance on small collections or when using non-thread-safe collectors.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways"><li>Prefer primitive streams for hot loops.</li><li>Use downstream collectors.</li><li>Profile before parallelizing.</li></ul>
-            </article>
-
-            
-          
-            <article class="card technical">
-              <div class="card-label">Edge cases</div>
-              <h3>Edge Cases & Tradeoffs</h3>
-              <ul class="takeaways"><li>Parallel streams can reorder results and hurt performance.</li><li>Stateful lambdas introduce race conditions.</li><li>Streams are single-use; reuse causes IllegalStateException.</li><li>Excessive boxing adds hidden GC overhead.</li><li>Short-circuiting changes evaluation order.</li></ul>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Checklist</div>
-              <h3>Production Checklist</h3>
-              <ul class="takeaways"><li>Prefer sequential unless profiling proves otherwise.</li><li>Avoid side effects; use collectors.</li><li>Use primitive streams for numeric work.</li><li>Keep pipelines readable and short.</li><li>Collect into immutable outputs when possible.</li></ul>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Interview</div>
-              <h3>Interview Hooks</h3>
-              <p>Demonstrate you understand correctness and performance tradeoffs.</p>
-              <ul class="takeaways"><li>map vs flatMap vs filter with examples.</li><li>reduce vs collect and identity pitfalls.</li><li>When parallel streams are a bad fit.</li></ul>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Advanced Example</div>
-              <div class="code-blocks">
-        <div>
-          <div class="code-title">Grouping with downstream collectors</div>
-          <pre>Map&lt;String, Long&gt; counts = orders.stream()
-  .collect(Collectors.groupingBy(
-    Order::region,
-    Collectors.counting()
-  ));</pre>
+      <div class="card-label">🧒 ELI5</div>
+      <h3>A moving walkway that is great until you need to pick up heavy boxes</h3>
+      <p>A moving walkway is perfect for smooth flow, but not every job belongs on it. If you must stop constantly, carry giant boxes, or make strange detours, walking normally may be better. Streams are the same: elegant for transformation pipelines, not ideal for every hot path.</p>
+    </article><article class="card analogy">
+      <div class="card-label">🔗 ANALOGY</div>
+      <h3>Using a spreadsheet versus raw handwritten notes</h3>
+      <p>A spreadsheet is powerful when you want filtering, sorting, and summaries. But if you only need one tiny arithmetic step, opening a giant sheet may be unnecessary overhead. Choosing Streams well means knowing when expressiveness beats the cost of extra abstraction.</p>
+    </article><article class="card technical">
+      <div class="card-label">Technical</div>
+      <h3>Loops versus Streams in performance-sensitive code</h3>
+      <div class="two-col"><div><p><strong>Definition:</strong> Streams trade some low-level control for composability, readability, and fluent aggregation.</p><p class="deep-note">In most business code, that trade is worth it. But in very hot loops, Streams can introduce overhead from lambda allocation, boxing, iterator indirection, or stateful operations. Primitive streams like <code>IntStream</code> help reduce boxing, but they still do not automatically beat a simple loop.</p><p class="deep-note">A senior-level answer should mention profiling, not guessing. If a pipeline is on the critical path, measure it with realistic data and choose the clearest solution that meets the performance budget.</p><div class="mini-grid"><div class="mini-panel"><h4>Choose Streams when</h4><p>You want expressive transformation, grouping, partitioning, or short-circuiting over in-memory data.</p></div><div class="mini-panel"><h4>Choose a loop when</h4><p>You need very tight performance, indexed control, early exits with custom mutation, or clearer imperative flow.</p></div></div><table><thead><tr><th>Concern</th><th>Stream guidance</th></tr></thead><tbody><tr><td>Boxing</td><td>Prefer <code>IntStream</code>, <code>LongStream</code>, etc. for numeric hot paths.</td></tr><tr><td>Stateful ops</td><td>Use carefully; they may buffer data.</td></tr><tr><td>Collector complexity</td><td>Great for grouped output; otherwise a loop may be clearer.</td></tr></tbody></table><div class="mini-panel" style="background: rgba(124,58,237,0.12); border-color: rgba(124,58,237,0.35); margin-top: 16px;">
+      <h4>💬 Model Interview Answer</h4>
+      <p>My default is to use Streams when they make transformation and aggregation clearer, especially for grouping or mapping pipelines. On hot code paths I watch for boxing, stateful operations like sorted, and accidental overuse of collectors. I do not assume Streams are faster than loops — I profile first. That balance between readability and measurement is usually what interviewers want to hear.</p>
+    </div></div><div></div></div><div class="code-blocks"><div>
+      <div class="code-title">Primitive stream to reduce boxing</div>
+      <pre>long total = orders.stream()
+    .mapToLong(Order::totalCents)
+    .sum();</pre>
+    </div><div>
+      <div class="code-title">Plain loop may still be the clearest hot-path choice</div>
+      <pre>long total = 0L;
+for (Order order : orders) {
+    if (order.isPaid()) {
+        total += order.totalCents();
+    }
+}</pre>
+    </div></div>
+    </article><article class="card warning">
+      <div class="card-label">Warning</div>
+      <h3>Do not force Streams everywhere</h3>
+      <p>Teams sometimes turn every loop into a stream chain, even when the result becomes harder to debug or slower under load. The fix is not “avoid Streams” — it is to use the right level of abstraction for the problem and measure critical paths.</p>
+    </article><article class="card quiz-card">
+      <div class="card-label">Quiz</div>
+      <h3>What is the strongest senior-level answer about Streams and performance?</h3>
+      <div class="quiz-options" data-answer="3"><button class="quiz-option">A. Streams are always faster than loops.</button><button class="quiz-option">B. Loops are always faster than Streams.</button><button class="quiz-option">C. Use Streams for everything because they look modern.</button><button class="quiz-option">D. Streams improve expressiveness, but hot paths should be measured and may favor loops or primitive streams.</button></div>
+      <div class="quiz-result"><strong>Answer</strong><span>D is correct because it balances readability with performance realism. A and B are absolute statements and usually false in real systems. C confuses style with engineering judgment. For interviews, the best answer is nuanced: use Streams where they help clarity, then profile hot spots before making low-level performance decisions.</span></div>
+    </article>
+          </div>
+        </div>
+      </section>
+      <section class="section" data-section="5">
+      <div class="section-inner">
+        <div class="hero">
+          <div class="section-label">Completion screen</div>
+          <h2>🎉 Streams API Cheat Sheet</h2>
+          <p>Use this page as a fast interview recap before mock rounds or senior backend interviews.</p>
+        </div>
+        <div class="completion-grid">
+          <article class="card technical">
+            <div class="celebrate">✅</div>
+            <h3>What to remember</h3>
+            <div class="cheat-list"><div class="cheat-item"><h4>Laziness</h4><p>Intermediate operations are just pipeline stages; terminal operations trigger traversal.</p></div><div class="cheat-item"><h4>Stateful ops</h4><p>sorted and distinct may buffer data and change performance characteristics.</p></div><div class="cheat-item"><h4>Collectors</h4><p>Use groupingBy, mapping, partitioningBy, and toMap with merge functions when keys can collide.</p></div><div class="cheat-item"><h4>Parallel streams</h4><p>Treat them as an optimization for large CPU-bound, stateless workloads — not as a default.</p></div><div class="cheat-item"><h4>Performance mindset</h4><p>Prefer clarity first, use primitive streams for numeric paths, and profile hot loops before optimizing.</p></div></div>
+          </article>
+          <article class="card warning">
+            <div class="card-label">Most common confusion points</div>
+            <h3>Where people slip</h3>
+            <div class="confusion-list"><div class="confusion-item"><strong>“Streams execute as you write them.”</strong><p>No — the chain is lazy until a terminal operation asks for a result.</p></div><div class="confusion-item"><strong>“toMap is safe by default.”</strong><p>It is not if duplicate keys are possible; define a merge function.</p></div><div class="confusion-item"><strong>“parallelStream means faster.”</strong><p>Only when work is large, independent, and CPU-heavy. Otherwise overhead or blocking can hurt throughput.</p></div></div>
+          </article>
         </div>
       </div>
-      <p>Downstream collectors keep pipelines expressive and efficient.</p>
-            </article><article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>What triggers stream execution?</h3>
-              <div class="quiz-options" data-answer="2">
-                <button class="quiz-option">A. map()</button><button class="quiz-option">B. filter()</button><button class="quiz-option">C. terminal operation</button><button class="quiz-option">D. peek()</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: C</strong>
-                <span>Streams are lazy; only terminal ops execute the pipeline.</span>
-              </div>
-            </article></div>
-        </div>
-      </section>
-<section class="section" data-section="5">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Completion screen · Review mode</div>
-            <h2>🎉 Streams API Cheat Sheet</h2>
-            <p>Use this to recall stream pipelines, collectors, and parallel trade-offs.</p>
-          </div>
-
-          <div class="completion-grid">
-            <div class="card technical">
-              <div class="card-label">Cheat sheet</div>
-              <div class="celebrate">🚀</div>
-              <h3>1-line interview answers</h3>
-              <div class="cheat-list">
-    <div class="cheat-item">
-      <h4>Pipeline</h4>
-      <p>Streams are lazy until a terminal operation runs.</p>
-    </div>
-    <div class="cheat-item">
-      <h4>Ops</h4>
-      <p>Intermediate ops transform, terminal ops produce results.</p>
-    </div>
-    <div class="cheat-item">
-      <h4>Collectors</h4>
-      <p>Use groupingBy/mapping/joining to shape results.</p>
-    </div>
-    <div class="cheat-item">
-      <h4>Parallel</h4>
-      <p>Only for large CPU-heavy workloads.</p>
-    </div></div>
-            </div>
-
-            <div class="card analogy">
-              <div class="card-label">What to remember</div>
-              <h3>Fast mental model</h3>
-              <ul class="takeaways">
-                <li><strong>Pipeline:</strong> source → intermediate → terminal.</li><li><strong>Lazy:</strong> work happens at terminal ops.</li><li><strong>Collectors:</strong> group, map, join results.</li><li><strong>Parallel:</strong> only for large CPU work.</li>
-              </ul>
-              <h3 style="margin-top:22px;">Common traps</h3>
-              <div class="badge-row">
-                <span class="pill bad">Using parallel on small lists</span><span class="pill bad">Stateful lambdas</span><span class="pill bad">Reusing consumed streams</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+    </section>
     </main>
 
     <footer class="footer-nav">

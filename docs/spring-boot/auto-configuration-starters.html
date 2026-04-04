@@ -1,13 +1,14 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Auto-Configuration & Starters Learning Module</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Auto-Configuration &amp; Starters Learning Module</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&amp;family=Syne:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<style>
 :root {
       --bg: #0a0e1a;
       --surface-1: #111827;
@@ -728,626 +729,219 @@
   </style>
 </head>
 <body>
-  <div class="app">
-    <header class="topbar">
-      <div class="topbar-inner">
-        <div class="topbar-row">
-          <div class="brand">
-            <h1>Auto-Configuration & Starters</h1>
-            <small>Interactive 35-minute learning module</small>
-          </div>
-                <div class="topbar-row">
-          <div class="breadcrumb">
-            <a href="../index.html">Home</a>
-            <span>›</span>
-            <a href="index.html">Spring Boot</a>
-            <span>›</span>
-            <span>Auto-Configuration & Starters</span>
-          </div>
-        </div>
-          <div class="timer-wrap" aria-live="polite">
-            <span class="timer-label">Time Left</span>
-            <span class="timer" id="timer">35:00</span>
-          </div>
-        </div>
-        <div class="topbar-row">
-                    <nav class="nav-dots" aria-label="Section navigation"><button class="nav-dot active" data-index="0" aria-label="Go to section 1">1</button><button class="nav-dot" data-index="1" aria-label="Go to section 2">2</button><button class="nav-dot" data-index="2" aria-label="Go to section 3">3</button><button class="nav-dot" data-index="3" aria-label="Go to section 4">4</button><button class="nav-dot" data-index="4" aria-label="Go to section 5">5</button><button class="nav-dot" data-index="5" aria-label="Go to completion screen">6</button></nav>
-        </div>
-        <div class="progress-shell" aria-hidden="true">
-          <div class="progress-bar" id="progressBar"></div>
-        </div>
-      </div>
-    </header>
+<div class="app">
+<header class="topbar">
+<div class="topbar-inner">
+<div class="topbar-row">
+<div class="brand">
+<h1>Auto-Configuration &amp; Starters</h1>
+<small>Interactive 35-minute learning module</small>
+</div>
+<div class="topbar-row">
+<div class="breadcrumb">
+<a href="../index.html">Home</a>
+<span>›</span>
+<a href="index.html">Spring Boot</a>
+<span>›</span>
+<span>Auto-Configuration &amp; Starters</span>
+</div>
+</div>
+<div aria-live="polite" class="timer-wrap">
+<span class="timer-label">Time Left</span>
+<span class="timer" id="timer">35:00</span>
+</div>
+</div>
+<div class="topbar-row">
+<nav aria-label="Section navigation" class="nav-dots"><button aria-label="Go to section 1" class="nav-dot active" data-index="0">1</button><button aria-label="Go to section 2" class="nav-dot" data-index="1">2</button><button aria-label="Go to section 3" class="nav-dot" data-index="2">3</button><button aria-label="Go to section 4" class="nav-dot" data-index="3">4</button><button aria-label="Go to section 5" class="nav-dot" data-index="4">5</button><button aria-label="Go to completion screen" class="nav-dot" data-index="5">6</button></nav>
+</div>
+<div aria-hidden="true" class="progress-shell">
+<div class="progress-bar" id="progressBar"></div>
+</div>
+</div>
+</header>
+<main>
 
-    <main>
-      
-      <section class="section active" data-section="0">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 1 of 5 · ~7 mins</div>
-            <h2>How Auto-Configuration Boots Your App</h2>
-            <p>Spring Boot reads the classpath and properties, then applies auto-configuration classes to register sensible defaults.</p>
-            <a class="back-link" href="index.html">← Back to Spring Boot</a>
-          </div>
 
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>A toy that builds itself</h3>
-              <p>If the toy box already has wheels and a motor, the toy knows to become a car without you building every part.</p>
-            </article>
 
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Hotel room upgrades</h3>
-              <p>If a room has a coffee machine, the hotel adds coffee pods automatically. If not, it skips them.</p>
-            </article>
 
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> @SpringBootApplication enables auto-configuration, which registers beans when classpath and properties match conditions.</p>
-                  <p class="deep-note">Auto-configuration applies defaults when conditions match, such as the presence of a library on the classpath or a property being enabled.</p>
-                  <p class="deep-note">This gives you a working app quickly, but still allows you to override beans when you need custom behavior.</p>
-                  <p class="deep-note">As a beginner, the key is to know you can always define your own bean to replace the auto-configured one.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul>
-                        <li>Faster bootstrapping</li><li>Consistent defaults across services</li><li>Less manual config</li>
-                      </ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common pitfall</h4>
-                      <ul>
-                        <li>Copy-pasting XML configs</li><li>Manual bean wiring everywhere</li><li>Inconsistent defaults</li>
-                      </ul>
-                    </div>
-                  </div>
-                  <div class="badge-row"><span class="pill info">Classpath</span><span class="pill good">Properties</span><span class="pill caution">Missing bean</span></div>
-                  
-                  <div class="flow"><span class="flow-step">App start</span><span class="flow-arrow">→</span><span class="flow-step">Auto-config imports</span><span class="flow-arrow">→</span><span class="flow-step">Conditions match</span><span class="flow-arrow">→</span><span class="flow-step">Beans registered</span><span class="flow-arrow">→</span><span class="flow-step">Overrides apply</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“Boot scans auto-config classes and applies them only when the right classes and properties exist, so defaults appear without manual wiring.”</p>
-                  <p class="deep-note">Auto-configuration is just conditional beans. Starters pull dependencies and register defaults; overriding a bean is how you take control.</p>
-                  
-                  <table>
-                    <thead><tr><th>Condition</th><th>Outcome</th></tr></thead>
-                    <tbody><tr><td>@ConditionalOnClass</td><td><span class="pill info">Loads when dependency exists</span></td></tr><tr><td>@ConditionalOnProperty</td><td><span class="pill good">Loads when config enabled</span></td></tr><tr><td>@ConditionalOnMissingBean</td><td><span class="pill caution">Skips if you override</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              
-    <div class="code-blocks">
-    <div>
-      <div class="code-title">Simple auto-configuration example</div>
-      <pre>@AutoConfiguration
-@ConditionalOnClass(DataSource.class)
-public class DbAutoConfig {
-  @Bean
-  @ConditionalOnMissingBean
-  public DataSource dataSource(DataSourceProperties props) {
-    return props.initializeDataSourceBuilder().build();
-  }
-}</pre>
-    </div>
-    </div>
-              
-            </article>
 
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Defaults can surprise you</h3>
-              <p>If you do not understand which auto-config loaded, you may debug behavior that was created for you behind the scenes.</p>
-            </article>
 
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>Auto-config is conditional, not magic.</li><li>Your beans override defaults.</li><li>Use condition reports for debugging.</li>
-              </ul>
-            </article>
+</main>
+<section class="section" data-section="0">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Section 1 · Core concept</div>
+<h2>How Auto-Configuration Boots Your App</h2>
+<p>How Auto-Configuration Boots Your App is a high-value senior interview topic because it reveals whether you understand the underlying mechanism, the default behavior, and the trade-offs in production.</p>
+</div>
+<div class="card-grid">
+<article class="card eli5"><div class="card-label">🧒 ELI5</div><h3>A simple mental picture</h3><p>Imagine a busy workplace where one small rule determines whether the whole team moves smoothly or keeps stepping on each other. Spring Boot auto-configuration adds beans conditionally based on classpath contents, existing beans, and configuration properties. works like that kind of rule: it tells the system how to behave before small mistakes turn into bigger production problems.</p><p>It matters because it gives you sensible defaults without forcing you to wire every infrastructure bean manually. Without that rule, engineers often discover the problem only after the app is under load, when the bug is expensive and confusing.</p><p>The useful mental shortcut is to ask: “What is the system trying to coordinate here, and what breaks when that coordination is missing?” That question usually reveals why this feature exists.</p></article><article class="card analogy"><div class="card-label">🔗 ANALOGY</div><h3>Why the rule exists</h3><p>Think of how auto-configuration boots your app as a piece of operating policy, not just a syntax feature. The policy exists to make decisions repeatable across the whole system instead of relying on every individual class to remember the rule.</p><p>If you ignore that policy, the most common smell is assuming boot “just knows” what you want without checking the conditions. In real applications, that smell usually shows up as flaky behavior, hidden coupling, or painful debugging.</p></article><article class="card technical"><div class="card-label">Technical</div><div class="two-col"><div><h3>How it works under the hood</h3><p><strong>Definition:</strong> Spring Boot auto-configuration adds beans conditionally based on classpath contents, existing beans, and configuration properties.</p><p class="deep-note">Spring Boot auto-configuration adds beans conditionally based on classpath contents, existing beans, and configuration properties. Under the hood, Spring or the underlying infrastructure usually applies the behavior around your code rather than by changing your business logic directly.</p><p class="deep-note">The production question is not “can I enable it?” but “where is the right boundary and what problem am I actually solving?”</p><p class="deep-note">Good engineering here comes from matching the mechanism to the use case, then watching the trade-off instead of blindly turning the feature on everywhere.</p><div class="mini-grid"><div class="mini-panel"><h4>Why it matters in production</h4><ul><li>it gives you sensible defaults without forcing you to wire every infrastructure bean manually</li><li>Makes auto-configuration &amp; starters behavior explicit</li><li>Gives you a clearer story in debugging and interviews</li></ul></div><div class="mini-panel"><h4>Common smell</h4><ul><li>assuming Boot “just knows” what you want without checking the conditions</li><li>Using the mechanism as a band-aid for design issues</li><li>Forgetting what the default behavior actually is</li></ul></div></div><div class="badge-row"><span class="pill good">Explicit intent</span><span class="pill info">Know the default</span><span class="pill caution">Trade-offs matter</span></div><div class="flow"><span class="flow-step">Call enters boundary</span><span class="flow-arrow">→</span><span class="flow-step">Framework applies rule</span><span class="flow-arrow">→</span><span class="flow-step">Your code runs</span><span class="flow-arrow">→</span><span class="flow-step">Outcome follows configured behavior</span></div></div><div><h3>💬 Model Interview Answer</h3><p>“How Auto-Configuration Boots Your App in Auto-Configuration &amp; Starters is really about spring boot auto-configuration adds beans conditionally based on classpath contents, existing beans, and configuration properties. I explain it as a mechanism that enforces a policy around my code so the application behaves consistently. The important trade-off is assuming boot “just knows” what you want without checking the conditions, so I use it deliberately and I make the boundary clear instead of relying on accidental defaults.”</p><table><thead><tr><th>Scenario</th><th>What to watch</th></tr></thead><tbody><tr><td>Classpath + conditions</td><td>Boot decides whether config applies</td></tr><tr><td>Existing bean present</td><td>Boot often backs off</td></tr><tr><td>Manual config</td><td>Still allowed when needed</td></tr></tbody></table></div></div><div class="code-blocks"><div><div class="code-title">❌ Wrong</div><pre>@Configuration
+public class AppConfig {
 
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>What makes a Spring Boot auto-config bean load?</h3>
-              <div class="quiz-options" data-answer="2">
-                <button class="quiz-option">A. It is annotated with @Component</button><button class="quiz-option">B. It is in the same package</button><button class="quiz-option">C. Its conditions match and no override exists</button><button class="quiz-option">D. It is named BeanConfig</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: C</strong>
-                <span>Auto-config beans load only when their conditional annotations match and a user bean has not overridden them.</span>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
+    @Bean
+    public ObjectMapper objectMapper() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        // hand-built mapper missing Boot customizations
+        return objectMapper;
+    }
+}</pre></div><div><div class="code-title">✅ Right</div><pre>@RestController
+public class UserController {
 
-      <section class="section" data-section="1">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 2 of 5 · ~7 mins</div>
-            <h2>Starters and Dependency Management</h2>
-            <p>Starters are curated dependency bundles that pull in libraries plus their auto-configurations with consistent versions.</p>
-            
-          </div>
+    private final ObjectMapper objectMapper;
 
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>A kit with all the parts</h3>
-              <p>Instead of buying each LEGO piece, you buy a kit that already has everything needed to build the spaceship.</p>
-            </article>
+    public UserController(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper; // Reuse Boot-managed bean
+    }
+}</pre></div></div><p>Use how auto-configuration boots your app where the rule belongs in architecture, not just where it happens to fix one failing test or one bug report.</p><p class="deep-note">The safest mental model is that Spring gives you a framework feature only when your call crosses the Spring-managed boundary and the surrounding infrastructure can participate.</p></article><article class="card warning"><div class="card-label">Warning</div><h3>Common misunderstanding</h3><p>The dangerous misunderstanding is treating how auto-configuration boots your app like a magic switch instead of a mechanism with boundaries and defaults. That is how teams end up with assuming boot “just knows” what you want without checking the conditions.</p><p>A safer pattern is to make the intent explicit, keep the scope narrow, and choose the smallest mechanism that actually solves the problem.</p><div class="code-blocks"><div><div class="code-title">Broken pattern</div><pre>@Configuration
+public class AppConfig {
 
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Meal kit delivery</h3>
-              <p>The kit arrives with spices, sauce, and instructions so you do not source ingredients one by one.</p>
-            </article>
+    @Bean
+    public ObjectMapper objectMapper() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        // hand-built mapper missing Boot customizations
+        return objectMapper;
+    }
+}</pre></div><div><div class="code-title">Safer pattern</div><pre>@RestController
+public class UserController {
 
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Spring Boot starters are BOM-backed dependency sets that bring in libraries and their recommended versions.</p>
-                  <p class="deep-note">Starters bundle dependencies so you add a feature with one dependency instead of managing versions manually.</p>
-                  <p class="deep-note">They rely on Spring Boot’s dependency management so transitive versions stay compatible and conflicts are avoided.</p>
-                  <p class="deep-note">Think of starters as curated dependency sets that prevent version conflicts for you.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul>
-                        <li>Avoids version conflicts</li><li>Shorter build files</li><li>Faster onboarding</li>
-                      </ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common pitfall</h4>
-                      <ul>
-                        <li>Pinning many versions manually</li><li>Incompatible library mixes</li><li>Starter sprawl</li>
-                      </ul>
-                    </div>
-                  </div>
-                  <div class="badge-row"><span class="pill good">BOM-managed</span><span class="pill info">Opinionated defaults</span><span class="pill caution">Transitive deps</span></div>
-                  
-                  <div class="flow"><span class="flow-step">Add starter</span><span class="flow-arrow">→</span><span class="flow-step">Dependencies resolve</span><span class="flow-arrow">→</span><span class="flow-step">Auto-config activates</span><span class="flow-arrow">→</span><span class="flow-step">App is ready</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“Starters are curated dependency bundles managed by the Boot BOM so you get compatible libraries and matching auto-config.”</p>
-                  <p class="deep-note">Auto-configuration is just conditional beans. Starters pull dependencies and register defaults; overriding a bean is how you take control.</p>
-                  
-                  <table>
-                    <thead><tr><th>Starter</th><th>What it brings</th></tr></thead>
-                    <tbody><tr><td>spring-boot-starter-web</td><td><span class="pill good">Spring MVC + JSON</span></td></tr><tr><td>spring-boot-starter-data-jpa</td><td><span class="pill info">JPA + Hibernate</span></td></tr><tr><td>spring-boot-starter-security</td><td><span class="pill caution">Security defaults</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              
-    <div class="code-blocks">
-    <div>
-      <div class="code-title">Starter in build file (Gradle)</div>
-      <pre>dependencies {
-  implementation "org.springframework.boot:spring-boot-starter-web"
-}</pre>
-    </div>
-    </div>
-              
-            </article>
+    private final ObjectMapper objectMapper;
 
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Too many starters</h3>
-              <p>Adding multiple overlapping starters can pull duplicate or conflicting dependencies and slow startup.</p>
-            </article>
+    public UserController(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper; // Reuse Boot-managed bean
+    }
+}</pre></div></div></article><article class="card technical"><div class="card-label">Mini takeaway</div><ul class="takeaways"><li>How Auto-Configuration Boots Your App exists to make a policy explicit</li><li>Defaults are useful, but interviews reward knowing the boundary and trade-off</li><li>If you see assuming boot “just knows” what you want without checking the conditions, revisit the design before adding more framework annotations</li></ul></article><article class="card quiz-card"><div class="card-label">Quiz</div><h3>What is the main idea behind Spring Boot auto-configuration?</h3><div class="quiz-options" data-answer="1"><button class="quiz-option">A. It replaces all explicit @Bean methods in every project</button><button class="quiz-option">B. It conditionally supplies sensible defaults when certain conditions match</button><button class="quiz-option">C. It runs only after the first HTTP request</button><button class="quiz-option">D. It disables manual configuration</button></div><div class="quiz-result"><strong>Correct answer: B</strong><span>B is correct because it matches how how auto-configuration boots your app is intended to work in a production-grade Spring application. The wrong choices are plausible because they sound framework-ish, but they either ignore the real boundary, confuse this feature with another one, or assume a stronger guarantee than the mechanism actually provides. In an interview, tie your answer back to the concrete failure mode you are preventing.</span></div></article></div></div></section><section class="section" data-section="1">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Section 2 · Dependency management</div>
+<h2>Starters and Dependency Management</h2>
+<p>Starters and Dependency Management is a high-value senior interview topic because it reveals whether you understand the underlying mechanism, the default behavior, and the trade-offs in production.</p>
+</div>
+<div class="card-grid">
+<article class="card eli5"><div class="card-label">🧒 ELI5</div><h3>A simple mental picture</h3><p>Imagine a busy workplace where one small rule determines whether the whole team moves smoothly or keeps stepping on each other. A starter is a curated dependency set that pulls in the libraries typically needed for a capability such as web, data JPA, or security. works like that kind of rule: it tells the system how to behave before small mistakes turn into bigger production problems.</p><p>It matters because it reduces version mismatch and setup friction. Without that rule, engineers often discover the problem only after the app is under load, when the bug is expensive and confusing.</p><p>The useful mental shortcut is to ask: “What is the system trying to coordinate here, and what breaks when that coordination is missing?” That question usually reveals why this feature exists.</p></article><article class="card analogy"><div class="card-label">🔗 ANALOGY</div><h3>Why the rule exists</h3><p>Think of starters and dependency management as a piece of operating policy, not just a syntax feature. The policy exists to make decisions repeatable across the whole system instead of relying on every individual class to remember the rule.</p><p>If you ignore that policy, the most common smell is adding random library versions by hand until the app finally starts. In real applications, that smell usually shows up as flaky behavior, hidden coupling, or painful debugging.</p></article><article class="card technical"><div class="card-label">Technical</div><div class="two-col"><div><h3>How it works under the hood</h3><p><strong>Definition:</strong> A starter is a curated dependency set that pulls in the libraries typically needed for a capability such as web, data JPA, or security.</p><p class="deep-note">A starter is a curated dependency set that pulls in the libraries typically needed for a capability such as web, data JPA, or security. Under the hood, Spring or the underlying infrastructure usually applies the behavior around your code rather than by changing your business logic directly.</p><p class="deep-note">The production question is not “can I enable it?” but “where is the right boundary and what problem am I actually solving?”</p><p class="deep-note">Good engineering here comes from matching the mechanism to the use case, then watching the trade-off instead of blindly turning the feature on everywhere.</p><div class="mini-grid"><div class="mini-panel"><h4>Why it matters in production</h4><ul><li>it reduces version mismatch and setup friction</li><li>Makes auto-configuration &amp; starters behavior explicit</li><li>Gives you a clearer story in debugging and interviews</li></ul></div><div class="mini-panel"><h4>Common smell</h4><ul><li>adding random library versions by hand until the app finally starts</li><li>Using the mechanism as a band-aid for design issues</li><li>Forgetting what the default behavior actually is</li></ul></div></div><div class="badge-row"><span class="pill good">Explicit intent</span><span class="pill info">Know the default</span><span class="pill caution">Trade-offs matter</span></div><div class="flow"><span class="flow-step">Call enters boundary</span><span class="flow-arrow">→</span><span class="flow-step">Framework applies rule</span><span class="flow-arrow">→</span><span class="flow-step">Your code runs</span><span class="flow-arrow">→</span><span class="flow-step">Outcome follows configured behavior</span></div></div><div><h3>💬 Model Interview Answer</h3><p>“Starters and Dependency Management in Auto-Configuration &amp; Starters is really about a starter is a curated dependency set that pulls in the libraries typically needed for a capability such as web, data jpa, or security. I explain it as a mechanism that enforces a policy around my code so the application behaves consistently. The important trade-off is adding random library versions by hand until the app finally starts, so I use it deliberately and I make the boundary clear instead of relying on accidental defaults.”</p><table><thead><tr><th>Scenario</th><th>What to watch</th></tr></thead><tbody><tr><td>Starter</td><td>Curated capability bundle</td></tr><tr><td>Dependency management</td><td>Keeps versions aligned</td></tr><tr><td>Random manual versions</td><td>Common conflict source</td></tr></tbody></table></div></div><div class="code-blocks"><div><div class="code-title">❌ Wrong</div><pre>dependencies {
+    implementation("org.springframework:spring-web:6.0.0")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.11.0")
+    implementation("org.apache.tomcat.embed:tomcat-embed-core:10.0.0")
+}</pre></div><div><div class="code-title">✅ Right</div><pre>dependencies {
+    implementation("org.springframework.boot:spring-boot-starter-web")
+}</pre></div></div><p>Use starters and dependency management where the rule belongs in architecture, not just where it happens to fix one failing test or one bug report.</p><p class="deep-note">The safest mental model is that Spring gives you a framework feature only when your call crosses the Spring-managed boundary and the surrounding infrastructure can participate.</p></article><article class="card warning"><div class="card-label">Warning</div><h3>Common misunderstanding</h3><p>The dangerous misunderstanding is treating starters and dependency management like a magic switch instead of a mechanism with boundaries and defaults. That is how teams end up with adding random library versions by hand until the app finally starts.</p><p>A safer pattern is to make the intent explicit, keep the scope narrow, and choose the smallest mechanism that actually solves the problem.</p><div class="code-blocks"><div><div class="code-title">Broken pattern</div><pre>dependencies {
+    implementation("org.springframework:spring-web:6.0.0")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.11.0")
+    implementation("org.apache.tomcat.embed:tomcat-embed-core:10.0.0")
+}</pre></div><div><div class="code-title">Safer pattern</div><pre>dependencies {
+    implementation("org.springframework.boot:spring-boot-starter-web")
+}</pre></div></div></article><article class="card technical"><div class="card-label">Mini takeaway</div><ul class="takeaways"><li>Starters and Dependency Management exists to make a policy explicit</li><li>Defaults are useful, but interviews reward knowing the boundary and trade-off</li><li>If you see adding random library versions by hand until the app finally starts, revisit the design before adding more framework annotations</li></ul></article><article class="card quiz-card"><div class="card-label">Quiz</div><h3>Why are starters valuable in Spring Boot projects?</h3><div class="quiz-options" data-answer="1"><button class="quiz-option">A. They remove the need for testing</button><button class="quiz-option">B. They provide curated dependency sets and aligned versions</button><button class="quiz-option">C. They force all projects to use the same database</button><button class="quiz-option">D. They disable manual dependencies</button></div><div class="quiz-result"><strong>Correct answer: B</strong><span>B is correct because it matches how starters and dependency management is intended to work in a production-grade Spring application. The wrong choices are plausible because they sound framework-ish, but they either ignore the real boundary, confuse this feature with another one, or assume a stronger guarantee than the mechanism actually provides. In an interview, tie your answer back to the concrete failure mode you are preventing.</span></div></article></div></div></section><section class="section" data-section="2">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Section 3 · Customization</div>
+<h2>Conditional Beans and Overrides</h2>
+<p>Conditional Beans and Overrides is a high-value senior interview topic because it reveals whether you understand the underlying mechanism, the default behavior, and the trade-offs in production.</p>
+</div>
+<div class="card-grid">
+<article class="card eli5"><div class="card-label">🧒 ELI5</div><h3>A simple mental picture</h3><p>Imagine a busy workplace where one small rule determines whether the whole team moves smoothly or keeps stepping on each other. Boot auto-configurations are guarded by conditions like @ConditionalOnClass, @ConditionalOnMissingBean, and properties so they can apply only when appropriate and back off when you provide your own bean. works like that kind of rule: it tells the system how to behave before small mistakes turn into bigger production problems.</p><p>It matters because it lets defaults stay helpful instead of becoming intrusive. Without that rule, engineers often discover the problem only after the app is under load, when the bug is expensive and confusing.</p><p>The useful mental shortcut is to ask: “What is the system trying to coordinate here, and what breaks when that coordination is missing?” That question usually reveals why this feature exists.</p></article><article class="card analogy"><div class="card-label">🔗 ANALOGY</div><h3>Why the rule exists</h3><p>Think of conditional beans and overrides as a piece of operating policy, not just a syntax feature. The policy exists to make decisions repeatable across the whole system instead of relying on every individual class to remember the rule.</p><p>If you ignore that policy, the most common smell is defining a custom bean but forgetting boot may already provide one. In real applications, that smell usually shows up as flaky behavior, hidden coupling, or painful debugging.</p></article><article class="card technical"><div class="card-label">Technical</div><div class="two-col"><div><h3>How it works under the hood</h3><p><strong>Definition:</strong> Boot auto-configurations are guarded by conditions like @ConditionalOnClass, @ConditionalOnMissingBean, and properties so they can apply only when appropriate and back off when you provide your own bean.</p><p class="deep-note">Boot auto-configurations are guarded by conditions like @ConditionalOnClass, @ConditionalOnMissingBean, and properties so they can apply only when appropriate and back off when you provide your own bean. Under the hood, Spring or the underlying infrastructure usually applies the behavior around your code rather than by changing your business logic directly.</p><p class="deep-note">The production question is not “can I enable it?” but “where is the right boundary and what problem am I actually solving?”</p><p class="deep-note">Good engineering here comes from matching the mechanism to the use case, then watching the trade-off instead of blindly turning the feature on everywhere.</p><div class="mini-grid"><div class="mini-panel"><h4>Why it matters in production</h4><ul><li>it lets defaults stay helpful instead of becoming intrusive</li><li>Makes auto-configuration &amp; starters behavior explicit</li><li>Gives you a clearer story in debugging and interviews</li></ul></div><div class="mini-panel"><h4>Common smell</h4><ul><li>defining a custom bean but forgetting Boot may already provide one</li><li>Using the mechanism as a band-aid for design issues</li><li>Forgetting what the default behavior actually is</li></ul></div></div><div class="badge-row"><span class="pill good">Explicit intent</span><span class="pill info">Know the default</span><span class="pill caution">Trade-offs matter</span></div><div class="flow"><span class="flow-step">Call enters boundary</span><span class="flow-arrow">→</span><span class="flow-step">Framework applies rule</span><span class="flow-arrow">→</span><span class="flow-step">Your code runs</span><span class="flow-arrow">→</span><span class="flow-step">Outcome follows configured behavior</span></div></div><div><h3>💬 Model Interview Answer</h3><p>“Conditional Beans and Overrides in Auto-Configuration &amp; Starters is really about boot auto-configurations are guarded by conditions like @conditionalonclass, @conditionalonmissingbean, and properties so they can apply only when appropriate and back off when you provide your own bean. I explain it as a mechanism that enforces a policy around my code so the application behaves consistently. The important trade-off is defining a custom bean but forgetting boot may already provide one, so I use it deliberately and I make the boundary clear instead of relying on accidental defaults.”</p><table><thead><tr><th>Scenario</th><th>What to watch</th></tr></thead><tbody><tr><td>@ConditionalOnClass</td><td>Only apply when dependency exists</td></tr><tr><td>@ConditionalOnMissingBean</td><td>Back off if user provided bean</td></tr><tr><td>@ConditionalOnProperty</td><td>Apply based on config flag</td></tr></tbody></table></div></div><div class="code-blocks"><div><div class="code-title">❌ Wrong</div><pre>@Configuration
+public class CacheConfig {
 
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>Starters align versions via the Boot BOM.</li><li>They activate auto-config automatically.</li><li>Add only what the service needs.</li>
-              </ul>
-            </article>
+    @Bean
+    public CacheManager cacheManager() {
+        return new ConcurrentMapCacheManager("users");
+    }
+}</pre></div><div><div class="code-title">✅ Right</div><pre>@Configuration
+public class CacheConfig {
 
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>What is the main purpose of a Spring Boot starter?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. It replaces component scanning</button><button class="quiz-option">B. It bundles compatible dependencies and auto-config</button><button class="quiz-option">C. It disables auto-config</button><button class="quiz-option">D. It creates a new profile</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>Starters pull a compatible dependency set that pairs with Boot auto-configuration.</span>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
+    @Bean
+    @Primary
+    public CacheManager cacheManager() {
+        return new ConcurrentMapCacheManager("users");
+    }
+}</pre></div></div><p>Use conditional beans and overrides where the rule belongs in architecture, not just where it happens to fix one failing test or one bug report.</p><p class="deep-note">The safest mental model is that Spring gives you a framework feature only when your call crosses the Spring-managed boundary and the surrounding infrastructure can participate.</p></article><article class="card warning"><div class="card-label">Warning</div><h3>Common misunderstanding</h3><p>The dangerous misunderstanding is treating conditional beans and overrides like a magic switch instead of a mechanism with boundaries and defaults. That is how teams end up with defining a custom bean but forgetting boot may already provide one.</p><p>A safer pattern is to make the intent explicit, keep the scope narrow, and choose the smallest mechanism that actually solves the problem.</p><div class="code-blocks"><div><div class="code-title">Broken pattern</div><pre>@Configuration
+public class CacheConfig {
 
-      <section class="section" data-section="2">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 3 of 5 · ~7 mins</div>
-            <h2>Conditional Beans and Overrides</h2>
-            <p>Conditions decide which beans load, and your explicit beans override auto-configured defaults.</p>
-            
-          </div>
+    @Bean
+    public CacheManager cacheManager() {
+        return new ConcurrentMapCacheManager("users");
+    }
+}</pre></div><div><div class="code-title">Safer pattern</div><pre>@Configuration
+public class CacheConfig {
 
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Only open when needed</h3>
-              <p>You only open the umbrella if it is raining. If it is sunny, you leave it closed.</p>
-            </article>
+    @Bean
+    @Primary
+    public CacheManager cacheManager() {
+        return new ConcurrentMapCacheManager("users");
+    }
+}</pre></div></div></article><article class="card technical"><div class="card-label">Mini takeaway</div><ul class="takeaways"><li>Conditional Beans and Overrides exists to make a policy explicit</li><li>Defaults are useful, but interviews reward knowing the boundary and trade-off</li><li>If you see defining a custom bean but forgetting boot may already provide one, revisit the design before adding more framework annotations</li></ul></article><article class="card quiz-card"><div class="card-label">Quiz</div><h3>What does @ConditionalOnMissingBean usually allow Boot to do?</h3><div class="quiz-options" data-answer="0"><button class="quiz-option">A. Skip a default bean when you already defined your own</button><button class="quiz-option">B. Force all beans to load eagerly</button><button class="quiz-option">C. Disable property binding</button><button class="quiz-option">D. Replace your bean with Boot’s bean</button></div><div class="quiz-result"><strong>Correct answer: A</strong><span>A is correct because it matches how conditional beans and overrides is intended to work in a production-grade Spring application. The wrong choices are plausible because they sound framework-ish, but they either ignore the real boundary, confuse this feature with another one, or assume a stronger guarantee than the mechanism actually provides. In an interview, tie your answer back to the concrete failure mode you are preventing.</span></div></article></div></div></section><section class="section" data-section="3">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Section 4 · Extension</div>
+<h2>Building a Custom Starter</h2>
+<p>Building a Custom Starter is a high-value senior interview topic because it reveals whether you understand the underlying mechanism, the default behavior, and the trade-offs in production.</p>
+</div>
+<div class="card-grid">
+<article class="card eli5"><div class="card-label">🧒 ELI5</div><h3>A simple mental picture</h3><p>Imagine a busy workplace where one small rule determines whether the whole team moves smoothly or keeps stepping on each other. A custom starter packages recurring configuration, defaults, and optional auto-configuration so teams can reuse an internal platform capability with one dependency. works like that kind of rule: it tells the system how to behave before small mistakes turn into bigger production problems.</p><p>It matters because it helps large organizations standardize repeated setup cleanly. Without that rule, engineers often discover the problem only after the app is under load, when the bug is expensive and confusing.</p><p>The useful mental shortcut is to ask: “What is the system trying to coordinate here, and what breaks when that coordination is missing?” That question usually reveals why this feature exists.</p></article><article class="card analogy"><div class="card-label">🔗 ANALOGY</div><h3>Why the rule exists</h3><p>Think of building a custom starter as a piece of operating policy, not just a syntax feature. The policy exists to make decisions repeatable across the whole system instead of relying on every individual class to remember the rule.</p><p>If you ignore that policy, the most common smell is copy-pasting the same config across many services. In real applications, that smell usually shows up as flaky behavior, hidden coupling, or painful debugging.</p></article><article class="card technical"><div class="card-label">Technical</div><div class="two-col"><div><h3>How it works under the hood</h3><p><strong>Definition:</strong> A custom starter packages recurring configuration, defaults, and optional auto-configuration so teams can reuse an internal platform capability with one dependency.</p><p class="deep-note">A custom starter packages recurring configuration, defaults, and optional auto-configuration so teams can reuse an internal platform capability with one dependency. Under the hood, Spring or the underlying infrastructure usually applies the behavior around your code rather than by changing your business logic directly.</p><p class="deep-note">The production question is not “can I enable it?” but “where is the right boundary and what problem am I actually solving?”</p><p class="deep-note">Good engineering here comes from matching the mechanism to the use case, then watching the trade-off instead of blindly turning the feature on everywhere.</p><div class="mini-grid"><div class="mini-panel"><h4>Why it matters in production</h4><ul><li>it helps large organizations standardize repeated setup cleanly</li><li>Makes auto-configuration &amp; starters behavior explicit</li><li>Gives you a clearer story in debugging and interviews</li></ul></div><div class="mini-panel"><h4>Common smell</h4><ul><li>copy-pasting the same config across many services</li><li>Using the mechanism as a band-aid for design issues</li><li>Forgetting what the default behavior actually is</li></ul></div></div><div class="badge-row"><span class="pill good">Explicit intent</span><span class="pill info">Know the default</span><span class="pill caution">Trade-offs matter</span></div><div class="flow"><span class="flow-step">Call enters boundary</span><span class="flow-arrow">→</span><span class="flow-step">Framework applies rule</span><span class="flow-arrow">→</span><span class="flow-step">Your code runs</span><span class="flow-arrow">→</span><span class="flow-step">Outcome follows configured behavior</span></div></div><div><h3>💬 Model Interview Answer</h3><p>“Building a Custom Starter in Auto-Configuration &amp; Starters is really about a custom starter packages recurring configuration, defaults, and optional auto-configuration so teams can reuse an internal platform capability with one dependency. I explain it as a mechanism that enforces a policy around my code so the application behaves consistently. The important trade-off is copy-pasting the same config across many services, so I use it deliberately and I make the boundary clear instead of relying on accidental defaults.”</p><table><thead><tr><th>Scenario</th><th>What to watch</th></tr></thead><tbody><tr><td>Starter</td><td>Dependency entry point</td></tr><tr><td>Auto-configuration</td><td>Creates beans conditionally</td></tr><tr><td>Properties class</td><td>Exposes typed customization</td></tr></tbody></table></div></div><div class="code-blocks"><div><div class="code-title">❌ Wrong</div><pre>// Every service has its own copy of the same metrics config,
+// RestTemplate config, and feature toggles.</pre></div><div><div class="code-title">✅ Right</div><pre>@AutoConfiguration
+@ConditionalOnClass(MySdkClient.class)
+@EnableConfigurationProperties(MySdkProperties.class)
+public class MySdkAutoConfiguration {
 
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>A plug-in slot</h3>
-              <p>If you already have a charger in the socket, the system does not add another one.</p>
-            </article>
+    @Bean
+    @ConditionalOnMissingBean
+    public MySdkClient mySdkClient(MySdkProperties properties) {
+        return new MySdkClient(properties.baseUrl(), properties.apiKey());
+    }
+}</pre></div></div><p>Use building a custom starter where the rule belongs in architecture, not just where it happens to fix one failing test or one bug report.</p><p class="deep-note">The safest mental model is that Spring gives you a framework feature only when your call crosses the Spring-managed boundary and the surrounding infrastructure can participate.</p></article><article class="card warning"><div class="card-label">Warning</div><h3>Common misunderstanding</h3><p>The dangerous misunderstanding is treating building a custom starter like a magic switch instead of a mechanism with boundaries and defaults. That is how teams end up with copy-pasting the same config across many services.</p><p>A safer pattern is to make the intent explicit, keep the scope narrow, and choose the smallest mechanism that actually solves the problem.</p><div class="code-blocks"><div><div class="code-title">Broken pattern</div><pre>// Every service has its own copy of the same metrics config,
+// RestTemplate config, and feature toggles.</pre></div><div><div class="code-title">Safer pattern</div><pre>@AutoConfiguration
+@ConditionalOnClass(MySdkClient.class)
+@EnableConfigurationProperties(MySdkProperties.class)
+public class MySdkAutoConfiguration {
 
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Conditional annotations gate bean creation, while @Primary or user-defined beans override defaults.</p>
-                  <p class="deep-note">Conditional annotations decide whether beans are created, which lets user-defined beans override defaults cleanly.</p>
-                  <p class="deep-note">Think of auto-config as opt-in defaults: it only activates when conditions match and you have not provided your own bean.</p>
-                  <p class="deep-note">If you see a bean you did not expect, check conditions like @ConditionalOnClass and @ConditionalOnProperty.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul>
-                        <li>Enables modular defaults</li><li>Lets teams customize behavior</li><li>Avoids duplicate beans</li>
-                      </ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common pitfall</h4>
-                      <ul>
-                        <li>Multiple beans without qualifier</li><li>Unexpected auto-config overrides</li><li>Hidden primary beans</li>
-                      </ul>
-                    </div>
-                  </div>
-                  <div class="badge-row"><span class="pill info">@ConditionalOnProperty</span><span class="pill good">@ConditionalOnMissingBean</span><span class="pill caution">@Primary</span></div>
-                  
-                  <div class="flow"><span class="flow-step">Check property</span><span class="flow-arrow">→</span><span class="flow-step">Check existing beans</span><span class="flow-arrow">→</span><span class="flow-step">Register default</span><span class="flow-arrow">→</span><span class="flow-step">User override wins</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“I override auto-config by defining my own @Bean or marking a bean @Primary, and conditions decide which defaults load.”</p>
-                  <p class="deep-note">DI keeps construction separate from behavior. Constructor injection is safest, qualifiers resolve ambiguity, and scopes decide lifecycle and caching.</p>
-                  
-                  <table>
-                    <thead><tr><th>Scenario</th><th>What happens</th></tr></thead>
-                    <tbody><tr><td>User bean present</td><td><span class="pill good">Default skipped</span></td></tr><tr><td>Property disabled</td><td><span class="pill caution">Auto-config off</span></td></tr><tr><td>Multiple beans</td><td><span class="pill bad">Qualifier needed</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              
-    <div class="code-blocks">
-    <div>
-      <div class="code-title">Overriding a default bean</div>
-      <pre>@Configuration
-public class CustomConfig {
-  @Bean
-  public Clock appClock() {
-    return Clock.systemUTC();
-  }
-}</pre>
-    </div>
-    </div>
-              
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Ambiguous beans break startup</h3>
-              <p>If you add multiple beans of the same type without a qualifier or @Primary, Spring fails to start.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>Conditions decide if defaults load.</li><li>Your @Bean overrides auto-config.</li><li>Qualifiers resolve ambiguity.</li>
-              </ul>
-            </article>
-
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>Which annotation prevents an auto-config bean when you supply your own?</h3>
-              <div class="quiz-options" data-answer="0">
-                <button class="quiz-option">A. @ConditionalOnMissingBean</button><button class="quiz-option">B. @Component</button><button class="quiz-option">C. @Profile</button><button class="quiz-option">D. @Order</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: A</strong>
-                <span>@ConditionalOnMissingBean means the auto-config bean loads only if no other bean exists.</span>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section class="section" data-section="3">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 4 of 5 · ~7 mins</div>
-            <h2>Building a Custom Starter</h2>
-            <p>You can package reusable auto-configuration into your own starter so every team shares the same defaults.</p>
-            
-          </div>
-
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Make your own kit</h3>
-              <p>You build a kit once, then every teammate can assemble the same toy quickly.</p>
-            </article>
-
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Company template</h3>
-              <p>A shared slide deck template keeps every presentation consistent without redoing styles.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Custom starters bundle dependencies plus auto-config classes registered through AutoConfiguration.imports.</p>
-                  <p class="deep-note">A custom starter usually has a starter module (dependencies) and an autoconfigure module (conditional beans).</p>
-                  <p class="deep-note">Expose clear properties, document defaults, and test conditions so users can override behavior predictably.</p>
-                  <p class="deep-note">A good starter feels invisible: defaults work out of the box, but customization is straightforward and well documented.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul>
-                        <li>Reusable defaults</li><li>Consistent infrastructure wiring</li><li>Faster service creation</li>
-                      </ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common pitfall</h4>
-                      <ul>
-                        <li>Copying shared config across repos</li><li>Inconsistent observability wiring</li><li>Manual property binding</li>
-                      </ul>
-                    </div>
-                  </div>
-                  <div class="badge-row"><span class="pill info">Auto-config module</span><span class="pill good">Starter module</span><span class="pill caution">Metadata</span></div>
-                  
-                  <div class="flow"><span class="flow-step">Create auto-config</span><span class="flow-arrow">→</span><span class="flow-step">Register imports</span><span class="flow-arrow">→</span><span class="flow-step">Publish starter</span><span class="flow-arrow">→</span><span class="flow-step">Consume in apps</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“A starter is two modules: an auto-config module plus a dependency-only starter that apps include.”</p>
-                  <p class="deep-note">Auto-configuration is just conditional beans. Starters pull dependencies and register defaults; overriding a bean is how you take control.</p>
-                  
-                  <table>
-                    <thead><tr><th>Part</th><th>Role</th></tr></thead>
-                    <tbody><tr><td>Auto-config</td><td><span class="pill info">Defines beans</span></td></tr><tr><td>Starter</td><td><span class="pill good">Depends on auto-config</span></td></tr><tr><td>Metadata</td><td><span class="pill caution">Property hints</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              
-    <div class="code-blocks">
-    <div>
-      <div class="code-title">Register auto-configuration</div>
-      <pre># META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports
-com.acme.logging.LoggingAutoConfiguration</pre>
-    </div>
-    </div>
-              
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Versioning matters</h3>
-              <p>Starters become shared infrastructure. Use semantic versioning and document defaults clearly.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>Custom starters share defaults safely.</li><li>Use AutoConfiguration.imports.</li><li>Document properties and versions.</li>
-              </ul>
-            </article>
-
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>What file registers a custom auto-configuration class in Boot 3?</h3>
-              <div class="quiz-options" data-answer="2">
-                <button class="quiz-option">A. spring.factories</button><button class="quiz-option">B. application.yml</button><button class="quiz-option">C. AutoConfiguration.imports</button><button class="quiz-option">D. BeanFactory.xml</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: C</strong>
-                <span>Boot 3 uses AutoConfiguration.imports to register auto-config classes.</span>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-      
-      
-      <section class="section" data-section="4">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 5 of 5 · ~7 mins</div>
-            <h2>Deep Dive: Debugging Auto-Config</h2>
-            <p>When defaults feel magical, use condition reports and /actuator to see what loaded.</p>
-          </div>
-
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Checklist of switches</h3>
-              <p>You can open the toy and see which switches are ON.</p>
-            </article>
-
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Circuit breaker panel</h3>
-              <p>You check the panel to see which circuits are active.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Boot provides condition evaluation reports and actuator endpoints to inspect applied auto-config.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul><li>Makes behavior predictable</li><li>Helps troubleshoot missing beans</li><li>Clarifies overrides</li></ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common pitfall</h4>
-                      <ul><li>Guessing which config loaded</li><li>Random bean conflicts</li><li>Overriding without knowing</li></ul>
-                    </div>
-                  </div>
-                  <div class="badge-row"><span class="pill good">Condition report</span><span class="pill info">Actuator</span><span class="pill caution">Overrides</span></div>
-                  <div class="flow"><span class="flow-step">Enable debug</span><span class="flow-arrow">→</span><span class="flow-step">Check report</span><span class="flow-arrow">→</span><span class="flow-step">Inspect beans</span><span class="flow-arrow">→</span><span class="flow-step">Override as needed</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“I enable condition reports to see why auto-config applied or not, then override with @Bean.”</p>
-                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
-                  <table>
-                    <thead><tr><th>Tool</th><th>Use</th></tr></thead>
-                    <tbody><tr><td>--debug</td><td><span class="pill good">Condition report</span></td></tr><tr><td>/actuator/beans</td><td><span class="pill info">Bean list</span></td></tr><tr><td>/actuator/conditions</td><td><span class="pill caution">Why matched</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              <div class="code-blocks">
-    <div>
-      <div class="code-title">Enable auto-config report</div>
-      <pre>java -jar app.jar --debug</pre>
-    </div>
-    </div>
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Default beans can hide bugs</h3>
-              <p>If you assume a bean is your own but it’s auto-configured, you may miss behavior differences.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways"><li>Use condition reports.</li><li>Inspect actuator beans.</li><li>Override only when necessary.</li></ul>
-            </article>
-
-            
-          
-            <article class="card technical">
-              <div class="card-label">Edge cases</div>
-              <h3>Edge Cases & Tradeoffs</h3>
-              <ul class="takeaways"><li>Auto-config order can override your beans.</li><li>Classpath conditions change with optional deps.</li><li>Conditional beans are skipped if a bean already exists.</li><li>Overriding bean names can be confusing.</li><li>Eager initialization can slow startup.</li></ul>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Checklist</div>
-              <h3>Production Checklist</h3>
-              <ul class="takeaways"><li>Use @ConditionalOnMissingBean for extensibility.</li><li>Document property toggles for features.</li><li>Expose sensible defaults that are easy to override.</li><li>Keep auto-config in separate module.</li><li>Use AutoConfigurationMetadata for performance.</li></ul>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Interview</div>
-              <h3>Interview Hooks</h3>
-              <p>Connect starters, auto-config, and conditional beans.</p>
-              <ul class="takeaways"><li>@SpringBootApplication pulls in @EnableAutoConfiguration.</li><li>Auto-config is driven by spring.factories / AutoConfiguration.imports.</li><li>Conditions decide if beans are created.</li></ul>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Advanced Example</div>
-              <div class="code-blocks">
-        <div>
-          <div class="code-title">Conditional bean example</div>
-          <pre>@AutoConfiguration
-class MyAutoConfig {
-  @Bean
-  @ConditionalOnMissingBean
-  MyClient myClient(MyProps props){
-    return new MyClient(props.getUrl());
-  }
-}</pre>
-        </div>
-      </div>
-      <p>Auto-config creates beans only when users did not override them.</p>
-            </article><article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>Which actuator endpoint shows condition evaluation?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. /actuator/info</button><button class="quiz-option">B. /actuator/conditions</button><button class="quiz-option">C. /actuator/metrics</button><button class="quiz-option">D. /actuator/loggers</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>/actuator/conditions lists auto-config conditions.</span>
-              </div>
-            </article></div>
-        </div>
-      </section>
-<section class="section" data-section="5">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Completion screen · Review mode</div>
-            <h2>🎉 Auto-Configuration & Starters Cheat Sheet</h2>
-            <p>Use this to recall how Boot wires defaults and how starters pull the right modules.</p>
-          </div>
-
-          <div class="completion-grid">
-            <div class="card technical">
-              <div class="card-label">Cheat sheet</div>
-              <div class="celebrate">🚀</div>
-              <h3>1-line interview answers</h3>
-              <div class="cheat-list">
-    <div class="cheat-item">
-      <h4>Auto-config</h4>
-      <p>Boot auto-configures beans based on classpath + properties + missing beans.</p>
-    </div>
-    <div class="cheat-item">
-      <h4>Starters</h4>
-      <p>Starters bundle dependencies plus default auto-config for common stacks.</p>
-    </div>
-    <div class="cheat-item">
-      <h4>Conditions</h4>
-      <p>Conditional annotations decide which beans load.</p>
-    </div>
-    <div class="cheat-item">
-      <h4>Overrides</h4>
-      <p>Your @Bean wins over auto-config defaults.</p>
-    </div>
-              </div>
-            </div>
-
-            <div class="card analogy">
-              <div class="card-label">What to remember</div>
-              <h3>Fast mental model</h3>
-              <ul class="takeaways">
-                <li><strong>@SpringBootApplication</strong>: includes auto-config and component scan.</li><li><strong>Starters</strong>: consistent dependency sets and versions.</li><li><strong>Conditions</strong>: @ConditionalOnClass/Property/MissingBean.</li><li><strong>Overrides</strong>: define your own bean to replace defaults.</li>
-              </ul>
-              <h3 style="margin-top:22px;">Common traps</h3>
-              <div class="badge-row">
-                <span class="pill bad">Mystery beans</span><span class="pill bad">Multiple starters for same feature</span><span class="pill bad">Missing overrides</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    </main>
-
-    <footer class="footer-nav">
-      <div class="footer-nav-inner">
-        <button class="btn" id="prevBtn">← Back</button>
-        <button class="btn primary" id="nextBtn">Next →</button>
-      </div>
-    </footer>
-  </div>
-
-  <script>
+    @Bean
+    @ConditionalOnMissingBean
+    public MySdkClient mySdkClient(MySdkProperties properties) {
+        return new MySdkClient(properties.baseUrl(), properties.apiKey());
+    }
+}</pre></div></div></article><article class="card technical"><div class="card-label">Mini takeaway</div><ul class="takeaways"><li>Building a Custom Starter exists to make a policy explicit</li><li>Defaults are useful, but interviews reward knowing the boundary and trade-off</li><li>If you see copy-pasting the same config across many services, revisit the design before adding more framework annotations</li></ul></article><article class="card quiz-card"><div class="card-label">Quiz</div><h3>What problem does a custom starter primarily solve?</h3><div class="quiz-options" data-answer="1"><button class="quiz-option">A. It makes every project identical at runtime</button><button class="quiz-option">B. It packages repeated setup and aligned defaults behind one dependency</button><button class="quiz-option">C. It removes the need for documentation</button><button class="quiz-option">D. It works only for open-source libraries</button></div><div class="quiz-result"><strong>Correct answer: B</strong><span>B is correct because it matches how building a custom starter is intended to work in a production-grade Spring application. The wrong choices are plausible because they sound framework-ish, but they either ignore the real boundary, confuse this feature with another one, or assume a stronger guarantee than the mechanism actually provides. In an interview, tie your answer back to the concrete failure mode you are preventing.</span></div></article></div></div></section><section class="section" data-section="4">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Section 5 · Interview deep dive</div>
+<h2>Deep Dive: Debugging Auto-Config</h2>
+<p>This deep dive connects the mechanics of auto-configuration &amp; starters with the production decisions senior engineers are expected to explain clearly.</p>
+</div>
+<div class="card-grid">
+<article class="card eli5"><div class="card-label">🧒 ELI5</div><h3>A bigger real-world picture</h3><p>In a larger system, the hard part is not knowing the vocabulary. The hard part is deciding which rule belongs where so the whole operation still makes sense when something unexpected happens.</p><p>That is why understanding why an auto-configuration matched, why it backed off, and how to take control cleanly. The mechanism has to support the story your system tells under stress, not just the happy path.</p><p>This is where interviewers are listening for judgment: not just what the feature does, but how you would keep the design honest when multiple moving parts are involved.</p></article><article class="card analogy"><div class="card-label">🔗 ANALOGY</div><h3>Why senior engineers care</h3><p>understanding why an auto-configuration matched, why it backed off, and how to take control cleanly usually sits at the intersection of framework behavior, business requirements, and operational trade-offs.</p><p>When teams get this wrong, the system may still compile and even pass local tests, but production behavior becomes surprising.</p></article><article class="card technical"><div class="card-label">Technical</div><div class="two-col"><div><h3>What to optimize for</h3><p><strong>Definition:</strong> understanding why an auto-configuration matched, why it backed off, and how to take control cleanly</p><p class="deep-note">Senior-level answers usually mention boundaries, defaults, observability, and trade-offs in the same breath.</p><p class="deep-note">The safest pattern is usually to keep the mechanism narrow, explicit, and easy to reason about.</p><p class="deep-note">If a framework feature starts compensating for unclear ownership, unclear state, or unclear flow, the real problem is probably design, not syntax.</p><div class="mini-grid"><div class="mini-panel"><h4>What senior engineers optimize for</h4><ul><li>Optimize for clarity of boundary</li><li>Prefer explicit over accidental behavior</li><li>Choose the smallest mechanism that solves the real problem</li></ul></div><div class="mini-panel"><h4>Trade-offs</h4><ul><li>Magic defaults can hide surprises</li><li>Cross-cutting features can mask weak design</li><li>More power usually means more room for misuse</li></ul></div></div><div class="badge-row"><span class="pill good">Clear boundary</span><span class="pill info">Explain the why</span><span class="pill bad">Framework cargo-culting</span></div><div class="flow"><span class="flow-step">Requirement appears</span><span class="flow-arrow">→</span><span class="flow-step">Choose boundary</span><span class="flow-arrow">→</span><span class="flow-step">Apply mechanism</span><span class="flow-arrow">→</span><span class="flow-step">Observe real outcome</span></div></div><div><h3>💬 Model Interview Answer</h3><p>“When I talk about auto-configuration &amp; starters at a senior level, I focus on the boundary, the default behavior, and the production trade-off. I want the design to make the intent obvious even to the next engineer reading the code. The smell I watch for is using framework features to hide a design problem instead of clarifying one.”</p><table><thead><tr><th>Decision point</th><th>Senior answer</th></tr></thead><tbody><tr><td>Boundary</td><td>State it explicitly</td></tr><tr><td>Default behavior</td><td>Know it by memory</td></tr><tr><td>Trade-off</td><td>Say what you pay for the guarantee</td></tr></tbody></table></div></div><div class="code-blocks"><div><div class="code-title">❌ Wrong: implicit or leaky design</div><pre>// Team keeps adding random @Bean definitions without checking
+// the condition report or whether Boot already provided one.</pre></div><div><div class="code-title">✅ Right: explicit design</div><pre># application.yml
+debug: true</pre></div></div></article><article class="card warning"><div class="card-label">Warning</div><h3>The biggest trap</h3><p>The hardest bugs here come from systems that “mostly work” until traffic, retries, concurrency, or environment differences expose the hidden assumption.</p><p>A good fix usually makes the intent more explicit instead of adding one more annotation and hoping the framework figures it out.</p><div class="code-blocks"><div><div class="code-title">Broken pattern</div><pre>// Team keeps adding random @Bean definitions without checking
+// the condition report or whether Boot already provided one.</pre></div><div><div class="code-title">Safer pattern</div><pre># application.yml
+debug: true</pre></div></div></article><article class="card technical"><div class="card-label">Edge cases</div><h3>Edge Cases &amp; Tradeoffs</h3><ul class="takeaways"><li>Defaults can differ across libraries or underlying infrastructure.</li><li>A passing unit test does not prove the boundary is correct in production.</li><li>Observability is often what reveals misuse first.</li><li>Keep side effects and lifetime of state in view when designing the boundary.</li><li>Explain what would happen under failure, not just success.</li></ul></article><article class="card technical"><div class="card-label">Checklist</div><h3>Production Checklist</h3><ul class="takeaways"><li>Name the real invariant or guarantee you care about</li><li>Choose the narrowest boundary that enforces it</li><li>Know the default behavior and the override you would use</li><li>Keep the design easy to test and easy to observe</li><li>Call out one concrete gotcha in interviews</li></ul></article><article class="card technical"><div class="card-label">Interview</div><h3>Interview Hooks</h3><ul class="takeaways"><li>What is the default behavior?</li><li>What is the most common production mistake?</li><li>What trade-off are you accepting for the guarantee?</li></ul></article><article class="card technical"><div class="card-label">Advanced Example</div><h3>Advanced example</h3><div class="code-blocks"><div><div class="code-title">Advanced example</div><pre>@AutoConfiguration
+@ConditionalOnProperty(prefix = "client", name = "enabled", havingValue = "true", matchIfMissing = true)
+class ClientAutoConfiguration {}</pre></div></div></article><article class="card quiz-card"><div class="card-label">Quiz</div><h3>When Boot configuration behaves unexpectedly, what is the healthiest first move?</h3><div class="quiz-options" data-answer="1"><button class="quiz-option">A. Add more random @Bean methods until startup succeeds</button><button class="quiz-option">B. Check the condition evaluation report and the existing beans</button><button class="quiz-option">C. Delete the starter from the build immediately</button><button class="quiz-option">D. Assume component scanning is broken</button></div><div class="quiz-result"><strong>Correct answer: B</strong><span>B is correct because it reflects the mature design choice for this kind of boundary. The distractors all represent common mistakes: pushing responsibility to the wrong layer, assuming defaults are stronger than they are, or using a framework feature as a substitute for clear design. In an interview, explain not only which answer is right, but what failure mode the wrong answers would create.</span></div></article></div></div></section><section class="section" data-section="5">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Completion screen · Review mode</div>
+<h2>🎉 Auto-Configuration &amp; Starters Cheat Sheet</h2>
+<p>Use this cheat sheet to recall the core mental model for auto-configuration &amp; starters and the most common traps.</p>
+</div>
+<div class="completion-grid">
+<div class="card technical">
+<div class="card-label">Cheat sheet</div>
+<div class="celebrate">🚀</div>
+<h3>1-line interview answers</h3>
+<div class="cheat-list"><div class="cheat-item"><h4>Auto-config</h4><p>Boot applies defaults conditionally, not blindly.</p></div><div class="cheat-item"><h4>Starters</h4><p>Use curated dependency bundles instead of random manual versions.</p></div><div class="cheat-item"><h4>Back-off</h4><p>User-defined beans often make Boot defaults step aside.</p></div><div class="cheat-item"><h4>Custom starter</h4><p>Great for reusable internal platform setup.</p></div></div>
+</div>
+<div class="card analogy">
+<div class="card-label">What to remember</div>
+<h3>Fast mental model</h3>
+<ul class="takeaways"><li><strong>Auto-config:</strong> Boot applies defaults conditionally, not blindly.</li><li><strong>Starters:</strong> Use curated dependency bundles instead of random manual versions.</li><li><strong>Back-off:</strong> User-defined beans often make Boot defaults step aside.</li><li><strong>Custom starter:</strong> Great for reusable internal platform setup.</li></ul>
+<h3 style="margin-top:22px;">Common traps</h3>
+<div class="badge-row"><span class="pill bad">Assuming magic</span><span class="pill bad">Version soup</span><span class="pill bad">Copy-pasted config</span></div>
+</div>
+</div>
+</div>
+</section><footer class="footer-nav">
+<div class="footer-nav-inner">
+<button class="btn" id="prevBtn">← Back</button>
+<button class="btn primary" id="nextBtn">Next →</button>
+</div>
+</footer>
+</div>
+<script>
 const sections = Array.from(document.querySelectorAll('.section'));
     const dots = Array.from(document.querySelectorAll('.nav-dot'));
     const prevBtn = document.getElementById('prevBtn');

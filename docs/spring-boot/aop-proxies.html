@@ -1,13 +1,14 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AOP & Proxies Learning Module</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AOP &amp; Proxies Learning Module</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&amp;family=Syne:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<style>
 :root {
       --bg: #0a0e1a;
       --surface-1: #111827;
@@ -728,638 +729,334 @@
   </style>
 </head>
 <body>
-  <div class="app">
-    <header class="topbar">
-      <div class="topbar-inner">
-        <div class="topbar-row">
-          <div class="brand">
-            <h1>AOP & Proxies</h1>
-            <small>Interactive 35-minute learning module</small>
-          </div>
-                <div class="topbar-row">
-          <div class="breadcrumb">
-            <a href="../index.html">Home</a>
-            <span>›</span>
-            <a href="index.html">Spring Boot</a>
-            <span>›</span>
-            <span>AOP & Proxies</span>
-          </div>
-        </div>
-          <div class="timer-wrap" aria-live="polite">
-            <span class="timer-label">Time Left</span>
-            <span class="timer" id="timer">35:00</span>
-          </div>
-        </div>
-        <div class="topbar-row">
-                    <nav class="nav-dots" aria-label="Section navigation"><button class="nav-dot active" data-index="0" aria-label="Go to section 1">1</button><button class="nav-dot" data-index="1" aria-label="Go to section 2">2</button><button class="nav-dot" data-index="2" aria-label="Go to section 3">3</button><button class="nav-dot" data-index="3" aria-label="Go to section 4">4</button><button class="nav-dot" data-index="4" aria-label="Go to section 5">5</button><button class="nav-dot" data-index="5" aria-label="Go to completion screen">6</button></nav>
-        </div>
-        <div class="progress-shell" aria-hidden="true">
-          <div class="progress-bar" id="progressBar"></div>
-        </div>
-      </div>
-    </header>
+<div class="app">
+<header class="topbar">
+<div class="topbar-inner">
+<div class="topbar-row">
+<div class="brand">
+<h1>AOP &amp; Proxies</h1>
+<small>Interactive 35-minute learning module</small>
+</div>
+<div class="topbar-row">
+<div class="breadcrumb">
+<a href="../index.html">Home</a>
+<span>›</span>
+<a href="index.html">Spring Boot</a>
+<span>›</span>
+<span>AOP &amp; Proxies</span>
+</div>
+</div>
+<div aria-live="polite" class="timer-wrap">
+<span class="timer-label">Time Left</span>
+<span class="timer" id="timer">35:00</span>
+</div>
+</div>
+<div class="topbar-row">
+<nav aria-label="Section navigation" class="nav-dots"><button aria-label="Go to section 1" class="nav-dot active" data-index="0">1</button><button aria-label="Go to section 2" class="nav-dot" data-index="1">2</button><button aria-label="Go to section 3" class="nav-dot" data-index="2">3</button><button aria-label="Go to section 4" class="nav-dot" data-index="3">4</button><button aria-label="Go to section 5" class="nav-dot" data-index="4">5</button><button aria-label="Go to completion screen" class="nav-dot" data-index="5">6</button></nav>
+</div>
+<div aria-hidden="true" class="progress-shell">
+<div class="progress-bar" id="progressBar"></div>
+</div>
+</div>
+</header>
+<main>
 
-    <main>
-      
-      <section class="section active" data-section="0">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 1 of 5 · ~7 mins</div>
-            <h2>Why AOP Exists</h2>
-            <p>AOP lets you apply cross-cutting concerns like logging or security without scattering code everywhere.</p>
-            <a class="back-link" href="index.html">← Back to Spring Boot</a>
-          </div>
 
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Automatic stamp</h3>
-              <p>Every document gets a stamp automatically, so you do not stamp each page by hand.</p>
-            </article>
 
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Security checkpoint</h3>
-              <p>Everyone passes through one checkpoint rather than each room having its own guard.</p>
-            </article>
 
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> AOP wraps method calls with advice through proxies so cross-cutting logic is centralized.</p>
-                  <p class="deep-note">AOP isolates cross-cutting concerns like logging, security, and transactions from business logic, so core code stays clean.</p>
-                  <p class="deep-note">Instead of repeating the same logic in every service method, AOP applies it in one place through advice.</p>
-                  <p class="deep-note">A beginner-friendly way to think about AOP is as "invisible wrappers" around methods that add extra behavior.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul>
-                        <li>Less duplicated code</li><li>Consistent policies</li><li>Separation of concerns</li>
-                      </ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common pitfall</h4>
-                      <ul>
-                        <li>Logging in every method</li><li>Scattered security checks</li><li>Repeated timing code</li>
-                      </ul>
-                    </div>
-                  </div>
-                  <div class="badge-row"><span class="pill good">Advice</span><span class="pill info">Pointcut</span><span class="pill caution">Proxy</span></div>
-                  
-                  <div class="flow"><span class="flow-step">Call proxy</span><span class="flow-arrow">→</span><span class="flow-step">Apply advice</span><span class="flow-arrow">→</span><span class="flow-step">Invoke target</span><span class="flow-arrow">→</span><span class="flow-step">Return result</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“Spring AOP uses proxies to intercept method calls and apply cross-cutting logic like transactions.”</p>
-                  <p class="deep-note">AOP only works through proxies. Internal self-invocation bypasses advice, which is why annotations sometimes appear to be ignored.</p>
-                  
-                  <table>
-                    <thead><tr><th>Concern</th><th>Example</th></tr></thead>
-                    <tbody><tr><td>Transactions</td><td><span class="pill good">@Transactional</span></td></tr><tr><td>Caching</td><td><span class="pill info">@Cacheable</span></td></tr><tr><td>Security</td><td><span class="pill caution">@PreAuthorize</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              
-    <div class="code-blocks">
-    <div>
-      <div class="code-title">Simple @Around advice</div>
-      <pre>@Aspect
+
+
+</main>
+<section class="section" data-section="0">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Section 1 · Core concept</div>
+<h2>Why AOP Exists</h2>
+<p>Why AOP Exists is a high-value senior interview topic because it reveals whether you understand the underlying mechanism, the default behavior, and the trade-offs in production.</p>
+</div>
+<div class="card-grid">
+<article class="card eli5"><div class="card-label">🧒 ELI5</div><h3>A simple mental picture</h3><p>Imagine a busy workplace where one small rule determines whether the whole team moves smoothly or keeps stepping on each other. Aspect-Oriented Programming lets you apply cross-cutting behavior such as transactions, logging, security, or timing around many methods without duplicating that logic in each method body. works like that kind of rule: it tells the system how to behave before small mistakes turn into bigger production problems.</p><p>It matters because it keeps repeated infrastructure concerns from drowning the business logic. Without that rule, engineers often discover the problem only after the app is under load, when the bug is expensive and confusing.</p><p>The useful mental shortcut is to ask: “What is the system trying to coordinate here, and what breaks when that coordination is missing?” That question usually reveals why this feature exists.</p></article><article class="card analogy"><div class="card-label">🔗 ANALOGY</div><h3>Why the rule exists</h3><p>Think of why aop exists as a piece of operating policy, not just a syntax feature. The policy exists to make decisions repeatable across the whole system instead of relying on every individual class to remember the rule.</p><p>If you ignore that policy, the most common smell is copy-pasted try/finally, timing, or auth checks inside every service method. In real applications, that smell usually shows up as flaky behavior, hidden coupling, or painful debugging.</p></article><article class="card technical"><div class="card-label">Technical</div><div class="two-col"><div><h3>How it works under the hood</h3><p><strong>Definition:</strong> Aspect-Oriented Programming lets you apply cross-cutting behavior such as transactions, logging, security, or timing around many methods without duplicating that logic in each method body.</p><p class="deep-note">Aspect-Oriented Programming lets you apply cross-cutting behavior such as transactions, logging, security, or timing around many methods without duplicating that logic in each method body. Under the hood, Spring or the underlying infrastructure usually applies the behavior around your code rather than by changing your business logic directly.</p><p class="deep-note">The production question is not “can I enable it?” but “where is the right boundary and what problem am I actually solving?”</p><p class="deep-note">Good engineering here comes from matching the mechanism to the use case, then watching the trade-off instead of blindly turning the feature on everywhere.</p><div class="mini-grid"><div class="mini-panel"><h4>Why it matters in production</h4><ul><li>it keeps repeated infrastructure concerns from drowning the business logic</li><li>Makes aop &amp; proxies behavior explicit</li><li>Gives you a clearer story in debugging and interviews</li></ul></div><div class="mini-panel"><h4>Common smell</h4><ul><li>copy-pasted try/finally, timing, or auth checks inside every service method</li><li>Using the mechanism as a band-aid for design issues</li><li>Forgetting what the default behavior actually is</li></ul></div></div><div class="badge-row"><span class="pill good">Explicit intent</span><span class="pill info">Know the default</span><span class="pill caution">Trade-offs matter</span></div><div class="flow"><span class="flow-step">Call enters boundary</span><span class="flow-arrow">→</span><span class="flow-step">Framework applies rule</span><span class="flow-arrow">→</span><span class="flow-step">Your code runs</span><span class="flow-arrow">→</span><span class="flow-step">Outcome follows configured behavior</span></div></div><div><h3>💬 Model Interview Answer</h3><p>“Why AOP Exists in AOP &amp; Proxies is really about aspect-oriented programming lets you apply cross-cutting behavior such as transactions, logging, security, or timing around many methods without duplicating that logic in each method body. I explain it as a mechanism that enforces a policy around my code so the application behaves consistently. The important trade-off is copy-pasted try/finally, timing, or auth checks inside every service method, so I use it deliberately and I make the boundary clear instead of relying on accidental defaults.”</p><table><thead><tr><th>Scenario</th><th>What to watch</th></tr></thead><tbody><tr><td>Business logic</td><td>What the method is trying to do</td></tr><tr><td>Cross-cutting concern</td><td>Behavior applied to many places</td></tr><tr><td>Aspect</td><td>Reusable wrapper for that concern</td></tr></tbody></table></div></div><div class="code-blocks"><div><div class="code-title">❌ Wrong</div><pre>@Service
+public class OrderService {
+
+    public Order findById(Long id) {
+        long start = System.currentTimeMillis();
+        try {
+            return repository.findById(id).orElseThrow();
+        } finally {
+            log.info("took={}ms", System.currentTimeMillis() - start);
+        }
+    }
+}</pre></div><div><div class="code-title">✅ Right</div><pre>@Aspect
 @Component
 public class TimingAspect {
-  @Around("execution(* com.acme..*(..))")
-  public Object time(ProceedingJoinPoint pjp) throws Throwable {
-    long start = System.currentTimeMillis();
-    try { return pjp.proceed(); }
-    finally { log.info("{} took {}ms", pjp.getSignature(), System.currentTimeMillis() - start); }
-  }
-}</pre>
-    </div>
-    </div>
-              
-            </article>
 
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Proxies add indirection</h3>
-              <p>Debugging through proxies can be confusing if you do not understand the call chain.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>AOP centralizes cross-cutting concerns.</li><li>Proxies intercept calls.</li><li>Advice wraps method execution.</li>
-              </ul>
-            </article>
-
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>What is the primary mechanism behind Spring AOP?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. Bytecode rewriting only</button><button class="quiz-option">B. Proxies intercepting method calls</button><button class="quiz-option">C. Reflection in each method</button><button class="quiz-option">D. JVM agents</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>Spring AOP relies on proxies that intercept method calls.</span>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section class="section" data-section="1">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 2 of 5 · ~7 mins</div>
-            <h2>Proxy Types: JDK vs CGLIB</h2>
-            <p>Spring can proxy interfaces with JDK dynamic proxies or classes with CGLIB.</p>
-            
-          </div>
-
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Stand-in actor</h3>
-              <p>A stand-in actor can play a role as long as they follow the same script.</p>
-            </article>
-
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Adapter vs mold</h3>
-              <p>An adapter fits a standard plug, while a mold copies the shape exactly.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> JDK proxies implement interfaces; CGLIB creates subclasses to proxy concrete classes.</p>
-                  <p class="deep-note">JDK proxies wrap interfaces while CGLIB proxies subclass classes; both affect how methods are intercepted.</p>
-                  <p class="deep-note">Knowing the proxy type matters for final classes, equals/hashCode behavior, and performance.</p>
-                  <p class="deep-note">If your class does not implement an interface, Spring will likely use CGLIB and create a subclass at runtime.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul>
-                        <li>Works with or without interfaces</li><li>Flexible proxying</li><li>Control over behavior</li>
-                      </ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common pitfall</h4>
-                      <ul>
-                        <li>No interfaces with JDK proxies</li><li>Final classes with CGLIB</li><li>Unexpected proxy type</li>
-                      </ul>
-                    </div>
-                  </div>
-                  <div class="badge-row"><span class="pill info">JDK proxy</span><span class="pill good">CGLIB</span><span class="pill caution">Final method</span></div>
-                  
-                  <div class="flow"><span class="flow-step">Pick proxy type</span><span class="flow-arrow">→</span><span class="flow-step">Create proxy</span><span class="flow-arrow">→</span><span class="flow-step">Intercept method</span><span class="flow-arrow">→</span><span class="flow-step">Delegate to target</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“If a bean has an interface, Spring can use JDK proxies; otherwise it falls back to CGLIB.”</p>
-                  <p class="deep-note">AOP only works through proxies. Internal self-invocation bypasses advice, which is why annotations sometimes appear to be ignored.</p>
-                  
-                  <table>
-                    <thead><tr><th>Proxy</th><th>Constraint</th></tr></thead>
-                    <tbody><tr><td>JDK</td><td><span class="pill info">Requires interface</span></td></tr><tr><td>CGLIB</td><td><span class="pill good">Subclass based</span></td></tr><tr><td>Final methods</td><td><span class="pill bad">Cannot be proxied</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              
-    <div class="code-blocks">
-    <div>
-      <div class="code-title">Force CGLIB</div>
-      <pre>spring:
-  aop:
-    proxy-target-class: true</pre>
-    </div>
-    </div>
-              
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Final methods are not advised</h3>
-              <p>CGLIB cannot override final methods, so advice will not apply.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>JDK proxies need interfaces.</li><li>CGLIB proxies classes.</li><li>Final methods cannot be advised.</li>
-              </ul>
-            </article>
-
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>When does Spring use JDK dynamic proxies?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. When no interfaces exist</button><button class="quiz-option">B. When an interface is present</button><button class="quiz-option">C. Always</button><button class="quiz-option">D. Only for @Configuration</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>JDK proxies are used when the target implements an interface.</span>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section class="section" data-section="2">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 3 of 5 · ~7 mins</div>
-            <h2>Self-invocation and AOP Limitations</h2>
-            <p>Calls within the same class bypass the proxy, so advice does not apply.</p>
-            
-          </div>
-
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Calling yourself</h3>
-              <p>If you call yourself, the assistant does not get a chance to help.</p>
-            </article>
-
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Taking a shortcut</h3>
-              <p>If you bypass the checkpoint, no one checks your pass.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Spring AOP works through proxies, so only external calls go through the proxy and trigger advice.</p>
-                  <p class="deep-note">Self-invocation bypasses the proxy because the call stays inside the target object.</p>
-                  <p class="deep-note">To apply advice, calls must go through the proxy or use AspectJ for compile-time weaving.</p>
-                  <p class="deep-note">A simple fix is to move the advised method to another bean, so calls naturally go through the proxy.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul>
-                        <li>Prevents false assumptions</li><li>Explains missing advice</li><li>Guides design choices</li>
-                      </ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common pitfall</h4>
-                      <ul>
-                        <li>Advice not applied</li><li>Calling methods internally</li><li>Unexpected transaction boundaries</li>
-                      </ul>
-                    </div>
-                  </div>
-                  <div class="badge-row"><span class="pill good">Proxy boundary</span><span class="pill bad">Self-call</span><span class="pill caution">Refactor</span></div>
-                  
-                  <div class="flow"><span class="flow-step">Caller -> Proxy</span><span class="flow-arrow">→</span><span class="flow-step">Proxy -> Target</span><span class="flow-arrow">→</span><span class="flow-step">Advice applied</span><span class="flow-arrow">→</span><span class="flow-step">Return</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“Self-invocation bypasses proxies, so annotations like @Transactional or @Cacheable do not apply.”</p>
-                  <p class="deep-note">AOP only works through proxies. Internal self-invocation bypasses advice, which is why annotations sometimes appear to be ignored.</p>
-                  
-                  <table>
-                    <thead><tr><th>Scenario</th><th>Result</th></tr></thead>
-                    <tbody><tr><td>External call</td><td><span class="pill good">Advice runs</span></td></tr><tr><td>Internal call</td><td><span class="pill bad">Advice skipped</span></td></tr><tr><td>Proxy-aware call</td><td><span class="pill info">Advice runs</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              
-    <div class="code-blocks">
-    <div>
-      <div class="code-title">Self-invocation pitfall</div>
-      <pre>@Service
-public class BillingService {
-  @Transactional
-  public void charge() { ... }
-
-  public void run() {
-    charge(); // bypasses proxy
-  }
-}</pre>
-    </div>
-    </div>
-              
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Transactions may not start</h3>
-              <p>Self-invocation is a common cause of @Transactional not working.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>AOP applies only across proxy boundary.</li><li>Refactor to separate beans.</li><li>Be careful with self-calls.</li>
-              </ul>
-            </article>
-
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>Why might @Transactional not work on an internal method call?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. Transactions require XML</button><button class="quiz-option">B. Proxy is bypassed</button><button class="quiz-option">C. It only works in tests</button><button class="quiz-option">D. It disables autowiring</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>AOP advice only runs when calls go through the proxy.</span>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section class="section" data-section="3">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 4 of 5 · ~7 mins</div>
-            <h2>Common Spring AOP Use Cases</h2>
-            <p>AOP powers transactions, caching, security checks, and async execution in Spring.</p>
-            
-          </div>
-
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Automatic rules</h3>
-              <p>You set rules once, and they apply automatically when people pass through.</p>
-            </article>
-
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Toll booth</h3>
-              <p>Cars pass through a toll booth where rules apply without stopping traffic entirely.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Spring uses AOP to wrap methods with concerns like transaction boundaries, caching, and security.</p>
-                  <p class="deep-note">Common AOP use cases include transaction boundaries, auditing, retries, and metrics.</p>
-                  <p class="deep-note">Avoid putting business decisions in aspects; keep them focused on cross-cutting behavior.</p>
-                  <p class="deep-note">If an aspect becomes large or complex, it is often a sign that the concern belongs in normal code, not in AOP.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul>
-                        <li>Centralized policies</li><li>Consistency</li><li>Cleaner business logic</li>
-                      </ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common pitfall</h4>
-                      <ul>
-                        <li>Cross-cutting logic in services</li><li>Manual transaction management</li><li>Scattered security checks</li>
-                      </ul>
-                    </div>
-                  </div>
-                  <div class="badge-row"><span class="pill good">@Transactional</span><span class="pill info">@Cacheable</span><span class="pill caution">@Async</span></div>
-                  
-                  <div class="flow"><span class="flow-step">Call method</span><span class="flow-arrow">→</span><span class="flow-step">Apply transaction</span><span class="flow-arrow">→</span><span class="flow-step">Execute</span><span class="flow-arrow">→</span><span class="flow-step">Commit/rollback</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“Spring AOP wraps service calls to manage transactions, caching, and security without cluttering code.”</p>
-                  <p class="deep-note">AOP only works through proxies. Internal self-invocation bypasses advice, which is why annotations sometimes appear to be ignored.</p>
-                  
-                  <table>
-                    <thead><tr><th>Annotation</th><th>Concern</th></tr></thead>
-                    <tbody><tr><td>@Transactional</td><td><span class="pill good">ACID boundaries</span></td></tr><tr><td>@Cacheable</td><td><span class="pill info">Performance</span></td></tr><tr><td>@Async</td><td><span class="pill caution">Concurrency</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              
-    <div class="code-blocks">
-    <div>
-      <div class="code-title">Transactional service</div>
-      <pre>@Service
+    @Around("execution(* com.example..service..*(..))")
+    public Object time(ProceedingJoinPoint pjp) throws Throwable {
+        long start = System.currentTimeMillis();
+        try {
+            return pjp.proceed();
+        } finally {
+            log.info("{} took={}ms", pjp.getSignature(), System.currentTimeMillis() - start);
+        }
+    }
+}</pre></div></div><p>Use why aop exists where the rule belongs in architecture, not just where it happens to fix one failing test or one bug report.</p><p class="deep-note">The safest mental model is that Spring gives you a framework feature only when your call crosses the Spring-managed boundary and the surrounding infrastructure can participate.</p></article><article class="card warning"><div class="card-label">Warning</div><h3>Common misunderstanding</h3><p>The dangerous misunderstanding is treating why aop exists like a magic switch instead of a mechanism with boundaries and defaults. That is how teams end up with copy-pasted try/finally, timing, or auth checks inside every service method.</p><p>A safer pattern is to make the intent explicit, keep the scope narrow, and choose the smallest mechanism that actually solves the problem.</p><div class="code-blocks"><div><div class="code-title">Broken pattern</div><pre>@Service
 public class OrderService {
-  @Transactional
-  public void placeOrder(Order order) {
-    orderRepo.save(order);
-    inventory.reserve(order);
-  }
-}</pre>
-    </div>
-    </div>
-              
-            </article>
 
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Hidden complexity</h3>
-              <p>AOP can hide behavior. Make sure team members know which annotations add side effects.</p>
-            </article>
+    public Order findById(Long id) {
+        long start = System.currentTimeMillis();
+        try {
+            return repository.findById(id).orElseThrow();
+        } finally {
+            log.info("took={}ms", System.currentTimeMillis() - start);
+        }
+    }
+}</pre></div><div><div class="code-title">Safer pattern</div><pre>@Aspect
+@Component
+public class TimingAspect {
 
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>AOP powers core Spring features.</li><li>Use it to keep business code clean.</li><li>Document cross-cutting behavior.</li>
-              </ul>
-            </article>
+    @Around("execution(* com.example..service..*(..))")
+    public Object time(ProceedingJoinPoint pjp) throws Throwable {
+        long start = System.currentTimeMillis();
+        try {
+            return pjp.proceed();
+        } finally {
+            log.info("{} took={}ms", pjp.getSignature(), System.currentTimeMillis() - start);
+        }
+    }
+}</pre></div></div></article><article class="card technical"><div class="card-label">Mini takeaway</div><ul class="takeaways"><li>Why AOP Exists exists to make a policy explicit</li><li>Defaults are useful, but interviews reward knowing the boundary and trade-off</li><li>If you see copy-pasted try/finally, timing, or auth checks inside every service method, revisit the design before adding more framework annotations</li></ul></article><article class="card quiz-card"><div class="card-label">Quiz</div><h3>What problem is AOP mainly trying to solve?</h3><div class="quiz-options" data-answer="1"><button class="quiz-option">A. Faster SQL joins</button><button class="quiz-option">B. Reusing cross-cutting behavior without repeating it in every method</button><button class="quiz-option">C. Replacing all object-oriented design</button><button class="quiz-option">D. Disabling proxies</button></div><div class="quiz-result"><strong>Correct answer: B</strong><span>B is correct because it matches how why aop exists is intended to work in a production-grade Spring application. The wrong choices are plausible because they sound framework-ish, but they either ignore the real boundary, confuse this feature with another one, or assume a stronger guarantee than the mechanism actually provides. In an interview, tie your answer back to the concrete failure mode you are preventing.</span></div></article></div></div></section><section class="section" data-section="1">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Section 2 · Proxy mechanics</div>
+<h2>Proxy Types: JDK vs CGLIB</h2>
+<p>Proxy Types: JDK vs CGLIB is a high-value senior interview topic because it reveals whether you understand the underlying mechanism, the default behavior, and the trade-offs in production.</p>
+</div>
+<div class="card-grid">
+<article class="card eli5"><div class="card-label">🧒 ELI5</div><h3>A simple mental picture</h3><p>Imagine a busy workplace where one small rule determines whether the whole team moves smoothly or keeps stepping on each other. Spring AOP usually works by wrapping your bean in a proxy, either a JDK dynamic proxy for interfaces or a CGLIB subclass proxy for classes. works like that kind of rule: it tells the system how to behave before small mistakes turn into bigger production problems.</p><p>It matters because it explains what methods can actually be intercepted and why some calls do not behave as expected. Without that rule, engineers often discover the problem only after the app is under load, when the bug is expensive and confusing.</p><p>The useful mental shortcut is to ask: “What is the system trying to coordinate here, and what breaks when that coordination is missing?” That question usually reveals why this feature exists.</p></article><article class="card analogy"><div class="card-label">🔗 ANALOGY</div><h3>Why the rule exists</h3><p>Think of proxy types: jdk vs cglib as a piece of operating policy, not just a syntax feature. The policy exists to make decisions repeatable across the whole system instead of relying on every individual class to remember the rule.</p><p>If you ignore that policy, the most common smell is forgetting that final methods or same-class calls may not be intercepted the way you assume. In real applications, that smell usually shows up as flaky behavior, hidden coupling, or painful debugging.</p></article><article class="card technical"><div class="card-label">Technical</div><div class="two-col"><div><h3>How it works under the hood</h3><p><strong>Definition:</strong> Spring AOP usually works by wrapping your bean in a proxy, either a JDK dynamic proxy for interfaces or a CGLIB subclass proxy for classes.</p><p class="deep-note">Spring AOP usually works by wrapping your bean in a proxy, either a JDK dynamic proxy for interfaces or a CGLIB subclass proxy for classes. Under the hood, Spring or the underlying infrastructure usually applies the behavior around your code rather than by changing your business logic directly.</p><p class="deep-note">The production question is not “can I enable it?” but “where is the right boundary and what problem am I actually solving?”</p><p class="deep-note">Good engineering here comes from matching the mechanism to the use case, then watching the trade-off instead of blindly turning the feature on everywhere.</p><div class="mini-grid"><div class="mini-panel"><h4>Why it matters in production</h4><ul><li>it explains what methods can actually be intercepted and why some calls do not behave as expected</li><li>Makes aop &amp; proxies behavior explicit</li><li>Gives you a clearer story in debugging and interviews</li></ul></div><div class="mini-panel"><h4>Common smell</h4><ul><li>forgetting that final methods or same-class calls may not be intercepted the way you assume</li><li>Using the mechanism as a band-aid for design issues</li><li>Forgetting what the default behavior actually is</li></ul></div></div><div class="badge-row"><span class="pill good">Explicit intent</span><span class="pill info">Know the default</span><span class="pill caution">Trade-offs matter</span></div><div class="flow"><span class="flow-step">Call enters boundary</span><span class="flow-arrow">→</span><span class="flow-step">Framework applies rule</span><span class="flow-arrow">→</span><span class="flow-step">Your code runs</span><span class="flow-arrow">→</span><span class="flow-step">Outcome follows configured behavior</span></div></div><div><h3>💬 Model Interview Answer</h3><p>“Proxy Types: JDK vs CGLIB in AOP &amp; Proxies is really about spring aop usually works by wrapping your bean in a proxy, either a jdk dynamic proxy for interfaces or a cglib subclass proxy for classes. I explain it as a mechanism that enforces a policy around my code so the application behaves consistently. The important trade-off is forgetting that final methods or same-class calls may not be intercepted the way you assume, so I use it deliberately and I make the boundary clear instead of relying on accidental defaults.”</p><table><thead><tr><th>Scenario</th><th>What to watch</th></tr></thead><tbody><tr><td>JDK proxy</td><td>Works through interfaces</td></tr><tr><td>CGLIB proxy</td><td>Subclass-based</td></tr><tr><td>Final method/class</td><td>Can limit interception</td></tr></tbody></table></div></div><div class="code-blocks"><div><div class="code-title">❌ Wrong</div><pre>@Service
+public final class BillingService {
 
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>Which Spring feature relies heavily on AOP proxies?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. @Value</button><button class="quiz-option">B. @Transactional</button><button class="quiz-option">C. @ComponentScan</button><button class="quiz-option">D. @ConfigurationProperties</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>@Transactional is implemented through AOP proxies.</span>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-      
-      
-      <section class="section" data-section="4">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 5 of 5 · ~7 mins</div>
-            <h2>Deep Dive: Proxy Boundaries in Practice</h2>
-            <p>Knowing where proxies start and end prevents missing advice and unexpected behavior.</p>
-          </div>
+    @Transactional
+    public final void charge() {}
+}</pre></div><div><div class="code-title">✅ Right</div><pre>public interface BillingService {
+    void charge();
+}
 
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Talk to the assistant</h3>
-              <p>If you talk to yourself, the assistant never helps.</p>
-            </article>
+@Service
+public class DefaultBillingService implements BillingService {
+    @Transactional
+    public void charge() {}
+}</pre></div></div><p>Use proxy types: jdk vs cglib where the rule belongs in architecture, not just where it happens to fix one failing test or one bug report.</p><p class="deep-note">The safest mental model is that Spring gives you a framework feature only when your call crosses the Spring-managed boundary and the surrounding infrastructure can participate.</p></article><article class="card warning"><div class="card-label">Warning</div><h3>Common misunderstanding</h3><p>The dangerous misunderstanding is treating proxy types: jdk vs cglib like a magic switch instead of a mechanism with boundaries and defaults. That is how teams end up with forgetting that final methods or same-class calls may not be intercepted the way you assume.</p><p>A safer pattern is to make the intent explicit, keep the scope narrow, and choose the smallest mechanism that actually solves the problem.</p><div class="code-blocks"><div><div class="code-title">Broken pattern</div><pre>@Service
+public final class BillingService {
 
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Front desk vs back office</h3>
-              <p>Only requests through the front desk get processed.</p>
-            </article>
+    @Transactional
+    public final void charge() {}
+}</pre></div><div><div class="code-title">Safer pattern</div><pre>public interface BillingService {
+    void charge();
+}
 
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> AOP advice runs only when calls go through the proxy; self-invocation bypasses advice.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul><li>Explains missing @Transactional</li><li>Guides refactoring</li><li>Improves reliability</li></ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common pitfall</h4>
-                      <ul><li>Self-calls in same class</li><li>Final methods</li><li>Proxy mismatch</li></ul>
-                    </div>
-                  </div>
-                  <div class="badge-row"><span class="pill good">Proxy boundary</span><span class="pill bad">Self-call</span><span class="pill caution">Refactor</span></div>
-                  <div class="flow"><span class="flow-step">Caller -> Proxy</span><span class="flow-arrow">→</span><span class="flow-step">Advice runs</span><span class="flow-arrow">→</span><span class="flow-step">Target executes</span><span class="flow-arrow">→</span><span class="flow-step">Result returns</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“If advice doesn’t run, I check whether the call crossed the proxy boundary.”</p>
-                  <p class="deep-note">AOP only works through proxies. Internal self-invocation bypasses advice, which is why annotations sometimes appear to be ignored.</p>
-                  <table>
-                    <thead><tr><th>Scenario</th><th>Advice?</th></tr></thead>
-                    <tbody><tr><td>Bean called externally</td><td><span class="pill good">Yes</span></td></tr><tr><td>Self-invocation</td><td><span class="pill bad">No</span></td></tr><tr><td>Proxy-aware call</td><td><span class="pill info">Yes</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              <div class="code-blocks">
-    <div>
-      <div class="code-title">Refactor to separate bean</div>
-      <pre>@Service
-class BillingService {
-  private final TxService txService;
-  BillingService(TxService txService){ this.txService = txService; }
-  public void charge(){ txService.charge(); }
-}</pre>
-    </div>
-    </div>
-            </article>
+@Service
+public class DefaultBillingService implements BillingService {
+    @Transactional
+    public void charge() {}
+}</pre></div></div></article><article class="card technical"><div class="card-label">Mini takeaway</div><ul class="takeaways"><li>Proxy Types: JDK vs CGLIB exists to make a policy explicit</li><li>Defaults are useful, but interviews reward knowing the boundary and trade-off</li><li>If you see forgetting that final methods or same-class calls may not be intercepted the way you assume, revisit the design before adding more framework annotations</li></ul></article><article class="card quiz-card"><div class="card-label">Quiz</div><h3>Why do proxy types matter in Spring AOP?</h3><div class="quiz-options" data-answer="0"><button class="quiz-option">A. Because they determine what Spring can wrap and intercept</button><button class="quiz-option">B. Because they change your SQL dialect</button><button class="quiz-option">C. Because they disable bean scopes</button><button class="quiz-option">D. Because they replace dependency injection</button></div><div class="quiz-result"><strong>Correct answer: A</strong><span>A is correct because it matches how proxy types: jdk vs cglib is intended to work in a production-grade Spring application. The wrong choices are plausible because they sound framework-ish, but they either ignore the real boundary, confuse this feature with another one, or assume a stronger guarantee than the mechanism actually provides. In an interview, tie your answer back to the concrete failure mode you are preventing.</span></div></article></div></div></section><section class="section" data-section="2">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Section 3 · Common trap</div>
+<h2>Self-invocation and AOP Limitations</h2>
+<p>Self-invocation and AOP Limitations is a high-value senior interview topic because it reveals whether you understand the underlying mechanism, the default behavior, and the trade-offs in production.</p>
+</div>
+<div class="card-grid">
+<article class="card eli5"><div class="card-label">🧒 ELI5</div><h3>A simple mental picture</h3><p>Imagine a busy workplace where one small rule determines whether the whole team moves smoothly or keeps stepping on each other. A same-class method call can bypass the proxy because the call never leaves the object, so the aspect does not get a chance to intercept it. works like that kind of rule: it tells the system how to behave before small mistakes turn into bigger production problems.</p><p>It matters because it explains many “why did my transaction/logging/retry annotation not run?” bugs. Without that rule, engineers often discover the problem only after the app is under load, when the bug is expensive and confusing.</p><p>The useful mental shortcut is to ask: “What is the system trying to coordinate here, and what breaks when that coordination is missing?” That question usually reveals why this feature exists.</p></article><article class="card analogy"><div class="card-label">🔗 ANALOGY</div><h3>Why the rule exists</h3><p>Think of self-invocation and aop limitations as a piece of operating policy, not just a syntax feature. The policy exists to make decisions repeatable across the whole system instead of relying on every individual class to remember the rule.</p><p>If you ignore that policy, the most common smell is annotated method works from another bean but not from a helper method in the same class. In real applications, that smell usually shows up as flaky behavior, hidden coupling, or painful debugging.</p></article><article class="card technical"><div class="card-label">Technical</div><div class="two-col"><div><h3>How it works under the hood</h3><p><strong>Definition:</strong> A same-class method call can bypass the proxy because the call never leaves the object, so the aspect does not get a chance to intercept it.</p><p class="deep-note">A same-class method call can bypass the proxy because the call never leaves the object, so the aspect does not get a chance to intercept it. Under the hood, Spring or the underlying infrastructure usually applies the behavior around your code rather than by changing your business logic directly.</p><p class="deep-note">The production question is not “can I enable it?” but “where is the right boundary and what problem am I actually solving?”</p><p class="deep-note">Good engineering here comes from matching the mechanism to the use case, then watching the trade-off instead of blindly turning the feature on everywhere.</p><div class="mini-grid"><div class="mini-panel"><h4>Why it matters in production</h4><ul><li>it explains many “why did my transaction/logging/retry annotation not run?” bugs</li><li>Makes aop &amp; proxies behavior explicit</li><li>Gives you a clearer story in debugging and interviews</li></ul></div><div class="mini-panel"><h4>Common smell</h4><ul><li>annotated method works from another bean but not from a helper method in the same class</li><li>Using the mechanism as a band-aid for design issues</li><li>Forgetting what the default behavior actually is</li></ul></div></div><div class="badge-row"><span class="pill good">Explicit intent</span><span class="pill info">Know the default</span><span class="pill caution">Trade-offs matter</span></div><div class="flow"><span class="flow-step">Call enters boundary</span><span class="flow-arrow">→</span><span class="flow-step">Framework applies rule</span><span class="flow-arrow">→</span><span class="flow-step">Your code runs</span><span class="flow-arrow">→</span><span class="flow-step">Outcome follows configured behavior</span></div></div><div><h3>💬 Model Interview Answer</h3><p>“Self-invocation and AOP Limitations in AOP &amp; Proxies is really about a same-class method call can bypass the proxy because the call never leaves the object, so the aspect does not get a chance to intercept it. I explain it as a mechanism that enforces a policy around my code so the application behaves consistently. The important trade-off is annotated method works from another bean but not from a helper method in the same class, so I use it deliberately and I make the boundary clear instead of relying on accidental defaults.”</p><table><thead><tr><th>Scenario</th><th>What to watch</th></tr></thead><tbody><tr><td>External bean call</td><td>Proxy can intercept</td></tr><tr><td>Same-class call</td><td>Proxy often bypassed</td></tr><tr><td>Result</td><td>Aspect may never run</td></tr></tbody></table></div></div><div class="code-blocks"><div><div class="code-title">❌ Wrong</div><pre>@Service
+public class SyncService {
 
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Proxy surprises are common</h3>
-              <p>Understand when proxies are created to avoid missing advice.</p>
-            </article>
+    public void syncAll() {
+        retryableStep(); // bypasses proxy
+    }
 
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways"><li>Advice runs across proxy boundary.</li><li>Avoid self-invocation.</li><li>Split beans when needed.</li></ul>
-            </article>
+    @Retryable
+    public void retryableStep() {}
+}</pre></div><div><div class="code-title">✅ Right</div><pre>@Service
+public class RetryableStepService {
 
-            
-          
-            <article class="card technical">
-              <div class="card-label">Edge cases</div>
-              <h3>Edge Cases & Tradeoffs</h3>
-              <ul class="takeaways"><li>Self-invocation bypasses proxies.</li><li>Final classes/methods cannot be proxied by CGLIB.</li><li>Proxying changes equals/hashCode semantics.</li><li>Ordering of aspects can change behavior.</li><li>Advice with heavy logic slows calls.</li></ul>
-            </article>
+    @Retryable
+    public void retryableStep() {}
+}
 
-            <article class="card technical">
-              <div class="card-label">Checklist</div>
-              <h3>Production Checklist</h3>
-              <ul class="takeaways"><li>Keep aspects small and focused.</li><li>Document ordering with @Order.</li><li>Avoid AOP for core business logic.</li><li>Use interface-based proxies when possible.</li><li>Test cross-cutting behavior separately.</li></ul>
-            </article>
+@Service
+public class SyncService {
 
-            <article class="card technical">
-              <div class="card-label">Interview</div>
-              <h3>Interview Hooks</h3>
-              <p>Explain proxies, join points, and advice types.</p>
-              <ul class="takeaways"><li>JDK proxies use interfaces; CGLIB subclasses classes.</li><li>Advice types: before, after, around.</li><li>Pointcuts select join points.</li></ul>
-            </article>
+    private final RetryableStepService retryableStepService;
 
-            <article class="card technical">
-              <div class="card-label">Advanced Example</div>
-              <div class="code-blocks">
-        <div>
-          <div class="code-title">Around advice example</div>
-          <pre>@Around("execution(* com.app..*(..))")
-public Object timing(ProceedingJoinPoint pjp) throws Throwable {
-  long start = System.nanoTime();
-  try { return pjp.proceed(); }
-  finally { log(pjp.getSignature(), System.nanoTime()-start); }
-}</pre>
-        </div>
-      </div>
-      <p>Around advice can measure performance or enforce policies.</p>
-            </article><article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>Why does self-invocation bypass advice?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. It disables beans</button><button class="quiz-option">B. It skips the proxy</button><button class="quiz-option">C. It changes scope</button><button class="quiz-option">D. It resets context</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>Self-calls do not go through the proxy, so advice doesn’t run.</span>
-              </div>
-            </article></div>
-        </div>
-      </section>
-<section class="section" data-section="5">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Completion screen · Review mode</div>
-            <h2>🎉 AOP & Proxies Cheat Sheet</h2>
-            <p>Use this to recall how proxies enable cross-cutting behavior like transactions and caching.</p>
-          </div>
+    public SyncService(RetryableStepService retryableStepService) {
+        this.retryableStepService = retryableStepService;
+    }
 
-          <div class="completion-grid">
-            <div class="card technical">
-              <div class="card-label">Cheat sheet</div>
-              <div class="celebrate">🚀</div>
-              <h3>1-line interview answers</h3>
-              <div class="cheat-list">
-    <div class="cheat-item">
-      <h4>AOP</h4>
-      <p>Cross-cutting concerns applied via proxies.</p>
-    </div>
-    <div class="cheat-item">
-      <h4>JDK vs CGLIB</h4>
-      <p>JDK proxies require interfaces; CGLIB proxies classes.</p>
-    </div>
-    <div class="cheat-item">
-      <h4>Self-invocation</h4>
-      <p>Calls within the same class bypass the proxy.</p>
-    </div>
-    <div class="cheat-item">
-      <h4>Common uses</h4>
-      <p>@Transactional, @Cacheable, @Async.</p>
-    </div>
-              </div>
-            </div>
+    public void syncAll() {
+        retryableStepService.retryableStep();
+    }
+}</pre></div></div><p>Use self-invocation and aop limitations where the rule belongs in architecture, not just where it happens to fix one failing test or one bug report.</p><p class="deep-note">The safest mental model is that Spring gives you a framework feature only when your call crosses the Spring-managed boundary and the surrounding infrastructure can participate.</p></article><article class="card warning"><div class="card-label">Warning</div><h3>Common misunderstanding</h3><p>The dangerous misunderstanding is treating self-invocation and aop limitations like a magic switch instead of a mechanism with boundaries and defaults. That is how teams end up with annotated method works from another bean but not from a helper method in the same class.</p><p>A safer pattern is to make the intent explicit, keep the scope narrow, and choose the smallest mechanism that actually solves the problem.</p><div class="code-blocks"><div><div class="code-title">Broken pattern</div><pre>@Service
+public class SyncService {
 
-            <div class="card analogy">
-              <div class="card-label">What to remember</div>
-              <h3>Fast mental model</h3>
-              <ul class="takeaways">
-                <li><strong>Proxies</strong>: intercept method calls.</li><li><strong>Pointcuts</strong>: select join points.</li><li><strong>Advice</strong>: before/after/around behavior.</li><li><strong>Limitations</strong>: self-invocation and final methods.</li>
-              </ul>
-              <h3 style="margin-top:22px;">Common traps</h3>
-              <div class="badge-row">
-                <span class="pill bad">Self-invocation</span><span class="pill bad">Final methods</span><span class="pill bad">Proxy type mismatch</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    </main>
+    public void syncAll() {
+        retryableStep(); // bypasses proxy
+    }
 
-    <footer class="footer-nav">
-      <div class="footer-nav-inner">
-        <button class="btn" id="prevBtn">← Back</button>
-        <button class="btn primary" id="nextBtn">Next →</button>
-      </div>
-    </footer>
-  </div>
+    @Retryable
+    public void retryableStep() {}
+}</pre></div><div><div class="code-title">Safer pattern</div><pre>@Service
+public class RetryableStepService {
 
-  <script>
+    @Retryable
+    public void retryableStep() {}
+}
+
+@Service
+public class SyncService {
+
+    private final RetryableStepService retryableStepService;
+
+    public SyncService(RetryableStepService retryableStepService) {
+        this.retryableStepService = retryableStepService;
+    }
+
+    public void syncAll() {
+        retryableStepService.retryableStep();
+    }
+}</pre></div></div></article><article class="card technical"><div class="card-label">Mini takeaway</div><ul class="takeaways"><li>Self-invocation and AOP Limitations exists to make a policy explicit</li><li>Defaults are useful, but interviews reward knowing the boundary and trade-off</li><li>If you see annotated method works from another bean but not from a helper method in the same class, revisit the design before adding more framework annotations</li></ul></article><article class="card quiz-card"><div class="card-label">Quiz</div><h3>Why does self-invocation often break annotation-based AOP behavior?</h3><div class="quiz-options" data-answer="1"><button class="quiz-option">A. Because Java forbids annotations on public methods</button><button class="quiz-option">B. Because the internal call skips the proxy boundary</button><button class="quiz-option">C. Because only controllers are proxied</button><button class="quiz-option">D. Because proxies work only in tests</button></div><div class="quiz-result"><strong>Correct answer: B</strong><span>B is correct because it matches how self-invocation and aop limitations is intended to work in a production-grade Spring application. The wrong choices are plausible because they sound framework-ish, but they either ignore the real boundary, confuse this feature with another one, or assume a stronger guarantee than the mechanism actually provides. In an interview, tie your answer back to the concrete failure mode you are preventing.</span></div></article></div></div></section><section class="section" data-section="3">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Section 4 · Practical use</div>
+<h2>Common Spring AOP Use Cases</h2>
+<p>Common Spring AOP Use Cases is a high-value senior interview topic because it reveals whether you understand the underlying mechanism, the default behavior, and the trade-offs in production.</p>
+</div>
+<div class="card-grid">
+<article class="card eli5"><div class="card-label">🧒 ELI5</div><h3>A simple mental picture</h3><p>Imagine a busy workplace where one small rule determines whether the whole team moves smoothly or keeps stepping on each other. Spring commonly uses proxy-based AOP for transactions, method security, caching, retries, and custom logging or metrics. works like that kind of rule: it tells the system how to behave before small mistakes turn into bigger production problems.</p><p>It matters because it helps you recognize that many “spring features” are really the same proxy mechanism applied to different concerns. Without that rule, engineers often discover the problem only after the app is under load, when the bug is expensive and confusing.</p><p>The useful mental shortcut is to ask: “What is the system trying to coordinate here, and what breaks when that coordination is missing?” That question usually reveals why this feature exists.</p></article><article class="card analogy"><div class="card-label">🔗 ANALOGY</div><h3>Why the rule exists</h3><p>Think of common spring aop use cases as a piece of operating policy, not just a syntax feature. The policy exists to make decisions repeatable across the whole system instead of relying on every individual class to remember the rule.</p><p>If you ignore that policy, the most common smell is treating each annotation as unrelated magic. In real applications, that smell usually shows up as flaky behavior, hidden coupling, or painful debugging.</p></article><article class="card technical"><div class="card-label">Technical</div><div class="two-col"><div><h3>How it works under the hood</h3><p><strong>Definition:</strong> Spring commonly uses proxy-based AOP for transactions, method security, caching, retries, and custom logging or metrics.</p><p class="deep-note">Spring commonly uses proxy-based AOP for transactions, method security, caching, retries, and custom logging or metrics. Under the hood, Spring or the underlying infrastructure usually applies the behavior around your code rather than by changing your business logic directly.</p><p class="deep-note">The production question is not “can I enable it?” but “where is the right boundary and what problem am I actually solving?”</p><p class="deep-note">Good engineering here comes from matching the mechanism to the use case, then watching the trade-off instead of blindly turning the feature on everywhere.</p><div class="mini-grid"><div class="mini-panel"><h4>Why it matters in production</h4><ul><li>it helps you recognize that many “Spring features” are really the same proxy mechanism applied to different concerns</li><li>Makes aop &amp; proxies behavior explicit</li><li>Gives you a clearer story in debugging and interviews</li></ul></div><div class="mini-panel"><h4>Common smell</h4><ul><li>treating each annotation as unrelated magic</li><li>Using the mechanism as a band-aid for design issues</li><li>Forgetting what the default behavior actually is</li></ul></div></div><div class="badge-row"><span class="pill good">Explicit intent</span><span class="pill info">Know the default</span><span class="pill caution">Trade-offs matter</span></div><div class="flow"><span class="flow-step">Call enters boundary</span><span class="flow-arrow">→</span><span class="flow-step">Framework applies rule</span><span class="flow-arrow">→</span><span class="flow-step">Your code runs</span><span class="flow-arrow">→</span><span class="flow-step">Outcome follows configured behavior</span></div></div><div><h3>💬 Model Interview Answer</h3><p>“Common Spring AOP Use Cases in AOP &amp; Proxies is really about spring commonly uses proxy-based aop for transactions, method security, caching, retries, and custom logging or metrics. I explain it as a mechanism that enforces a policy around my code so the application behaves consistently. The important trade-off is treating each annotation as unrelated magic, so I use it deliberately and I make the boundary clear instead of relying on accidental defaults.”</p><table><thead><tr><th>Scenario</th><th>What to watch</th></tr></thead><tbody><tr><td>Transactions</td><td>Aspect-like boundary</td></tr><tr><td>Caching</td><td>Aspect-like boundary</td></tr><tr><td>Method security</td><td>Aspect-like boundary</td></tr></tbody></table></div></div><div class="code-blocks"><div><div class="code-title">❌ Wrong</div><pre>// Team memorizes @Transactional, @Cacheable, and @PreAuthorize separately
+// without realizing they all depend on boundaries and proxy behavior.</pre></div><div><div class="code-title">✅ Right</div><pre>@Service
+public class ProductService {
+
+    @Cacheable("products")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Transactional(readOnly = true)
+    public Product getProduct(Long id) {
+        return repository.findById(id).orElseThrow();
+    }
+}</pre></div></div><p>Use common spring aop use cases where the rule belongs in architecture, not just where it happens to fix one failing test or one bug report.</p><p class="deep-note">The safest mental model is that Spring gives you a framework feature only when your call crosses the Spring-managed boundary and the surrounding infrastructure can participate.</p></article><article class="card warning"><div class="card-label">Warning</div><h3>Common misunderstanding</h3><p>The dangerous misunderstanding is treating common spring aop use cases like a magic switch instead of a mechanism with boundaries and defaults. That is how teams end up with treating each annotation as unrelated magic.</p><p>A safer pattern is to make the intent explicit, keep the scope narrow, and choose the smallest mechanism that actually solves the problem.</p><div class="code-blocks"><div><div class="code-title">Broken pattern</div><pre>// Team memorizes @Transactional, @Cacheable, and @PreAuthorize separately
+// without realizing they all depend on boundaries and proxy behavior.</pre></div><div><div class="code-title">Safer pattern</div><pre>@Service
+public class ProductService {
+
+    @Cacheable("products")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Transactional(readOnly = true)
+    public Product getProduct(Long id) {
+        return repository.findById(id).orElseThrow();
+    }
+}</pre></div></div></article><article class="card technical"><div class="card-label">Mini takeaway</div><ul class="takeaways"><li>Common Spring AOP Use Cases exists to make a policy explicit</li><li>Defaults are useful, but interviews reward knowing the boundary and trade-off</li><li>If you see treating each annotation as unrelated magic, revisit the design before adding more framework annotations</li></ul></article><article class="card quiz-card"><div class="card-label">Quiz</div><h3>What is the most useful senior-level insight about many Spring annotations like @Transactional or @Cacheable?</h3><div class="quiz-options" data-answer="0"><button class="quiz-option">A. They often rely on the same proxy-based interception model</button><button class="quiz-option">B. They only work on REST controllers</button><button class="quiz-option">C. They compile to native SQL</button><button class="quiz-option">D. They remove the need for testing</button></div><div class="quiz-result"><strong>Correct answer: A</strong><span>A is correct because it matches how common spring aop use cases is intended to work in a production-grade Spring application. The wrong choices are plausible because they sound framework-ish, but they either ignore the real boundary, confuse this feature with another one, or assume a stronger guarantee than the mechanism actually provides. In an interview, tie your answer back to the concrete failure mode you are preventing.</span></div></article></div></div></section><section class="section" data-section="4">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Section 5 · Interview deep dive</div>
+<h2>Deep Dive: Proxy Boundaries in Practice</h2>
+<p>This deep dive connects the mechanics of aop &amp; proxies with the production decisions senior engineers are expected to explain clearly.</p>
+</div>
+<div class="card-grid">
+<article class="card eli5"><div class="card-label">🧒 ELI5</div><h3>A bigger real-world picture</h3><p>In a larger system, the hard part is not knowing the vocabulary. The hard part is deciding which rule belongs where so the whole operation still makes sense when something unexpected happens.</p><p>That is why knowing when a framework feature depends on proxy interception and designing class boundaries so that interception actually happens. The mechanism has to support the story your system tells under stress, not just the happy path.</p><p>This is where interviewers are listening for judgment: not just what the feature does, but how you would keep the design honest when multiple moving parts are involved.</p></article><article class="card analogy"><div class="card-label">🔗 ANALOGY</div><h3>Why senior engineers care</h3><p>knowing when a framework feature depends on proxy interception and designing class boundaries so that interception actually happens usually sits at the intersection of framework behavior, business requirements, and operational trade-offs.</p><p>When teams get this wrong, the system may still compile and even pass local tests, but production behavior becomes surprising.</p></article><article class="card technical"><div class="card-label">Technical</div><div class="two-col"><div><h3>What to optimize for</h3><p><strong>Definition:</strong> knowing when a framework feature depends on proxy interception and designing class boundaries so that interception actually happens</p><p class="deep-note">Senior-level answers usually mention boundaries, defaults, observability, and trade-offs in the same breath.</p><p class="deep-note">The safest pattern is usually to keep the mechanism narrow, explicit, and easy to reason about.</p><p class="deep-note">If a framework feature starts compensating for unclear ownership, unclear state, or unclear flow, the real problem is probably design, not syntax.</p><div class="mini-grid"><div class="mini-panel"><h4>What senior engineers optimize for</h4><ul><li>Optimize for clarity of boundary</li><li>Prefer explicit over accidental behavior</li><li>Choose the smallest mechanism that solves the real problem</li></ul></div><div class="mini-panel"><h4>Trade-offs</h4><ul><li>Magic defaults can hide surprises</li><li>Cross-cutting features can mask weak design</li><li>More power usually means more room for misuse</li></ul></div></div><div class="badge-row"><span class="pill good">Clear boundary</span><span class="pill info">Explain the why</span><span class="pill bad">Framework cargo-culting</span></div><div class="flow"><span class="flow-step">Requirement appears</span><span class="flow-arrow">→</span><span class="flow-step">Choose boundary</span><span class="flow-arrow">→</span><span class="flow-step">Apply mechanism</span><span class="flow-arrow">→</span><span class="flow-step">Observe real outcome</span></div></div><div><h3>💬 Model Interview Answer</h3><p>“When I talk about aop &amp; proxies at a senior level, I focus on the boundary, the default behavior, and the production trade-off. I want the design to make the intent obvious even to the next engineer reading the code. The smell I watch for is using framework features to hide a design problem instead of clarifying one.”</p><table><thead><tr><th>Decision point</th><th>Senior answer</th></tr></thead><tbody><tr><td>Boundary</td><td>State it explicitly</td></tr><tr><td>Default behavior</td><td>Know it by memory</td></tr><tr><td>Trade-off</td><td>Say what you pay for the guarantee</td></tr></tbody></table></div></div><div class="code-blocks"><div><div class="code-title">❌ Wrong: implicit or leaky design</div><pre>@Service
+public class InvoiceService {
+
+    public void generate() {
+        saveAudit(); // @Transactional or @Retryable here may not apply
+    }
+
+    @Transactional
+    public void saveAudit() {}
+}</pre></div><div><div class="code-title">✅ Right: explicit design</div><pre>@Service
+public class AuditService {
+
+    @Transactional
+    public void saveAudit() {}
+}
+
+@Service
+public class InvoiceService {
+
+    private final AuditService auditService;
+
+    public InvoiceService(AuditService auditService) {
+        this.auditService = auditService;
+    }
+
+    public void generate() {
+        auditService.saveAudit();
+    }
+}</pre></div></div></article><article class="card warning"><div class="card-label">Warning</div><h3>The biggest trap</h3><p>The hardest bugs here come from systems that “mostly work” until traffic, retries, concurrency, or environment differences expose the hidden assumption.</p><p>A good fix usually makes the intent more explicit instead of adding one more annotation and hoping the framework figures it out.</p><div class="code-blocks"><div><div class="code-title">Broken pattern</div><pre>@Service
+public class InvoiceService {
+
+    public void generate() {
+        saveAudit(); // @Transactional or @Retryable here may not apply
+    }
+
+    @Transactional
+    public void saveAudit() {}
+}</pre></div><div><div class="code-title">Safer pattern</div><pre>@Service
+public class AuditService {
+
+    @Transactional
+    public void saveAudit() {}
+}
+
+@Service
+public class InvoiceService {
+
+    private final AuditService auditService;
+
+    public InvoiceService(AuditService auditService) {
+        this.auditService = auditService;
+    }
+
+    public void generate() {
+        auditService.saveAudit();
+    }
+}</pre></div></div></article><article class="card technical"><div class="card-label">Edge cases</div><h3>Edge Cases &amp; Tradeoffs</h3><ul class="takeaways"><li>Defaults can differ across libraries or underlying infrastructure.</li><li>A passing unit test does not prove the boundary is correct in production.</li><li>Observability is often what reveals misuse first.</li><li>Keep side effects and lifetime of state in view when designing the boundary.</li><li>Explain what would happen under failure, not just success.</li></ul></article><article class="card technical"><div class="card-label">Checklist</div><h3>Production Checklist</h3><ul class="takeaways"><li>Name the real invariant or guarantee you care about</li><li>Choose the narrowest boundary that enforces it</li><li>Know the default behavior and the override you would use</li><li>Keep the design easy to test and easy to observe</li><li>Call out one concrete gotcha in interviews</li></ul></article><article class="card technical"><div class="card-label">Interview</div><h3>Interview Hooks</h3><ul class="takeaways"><li>What is the default behavior?</li><li>What is the most common production mistake?</li><li>What trade-off are you accepting for the guarantee?</li></ul></article><article class="card technical"><div class="card-label">Advanced Example</div><h3>Advanced example</h3><div class="code-blocks"><div><div class="code-title">Advanced example</div><pre>@Aspect
+@Component
+public class CorrelationAspect {
+
+    @Around("@annotation(org.springframework.web.bind.annotation.GetMapping)")
+    public Object attachCorrelationId(ProceedingJoinPoint pjp) throws Throwable {
+        MDC.put("correlationId", UUID.randomUUID().toString());
+        try {
+            return pjp.proceed();
+        } finally {
+            MDC.clear();
+        }
+    }
+}</pre></div></div></article><article class="card quiz-card"><div class="card-label">Quiz</div><h3>When a Spring annotation relies on AOP, what design habit helps most?</h3><div class="quiz-options" data-answer="0"><button class="quiz-option">A. Keep the boundary on externally called methods in Spring-managed beans</button><button class="quiz-option">B. Put every helper method in the same class</button><button class="quiz-option">C. Prefer final classes everywhere</button><button class="quiz-option">D. Assume the framework will intercept any call path</button></div><div class="quiz-result"><strong>Correct answer: A</strong><span>A is correct because it reflects the mature design choice for this kind of boundary. The distractors all represent common mistakes: pushing responsibility to the wrong layer, assuming defaults are stronger than they are, or using a framework feature as a substitute for clear design. In an interview, explain not only which answer is right, but what failure mode the wrong answers would create.</span></div></article></div></div></section><section class="section" data-section="5">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Completion screen · Review mode</div>
+<h2>🎉 AOP &amp; Proxies Cheat Sheet</h2>
+<p>Use this cheat sheet to recall the core mental model for aop &amp; proxies and the most common traps.</p>
+</div>
+<div class="completion-grid">
+<div class="card technical">
+<div class="card-label">Cheat sheet</div>
+<div class="celebrate">🚀</div>
+<h3>1-line interview answers</h3>
+<div class="cheat-list"><div class="cheat-item"><h4>AOP</h4><p>Centralize cross-cutting behavior instead of repeating it everywhere.</p></div><div class="cheat-item"><h4>Proxy</h4><p>Most Spring AOP features work by wrapping the bean.</p></div><div class="cheat-item"><h4>Self-invocation</h4><p>Internal same-class calls often skip interception.</p></div><div class="cheat-item"><h4>Interview hook</h4><p>Many Spring annotations are proxy-powered, not magical.</p></div></div>
+</div>
+<div class="card analogy">
+<div class="card-label">What to remember</div>
+<h3>Fast mental model</h3>
+<ul class="takeaways"><li><strong>AOP:</strong> Centralize cross-cutting behavior instead of repeating it everywhere.</li><li><strong>Proxy:</strong> Most Spring AOP features work by wrapping the bean.</li><li><strong>Self-invocation:</strong> Internal same-class calls often skip interception.</li><li><strong>Interview hook:</strong> Many Spring annotations are proxy-powered, not magical.</li></ul>
+<h3 style="margin-top:22px;">Common traps</h3>
+<div class="badge-row"><span class="pill bad">Copy-pasted cross-cutting code</span><span class="pill bad">Final methods everywhere</span><span class="pill bad">Self-invocation surprises</span></div>
+</div>
+</div>
+</div>
+</section><footer class="footer-nav">
+<div class="footer-nav-inner">
+<button class="btn" id="prevBtn">← Back</button>
+<button class="btn primary" id="nextBtn">Next →</button>
+</div>
+</footer>
+</div>
+<script>
 const sections = Array.from(document.querySelectorAll('.section'));
     const dots = Array.from(document.querySelectorAll('.nav-dot'));
     const prevBtn = document.getElementById('prevBtn');

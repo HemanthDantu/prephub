@@ -749,605 +749,292 @@
     </header>
 
     <main>
-      
       <section class="section active" data-section="0">
         <div class="section-inner">
           <div class="hero">
             <div class="section-label">Section 1 of 5 · ~7 mins</div>
             <h2>Creational Patterns (Singleton, Factory, Builder)</h2>
-            <p>Creational patterns help you control how objects are made, especially when setup is complex or should be consistent across the app.</p>
+            <p>Creational patterns answer one question: how do we construct objects safely when creation logic becomes repetitive, conditional, or easy to misuse?</p>
           </div>
-
           <div class="card-grid">
             <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>One toy, one rulebook</h3>
-              <p>Imagine a toy store where certain toys must always be built the same way. You use a simple rulebook so every toy comes out correct.</p>
-            </article>
-
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Restaurant prep station</h3>
-              <p>Instead of every cook mixing ingredients differently, a prep station creates the ingredients the same way so the kitchen stays consistent.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Creational patterns centralize and control object creation so callers do not need to know construction details.</p>
-                  <p class="deep-note">Creational patterns solve the problem of object setup becoming scattered and inconsistent. Instead of every caller knowing which constructor parameters, defaults, or collaborators to use, one place owns that knowledge and returns ready-to-use objects.</p>
-                  <p class="deep-note">Factory is for choosing between implementations at runtime, while Builder is for complex objects with optional fields or step-by-step construction. Singleton is about a single instance, but it trades simplicity for testability and should be used only when global state is genuinely required.</p>
-                  <p class="deep-note">A beginner-friendly mental model is to centralize creation so that changes in construction only happen in one file. That is the core value: fewer places to edit when you add a dependency or change defaults.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul>
-                        <li>Keeps object setup consistent</li><li>Hides complex construction</li><li>Improves testability</li>
-                      </ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common smell</h4>
-                      <ul>
-                        <li>Newing up many variants in one class</li><li>Constructor parameters exploding</li><li>Duplicate setup logic</li>
-                      </ul>
-                    </div>
-                  </div>
-                  <div class="badge-row">
-                    <span class="pill good">Factory for variants</span><span class="pill info">Builder for optional fields</span><span class="pill caution">Singleton with care</span>
-                  </div>
-                  <div class="flow"><span class="flow-step">Need object</span><span class="flow-arrow">→</span><span class="flow-step">Choose creator</span><span class="flow-arrow">→</span><span class="flow-step">Build safely</span><span class="flow-arrow">→</span><span class="flow-step">Return ready instance</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“I use Factory when I need multiple implementations behind a stable interface, and Builder when a constructor would become unreadable or error-prone.”</p>
-                  <table>
-                    <thead><tr><th>Best fit</th><th>Avoid when</th></tr></thead>
-                    <tbody><tr><td>Many variants</td><td><span class="pill caution">Only one type forever</span></td></tr><tr><td>Optional params</td><td><span class="pill bad">Rigid constructor</span></td></tr><tr><td>Shared config</td><td><span class="pill bad">Hidden global state</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              
-    <div class="code-blocks">
-      
-    <div>
-      <div class="code-title">Factory + Builder example</div>
-      <pre><span class="token-comment">public class UserBuilder {
-  private String name;
-  private String role;
-  public UserBuilder name(String name){ this.name = name; return this; }
-  public UserBuilder role(String role){ this.role = role; return this; }
-  public User build(){ return new User(name, role); }
-}
-
-public class UserFactory {
-  public static UserBuilder builder(){ return new UserBuilder(); }
-}</span></pre>
-    </div>
-    </div>
-              <p>Callers get a clean API and never touch the messy construction details.</p>
-                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Singletons hide global state</h3>
-              <p>Singletons are easy to overuse. Prefer DI-managed singletons so you can test and swap implementations.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>Factory hides creation choices.</li><li>Builder makes complex construction readable.</li><li>Singletons should be rare and explicit.</li>
-              </ul>
-            </article>
-
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>Which pattern best fits a class with 8 optional constructor fields?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. Observer</button><button class="quiz-option">B. Builder</button><button class="quiz-option">C. Decorator</button><button class="quiz-option">D. Strategy</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>Builder is ideal when many optional fields would make a constructor unreadable.</span>
-              </div>
-            </article>
+      <div class="card-label">🧒 ELI5</div>
+      <h3>A school with one admissions desk and standard forms</h3>
+      <p>Imagine a school where every student must be registered using the right form, the right defaults, and the right classroom assignment. You would not let every teacher invent the process from scratch. A single admissions desk gives consistency, and a checklist helps build the final student record correctly. Creational patterns solve that kind of problem in code.</p>
+    </article><article class="card analogy">
+      <div class="card-label">🔗 ANALOGY</div>
+      <h3>A car factory versus a backyard garage</h3>
+      <p>A factory knows exactly how to build different car variants from the same platform. Buyers ask for a type, and the factory handles the wiring, engine choice, and safety defaults. Without that central creation step, assembly logic gets scattered through the codebase and becomes painful to change later.</p>
+    </article><article class="card technical">
+      <div class="card-label">Technical</div>
+      <h3>Factory, Builder, and Singleton in real systems</h3>
+      <div class="two-col"><div><p><strong>Definition:</strong> Creational patterns centralize object construction so callers do not own complex setup details.</p><p class="deep-note">Use <strong>Factory</strong> when the caller wants “the right implementation” without knowing which concrete class should be built. Use <strong>Builder</strong> when an object has many optional fields or construction steps that would make constructors unreadable. Use <strong>Singleton</strong> only when one logical instance is truly required and hidden global state is acceptable.</p><p class="deep-note">In Spring applications, DI often plays the role people used to solve with Singletons manually. That is usually safer because Spring-managed singletons can still be mocked and replaced in tests.</p><div class="mini-grid"><div class="mini-panel"><h4>Why it matters in production</h4><p>Centralized construction reduces duplication, prevents invalid object states, and makes later changes localized instead of scattered.</p></div><div class="mini-panel"><h4>Trade-off</h4><p>Extra abstraction adds files and indirection. Use it when creation complexity is real, not imagined.</p></div></div><table><thead><tr><th>Pattern</th><th>Best use</th></tr></thead><tbody><tr><td>Factory</td><td>Choose the correct implementation at runtime.</td></tr><tr><td>Builder</td><td>Create complex objects with optional data and validation.</td></tr><tr><td>Singleton</td><td>One shared instance, but be careful with hidden global state.</td></tr></tbody></table><div class="mini-panel" style="background: rgba(124,58,237,0.12); border-color: rgba(124,58,237,0.35); margin-top: 16px;">
+      <h4>💬 Model Interview Answer</h4>
+      <p>Creational patterns are about controlling object creation. I reach for Builder when constructors become unreadable, Factory when callers should not know which concrete class to instantiate, and I avoid manual Singletons unless there is a genuine one-instance requirement. In Spring, DI-managed beans often remove the need for handwritten Singleton code. The trade-off is added abstraction, so I only use these patterns when construction complexity is real.</p>
+    </div></div><div></div></div><div class="code-blocks"><div>
+      <div class="code-title">❌ Wrong: callers own every construction detail</div>
+      <pre>NotificationClient client = new NotificationClient(
+    &quot;smtp.example.com&quot;,
+    587,
+    true,
+    Duration.ofSeconds(2),
+    Duration.ofSeconds(5),
+    new RetryPolicy(3)
+);</pre>
+    </div><div>
+      <div class="code-title">✅ Right: builder validates and keeps construction readable</div>
+      <pre>NotificationClient client = NotificationClient.builder()
+    .host(&quot;smtp.example.com&quot;)
+    .port(587)
+    .tlsEnabled(true)
+    .connectTimeout(Duration.ofSeconds(2))
+    .readTimeout(Duration.ofSeconds(5))
+    .retryPolicy(new RetryPolicy(3))
+    .build();</pre>
+    </div></div>
+    </article><article class="card warning">
+      <div class="card-label">Warning</div>
+      <h3>Manual Singleton is often a smell in DI-based apps</h3>
+      <p>A handwritten Singleton can hide global mutable state, complicate tests, and quietly create coupling across the codebase. In Spring, prefer constructor injection into a bean with singleton scope unless you have a very specific reason not to.</p>
+    </article><article class="card quiz-card">
+      <div class="card-label">Quiz</div>
+      <h3>Which pattern is the best fit for constructing an object with many optional fields and validation rules?</h3>
+      <div class="quiz-options" data-answer="1"><button class="quiz-option">A. Observer</button><button class="quiz-option">B. Builder</button><button class="quiz-option">C. Decorator</button><button class="quiz-option">D. Strategy</button></div>
+      <div class="quiz-result"><strong>Answer</strong><span>B is correct because Builder makes complex construction readable and gives one place for validation. Observer is about notifications, Decorator is for wrapping behavior, and Strategy is for swapping algorithms. The interview memory hook is: “Builder handles optional construction complexity.”</span></div>
+    </article>
           </div>
         </div>
       </section>
-      <section class="section " data-section="1">
+      <section class="section" data-section="1">
         <div class="section-inner">
           <div class="hero">
             <div class="section-label">Section 2 of 5 · ~7 mins</div>
             <h2>Behavioral Patterns (Strategy, Observer)</h2>
-            <p>Behavioral patterns define how objects collaborate and how behavior can change without rewriting core logic.</p>
+            <p>Behavioral patterns organize how objects choose behavior and react to events without turning core flows into giant conditionals.</p>
           </div>
-
           <div class="card-grid">
             <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Pick your game plan</h3>
-              <p>If you play soccer or basketball, you pick a different strategy. You still have the same team, but the plan changes.</p>
-            </article>
-
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>News subscription</h3>
-              <p>A news app sends updates to all subscribers. Each subscriber can react differently without changing the app.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Behavioral patterns separate actions and communication so the same system can behave differently without big rewrites.</p>
-                  <p class="deep-note">Behavioral patterns are about how objects communicate and how behavior changes without rewriting core flows. They keep your code open for extension by letting you plug in new behavior instead of adding more if/else logic.</p>
-                  <p class="deep-note">Strategy is a good fit when you want to swap algorithms like pricing, routing, or validation. Observer works when multiple systems need to react to events (emails, metrics, inventory updates) without the producer knowing each consumer.</p>
-                  <p class="deep-note">If you picture a checkout service, Strategy lets you swap discount rules, and Observer lets you notify analytics and shipping without changing checkout code. That separation is what keeps large systems maintainable.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul>
-                        <li>Swap behavior at runtime</li><li>Reduce giant if/else trees</li><li>Decouple event producers from consumers</li>
-                      </ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common smell</h4>
-                      <ul>
-                        <li>Large conditional blocks</li><li>Tight coupling between sender and receiver</li><li>Copy/pasted behavior</li>
-                      </ul>
-                    </div>
-                  </div>
-                  <div class="badge-row">
-                    <span class="pill good">Strategy for algorithms</span><span class="pill info">Observer for events</span><span class="pill bad">Hard-coded branching</span>
-                  </div>
-                  <div class="flow"><span class="flow-step">Need behavior</span><span class="flow-arrow">→</span><span class="flow-step">Select strategy</span><span class="flow-arrow">→</span><span class="flow-step">Execute</span><span class="flow-arrow">→</span><span class="flow-step">Notify observers</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“Strategy lets me plug different algorithms behind one interface, and Observer lets producers broadcast events without knowing consumers.”</p>
-                  <table>
-                    <thead><tr><th>Pattern</th><th>When to use</th></tr></thead>
-                    <tbody><tr><td>Strategy</td><td><span class="pill good">Runtime algorithm swap</span></td></tr><tr><td>Observer</td><td><span class="pill info">Event fan-out</span></td></tr><tr><td>Switch chains</td><td><span class="pill bad">Growing brittle logic</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              
-    <div class="code-blocks">
-      
-    <div>
-      <div class="code-title">Strategy example</div>
-      <pre><span class="token-comment">public interface PricingStrategy {
-  double price(Order order);
+      <div class="card-label">🧒 ELI5</div>
+      <h3>Choosing a different game plan for each match</h3>
+      <p>A team might defend in one match and attack in another. The players are the same, but the plan changes depending on the opponent. That is what Strategy does. Observer is different: it is like fans, reporters, and scoreboards all reacting when the referee blows the whistle.</p>
+    </article><article class="card analogy">
+      <div class="card-label">🔗 ANALOGY</div>
+      <h3>A fire alarm connected to many listeners</h3>
+      <p>One sensor detects smoke, but many things react: alarms sound, doors unlock, elevators stop, and the fire department is notified. The detector should not hard-code every one of those behaviors. Observer exists so the event producer stays simple while listeners can change independently.</p>
+    </article><article class="card technical">
+      <div class="card-label">Technical</div>
+      <h3>Separating decisions from core workflow</h3>
+      <div class="two-col"><div><p><strong>Definition:</strong> Behavioral patterns control how objects interact and how behavior changes over time without rewriting the main flow.</p><p class="deep-note"><strong>Strategy</strong> is for swapping algorithms behind a stable interface, such as pricing, validation, fraud checks, or routing rules. <strong>Observer</strong> is for publishing events to interested listeners without coupling the producer to every consumer.</p><p class="deep-note">These patterns matter when the codebase is expected to grow. A checkout service with discount logic hard-coded in one switch statement will become brittle quickly. A publisher that directly invokes email, analytics, billing, and audit code will be painful to extend or test.</p><div class="mini-grid"><div class="mini-panel"><h4>When Strategy helps</h4><p>When you know variants will grow and you want to add new behavior without touching stable code.</p></div><div class="mini-panel"><h4>When Observer helps</h4><p>When one event should trigger many independent reactions such as notifications, metrics, and workflows.</p></div></div><table><thead><tr><th>Pattern</th><th>Typical backend example</th></tr></thead><tbody><tr><td>Strategy</td><td>Different discount or fraud-scoring algorithms.</td></tr><tr><td>Observer</td><td>Order placed event fan-out to email, metrics, and inventory listeners.</td></tr></tbody></table><div class="mini-panel" style="background: rgba(124,58,237,0.12); border-color: rgba(124,58,237,0.35); margin-top: 16px;">
+      <h4>💬 Model Interview Answer</h4>
+      <p>Strategy lets me plug in different algorithms behind one interface, which is great for rules that evolve over time. Observer lets one event trigger many independent reactions without tightly coupling the producer to its consumers. The main trade-off is indirection — the code becomes easier to extend, but you need clear naming and tracing so the behavior stays discoverable.</p>
+    </div></div><div></div></div><div class="code-blocks"><div>
+      <div class="code-title">✅ Strategy example</div>
+      <pre>interface PricingStrategy {
+    Money price(Order order);
 }
 
-public class SurgePricing implements PricingStrategy {
-  public double price(Order order){ return order.base() * 1.2; }
-}</span></pre>
-    </div>
-    </div>
-              <p>Adding a new strategy never changes the caller — you just inject a new implementation.</p>
-                  <p class="deep-note">Resilience patterns protect downstreams and your own service. Always pair retries with timeouts and circuit breakers to avoid cascading failure.</p>
-            </article>
+final class HolidayPricingStrategy implements PricingStrategy {
+    @Override
+    public Money price(Order order) {
+        return order.basePrice().minus(Money.of(20));
+    }
+}
 
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Don’t over-abstract early</h3>
-              <p>Use Strategy when you actually have variation. One-off behavior does not need a pattern.</p>
-            </article>
+final class CheckoutService {
+    private final PricingStrategy pricingStrategy;
 
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>Strategy swaps algorithms cleanly.</li><li>Observer decouples sender and listeners.</li><li>Patterns are tools, not mandatory.</li>
-              </ul>
-            </article>
+    CheckoutService(PricingStrategy pricingStrategy) {
+        this.pricingStrategy = pricingStrategy;
+    }
 
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>You need to notify multiple systems when an order ships. Best fit?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. Builder</button><button class="quiz-option">B. Observer</button><button class="quiz-option">C. Singleton</button><button class="quiz-option">D. Template Method</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>Observer handles one-to-many event notifications without tight coupling.</span>
-              </div>
-            </article>
+    Money totalFor(Order order) {
+        return pricingStrategy.price(order);
+    }
+}</pre>
+    </div><div>
+      <div class="code-title">✅ Observer-style event publishing</div>
+      <pre>record OrderPlacedEvent(UUID orderId) {}
+
+interface OrderPlacedListener {
+    void onOrderPlaced(OrderPlacedEvent event);
+}
+
+final class MetricsListener implements OrderPlacedListener {
+    public void onOrderPlaced(OrderPlacedEvent event) {
+        System.out.println(&quot;Increment metric for &quot; + event.orderId());
+    }
+}</pre>
+    </div></div>
+    </article><article class="card warning">
+      <div class="card-label">Warning</div>
+      <h3>Do not create a pattern when you have only one behavior and no evidence of change</h3>
+      <p>Patterns should reduce change risk, not inflate class count for no reason. If there is genuinely only one algorithm and no sign of future variants, a simple method may be the better design today.</p>
+    </article><article class="card quiz-card">
+      <div class="card-label">Quiz</div>
+      <h3>A service must support multiple pricing algorithms chosen at runtime. Which pattern fits best?</h3>
+      <div class="quiz-options" data-answer="0"><button class="quiz-option">A. Strategy</button><button class="quiz-option">B. Singleton</button><button class="quiz-option">C. Builder</button><button class="quiz-option">D. Adapter</button></div>
+      <div class="quiz-result"><strong>Answer</strong><span>A is correct because Strategy cleanly swaps algorithms behind one interface. Singleton is about one instance, Builder is about object construction, and Adapter changes interfaces. Interview takeaway: if behavior varies, think Strategy.</span></div>
+    </article>
           </div>
         </div>
       </section>
-      <section class="section " data-section="2">
+      <section class="section" data-section="2">
         <div class="section-inner">
           <div class="hero">
             <div class="section-label">Section 3 of 5 · ~7 mins</div>
             <h2>Structural Patterns (Decorator)</h2>
-            <p>Structural patterns focus on how objects are composed so features can be added without exploding class hierarchies.</p>
+            <p>Structural patterns are about composition. Decorator is especially important because it adds behavior without exploding subclass hierarchies.</p>
           </div>
-
           <div class="card-grid">
             <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Layer your outfit</h3>
-              <p>If it’s cold, you add a jacket, not a whole new body. You stack layers instead of replacing the base.</p>
-            </article>
-
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Filters on a photo</h3>
-              <p>You can apply multiple filters to a photo without changing the original. Each filter wraps the previous one.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Decorator wraps an object to add behavior dynamically without modifying the original class.</p>
-                  <p class="deep-note">Structural patterns focus on composition: they let you add features or adapt interfaces without changing what callers expect. That keeps dependencies stable even when internal structure evolves.</p>
-                  <p class="deep-note">Decorator wraps an object to add behavior at runtime, which avoids subclass explosions but introduces ordering and debugging concerns. It is best when features are optional or combinable rather than fixed.</p>
-                  <p class="deep-note">For example, you can wrap a FileStore with encryption and then compression without changing the FileStore interface. The trade-off is that debugging requires understanding the wrapper chain.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul>
-                        <li>Avoid subclass explosion</li><li>Mix features at runtime</li><li>Keep core class simple</li>
-                      </ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common smell</h4>
-                      <ul>
-                        <li>Dozens of subclasses for combos</li><li>Base class growing flags</li><li>Hardcoded feature mix</li>
-                      </ul>
-                    </div>
-                  </div>
-                  <div class="badge-row">
-                    <span class="pill good">Composable features</span><span class="pill info">Runtime wrapping</span><span class="pill bad">Subclass explosion</span>
-                  </div>
-                  <div class="flow"><span class="flow-step">Base component</span><span class="flow-arrow">→</span><span class="flow-step">Wrap feature A</span><span class="flow-arrow">→</span><span class="flow-step">Wrap feature B</span><span class="flow-arrow">→</span><span class="flow-step">Use composed result</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“Decorator lets me add behavior by wrapping objects instead of creating a subclass for every feature combination.”</p>
-                  <table>
-                    <thead><tr><th>Approach</th><th>Trade-off</th></tr></thead>
-                    <tbody><tr><td>Decorator</td><td><span class="pill good">Flexible composition</span></td></tr><tr><td>Subclass per combo</td><td><span class="pill bad">Exponential growth</span></td></tr><tr><td>Flags in base</td><td><span class="pill caution">Hard to maintain</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              
-    <div class="code-blocks">
-      
-    <div>
-      <div class="code-title">Decorator example</div>
-      <pre><span class="token-comment">public interface Notifier {
-  void send(String msg);
+      <div class="card-label">🧒 ELI5</div>
+      <h3>Putting layers on a winter outfit</h3>
+      <p>You start with regular clothes, then add a jacket, scarf, and gloves depending on the weather. You do not create a brand-new human for every weather combination. Decorator works the same way: keep a simple base object, then wrap extra behavior around it as needed.</p>
+    </article><article class="card analogy">
+      <div class="card-label">🔗 ANALOGY</div>
+      <h3>Applying filters to a photo one by one</h3>
+      <p>A photo editor can add brightness, contrast, blur, and watermark filters in sequence. Each filter wraps the result of the previous one. That is easier than creating a separate image class for every possible combination of features.</p>
+    </article><article class="card technical">
+      <div class="card-label">Technical</div>
+      <h3>Why Decorator beats subclass explosion</h3>
+      <div class="two-col"><div><p><strong>Definition:</strong> Decorator wraps an object that implements a shared interface and adds behavior before or after delegating to the wrapped instance.</p><p class="deep-note">Decorator is valuable when optional features can be combined in many ways. Logging, caching, retries, rate limiting, encryption, and compression are classic examples. Without Decorator, teams often create a subclass per combination, which grows out of control.</p><p class="deep-note">The trade-off is discoverability: once wrappers stack, debugging requires understanding the order of decoration. That means naming and composition need to be explicit.</p><div class="mini-grid"><div class="mini-panel"><h4>Why it matters</h4><p>Lets you add behavior dynamically while keeping the base component simple and stable.</p></div><div class="mini-panel"><h4>Main trade-off</h4><p>Too many wrappers can make the execution path harder to trace unless composition is clear.</p></div></div><table><thead><tr><th>Approach</th><th>Outcome</th></tr></thead><tbody><tr><td>Subclass per feature combo</td><td>Class explosion and duplication.</td></tr><tr><td>Flags inside one class</td><td>Large conditional logic and feature tangling.</td></tr><tr><td>Decorator</td><td>Composable behavior with stable interfaces.</td></tr></tbody></table><div class="mini-panel" style="background: rgba(124,58,237,0.12); border-color: rgba(124,58,237,0.35); margin-top: 16px;">
+      <h4>💬 Model Interview Answer</h4>
+      <p>Decorator is useful when behavior is optional or combinable, like logging plus retries plus metrics around a client. Instead of subclassing for every combination, I wrap a shared interface and compose behavior at runtime. The trade-off is that deep wrapper chains can be harder to trace, so I keep the composition explicit and well named.</p>
+    </div></div><div></div></div><div class="code-blocks"><div>
+      <div class="code-title">✅ Decorator example</div>
+      <pre>interface FileStore {
+    byte[] read(String key);
 }
 
-public class EmailNotifier implements Notifier {
-  public void send(String msg){ /* email */ }
+final class S3FileStore implements FileStore {
+    public byte[] read(String key) {
+        return key.getBytes();
+    }
 }
 
-public class SmsDecorator implements Notifier {
-  private final Notifier base;
-  public SmsDecorator(Notifier base){ this.base = base; }
-  public void send(String msg){ base.send(msg); /* sms */ }
-}</span></pre>
-    </div>
-    </div>
-              <p>You can stack decorators to add SMS, Slack, or audit logging without changing EmailNotifier.</p>
-                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
-            </article>
+final class LoggingFileStore implements FileStore {
+    private final FileStore delegate;
 
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Too many wrappers can confuse</h3>
-              <p>Decorator chains can be hard to trace. Keep names clear and avoid deep nesting.</p>
-            </article>
+    LoggingFileStore(FileStore delegate) {
+        this.delegate = delegate;
+    }
 
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>Decorator composes features.</li><li>Avoid subclass explosion.</li><li>Wrap when you need runtime flexibility.</li>
-              </ul>
-            </article>
-
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>Which technique avoids creating 12 subclasses for feature combinations?</h3>
-              <div class="quiz-options" data-answer="0">
-                <button class="quiz-option">A. Decorator</button><button class="quiz-option">B. Singleton</button><button class="quiz-option">C. Adapter</button><button class="quiz-option">D. Observer</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: A</strong>
-                <span>Decorator composes features by wrapping objects instead of subclassing.</span>
-              </div>
-            </article>
+    public byte[] read(String key) {
+        long start = System.nanoTime();
+        try {
+            return delegate.read(key);
+        } finally {
+            System.out.println(&quot;read(&quot; + key + &quot;) took &quot; + (System.nanoTime() - start));
+        }
+    }
+}</pre>
+    </div></div>
+    </article><article class="card warning">
+      <div class="card-label">Warning</div>
+      <h3>Decorator is not a license to hide complexity</h3>
+      <p>If wrappers are assembled in many places with different orderings, behavior becomes unpredictable. Centralize composition, document wrapper order, and prefer integration tests that exercise the final decorated chain.</p>
+    </article><article class="card quiz-card">
+      <div class="card-label">Quiz</div>
+      <h3>Why is Decorator usually preferred over many subclasses for optional features?</h3>
+      <div class="quiz-options" data-answer="2"><button class="quiz-option">A. It eliminates interfaces.</button><button class="quiz-option">B. It makes inheritance deeper.</button><button class="quiz-option">C. It composes behavior without creating a class for every combination.</button><button class="quiz-option">D. It guarantees faster runtime performance.</button></div>
+      <div class="quiz-result"><strong>Answer</strong><span>C is correct because Decorator uses composition to add optional behavior around a common interface. A and B are false, and D is not guaranteed. The real benefit is maintainability: fewer rigid subclasses and more flexible combinations.</span></div>
+    </article>
           </div>
         </div>
       </section>
-      <section class="section " data-section="3">
+      <section class="section" data-section="3">
         <div class="section-inner">
           <div class="hero">
             <div class="section-label">Section 4 of 5 · ~7 mins</div>
             <h2>Pattern Selection & Trade-offs</h2>
-            <p>Interviewers often care more about why you chose a pattern than the pattern name itself.</p>
+            <p>Senior interviews care less about whether you memorized pattern names and more about whether you can justify a design choice under changing requirements.</p>
           </div>
-
           <div class="card-grid">
             <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Use tools that fit the job</h3>
-              <p>You wouldn’t use a hammer for every task. Pick the tool that solves the problem with the least fuss.</p>
-            </article>
-
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Choosing a route</h3>
-              <p>Sometimes a highway is faster, sometimes a side street is better. The context decides, not the label.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Pattern choice is a trade-off between flexibility, complexity, and risk of change.</p>
-                  <p class="deep-note">Pattern selection should start with the change you expect, not with the pattern name. If a system will add new implementations frequently, prefer Strategy; if construction is messy, use Builder or Factory; if behavior is optional, use Decorator.</p>
-                  <p class="deep-note">If there is no real variation yet, keep it simple. Over-patterned code creates more classes and indirection than value, so it is better to refactor into a pattern when the need is clear.</p>
-                  <p class="deep-note">In interviews, explain the problem first, then the pattern that reduces risk. That shows you are designing for change, not just memorizing patterns.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul>
-                        <li>Explains design intent</li><li>Avoids over-engineering</li><li>Helps teammates reason quickly</li>
-                      </ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common smell</h4>
-                      <ul>
-                        <li>Pattern everywhere</li><li>Adding layers without variation</li><li>No clear extension point</li>
-                      </ul>
-                    </div>
-                  </div>
-                  <div class="badge-row">
-                    <span class="pill good">Problem-driven</span><span class="pill caution">Premature abstraction</span><span class="pill bad">Pattern for resume</span>
-                  </div>
-                  <div class="flow"><span class="flow-step">Define problem</span><span class="flow-arrow">→</span><span class="flow-step">Check variation</span><span class="flow-arrow">→</span><span class="flow-step">Pick pattern</span><span class="flow-arrow">→</span><span class="flow-step">Review trade-off</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“I choose patterns when they reduce change risk or clarify intent. If no variation exists, I keep it simple.”</p>
-                  <table>
-                    <thead><tr><th>Question</th><th>Answer</th></tr></thead>
-                    <tbody><tr><td>Do we expect variants?</td><td><span class="pill good">Yes → Strategy/Factory</span></td></tr><tr><td>Need runtime composition?</td><td><span class="pill info">Decorator</span></td></tr><tr><td>No variation?</td><td><span class="pill caution">Keep it simple</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              
-    <div class="code-blocks">
-      
-    <div>
-      <div class="code-title">Simple decision stub</div>
-      <pre><span class="token-comment">public Pattern pick(boolean variants, boolean compose){
-  if (compose) return Pattern.DECORATOR;
-  if (variants) return Pattern.STRATEGY;
-  return Pattern.NONE;
-}</span></pre>
-    </div>
-    </div>
-              <p>Showing a decision framework makes your interview answer stronger than just naming patterns.</p>
-                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Avoid pattern bingo</h3>
-              <p>Interviewers dislike forced patterns. Ground your answer in the problem and trade-offs.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>Patterns communicate intent.</li><li>Trade-offs matter more than labels.</li><li>Keep solutions minimal when possible.</li>
-              </ul>
-            </article>
-
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>What is the strongest reason to use a pattern?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. It sounds advanced</button><button class="quiz-option">B. It reduces change risk and clarifies design</button><button class="quiz-option">C. It adds more classes</button><button class="quiz-option">D. It avoids writing tests</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>Patterns are valuable when they reduce risk and clarify extension points.</span>
-              </div>
-            </article>
+      <div class="card-label">🧒 ELI5</div>
+      <h3>Picking the right tool from a toolbox</h3>
+      <p>You do not use a chainsaw to open a cardboard box. Good builders choose the simplest tool that handles the job safely. Pattern selection is the same: use the lightest abstraction that solves the real problem, not the fanciest one.</p>
+    </article><article class="card analogy">
+      <div class="card-label">🔗 ANALOGY</div>
+      <h3>Choosing the right route for traffic conditions</h3>
+      <p>Sometimes the highway is best, sometimes the local road is better. The right answer depends on traffic, not on a favorite road. Patterns should be selected based on likely change, risk, and complexity — not on personal preference.</p>
+    </article><article class="card technical">
+      <div class="card-label">Technical</div>
+      <h3>Start with the change you expect</h3>
+      <div class="two-col"><div><p><strong>Definition:</strong> Pattern selection is the design decision of choosing the smallest abstraction that reduces future change cost and improves clarity.</p><p class="deep-note">A good pattern answer begins with the problem: “I expect multiple algorithm variants,” or “construction rules are spreading,” or “one event should trigger multiple independent side effects.” The pattern is just the response to that pressure.</p><p class="deep-note">That is why over-engineering is dangerous. Adding Strategy, Factory, and Observer to code with no real variation only adds files and indirection. Refactor into a pattern when change becomes likely or duplication becomes costly.</p><div class="mini-grid"><div class="mini-panel"><h4>Healthy signal</h4><p>The pattern reduces duplication, creates a clear extension point, and keeps the stable code mostly unchanged.</p></div><div class="mini-panel"><h4>Bad signal</h4><p>The pattern exists only to “look advanced,” and nobody can explain the concrete variation it protects against.</p></div></div><table><thead><tr><th>Question</th><th>Design hint</th></tr></thead><tbody><tr><td>Will behavior vary?</td><td>Consider Strategy or Observer.</td></tr><tr><td>Is creation messy?</td><td>Consider Builder or Factory.</td></tr><tr><td>Need optional feature layers?</td><td>Consider Decorator.</td></tr><tr><td>No real variation yet?</td><td>Keep it simple.</td></tr></tbody></table><div class="mini-panel" style="background: rgba(124,58,237,0.12); border-color: rgba(124,58,237,0.35); margin-top: 16px;">
+      <h4>💬 Model Interview Answer</h4>
+      <p>I choose patterns based on expected change, not on memorization. If I expect algorithm variants, I lean toward Strategy; if construction logic is spreading, I use Builder or Factory; if behavior is layered, Decorator helps. If none of those pressures are real yet, I keep the design simple. Interviewers usually like hearing the problem-to-pattern mapping more than the pattern name alone.</p>
+    </div></div><div></div></div>
+    </article><article class="card warning">
+      <div class="card-label">Warning</div>
+      <h3>Pattern bingo is a red flag</h3>
+      <p>If you answer every design question with a named pattern before describing the problem, it sounds memorized. Lead with the change risk, the design pressure, and the trade-off. Then mention the pattern as the mechanism, not the headline.</p>
+    </article><article class="card quiz-card">
+      <div class="card-label">Quiz</div>
+      <h3>What is the strongest reason to choose a design pattern?</h3>
+      <div class="quiz-options" data-answer="2"><button class="quiz-option">A. It adds more classes.</button><button class="quiz-option">B. It sounds senior.</button><button class="quiz-option">C. It reduces change risk and clarifies an extension point.</button><button class="quiz-option">D. It avoids testing.</button></div>
+      <div class="quiz-result"><strong>Answer</strong><span>C is correct because patterns are worthwhile when they reduce future change cost and make extension points explicit. A and B are superficial, and D is wrong because abstractions still require tests. For interviews, tie patterns to maintainability and change isolation.</span></div>
+    </article>
           </div>
         </div>
       </section>
-      
-      
       <section class="section" data-section="4">
         <div class="section-inner">
           <div class="hero">
             <div class="section-label">Section 5 of 5 · ~7 mins</div>
             <h2>Deep Dive: Choosing Patterns Under Constraints</h2>
-            <p>Map the problem to variation points, then pick the lightest pattern that reduces change risk.</p>
+            <p>Great design is rarely about applying a textbook pattern in pure form. It is about adapting the idea to constraints like deadlines, team familiarity, testability, and system growth.</p>
           </div>
-
           <div class="card-grid">
             <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Pick the simplest tool</h3>
-              <p>If you just need to cut paper, you do not pull out a chainsaw. You use scissors.</p>
-            </article>
-
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Kitchen utensils</h3>
-              <p>Use a whisk for eggs, not a power drill. The right tool is the smallest one that solves the job.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Patterns are trade-offs. Choose them based on where change is likely, not because the pattern exists.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul><li>Keeps design flexible at the right seams</li><li>Avoids over-engineering</li><li>Improves maintainability</li></ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common pitfall</h4>
-                      <ul><li>Pattern for every class</li><li>Inheritance explosions</li><li>Tight coupling to concrete types</li></ul>
-                    </div>
-                  </div>
-                  <div class="badge-row"><span class="pill good">Variation points</span><span class="pill info">Minimal abstraction</span><span class="pill caution">Avoid overdesign</span></div>
-                  <div class="flow"><span class="flow-step">Identify change</span><span class="flow-arrow">→</span><span class="flow-step">Select seam</span><span class="flow-arrow">→</span><span class="flow-step">Pick light pattern</span><span class="flow-arrow">→</span><span class="flow-step">Validate trade-off</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“I pick patterns where I expect change: Strategy for algorithm swaps, Decorator for optional behavior, Factory for creation complexity.”</p>
-                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
-                  <table>
-                    <thead><tr><th>Signal</th><th>Pattern</th></tr></thead>
-                    <tbody><tr><td>Many algorithm variants</td><td><span class="pill info">Strategy</span></td></tr><tr><td>Optional behavior layers</td><td><span class="pill good">Decorator</span></td></tr><tr><td>Complex construction</td><td><span class="pill caution">Builder/Factory</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              <div class="code-blocks">
-    <div>
-      <div class="code-title">Strategy injected through DI</div>
-      <pre>interface PricingStrategy { int price(int base); }
-
-class HolidayPricing implements PricingStrategy {
-  public int price(int base){ return base - 20; }
-}
-
-class CheckoutService {
-  private final PricingStrategy strategy;
-  CheckoutService(PricingStrategy strategy){ this.strategy = strategy; }
-  int total(int base){ return strategy.price(base); }
-}</pre>
-    </div>
-    </div>
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Beware pattern gravity</h3>
-              <p>Once you add a pattern, teams tend to expand it. Start small and refactor when the variation is real.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways"><li>Patterns model change, not complexity.</li><li>Prefer composition over inheritance.</li><li>Leave escape hatches for future changes.</li></ul>
-            </article>
-
-            
-          
-            <article class="card technical">
-              <div class="card-label">Edge cases</div>
-              <h3>Edge Cases & Tradeoffs</h3>
-              <ul class="takeaways"><li>Over-abstracting adds indirection without real variability.</li><li>Singletons hide global state and make tests flaky.</li><li>Factories can drift into mini service locators.</li><li>Pattern-heavy designs can hurt readability and onboarding.</li><li>Choose composition over inheritance when behavior varies.</li></ul>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Checklist</div>
-              <h3>Production Checklist</h3>
-              <ul class="takeaways"><li>Identify the variation point first (creation, behavior, structure).</li><li>Keep the public interface stable and hide wiring details.</li><li>Prefer DI-managed lifecycles over manual singletons.</li><li>Add tests that prove substitutability and extension.</li><li>Document tradeoffs so others know why the pattern exists.</li></ul>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Interview</div>
-              <h3>Interview Hooks</h3>
-              <p>Frame patterns as tools for specific pain points, not badges of honor.</p>
-              <ul class="takeaways"><li>Explain the problem first, then the pattern that fixes it.</li><li>Call out the alternative you rejected and why.</li><li>Mention how the pattern affects testability and coupling.</li></ul>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Advanced Example</div>
-              <div class="code-blocks">
-        <div>
-          <div class="code-title">Strategy + Factory in practice</div>
-          <pre>interface PricingStrategy { double price(Order o); }
-class StandardPricing implements PricingStrategy {
-  public double price(Order o){ return o.base(); }
-}
-class PricingFactory {
-  static PricingStrategy forTier(String tier){
-    return "VIP".equals(tier) ? o -&gt; o.base() * 0.8 : new StandardPricing();
-  }
-}</pre>
+      <div class="card-label">🧒 ELI5</div>
+      <h3>Packing for a short trip versus a year abroad</h3>
+      <p>If you are leaving for one night, you pack lightly. If you are moving for a year, you plan much more carefully. Software design works the same way: the right amount of abstraction depends on how much future change and complexity you genuinely expect.</p>
+    </article><article class="card analogy">
+      <div class="card-label">🔗 ANALOGY</div>
+      <h3>Building a temporary stage versus a permanent theater</h3>
+      <p>A temporary stage can be simple and fast to assemble. A permanent theater needs stronger structure, better access paths, and room for future upgrades. Patterns should scale with the expected lifespan and change rate of the code.</p>
+    </article><article class="card technical">
+      <div class="card-label">Technical</div>
+      <h3>Balancing elegance with team reality</h3>
+      <div class="two-col"><div><p><strong>Definition:</strong> Constraints-driven design means choosing patterns that fit not just the code problem but also the operational and human context around the code.</p><p class="deep-note">Sometimes the technically pure pattern is not the best immediate choice. A team unfamiliar with a complicated abstraction may move slower and introduce bugs, while a simpler design could be more effective in the short term.</p><p class="deep-note">A senior engineer should be able to say, “I could use Strategy here, but today there are only two stable cases, so I will keep a simple branch and refactor when the third variant appears.” That is not weakness — it is judgment.</p><div class="mini-grid"><div class="mini-panel"><h4>Use a stronger pattern when</h4><p>Change is likely, duplication is already appearing, tests need isolation, or multiple teams will extend the logic.</p></div><div class="mini-panel"><h4>Delay the pattern when</h4><p>The requirement is stable, the variation is hypothetical, or the team would pay too much complexity for too little return.</p></div></div><table><thead><tr><th>Constraint</th><th>Effect on choice</th></tr></thead><tbody><tr><td>Deadline pressure</td><td>Prefer simpler designs unless risk is high.</td></tr><tr><td>Frequent new variants</td><td>Create extension points earlier.</td></tr><tr><td>Team unfamiliarity</td><td>Bias toward readability and explicitness.</td></tr><tr><td>Heavy testing needs</td><td>Patterns that isolate dependencies become more valuable.</td></tr></tbody></table><div class="mini-panel" style="background: rgba(124,58,237,0.12); border-color: rgba(124,58,237,0.35); margin-top: 16px;">
+      <h4>💬 Model Interview Answer</h4>
+      <p>When I choose patterns, I also think about constraints beyond the code itself: how often the logic will change, how testable the solution needs to be, how familiar the team is with the abstraction, and how costly future refactors would be. A senior answer is not “always use the textbook pattern.” It is “pick the smallest abstraction that protects against the most likely change.”</p>
+    </div></div><div></div></div>
+    </article><article class="card warning">
+      <div class="card-label">Warning</div>
+      <h3>The wrong abstraction can lock a team into complexity</h3>
+      <p>Once a pattern spreads, it becomes hard to remove because other code starts depending on it. That is why “start simple, refactor when variation becomes real” is often the safest path.</p>
+    </article><article class="card quiz-card">
+      <div class="card-label">Quiz</div>
+      <h3>Which answer sounds most like strong senior judgment?</h3>
+      <div class="quiz-options" data-answer="2"><button class="quiz-option">A. I always use design patterns early so the code looks scalable.</button><button class="quiz-option">B. I ignore patterns because plain code is enough for everything.</button><button class="quiz-option">C. I choose the smallest abstraction that addresses the most likely future change and I refactor when variation becomes real.</button><button class="quiz-option">D. I pick whichever pattern I remember best.</button></div>
+      <div class="quiz-result"><strong>Answer</strong><span>C is correct because it shows balance, change awareness, and restraint. A over-engineers, B underestimates abstraction, and D is not engineering judgment at all. In interviews, thoughtful trade-off language is often more impressive than the pattern catalog itself.</span></div>
+    </article>
+          </div>
+        </div>
+      </section>
+      <section class="section" data-section="5">
+      <div class="section-inner">
+        <div class="hero">
+          <div class="section-label">Completion screen</div>
+          <h2>🎉 Design Patterns Cheat Sheet</h2>
+          <p>Use this page as a fast interview recap before mock rounds or senior backend interviews.</p>
+        </div>
+        <div class="completion-grid">
+          <article class="card technical">
+            <div class="celebrate">✅</div>
+            <h3>What to remember</h3>
+            <div class="cheat-list"><div class="cheat-item"><h4>Creational</h4><p>Factory chooses implementations, Builder manages complex construction, and Singleton should be used carefully.</p></div><div class="cheat-item"><h4>Behavioral</h4><p>Strategy swaps algorithms; Observer fans out events without tight coupling.</p></div><div class="cheat-item"><h4>Structural</h4><p>Decorator adds optional layered behavior without subclass explosion.</p></div><div class="cheat-item"><h4>Selection rule</h4><p>Start with the design pressure or expected change, then choose the smallest useful abstraction.</p></div><div class="cheat-item"><h4>Senior framing</h4><p>Explain the problem, the risk of change, and the trade-off — then name the pattern.</p></div></div>
+          </article>
+          <article class="card warning">
+            <div class="card-label">Most common confusion points</div>
+            <h3>Where people slip</h3>
+            <div class="confusion-list"><div class="confusion-item"><strong>“Patterns are always good.”</strong><p>No — they are tools. Extra abstraction without real change pressure is just complexity.</p></div><div class="confusion-item"><strong>“Singleton is the standard way to share state.”</strong><p>In DI-based applications, manual Singleton often hides global state and hurts testability.</p></div><div class="confusion-item"><strong>“The pattern name is the most important part of the answer.”</strong><p>Usually the design pressure and trade-off matter more than the label.</p></div></div>
+          </article>
         </div>
       </div>
-      <p>Factories keep creation centralized, strategies keep behavior swappable.</p>
-            </article><article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>What is the best reason to introduce a pattern?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. It sounds advanced</button><button class="quiz-option">B. It reduces a specific change risk</button><button class="quiz-option">C. It adds more classes</button><button class="quiz-option">D. It avoids documentation</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>Patterns are justified when they reduce a concrete change risk or clarify extension points.</span>
-              </div>
-            </article></div>
-        </div>
-      </section>
-<section class="section" data-section="5">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Completion screen · Review mode</div>
-            <h2>🎉 Design Patterns Cheat Sheet</h2>
-            <p>Use this as a fast refresher for the most common pattern questions.</p>
-          </div>
-
-          <div class="completion-grid">
-            <div class="card technical">
-              <div class="card-label">Cheat sheet</div>
-              <div class="celebrate">🚀</div>
-              <h3>1-line interview answers</h3>
-              <div class="cheat-list">
-    <div class="cheat-item">
-      <h4>Creational</h4>
-      <p>Choose Singleton/Factory/Builder to control creation and remove messy constructors.</p>
-    </div>
-    <div class="cheat-item">
-      <h4>Behavioral</h4>
-      <p>Use Strategy/Observer to swap behavior and broadcast events cleanly.</p>
-    </div>
-    <div class="cheat-item">
-      <h4>Structural</h4>
-      <p>Decorator composes features without subclass explosion.</p>
-    </div>
-    <div class="cheat-item">
-      <h4>Trade-offs</h4>
-      <p>Patterns reduce change risk but add indirection — justify them.</p>
-    </div></div>
-            </div>
-
-            <div class="card analogy">
-              <div class="card-label">What to remember</div>
-              <h3>Fast mental model</h3>
-              <ul class="takeaways">
-                <li><strong>Creational:</strong> control object creation.</li><li><strong>Behavioral:</strong> coordinate behavior and communication.</li><li><strong>Structural:</strong> compose objects safely.</li><li><strong>Interview move:</strong> name the pattern and the trade-off.</li>
-              </ul>
-              <h3 style="margin-top:22px;">Common traps</h3>
-              <div class="badge-row">
-                <span class="pill bad">Over-abstraction</span><span class="pill bad">Singleton for everything</span><span class="pill bad">Pattern without a problem</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+    </section>
     </main>
 
     <footer class="footer-nav">

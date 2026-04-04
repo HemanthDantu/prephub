@@ -1,13 +1,14 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Spring Transactions Learning Module</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Spring Transactions Learning Module</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&amp;family=Syne:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<style>
 :root {
       --bg: #0a0e1a;
       --surface-1: #111827;
@@ -717,611 +718,368 @@
   </style>
 </head>
 <body>
-  <div class="app">
-    <header class="topbar">
-      <div class="topbar-inner">
-        <div class="topbar-row">
-          <div class="brand">
-            <h1>Spring Transactions</h1>
-            <small>Interactive 35-minute learning module</small>
-          </div>
-                <div class="topbar-row">
-          <div class="breadcrumb">
-            <a href="../index.html">Home</a>
-            <span>›</span>
-            <a href="index.html">Spring Boot</a>
-            <span>›</span>
-            <span>Spring Transactions</span>
-          </div>
-        </div>
-          <div class="timer-wrap" aria-live="polite">
-            <span class="timer-label">Time Left</span>
-            <span class="timer" id="timer">35:00</span>
-          </div>
-        </div>
-        <div class="topbar-row">
-                    <nav class="nav-dots" aria-label="Section navigation"><button class="nav-dot active" data-index="0" aria-label="Go to section 1">1</button><button class="nav-dot" data-index="1" aria-label="Go to section 2">2</button><button class="nav-dot" data-index="2" aria-label="Go to section 3">3</button><button class="nav-dot" data-index="3" aria-label="Go to section 4">4</button><button class="nav-dot" data-index="4" aria-label="Go to section 5">5</button><button class="nav-dot" data-index="5" aria-label="Go to completion screen">6</button></nav>
-        </div>
-        <div class="progress-shell" aria-hidden="true">
-          <div class="progress-bar" id="progressBar"></div>
-        </div>
-      </div>
-    </header>
+<div class="app">
+<header class="topbar">
+<div class="topbar-inner">
+<div class="topbar-row">
+<div class="brand">
+<h1>Spring Transactions</h1>
+<small>Interactive 35-minute learning module</small>
+</div>
+<div class="topbar-row">
+<div class="breadcrumb">
+<a href="../index.html">Home</a>
+<span>›</span>
+<a href="index.html">Spring Boot</a>
+<span>›</span>
+<span>Spring Transactions</span>
+</div>
+</div>
+<div aria-live="polite" class="timer-wrap">
+<span class="timer-label">Time Left</span>
+<span class="timer" id="timer">35:00</span>
+</div>
+</div>
+<div class="topbar-row">
+<nav aria-label="Section navigation" class="nav-dots"><button aria-label="Go to section 1" class="nav-dot active" data-index="0">1</button><button aria-label="Go to section 2" class="nav-dot" data-index="1">2</button><button aria-label="Go to section 3" class="nav-dot" data-index="2">3</button><button aria-label="Go to section 4" class="nav-dot" data-index="3">4</button><button aria-label="Go to section 5" class="nav-dot" data-index="4">5</button><button aria-label="Go to completion screen" class="nav-dot" data-index="5">6</button></nav>
+</div>
+<div aria-hidden="true" class="progress-shell">
+<div class="progress-bar" id="progressBar"></div>
+</div>
+</div>
+</header>
+<main>
 
-    <main>
-      
-      <section class="section active" data-section="0">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 1 of 5 · ~7 mins</div>
-            <h2>@Transactional Basics</h2>
-            <p>Spring transactions are proxy-based and wrap method calls with begin/commit/rollback.</p>
-          </div>
 
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>A safe envelope</h3>
-              <p>You put multiple actions into one sealed envelope. Either all go through or none do.</p>
-            </article>
 
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Bank transfer ledger</h3>
-              <p>The bank records all steps together so money never disappears mid-transfer.</p>
-            </article>
 
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> @Transactional creates a transaction boundary with commit or rollback.</p>
-                  <p class="deep-note">@Transactional defines a unit of work that either commits or rolls back as a whole. It is usually applied at the service layer where business rules live.</p>
-                  <p class="deep-note">Because it is proxy-based, calls inside the same class bypass the proxy. That is why self-invocation does not start a transaction.</p>
-                  <p class="deep-note">A simple mental model is that a transaction is a safety boundary: either everything succeeds, or everything is undone.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul>
-                        <li>Keeps data consistent</li><li>Groups multiple DB operations</li><li>Supports rollback on failure</li>
-                      </ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common smell</h4>
-                      <ul>
-                        <li>Transactional methods called internally</li><li>Missing @Transactional on write paths</li><li>Long transactions</li>
-                      </ul>
-                    </div>
-                  </div>
-                  <div class="badge-row">
-                    <span class="pill good">Clear boundaries</span><span class="pill info">Commit/rollback</span><span class="pill bad">Self-invocation</span>
-                  </div>
-                  <div class="flow"><span class="flow-step">Begin</span><span class="flow-arrow">→</span><span class="flow-step">Do work</span><span class="flow-arrow">→</span><span class="flow-step">Commit</span><span class="flow-arrow">→</span><span class="flow-step">Rollback on error</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“@Transactional wraps a method in a transaction boundary; it’s proxy-based, so self-invocation won’t apply.”</p>
-                  <table>
-                    <thead><tr><th>Scenario</th><th>Effect</th></tr></thead>
-                    <tbody><tr><td>Runtime exception</td><td><span class="pill good">Rollback</span></td></tr><tr><td>Checked exception</td><td><span class="pill caution">No rollback</span></td></tr><tr><td>Self-call</td><td><span class="pill bad">No proxy</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              
-    <div class="code-blocks">
-      
-    <div>
-      <div class="code-title">@Transactional usage</div>
-      <pre>@Transactional
-public void transfer(){
-  debit();
-  credit();
-}</pre>
-    </div>
-    </div>
-              <p>Place @Transactional on public service methods called from outside the bean.</p>
-                  <p class="deep-note">Transactions are enforced via proxies, so propagation and rollback rules only apply when calls cross the proxy boundary. Always call transactional methods through Spring-managed beans, and be explicit about checked-exception rollback behavior.</p>
-            </article>
 
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Self-invocation bypasses proxy</h3>
-              <p>Calling a transactional method inside the same class won’t start a transaction.</p>
-            </article>
 
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>Transactions are proxy-based.</li><li>Define clear boundaries.</li><li>Handle failures.</li>
-              </ul>
-            </article>
+</main>
+<section class="section" data-section="0">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Section 1 · Core concept</div>
+<h2>@Transactional Basics</h2>
+<p>Learn what a transaction boundary actually does, why Spring implements it through proxies, and why the annotation belongs on business operations instead of being sprinkled randomly.</p>
+</div>
+<div class="card-grid">
+<article class="card eli5"><div class="card-label">🧒 ELI5</div><h3>One shopping trip, one receipt</h3><p>Imagine you are at a grocery store with a single receipt for the whole trip. If the cashier scans all your items and then the card machine fails at the very end, you do not want half the groceries paid for and half left hanging in the system.</p><p>The store either finishes the whole checkout or cancels the whole thing, because partial completion creates confusion for both the customer and the store. That is the core idea here: treat related work as one all-or-nothing unit.</p><p>It matters because business actions like transferring money, placing an order, or reserving inventory stop making sense when only part of the work succeeds. The “single receipt” mirrors the single success-or-fail boundary in your application.</p></article><article class="card analogy"><div class="card-label">🔗 ANALOGY</div><h3>A movie shoot with one director call</h3><p>Think of a film scene where lighting, camera, actors, and sound all have to start together when the director says “action.” If only some people follow the call, the take is useless even though pieces of work happened.</p><p>This concept exists so one coordinating boundary can decide whether the full scene is usable. If you ignore that boundary, you end up debugging ghost bugs where one database change is visible but its matching change is missing.</p></article><article class="card technical"><div class="card-label">Technical</div><div class="two-col"><div><h3>What it means under the hood</h3><p><strong>Definition:</strong> @Transactional tells Spring to open a database transaction before the method, commit on success, and roll back on failure according to configured rules.</p><p class="deep-note">Spring usually applies the annotation by wrapping your bean in a proxy. When another bean calls that proxied method, the proxy starts the transaction, delegates to your method, then commits or rolls back afterward.</p><p class="deep-note">Inside the transaction, Hibernate or JDBC work is attached to the same thread-bound transaction context. That is why multiple repository calls can behave like one logical unit even if they are separate Java method calls.</p><p class="deep-note">The mental model is not “annotation magic.” The mental model is “a proxy surrounds my method with begin / commit / rollback behavior.” Once you see that, self-invocation bugs suddenly make sense.</p><div class="mini-grid"><div class="mini-panel"><h4>Why it matters in production</h4><ul><li>Prevents half-written business operations</li><li>Coordinates repository calls into one unit</li><li>Keeps consistency rules close to service-layer logic</li></ul></div><div class="mini-panel"><h4>Common smell</h4><ul><li>Annotating private methods and expecting it to work</li><li>Calling a transactional method from the same class</li><li>Keeping the transaction open during slow remote calls</li></ul></div></div><div class="badge-row"><span class="pill good">Atomic writes</span><span class="pill info">Proxy boundary</span><span class="pill bad">Self-invocation</span></div><div class="flow"><span class="flow-step">Client calls service</span><span class="flow-arrow">→</span><span class="flow-step">Proxy opens transaction</span><span class="flow-arrow">→</span><span class="flow-step">Repositories participate</span><span class="flow-arrow">→</span><span class="flow-step">Commit or rollback</span></div></div><div><h3>💬 Model Interview Answer</h3><p>“I think of @Transactional as a service-layer consistency boundary. Spring usually enforces it with a proxy, so it only works when the call crosses the proxy. The common gotcha is self-invocation: a method inside the same bean can skip the proxy entirely, which means no transaction ever starts.”</p><table><thead><tr><th>Scenario</th><th>What to watch</th></tr></thead><tbody><tr><td>Public service method</td><td>Best place for the boundary</td></tr><tr><td>Private helper method</td><td>Annotation is ignored</td></tr><tr><td>Remote HTTP call inside tx</td><td>Usually a throughput and locking smell</td></tr></tbody></table></div></div><div class="code-blocks"><div><div class="code-title">❌ Wrong: private method + self-invocation</div><pre>@Service
+public class TransferService {
 
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>Why might @Transactional not work?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. It only works for interfaces</button><button class="quiz-option">B. Self-invocation bypasses proxy</button><button class="quiz-option">C. It requires @Component</button><button class="quiz-option">D. It only works in tests</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>Self-invocation bypasses the proxy, so the annotation is skipped.</span>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-      <section class="section " data-section="1">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 2 of 5 · ~7 mins</div>
-            <h2>Propagation</h2>
-            <p>Propagation defines how a method behaves if a transaction already exists.</p>
-          </div>
+    @Autowired
+    private AccountRepository accountRepository;
 
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Joining or starting a new game</h3>
-              <p>Sometimes you join an existing game; sometimes you start a new one.</p>
-            </article>
+    public void moveMoney(Long fromId, Long toId, BigDecimal amount) {
+        // Self-invocation: this call does not go through Spring's proxy
+        saveTransfer(fromId, toId, amount);
+    }
 
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Nested receipts</h3>
-              <p>You can add items to the same receipt or open a new receipt for a separate purchase.</p>
-            </article>
+    @Transactional
+    private void saveTransfer(Long fromId, Long toId, BigDecimal amount) {
+        accountRepository.debit(fromId, amount);
+        accountRepository.credit(toId, amount);
+    }
+}</pre></div><div><div class="code-title">✅ Right: public service boundary</div><pre>@Service
+public class TransferService {
 
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> REQUIRED joins existing; REQUIRES_NEW suspends and starts new; NESTED uses savepoints.</p>
-                  <p class="deep-note">Propagation determines how nested calls behave. REQUIRED joins an existing transaction, while REQUIRES_NEW suspends it and starts a new one.</p>
-                  <p class="deep-note">REQUIRES_NEW is useful for side effects like audit logs that must persist even if the main transaction fails.</p>
-                  <p class="deep-note">NESTED can be used for partial rollbacks with savepoints, but it depends on database support.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul>
-                        <li>Control transaction boundaries</li><li>Isolate side effects</li><li>Support audit logging</li>
-                      </ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common smell</h4>
-                      <ul>
-                        <li>Using REQUIRES_NEW everywhere</li><li>No understanding of join behavior</li><li>Unexpected rollbacks</li>
-                      </ul>
-                    </div>
-                  </div>
-                  <div class="badge-row">
-                    <span class="pill good">REQUIRED default</span><span class="pill info">REQUIRES_NEW isolate</span><span class="pill caution">NESTED savepoint</span>
-                  </div>
-                  <div class="flow"><span class="flow-step">Check existing tx</span><span class="flow-arrow">→</span><span class="flow-step">Join or create</span><span class="flow-arrow">→</span><span class="flow-step">Commit/rollback</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“REQUIRED joins an existing transaction, REQUIRES_NEW starts a new one for isolated work.”</p>
-                  <table>
-                    <thead><tr><th>Propagation</th><th>Use</th></tr></thead>
-                    <tbody><tr><td>REQUIRED</td><td><span class="pill good">Default</span></td></tr><tr><td>REQUIRES_NEW</td><td><span class="pill info">Isolate audit</span></td></tr><tr><td>NESTED</td><td><span class="pill caution">Savepoints</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              
-    <div class="code-blocks">
-      
-    <div>
-      <div class="code-title">Propagation example</div>
-      <pre>@Transactional(propagation = Propagation.REQUIRES_NEW)
-public void writeAudit(){ ... }</pre>
-    </div>
-    </div>
-              <p>Use REQUIRES_NEW for side effects that must commit independently.</p>
-                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
-            </article>
+    private final AccountRepository accountRepository;
 
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>REQUIRES_NEW can hide failures</h3>
-              <p>If used everywhere, it can mask rollback behavior and create inconsistencies.</p>
-            </article>
+    public TransferService(AccountRepository accountRepository) {
+        this.accountRepository = accountRepository;
+    }
 
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>REQUIRED is default.</li><li>REQUIRES_NEW isolates work.</li><li>Use propagation intentionally.</li>
-              </ul>
-            </article>
+    @Transactional
+    public void moveMoney(Long fromId, Long toId, BigDecimal amount) {
+        // Both statements now run inside the same transaction
+        accountRepository.debit(fromId, amount);
+        accountRepository.credit(toId, amount);
+    }
+}</pre></div></div><p>Put the annotation on a public service method that represents one business action. Keep the transaction short and centered on database work, not on slow network chatter.</p><p class="deep-note">The safest mental model is that Spring gives you a framework feature only when your call crosses the Spring-managed boundary and the surrounding infrastructure can participate.</p></article><article class="card warning"><div class="card-label">Warning</div><h3>Self-invocation bypasses the proxy</h3><p>The most misunderstood part of Spring transactions is that the annotation is not woven directly into your method body. It is usually applied by a separate proxy object placed in front of your bean.</p><p>When one method in the same class calls another, that internal call does not leave the object, so the proxy never gets a chance to start the transaction. The fix is to move the boundary to the externally called public method, or split behavior into another bean.</p><div class="code-blocks"><div><div class="code-title">Broken pattern</div><pre>@Service
+public class ReportService {
 
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>Which propagation starts a new transaction?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. REQUIRED</button><button class="quiz-option">B. REQUIRES_NEW</button><button class="quiz-option">C. SUPPORTS</button><button class="quiz-option">D. MANDATORY</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>REQUIRES_NEW suspends the current transaction and starts a new one.</span>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-      <section class="section " data-section="2">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 3 of 5 · ~7 mins</div>
-            <h2>Isolation Levels</h2>
-            <p>Isolation controls how concurrent transactions see each other’s data.</p>
-          </div>
+    public void generateDailyReport() {
+        // Looks fine, but no proxy is involved here
+        loadAndStore();
+    }
 
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Reading a book while someone edits it</h3>
-              <p>Do you want to see edits live or only after the author finishes? That’s isolation.</p>
-            </article>
+    @Transactional
+    public void loadAndStore() {
+        // No transaction actually starts for the internal call above
+    }
+}</pre></div><div><div class="code-title">Fixed pattern</div><pre>@Service
+public class ReportWriter {
 
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Shared document</h3>
-              <p>Strong isolation is like getting your own snapshot copy while others edit.</p>
-            </article>
+    @Transactional
+    public void loadAndStore() {
+        // Called from another bean, so the proxy can open the transaction
+    }
+}
 
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Isolation prevents anomalies like dirty reads, non-repeatable reads, and phantoms.</p>
-                  <p class="deep-note">Isolation levels trade performance for consistency. Higher isolation prevents anomalies but reduces concurrency due to locking.</p>
-                  <p class="deep-note">Pick the lowest isolation that still meets correctness so you avoid unnecessary contention in busy systems.</p>
-                  <p class="deep-note">If you do not know which to pick, start with READ_COMMITTED and adjust only when you observe anomalies.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul>
-                        <li>Correctness under concurrency</li><li>Predictable reads</li><li>Protect invariants</li>
-                      </ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common smell</h4>
-                      <ul>
-                        <li>Using SERIALIZABLE everywhere</li><li>Ignoring anomalies</li><li>Deadlocks from over-isolation</li>
-                      </ul>
-                    </div>
-                  </div>
-                  <div class="badge-row">
-                    <span class="pill good">READ_COMMITTED</span><span class="pill info">REPEATABLE_READ</span><span class="pill caution">SERIALIZABLE</span>
-                  </div>
-                  <div class="flow"><span class="flow-step">Start tx</span><span class="flow-arrow">→</span><span class="flow-step">Read data</span><span class="flow-arrow">→</span><span class="flow-step">Other tx writes</span><span class="flow-arrow">→</span><span class="flow-step">Isolation decides visibility</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“Isolation levels define what anomalies are allowed. I use the weakest level that preserves correctness.”</p>
-                  <table>
-                    <thead><tr><th>Level</th><th>Prevents</th></tr></thead>
-                    <tbody><tr><td>READ_COMMITTED</td><td><span class="pill good">Dirty reads</span></td></tr><tr><td>REPEATABLE_READ</td><td><span class="pill info">Non-repeatable</span></td></tr><tr><td>SERIALIZABLE</td><td><span class="pill caution">Phantoms</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              
-    <div class="code-blocks">
-      
-    <div>
-      <div class="code-title">Isolation example</div>
-      <pre>@Transactional(isolation = Isolation.REPEATABLE_READ)
-public void readReport(){ ... }</pre>
-    </div>
-    </div>
-              <p>Higher isolation means more locking and lower concurrency.</p>
-                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
-            </article>
+@Service
+public class ReportService {
 
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Isolation has a cost</h3>
-              <p>Stronger isolation can reduce throughput and cause deadlocks.</p>
-            </article>
+    private final ReportWriter reportWriter;
 
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>Choose weakest correct level.</li><li>Know anomalies.</li><li>Isolation affects concurrency.</li>
-              </ul>
-            </article>
+    public ReportService(ReportWriter reportWriter) {
+        this.reportWriter = reportWriter;
+    }
 
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>Which anomaly is prevented by READ_COMMITTED?</h3>
-              <div class="quiz-options" data-answer="0">
-                <button class="quiz-option">A. Dirty reads</button><button class="quiz-option">B. Phantom reads</button><button class="quiz-option">C. Write skew</button><button class="quiz-option">D. Lost updates</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: A</strong>
-                <span>READ_COMMITTED prevents dirty reads.</span>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-      <section class="section " data-section="3">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 4 of 5 · ~7 mins</div>
-            <h2>Rollback Rules & Timeouts</h2>
-            <p>Rollback behavior defaults to unchecked exceptions, but you can override it.</p>
-          </div>
+    public void generateDailyReport() {
+        reportWriter.loadAndStore();
+    }
+}</pre></div></div></article><article class="card technical"><div class="card-label">Mini takeaway</div><ul class="takeaways"><li>A transaction is a business boundary, not decoration</li><li>Proxy crossing matters as much as the annotation itself</li><li>Short transactions are safer than long “do everything” transactions</li></ul></article><article class="card quiz-card"><div class="card-label">Quiz</div><h3>Why might @Transactional appear to do nothing on a method?</h3><div class="quiz-options" data-answer="1"><button class="quiz-option">A. Because Spring only supports it on controllers</button><button class="quiz-option">B. Because self-invocation can skip the proxy</button><button class="quiz-option">C. Because it works only with JPA and never with JDBC</button><button class="quiz-option">D. Because it requires checked exceptions</button></div><div class="quiz-result"><strong>Correct answer: B</strong><span>Spring starts most transactions through a proxy, not by rewriting your method body. Option B is correct because a same-class call can bypass that proxy and therefore skip the begin/commit/rollback logic entirely. Option A is false because service-layer methods are the normal place for transactions, option C is false because Spring transactions are not limited to JPA, and option D is false because checked exceptions affect rollback rules, not whether the transaction infrastructure starts at all.</span></div></article></div></div></section><section class="section" data-section="1">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Section 2 · Control flow</div>
+<h2>Propagation</h2>
+<p>Propagation decides whether a method joins an existing transaction or starts a brand new one. It becomes important when one business action calls another and you need to control how failure should spread.</p>
+</div>
+<div class="card-grid">
+<article class="card eli5"><div class="card-label">🧒 ELI5</div><h3>Joining a dinner bill or starting your own tab</h3><p>Picture friends at a restaurant. Sometimes you join the group bill because the whole dinner is one shared activity. Other times you open a separate tab because your dessert should not fail just because someone else’s card gets declined.</p><p>That choice changes how mistakes are handled. If everyone is on one bill, one problem can block the whole checkout. If you split tabs, one person can finish even if the rest of the table has trouble.</p><p>Propagation is that choice for method calls inside your application: join the current unit of work or carve out a separate one with different consequences.</p></article><article class="card analogy"><div class="card-label">🔗 ANALOGY</div><h3>Shipping boxes inside a larger shipment</h3><p>A warehouse may ship one large order in a single truck, but it can also put a sensitive item in a separate insulated box with its own handling rules. That extra box exists because not every piece of work should share the exact same failure boundary.</p><p>If you ignore propagation and default everything blindly, you can accidentally make audit logging roll back with business data, or worse, commit side effects that should have stayed coupled to the main action.</p></article><article class="card technical"><div class="card-label">Technical</div><div class="two-col"><div><h3>How propagation really works</h3><p><strong>Definition:</strong> Propagation tells Spring what to do when a transactional method is called while another transaction may already be active.</p><p class="deep-note">REQUIRED is the default: join the current transaction if one exists, otherwise create a new one. REQUIRES_NEW suspends the current transaction and starts another independent one.</p><p class="deep-note">SUPPORTS, NOT_SUPPORTED, NEVER, and MANDATORY are not interview trivia; they are rules about whether code should require, reuse, avoid, or reject an ambient transaction context.</p><p class="deep-note">The senior-engineer mental model is: “When my call stack gets deeper, which operations must succeed or fail together, and which ones deserve their own commit boundary?”</p><div class="mini-grid"><div class="mini-panel"><h4>Why it matters in production</h4><ul><li>Lets you separate audit work from main writes</li><li>Prevents accidental coupling between unrelated side effects</li><li>Makes nested service calls predictable</li></ul></div><div class="mini-panel"><h4>Common smell</h4><ul><li>Using REQUIRES_NEW everywhere to “be safe”</li><li>Assuming REQUIRED always means “new transaction”</li><li>Forgetting suspended transactions still resume later</li></ul></div></div><div class="badge-row"><span class="pill good">REQUIRED default</span><span class="pill info">Suspend/resume</span><span class="pill caution">Separate audit writes</span></div><div class="flow"><span class="flow-step">Enter outer service</span><span class="flow-arrow">→</span><span class="flow-step">Check current transaction</span><span class="flow-arrow">→</span><span class="flow-step">Join or suspend/create</span><span class="flow-arrow">→</span><span class="flow-step">Commit according to each boundary</span></div></div><div><h3>💬 Model Interview Answer</h3><p>“Propagation is about how nested service calls participate in transactions. REQUIRED joins the current one, while REQUIRES_NEW creates an independent boundary and suspends the old one. The trade-off is that REQUIRES_NEW can keep audit or notification work durable, but it can also hide failures if you use it carelessly.”</p><table><thead><tr><th>Scenario</th><th>What to watch</th></tr></thead><tbody><tr><td>REQUIRED</td><td>Join existing or create one</td></tr><tr><td>REQUIRES_NEW</td><td>Always independent commit/rollback</td></tr><tr><td>MANDATORY</td><td>Fail fast if no transaction exists</td></tr></tbody></table></div></div><div class="code-blocks"><div><div class="code-title">❌ Wrong: audit log tied to outer outcome by accident</div><pre>@Service
+public class OrderService {
 
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Undoing a move</h3>
-              <p>If the move fails, you undo it. Some mistakes are considered serious enough to undo automatically.</p>
-            </article>
+    private final AuditService auditService;
+    private final OrderRepository orderRepository;
 
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Refund policy</h3>
-              <p>Certain failures trigger automatic refunds; others require manual review.</p>
-            </article>
+    public OrderService(AuditService auditService, OrderRepository orderRepository) {
+        this.auditService = auditService;
+        this.orderRepository = orderRepository;
+    }
 
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> By default, Spring rolls back on RuntimeException; use rollbackFor for checked exceptions.</p>
-                  <p class="deep-note">By default, only unchecked exceptions trigger rollback. If you expect checked exceptions to roll back, specify rollbackFor explicitly.</p>
-                  <p class="deep-note">Timeouts and readOnly flags make transactional behavior predictable and help avoid long-running locks.</p>
-                  <p class="deep-note">It is also common to split long operations so you avoid holding locks for the entire workflow.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul>
-                        <li>Ensure data integrity</li><li>Control business exceptions</li><li>Avoid partial writes</li>
-                      </ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common smell</h4>
-                      <ul>
-                        <li>Checked exception without rollbackFor</li><li>No timeout on long tx</li><li>Swallowing errors</li>
-                      </ul>
-                    </div>
-                  </div>
-                  <div class="badge-row">
-                    <span class="pill good">rollbackFor</span><span class="pill info">timeout</span><span class="pill bad">Silent failures</span>
-                  </div>
-                  <div class="flow"><span class="flow-step">Throw exception</span><span class="flow-arrow">→</span><span class="flow-step">Check rollback rules</span><span class="flow-arrow">→</span><span class="flow-step">Rollback or commit</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“Spring rolls back on unchecked exceptions. I use rollbackFor for checked exceptions that should undo work.”</p>
-                  <table>
-                    <thead><tr><th>Exception</th><th>Rollback?</th></tr></thead>
-                    <tbody><tr><td>RuntimeException</td><td><span class="pill good">Yes</span></td></tr><tr><td>Checked exception</td><td><span class="pill caution">No by default</span></td></tr><tr><td>rollbackFor</td><td><span class="pill info">Yes</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              
-    <div class="code-blocks">
-      
-    <div>
-      <div class="code-title">Rollback rule</div>
-      <pre>@Transactional(rollbackFor = IOException.class, timeout = 5)
-public void importData(){ ... }</pre>
-    </div>
-    </div>
-              <p>Timeouts prevent transactions from hanging too long.</p>
-                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
-            </article>
+    @Transactional
+    public void placeOrder(Order order) {
+        orderRepository.save(order);
+        auditService.record("ORDER_CREATED"); // Uses REQUIRED by default
+        throw new IllegalStateException("Payment failed");
+    }
+}
 
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Unchecked isn’t always enough</h3>
-              <p>If a checked exception should roll back, you must declare it.</p>
-            </article>
+@Service
+public class AuditService {
 
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>Rollback defaults to runtime exceptions.</li><li>Use rollbackFor when needed.</li><li>Set timeouts.</li>
-              </ul>
-            </article>
+    @Transactional
+    public void record(String eventName) {
+        // Rolls back with the outer transaction
+    }
+}</pre></div><div><div class="code-title">✅ Right: independent audit commit when appropriate</div><pre>@Service
+public class AuditService {
 
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>Which exception triggers rollback by default?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. IOException</button><button class="quiz-option">B. RuntimeException</button><button class="quiz-option">C. SQLException (checked)</button><button class="quiz-option">D. Exception</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>RuntimeException causes rollback by default.</span>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-      
-      
-      <section class="section" data-section="4">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 5 of 5 · ~7 mins</div>
-            <h2>Deep Dive: Propagation & Rollback Rules</h2>
-            <p>Understanding propagation and rollback behavior prevents subtle data bugs.</p>
-          </div>
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void record(String eventName) {
+        // This can commit even if the caller later rolls back
+    }
+}</pre></div></div><p>Use separate propagation only when the business requirement is explicit. Audit trails, idempotency records, or failure diagnostics are common reasons; routine domain writes usually belong in the same REQUIRED boundary.</p><p class="deep-note">The safest mental model is that Spring gives you a framework feature only when your call crosses the Spring-managed boundary and the surrounding infrastructure can participate.</p></article><article class="card warning"><div class="card-label">Warning</div><h3>REQUIRES_NEW can hide design mistakes</h3><p>Developers sometimes reach for REQUIRES_NEW because it “fixes” rollback behavior quickly. The danger is that it can commit records that no longer match the final business outcome.</p><p>If the outer operation fails, your independent inner transaction still commits. That is correct only when the business genuinely wants independent durability, such as an audit trail or outbox entry.</p><div class="code-blocks"><div><div class="code-title">Broken pattern</div><pre>@Transactional
+public void registerUser(User user) {
+    userRepository.save(user);
+    emailPreferenceService.saveDefaults(user.getId()); // REQUIRES_NEW added to "fix" a bug
+    throw new RuntimeException("validation later failed");
+}</pre></div><div><div class="code-title">Fixed pattern</div><pre>@Transactional
+public void registerUser(User user) {
+    userRepository.save(user);
+    emailPreferenceService.saveDefaults(user.getId()); // REQUIRED: stays coupled to user creation
+}
 
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Shared piggy bank</h3>
-              <p>If everyone uses the same bank, you need clear rules about when money goes in or out.</p>
-            </article>
+@Transactional(propagation = Propagation.REQUIRES_NEW)
+public void writeAuditEvent(String message) {
+    auditRepository.save(new AuditEvent(message));
+}</pre></div></div></article><article class="card technical"><div class="card-label">Mini takeaway</div><ul class="takeaways"><li>REQUIRED means “same unit of work when possible”</li><li>REQUIRES_NEW is for intentionally independent durability</li><li>Choose propagation from business semantics, not from debugging frustration</li></ul></article><article class="card quiz-card"><div class="card-label">Quiz</div><h3>Which propagation always creates a completely new transaction boundary?</h3><div class="quiz-options" data-answer="2"><button class="quiz-option">A. REQUIRED</button><button class="quiz-option">B. SUPPORTS</button><button class="quiz-option">C. REQUIRES_NEW</button><button class="quiz-option">D. MANDATORY</button></div><div class="quiz-result"><strong>Correct answer: C</strong><span>REQUIRES_NEW is correct because Spring suspends any current transaction and starts a separate one for that method. REQUIRED may create a transaction only when none exists, SUPPORTS simply joins if available and otherwise runs without one, and MANDATORY does not create anything at all—it throws if there is no ambient transaction. In interviews, emphasize the business consequence: REQUIRES_NEW can commit even if the outer operation later rolls back.</span></div></article></div></div></section><section class="section" data-section="2">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Section 3 · Consistency rules</div>
+<h2>Isolation Levels</h2>
+<p>Isolation levels control how one transaction can see changes made by another. They are about visibility and interference, not about whether a transaction exists in the first place.</p>
+</div>
+<div class="card-grid">
+<article class="card eli5"><div class="card-label">🧒 ELI5</div><h3>Reading a whiteboard while someone else keeps erasing and rewriting it</h3><p>Imagine you are copying a schedule from a whiteboard while another person keeps changing times in the middle of your note-taking. If you see half-finished edits, your copy can become nonsense even though you worked carefully.</p><p>Some workplaces solve that by saying nobody reads the board until an edit is fully finished. Stronger rules might even stop new items from being added while you are reviewing the whole schedule.</p><p>Isolation levels are those rules for concurrent work. They decide how much unfinished or newly arrived data your transaction is allowed to see.</p></article><article class="card analogy"><div class="card-label">🔗 ANALOGY</div><h3>A library with different reading-room rules</h3><p>One library might let staff rearrange books while readers are browsing shelves. Another might require readers to wait until reshelving finishes. A stricter room may even freeze the shelf layout until a catalog audit completes.</p><p>These rules exist because concurrency is a trade-off. If you ignore isolation, you get weird anomalies. If you crank it to the maximum everywhere, throughput drops because more work waits on more locks.</p></article><article class="card technical"><div class="card-label">Technical</div><div class="two-col"><div><h3>How isolation affects visibility</h3><p><strong>Definition:</strong> Isolation level defines which read anomalies a transaction may experience when other transactions are concurrently updating related data.</p><p class="deep-note">READ_COMMITTED prevents dirty reads, meaning you cannot observe another transaction’s uncommitted changes. REPEATABLE_READ and SERIALIZABLE add stronger guarantees, but at higher locking or coordination cost.</p><p class="deep-note">The database, not Spring alone, ultimately enforces the isolation semantics. Spring passes the requested level to the transaction manager, and the underlying database interprets it according to its own engine behavior.</p><p class="deep-note">The mental model is: “What inconsistent view can this reader tolerate while others are writing?” That answer should come from the use case, not from cargo-cult defaults.</p><div class="mini-grid"><div class="mini-panel"><h4>Why it matters in production</h4><ul><li>Prevents subtle concurrency bugs in money, inventory, and reporting flows</li><li>Lets you balance correctness and throughput explicitly</li><li>Makes anomalies discussable in design reviews</li></ul></div><div class="mini-panel"><h4>Common smell</h4><ul><li>Setting SERIALIZABLE everywhere out of fear</li><li>Assuming databases implement every level identically</li><li>Confusing isolation with optimistic locking</li></ul></div></div><div class="badge-row"><span class="pill good">Correctness vs throughput</span><span class="pill info">DB-enforced semantics</span><span class="pill caution">Vendor differences</span></div><div class="flow"><span class="flow-step">Start transaction</span><span class="flow-arrow">→</span><span class="flow-step">Read rows</span><span class="flow-arrow">→</span><span class="flow-step">Other transaction writes</span><span class="flow-arrow">→</span><span class="flow-step">Isolation decides what becomes visible</span></div></div><div><h3>💬 Model Interview Answer</h3><p>“Isolation levels answer a concurrency question: what can this transaction see while others are changing data? READ_COMMITTED blocks dirty reads, stronger levels reduce more anomalies, and the trade-off is reduced concurrency. In practice I pick the weakest level that still protects the business invariant, then I combine it with locking or optimistic version checks where needed.”</p><table><thead><tr><th>Scenario</th><th>What to watch</th></tr></thead><tbody><tr><td>READ_COMMITTED</td><td>No dirty reads</td></tr><tr><td>REPEATABLE_READ</td><td>More stable repeated reads</td></tr><tr><td>SERIALIZABLE</td><td>Strongest consistency, highest cost</td></tr></tbody></table></div></div><div class="code-blocks"><div><div class="code-title">❌ Wrong: assume repeated reads are automatically stable</div><pre>@Transactional(isolation = Isolation.READ_COMMITTED)
+public InventorySnapshot getSnapshot(Long productId) {
+    Product product = productRepository.findById(productId).orElseThrow();
+    // Another transaction may update the row before this second read
+    Product freshProduct = productRepository.findById(productId).orElseThrow();
+    return new InventorySnapshot(product.getStock(), freshProduct.getStock());
+}</pre></div><div><div class="code-title">✅ Right: choose the guarantee or lock explicitly</div><pre>@Transactional(isolation = Isolation.REPEATABLE_READ)
+public InventorySnapshot getSnapshot(Long productId) {
+    Product product = productRepository.findById(productId).orElseThrow();
+    Product freshProduct = productRepository.findById(productId).orElseThrow();
+    return new InventorySnapshot(product.getStock(), freshProduct.getStock());
+}</pre></div></div><p>Isolation is about visibility, but business correctness often still needs row locking, unique constraints, or optimistic version columns. Do not expect one switch to solve every concurrency problem.</p><p class="deep-note">The safest mental model is that Spring gives you a framework feature only when your call crosses the Spring-managed boundary and the surrounding infrastructure can participate.</p></article><article class="card warning"><div class="card-label">Warning</div><h3>Higher isolation has a cost</h3><p>A stronger isolation level can reduce anomalies, but it may also increase lock contention, retries, and latency under load. That is why “use the strongest level” is not a mature answer.</p><p>The right fix may be narrower: lock one row, add a uniqueness constraint, or use optimistic locking instead of globally tightening the whole transaction.</p><div class="code-blocks"><div><div class="code-title">Broken pattern</div><pre>@Transactional(isolation = Isolation.SERIALIZABLE)
+public void generateDailyAnalytics() {
+    // Heavy long-running reporting query under the strictest level
+    // Can throttle other writers and create unnecessary contention
+}</pre></div><div><div class="code-title">Fixed pattern</div><pre>@Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
+public ReportPage fetchReportPage() {
+    // Use the weakest level that still serves the reporting use case
+    // Apply explicit locking only where a business invariant truly needs it
+}</pre></div></div></article><article class="card technical"><div class="card-label">Mini takeaway</div><ul class="takeaways"><li>Isolation is about what reads can observe under concurrency</li><li>Database engines ultimately enforce the semantics</li><li>Strongest isolation is not always the best engineering choice</li></ul></article><article class="card quiz-card"><div class="card-label">Quiz</div><h3>Which anomaly is specifically prevented by READ_COMMITTED?</h3><div class="quiz-options" data-answer="0"><button class="quiz-option">A. Dirty reads</button><button class="quiz-option">B. Phantom reads</button><button class="quiz-option">C. Write skew</button><button class="quiz-option">D. Lost updates in all cases</button></div><div class="quiz-result"><strong>Correct answer: A</strong><span>READ_COMMITTED prevents dirty reads, so option A is correct: you do not see another transaction’s uncommitted changes. Phantom reads and write skew can still occur depending on the database and workload, so B and C are not guaranteed away at this level. D is also wrong because lost updates are a separate concurrency issue often handled with locking or optimistic versioning rather than by READ_COMMITTED alone.</span></div></article></div></div></section><section class="section" data-section="3">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Section 4 · Failure behavior</div>
+<h2>Rollback Rules &amp; Timeouts</h2>
+<p>A transaction boundary is only safe if you also understand what actually triggers rollback and how long the boundary is allowed to stay open. Defaults help, but defaults are not the same as explicit design.</p>
+</div>
+<div class="card-grid">
+<article class="card eli5"><div class="card-label">🧒 ELI5</div><h3>Undo rules on a board game timer</h3><p>Imagine a long board game where some mistakes let you rewind the turn, but other mistakes do not because the rules treat them differently. Now add a chess clock: if you hold the table too long, your turn must end before everyone else gets blocked.</p><p>That combination is what rollback rules and timeouts do. They decide which kinds of failure undo the work and how long the system will tolerate a transaction holding resources.</p><p>Without clear rules, you think your work will be undone when it will not, or you leave database locks open so long that unrelated requests slow down behind you.</p></article><article class="card analogy"><div class="card-label">🔗 ANALOGY</div><h3>A refund policy plus room reservation timer</h3><p>A hotel may allow a full refund for some cancellation reasons but not others. At the same time, it cannot let a guest hold a room forever without paying, so there is also an expiration timer.</p><p>Rollback rules exist because not all exceptions mean the same thing, and timeouts exist because correctness without throughput is still a production failure. Ignoring either one leads to systems that are surprising under load.</p></article><article class="card technical"><div class="card-label">Technical</div><div class="two-col"><div><h3>What Spring does by default</h3><p><strong>Definition:</strong> Spring rolls back by default for unchecked exceptions and errors, while checked exceptions require explicit rollback configuration if you want the transaction to undo work.</p><p class="deep-note">That default surprises many engineers because business code often throws checked exceptions such as IOException or custom checked domain exceptions. If you expect rollback for those, use rollbackFor explicitly.</p><p class="deep-note">Timeouts protect the system from transactions that sit open too long, holding locks or connection-pool resources. They are especially important when complex workflows accidentally mix database work with slow operations.</p><p class="deep-note">The mature mental model is: “What failures should undo this work, and what is the maximum safe time I want this transaction to monopolize resources?”</p><div class="mini-grid"><div class="mini-panel"><h4>Why it matters in production</h4><ul><li>Makes rollback behavior explicit instead of accidental</li><li>Protects the database and pool from long-running work</li><li>Prevents “it committed even though there was an error” surprises</li></ul></div><div class="mini-panel"><h4>Common smell</h4><ul><li>Catching exceptions and swallowing them inside the transaction</li><li>Relying on checked exceptions without rollbackFor</li><li>Performing remote API calls before commit with no timeout plan</li></ul></div></div><div class="badge-row"><span class="pill good">Explicit rollbackFor</span><span class="pill caution">Timeouts</span><span class="pill bad">Swallowed exceptions</span></div><div class="flow"><span class="flow-step">Method throws</span><span class="flow-arrow">→</span><span class="flow-step">Spring checks rollback rules</span><span class="flow-arrow">→</span><span class="flow-step">Transaction commits or rolls back</span><span class="flow-arrow">→</span><span class="flow-step">Resources are released</span></div></div><div><h3>💬 Model Interview Answer</h3><p>“By default Spring rolls back for RuntimeException and Error, not for checked exceptions. So if my domain flow throws a checked exception that should cancel the write, I configure rollbackFor explicitly. I also keep a timeout on important write paths because an open transaction is holding scarce resources even while my code is waiting.”</p><table><thead><tr><th>Scenario</th><th>What to watch</th></tr></thead><tbody><tr><td>RuntimeException</td><td>Rollback by default</td></tr><tr><td>Checked exception</td><td>Commit unless configured otherwise</td></tr><tr><td>Timeout</td><td>Abort long-running unit of work</td></tr></tbody></table></div></div><div class="code-blocks"><div><div class="code-title">❌ Wrong: checked exception but no rollback rule</div><pre>@Transactional
+public void importFile(Path path) throws IOException {
+    importLogRepository.markStarted(path.toString());
+    Files.readString(path); // Throws checked IOException
+    importLogRepository.markFinished(path.toString());
+}</pre></div><div><div class="code-title">✅ Right: explicit rollback rule and timeout</div><pre>@Transactional(rollbackFor = IOException.class, timeout = 5)
+public void importFile(Path path) throws IOException {
+    importLogRepository.markStarted(path.toString());
+    Files.readString(path);
+    importLogRepository.markFinished(path.toString());
+}</pre></div></div><p>Defaults are useful, but they are not a substitute for business intent. Whenever the failure type matters to correctness, encode that intent directly on the transaction boundary.</p><p class="deep-note">The safest mental model is that Spring gives you a framework feature only when your call crosses the Spring-managed boundary and the surrounding infrastructure can participate.</p></article><article class="card warning"><div class="card-label">Warning</div><h3>Catching an exception can accidentally force a commit</h3><p>Spring can only react to an exception that escapes the method or to a manually marked rollback-only status. If you catch the exception, log it, and keep going, the framework may happily commit.</p><p>That is why “catch and continue” inside a transactional method is dangerous unless you also decide whether the transaction should be marked for rollback.</p><div class="code-blocks"><div><div class="code-title">Broken pattern</div><pre>@Transactional
+public void reserveSeat(Long seatId) {
+    try {
+        seatRepository.lockAndReserve(seatId);
+        paymentGateway.charge(seatId); // Assume this throws RuntimeException
+    } catch (RuntimeException ex) {
+        log.warn("Payment failed", ex);
+        // Method returns normally, so the transaction may commit seat reservation
+    }
+}</pre></div><div><div class="code-title">Fixed pattern</div><pre>@Transactional
+public void reserveSeat(Long seatId) {
+    try {
+        seatRepository.lockAndReserve(seatId);
+        paymentGateway.charge(seatId);
+    } catch (RuntimeException ex) {
+        TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+        throw ex;
+    }
+}</pre></div></div></article><article class="card technical"><div class="card-label">Mini takeaway</div><ul class="takeaways"><li>Rollback defaults cover unchecked exceptions only</li><li>Timeouts are a resource-protection feature, not just a nice-to-have</li><li>Never swallow an exception unless you also decide the transaction outcome</li></ul></article><article class="card quiz-card"><div class="card-label">Quiz</div><h3>Which exception category triggers rollback by default in Spring transactions?</h3><div class="quiz-options" data-answer="1"><button class="quiz-option">A. Any checked exception</button><button class="quiz-option">B. RuntimeException</button><button class="quiz-option">C. IOException only</button><button class="quiz-option">D. Exception in all cases</button></div><div class="quiz-result"><strong>Correct answer: B</strong><span>RuntimeException is the correct answer because Spring’s default rule rolls back on unchecked exceptions and Error. Checked exceptions such as IOException do not trigger rollback unless you configure rollbackFor, so A and C are wrong. D is also wrong because Spring does not roll back for every possible Exception type by default. In interviews, say the default aloud—many candidates vaguely remember “exceptions roll back” without knowing the checked-vs-unchecked nuance.</span></div></article></div></div></section><section class="section" data-section="4">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Section 5 · Interview deep dive</div>
+<h2>Deep Dive: Propagation &amp; Rollback Rules</h2>
+<p>This section puts the pieces together: nested service calls, explicit rollback semantics, and the difference between domain writes that must stay coupled versus side effects that can commit independently.</p>
+</div>
+<div class="card-grid">
+<article class="card eli5"><div class="card-label">🧒 ELI5</div><h3>One wedding planner, many vendors</h3><p>Imagine a wedding planner coordinating venue, food, music, and photography. Some work must stay together: if the venue booking fails, the main event should not be considered fully arranged.</p><p>But some records still need to survive failure, like the planner’s own notes about what went wrong or a message sent to the support team. That is the same tension engineers manage with nested transactions and rollback rules.</p><p>The hard part is not knowing the words REQUIRED and REQUIRES_NEW. The hard part is deciding which pieces of work really belong to the same promise to the user.</p></article><article class="card analogy"><div class="card-label">🔗 ANALOGY</div><h3>A main suitcase with small sealed pouches</h3><p>When you pack for a long trip, most clothes belong in the main suitcase because they are part of one trip outcome. But medicine or documents might go into sealed pouches because losing the big bag should not destroy every critical item.</p><p>Propagation exists for that packaging decision. If you ignore it, you either over-couple independent work or scatter commits so widely that your database no longer reflects one believable business story.</p></article><article class="card technical"><div class="card-label">Technical</div><div class="two-col"><div><h3>How senior engineers reason about nested boundaries</h3><p><strong>Definition:</strong> The deep-dive question is not “Which propagation type exists?” but “Which data must share one atomic story, and which records are allowed to live outside it?”</p><p class="deep-note">An outer service usually represents the user-visible business action. Inner services should normally join that same transaction with REQUIRED unless you have a very explicit reason to separate durability.</p><p class="deep-note">REQUIRES_NEW is appropriate for independent audit records, outbox messages, retry markers, or operational diagnostics. It is dangerous when used to mask modeling mistakes, because the database may then reflect multiple inconsistent stories about the same event.</p><p class="deep-note">Rollback rules belong to that same conversation. If an inner service catches a checked or unchecked exception and hides it, the outer layer may commit data that should have been abandoned.</p><div class="mini-grid"><div class="mini-panel"><h4>What senior engineers optimize for</h4><ul><li>Start from business invariants, not framework defaults</li><li>Use independent transactions only for explicitly independent records</li><li>Keep transaction boundaries around database work, not around network waiting</li></ul></div><div class="mini-panel"><h4>Trade-offs</h4><ul><li>Too much REQUIRES_NEW creates fragmented outcomes</li><li>Too much catching/logging hides rollback intent</li><li>Long boundaries multiply lock contention and retry pain</li></ul></div></div><div class="badge-row"><span class="pill good">Invariant-driven design</span><span class="pill info">Outbox/audit candidates</span><span class="pill bad">Fragmented commits</span></div><div class="flow"><span class="flow-step">Outer service begins</span><span class="flow-arrow">→</span><span class="flow-step">Inner services join or split</span><span class="flow-arrow">→</span><span class="flow-step">Failure occurs</span><span class="flow-arrow">→</span><span class="flow-step">Rollback rules decide final story</span></div></div><div><h3>💬 Model Interview Answer</h3><p>“My rule is that the outer service method should model the user’s main business action, and inner methods should usually join it with REQUIRED. I reserve REQUIRES_NEW for deliberately independent records like audit or outbox writes. The gotcha is that catching exceptions or overusing new transactions can leave the database in a state that is technically committed but semantically inconsistent.”</p><table><thead><tr><th>Decision point</th><th>Senior answer</th></tr></thead><tbody><tr><td>Audit or outbox record</td><td>Independent durability may be correct</td></tr><tr><td>Domain state mutation</td><td>Usually stay in outer REQUIRED transaction</td></tr><tr><td>Caught exception</td><td>Decide rollback explicitly, don’t just log and move on</td></tr></tbody></table></div></div><div class="code-blocks"><div><div class="code-title">❌ Wrong: commit fragments of one business action</div><pre>@Service
+public class CheckoutService {
 
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Nested boxes</h3>
-              <p>A box inside a box may open with the outer one or separately depending on the rule.</p>
-            </article>
+    private final OrderRepository orderRepository;
+    private final InventoryService inventoryService;
+    private final PaymentService paymentService;
 
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> @Transactional propagation decides whether methods join existing transactions or start new ones.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul><li>Avoids partial updates</li><li>Controls rollback behavior</li><li>Improves data consistency</li></ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common pitfall</h4>
-                      <ul><li>Unexpected commits</li><li>Catching exceptions and swallowing rollback</li><li>Self-invocation</li></ul>
-                    </div>
-                  </div>
-                  <div class="badge-row"><span class="pill good">REQUIRED</span><span class="pill info">REQUIRES_NEW</span><span class="pill caution">Rollback rules</span></div>
-                  <div class="flow"><span class="flow-step">Call method</span><span class="flow-arrow">→</span><span class="flow-step">Check existing tx</span><span class="flow-arrow">→</span><span class="flow-step">Join or create</span><span class="flow-arrow">→</span><span class="flow-step">Commit/rollback</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“I use REQUIRED for default joins, REQUIRES_NEW for independent side effects.”</p>
-                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
-                  <table>
-                    <thead><tr><th>Propagation</th><th>Behavior</th></tr></thead>
-                    <tbody><tr><td>REQUIRED</td><td><span class="pill good">Join if exists</span></td></tr><tr><td>REQUIRES_NEW</td><td><span class="pill info">Suspend + new</span></td></tr><tr><td>NESTED</td><td><span class="pill caution">Savepoint</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              <div class="code-blocks">
-    <div>
-      <div class="code-title">Rollback for checked exception</div>
-      <pre>@Transactional(rollbackFor = IOException.class)
-public void importFile() throws IOException { ... }</pre>
-    </div>
-    </div>
-            </article>
+    public CheckoutService(OrderRepository orderRepository,
+                           InventoryService inventoryService,
+                           PaymentService paymentService) {
+        this.orderRepository = orderRepository;
+        this.inventoryService = inventoryService;
+        this.paymentService = paymentService;
+    }
 
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Catching exceptions can commit</h3>
-              <p>If you catch and swallow exceptions, Spring may commit instead of rolling back.</p>
-            </article>
+    @Transactional
+    public void checkout(Order order) {
+        orderRepository.save(order);
+        inventoryService.reserve(order); // inner service wrongly uses REQUIRES_NEW
+        paymentService.charge(order);    // throws RuntimeException
+    }
+}</pre></div><div><div class="code-title">✅ Right: keep domain writes together, split only operational records</div><pre>@Service
+public class CheckoutService {
 
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways"><li>Know propagation types.</li><li>Configure rollback rules explicitly.</li><li>Avoid self-invocation issues.</li></ul>
-            </article>
+    private final OrderRepository orderRepository;
+    private final InventoryService inventoryService;
+    private final PaymentService paymentService;
+    private final AuditService auditService;
 
-            
-          
-            <article class="card technical">
-              <div class="card-label">Edge cases</div>
-              <h3>Edge Cases & Tradeoffs</h3>
-              <ul class="takeaways"><li>Self-invocation bypasses @Transactional.</li><li>Checked exceptions do not trigger rollback by default.</li><li>Long transactions hold locks and reduce throughput.</li><li>Isolation level mismatch causes anomalies.</li><li>Nested transactions need explicit propagation.</li></ul>
-            </article>
+    public CheckoutService(OrderRepository orderRepository,
+                           InventoryService inventoryService,
+                           PaymentService paymentService,
+                           AuditService auditService) {
+        this.orderRepository = orderRepository;
+        this.inventoryService = inventoryService;
+        this.paymentService = paymentService;
+        this.auditService = auditService;
+    }
 
-            <article class="card technical">
-              <div class="card-label">Checklist</div>
-              <h3>Production Checklist</h3>
-              <ul class="takeaways"><li>Annotate service-layer methods, not controllers.</li><li>Pick propagation that matches the use case.</li><li>Set timeouts for long-running work.</li><li>Use readOnly for query-only paths.</li><li>Document rollback rules explicitly.</li></ul>
-            </article>
+    @Transactional
+    public void checkout(Order order) {
+        orderRepository.save(order);
+        inventoryService.reserve(order); // REQUIRED by default: stays coupled
+        try {
+            paymentService.charge(order);
+        } catch (RuntimeException ex) {
+            auditService.recordFailure(order.getId(), ex.getMessage()); // REQUIRES_NEW
+            throw ex;
+        }
+    }
+}</pre></div></div></article><article class="card warning"><div class="card-label">Warning</div><h3>Catching exceptions without deciding the final transaction outcome</h3><p>If an inner REQUIRED method marks the transaction rollback-only, the outer method may later hit UnexpectedRollbackException when it tries to commit. That is not Spring being weird; it is Spring protecting consistency after a deeper layer already decided the unit of work must fail.</p><p>Developers often swallow an exception “just for logging” and accidentally convert a rollback into a commit. If the business action should fail, let the exception escape or mark the transaction rollback-only explicitly.</p><div class="code-blocks"><div><div class="code-title">Broken pattern</div><pre>@Transactional
+public void checkout(Order order) {
+    try {
+        paymentService.charge(order);
+    } catch (RuntimeException ex) {
+        log.warn("charge failed", ex);
+        // execution continues, commit may still happen
+    }
+    orderRepository.markPaid(order.getId());
+}</pre></div><div><div class="code-title">Fixed pattern</div><pre>@Transactional
+public void checkout(Order order) {
+    paymentService.charge(order);
+    orderRepository.markPaid(order.getId());
+}</pre></div></div></article><article class="card technical"><div class="card-label">Edge cases</div><h3>Edge Cases &amp; Tradeoffs</h3><ul class="takeaways"><li>UnexpectedRollbackException usually means some inner layer already marked rollback-only.</li><li>saveAndFlush sends SQL early, but commit still happens only at transaction end.</li><li>Constraints and optimistic locking still matter alongside propagation.</li><li>Long-running remote calls inside transactions amplify lock contention.</li><li>An outbox table is often better than one giant cross-system transaction.</li></ul></article><article class="card technical"><div class="card-label">Checklist</div><h3>Production Checklist</h3><ul class="takeaways"><li>Define the outermost business action first</li><li>Default inner domain writes to REQUIRED</li><li>Use REQUIRES_NEW only for intentionally independent durability</li><li>Set rollbackFor on checked exceptions that should cancel writes</li><li>Keep remote I/O outside the main database transaction when possible</li></ul></article><article class="card technical"><div class="card-label">Interview</div><h3>Interview Hooks</h3><ul class="takeaways"><li>Be ready to explain self-invocation and proxy boundaries</li><li>Know why checked exceptions do not roll back by default</li><li>Describe one justified REQUIRES_NEW use and one smell</li></ul></article><article class="card technical"><div class="card-label">Advanced Example</div><h3>Advanced order + outbox pattern example</h3><div class="code-blocks"><div><div class="code-title">Advanced example</div><pre>@Service
+public class OrderPlacementService {
 
-            <article class="card technical">
-              <div class="card-label">Interview</div>
-              <h3>Interview Hooks</h3>
-              <p>Show you understand proxy semantics and isolation tradeoffs.</p>
-              <ul class="takeaways"><li>Propagation: REQUIRED vs REQUIRES_NEW.</li><li>Isolation levels and which anomalies they prevent.</li><li>Why self-invocation breaks proxies.</li></ul>
-            </article>
+    private final OrderRepository orderRepository;
+    private final OutboxService outboxService;
 
-            <article class="card technical">
-              <div class="card-label">Advanced Example</div>
-              <div class="code-blocks">
-        <div>
-          <div class="code-title">Transactional boundary with rollback rules</div>
-          <pre>@Transactional(
-  propagation = Propagation.REQUIRES_NEW,
-  rollbackFor = Exception.class,
-  timeout = 5
-)
-public void settleInvoice(...) { ... }</pre>
-        </div>
-      </div>
-      <p>Explicit rollback rules avoid surprises with checked exceptions.</p>
-            </article><article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>Which propagation always starts a new transaction?</h3>
-              <div class="quiz-options" data-answer="2">
-                <button class="quiz-option">A. REQUIRED</button><button class="quiz-option">B. SUPPORTS</button><button class="quiz-option">C. REQUIRES_NEW</button><button class="quiz-option">D. MANDATORY</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: C</strong>
-                <span>REQUIRES_NEW suspends any existing transaction and starts a new one.</span>
-              </div>
-            </article></div>
-        </div>
-      </section>
-<section class="section" data-section="5">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Completion screen · Review mode</div>
-            <h2>🎉 Spring Transactions Cheat Sheet</h2>
-            <p>Use this to recall propagation, isolation, and rollback rules.</p>
-          </div>
+    public OrderPlacementService(OrderRepository orderRepository, OutboxService outboxService) {
+        this.orderRepository = orderRepository;
+        this.outboxService = outboxService;
+    }
 
-          <div class="completion-grid">
-            <div class="card technical">
-              <div class="card-label">Cheat sheet</div>
-              <div class="celebrate">🚀</div>
-              <h3>1-line interview answers</h3>
-              <div class="cheat-list">
-    <div class="cheat-item">
-      <h4>Basics</h4>
-      <p>@Transactional is proxy-based; self-invocation skips it.</p>
-    </div>
-    <div class="cheat-item">
-      <h4>Propagation</h4>
-      <p>REQUIRES_NEW starts a new transaction.</p>
-    </div>
-    <div class="cheat-item">
-      <h4>Isolation</h4>
-      <p>Pick based on anomalies you must avoid.</p>
-    </div>
-    <div class="cheat-item">
-      <h4>Rollback</h4>
-      <p>Unchecked exceptions roll back by default.</p>
-    </div></div>
-            </div>
+    @Transactional
+    public Long place(Order order) {
+        Order saved = orderRepository.save(order);
+        outboxService.enqueueOrderCreated(saved.getId());
+        return saved.getId();
+    }
+}
 
-            <div class="card analogy">
-              <div class="card-label">What to remember</div>
-              <h3>Fast mental model</h3>
-              <ul class="takeaways">
-                <li><strong>@Transactional:</strong> proxy-based by default.</li><li><strong>Propagation:</strong> REQUIRED vs REQUIRES_NEW.</li><li><strong>Isolation:</strong> choose based on anomalies.</li><li><strong>Rollback:</strong> unchecked by default.</li>
-              </ul>
-              <h3 style="margin-top:22px;">Common traps</h3>
-              <div class="badge-row">
-                <span class="pill bad">Self-invocation</span><span class="pill bad">Forgetting rollbackFor</span><span class="pill bad">Using wrong propagation</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    </main>
+@Service
+public class OutboxService {
 
-    <footer class="footer-nav">
-      <div class="footer-nav-inner">
-        <button class="btn" id="prevBtn">← Back</button>
-        <button class="btn primary" id="nextBtn">Next →</button>
-      </div>
-    </footer>
-  </div>
+    private final OutboxRepository outboxRepository;
 
-  <script>
+    public OutboxService(OutboxRepository outboxRepository) {
+        this.outboxRepository = outboxRepository;
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void enqueueOrderCreated(Long orderId) {
+        outboxRepository.save(new OutboxEvent("ORDER_CREATED", orderId.toString()));
+    }
+}</pre></div></div></article><article class="card quiz-card"><div class="card-label">Quiz</div><h3>Which statement best describes a good use of REQUIRES_NEW?</h3><div class="quiz-options" data-answer="1"><button class="quiz-option">A. Use it for all repository calls so each write is safer</button><button class="quiz-option">B. Use it when you want independent durability such as an audit trail or retry marker</button><button class="quiz-option">C. Use it because REQUIRED cannot participate in an existing transaction</button><button class="quiz-option">D. Use it to make self-invocation work</button></div><div class="quiz-result"><strong>Correct answer: B</strong><span>Option B is correct because REQUIRES_NEW is justified when a piece of work is intentionally allowed to commit independently of the caller, such as an audit record or outbox marker. A is wrong because turning every write into its own transaction destroys atomic business behavior. C is wrong because REQUIRED is specifically designed to join an existing transaction, and D is wrong because propagation settings do not solve the proxy-boundary problem of self-invocation.</span></div></article></div></div></section><section class="section" data-section="5">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Completion screen · Review mode</div>
+<h2>🎉 Spring Transactions Cheat Sheet</h2>
+<p>Use this review screen to remember proxy boundaries, propagation rules, isolation trade-offs, and default rollback behavior.</p>
+</div>
+<div class="completion-grid">
+<div class="card technical">
+<div class="card-label">Cheat sheet</div>
+<div class="celebrate">🚀</div>
+<h3>1-line interview answers</h3>
+<div class="cheat-list"><div class="cheat-item"><h4>Basics</h4><p>@Transactional is usually proxy-based, so call boundaries matter as much as the annotation itself.</p></div><div class="cheat-item"><h4>Propagation</h4><p>REQUIRED joins the ambient transaction; REQUIRES_NEW creates an independent one.</p></div><div class="cheat-item"><h4>Isolation</h4><p>Pick the weakest level that still protects the business invariant.</p></div><div class="cheat-item"><h4>Rollback</h4><p>Unchecked exceptions roll back by default; checked ones need explicit rollbackFor.</p></div></div>
+</div>
+<div class="card analogy">
+<div class="card-label">What to remember</div>
+<h3>Fast mental model</h3>
+<ul class="takeaways"><li><strong>Transaction:</strong> one believable business story in the database.</li><li><strong>Propagation:</strong> decide whether nested work shares that story.</li><li><strong>Isolation:</strong> decide what concurrent edits this story is allowed to see.</li><li><strong>Rollback:</strong> make failure semantics explicit, not assumed.</li></ul>
+<h3 style="margin-top:22px;">Common traps</h3>
+<div class="badge-row"><span class="pill bad">Self-invocation</span><span class="pill bad">Swallowed exceptions</span><span class="pill bad">REQUIRES_NEW everywhere</span></div>
+</div>
+</div>
+</div>
+</section><footer class="footer-nav">
+<div class="footer-nav-inner">
+<button class="btn" id="prevBtn">← Back</button>
+<button class="btn primary" id="nextBtn">Next →</button>
+</div>
+</footer>
+</div>
+<script>
 const sections = Array.from(document.querySelectorAll('.section'));
     const dots = Array.from(document.querySelectorAll('.nav-dot'));
     const prevBtn = document.getElementById('prevBtn');

@@ -749,569 +749,250 @@
     </header>
 
     <main>
-      
       <section class="section active" data-section="0">
         <div class="section-inner">
           <div class="hero">
             <div class="section-label">Section 1 of 5 · ~7 mins</div>
             <h2>Chaining Futures</h2>
-            <p>Chaining is the core skill — it keeps async flows readable and avoids nested callbacks.</p>
+            <p>CompletableFuture becomes powerful when async work is modeled as a pipeline instead of a nest of callbacks or blocking waits.</p>
           </div>
-
           <div class="card-grid">
             <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Passing a baton</h3>
-              <p>Each runner passes the baton to the next. The race stays smooth when you hand off cleanly.</p>
-            </article>
-
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Factory assembly line</h3>
-              <p>Each station finishes its work and hands the item to the next station without stopping the line.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> thenApply maps values, thenCompose flattens async steps to avoid Future<Future<T>>.</p>
-                  <p class="deep-note">Chaining turns async work into a pipeline where each stage transforms the previous result. This makes complex workflows readable and avoids manual thread coordination.</p>
-                  <p class="deep-note">Use thenApply for synchronous transformations and thenCompose when the next step returns a future. thenCompose flattens the chain so you do not end up with nested futures.</p>
-                  <p class="deep-note">As a beginner, think of it like a conveyor belt: each stage adds value, and the pipeline stays clear as long as you keep each stage focused.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul>
-                        <li>Keeps pipelines readable</li><li>Avoids nested futures</li><li>Simplifies error flow</li>
-                      </ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common smell</h4>
-                      <ul>
-                        <li>thenApply returning a future</li><li>Nested callbacks</li><li>Blocking to unwrap</li>
-                      </ul>
-                    </div>
-                  </div>
-                  <div class="badge-row">
-                    <span class="pill good">thenCompose for async</span><span class="pill info">thenApply for map</span><span class="pill bad">Future<Future></span>
-                  </div>
-                  <div class="flow"><span class="flow-step">Start async</span><span class="flow-arrow">→</span><span class="flow-step">Transform</span><span class="flow-arrow">→</span><span class="flow-step">Compose</span><span class="flow-arrow">→</span><span class="flow-step">Return result</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“thenCompose flattens async stages. I use thenApply for simple mapping only.”</p>
-                  <table>
-                    <thead><tr><th>Operator</th><th>Use</th></tr></thead>
-                    <tbody><tr><td>thenApply</td><td><span class="pill info">Sync mapping</span></td></tr><tr><td>thenCompose</td><td><span class="pill good">Async chaining</span></td></tr><tr><td>thenAccept</td><td><span class="pill caution">Side effects</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              
-    <div class="code-blocks">
-      
-    <div>
-      <div class="code-title">thenCompose example</div>
-      <pre><span class="token-comment">CompletableFuture&lt;User&gt; u = fetchUser(id);
-CompletableFuture&lt;Profile&gt; p = u.thenCompose(user -&gt; fetchProfile(user));</span></pre>
-    </div>
-    </div>
-              <p>thenCompose avoids nested futures and keeps the pipeline flat.</p>
-                  <p class="deep-note">CompletableFuture is a pipeline. Prefer chaining and composing over blocking, and always handle exceptions so failures don't silently disappear.</p>
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Avoid blocking get()</h3>
-              <p>Blocking inside a pipeline defeats async benefits and can deadlock.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>thenCompose is for async chaining.</li><li>thenApply maps values.</li><li>Keep pipelines flat.</li>
-              </ul>
-            </article>
-
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>Which operator prevents Future<Future<T>>?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. thenApply</button><button class="quiz-option">B. thenCompose</button><button class="quiz-option">C. thenRun</button><button class="quiz-option">D. thenAccept</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>thenCompose flattens nested futures.</span>
-              </div>
-            </article>
+      <div class="card-label">🧒 ELI5</div>
+      <h3>Passing a relay baton without stopping the race</h3>
+      <p>In a relay race, each runner finishes their part and hands the baton to the next runner smoothly. The race stays fast because nobody stops the whole team to discuss what to do next. Chaining futures works the same way: one async step hands its result to the next without blocking the whole flow.</p>
+    </article><article class="card analogy">
+      <div class="card-label">🔗 ANALOGY</div>
+      <h3>A factory line where each station adds one step</h3>
+      <p>One station paints, the next packages, and the next labels. Each stage depends on the previous result, but the process stays readable because every step has one responsibility. CompletableFuture chaining exists to model that same staged flow in code.</p>
+    </article><article class="card technical">
+      <div class="card-label">Technical</div>
+      <h3>thenApply versus thenCompose</h3>
+      <div class="two-col"><div><p><strong>Definition:</strong> <code>thenApply</code> transforms a completed value synchronously, while <code>thenCompose</code> chains another asynchronous stage and flattens the result.</p><p class="deep-note">This distinction is critical. If the next step already returns a <code>CompletableFuture</code>, using <code>thenApply</code> gives you a nested future like <code>CompletableFuture&lt;CompletableFuture&lt;T&gt;&gt;</code>, which is awkward and often leads developers to block just to unwrap it.</p><p class="deep-note">Use <code>thenCompose</code> when the next stage is asynchronous. Use <code>thenApply</code> when you already have the value and only need a local transformation. That one point is one of the most common CompletableFuture interview questions.</p><div class="mini-grid"><div class="mini-panel"><h4>Why it matters</h4><p>Correct chaining keeps async code flat, composable, and less error-prone.</p></div><div class="mini-panel"><h4>Gotcha</h4><p>Using thenApply for an async-returning function creates nested futures and usually tempts people into blocking.</p></div></div><table><thead><tr><th>Method</th><th>Use it when</th></tr></thead><tbody><tr><td><code>thenApply</code></td><td>You already have a value and want to map it.</td></tr><tr><td><code>thenCompose</code></td><td>The next function returns another CompletableFuture.</td></tr><tr><td><code>thenAccept</code></td><td>You want a side effect and no downstream value.</td></tr></tbody></table><div class="mini-panel" style="background: rgba(124,58,237,0.12); border-color: rgba(124,58,237,0.35); margin-top: 16px;">
+      <h4>💬 Model Interview Answer</h4>
+      <p>I explain CompletableFuture chaining as a pipeline. thenApply is for synchronous mapping of a completed value, and thenCompose is for flattening the next asynchronous stage. That matters because using thenApply with a method that already returns a future creates nested futures and often leads to blocking workarounds. In interviews, that flattening concept is the key thing to call out.</p>
+    </div></div><div></div></div><div class="code-blocks"><div>
+      <div class="code-title">❌ Wrong: nested future from thenApply</div>
+      <pre>CompletableFuture&lt;CompletableFuture&lt;Profile&gt;&gt; nested =
+    fetchUser(userId).thenApply(user -&gt; fetchProfile(user.id()));</pre>
+    </div><div>
+      <div class="code-title">✅ Right: flatten async continuation with thenCompose</div>
+      <pre>CompletableFuture&lt;Profile&gt; profileFuture =
+    fetchUser(userId).thenCompose(user -&gt; fetchProfile(user.id()));</pre>
+    </div></div>
+    </article><article class="card warning">
+      <div class="card-label">Warning</div>
+      <h3>Blocking inside a chain defeats the whole model</h3>
+      <p>Calling <code>join()</code> or <code>get()</code> in the middle of a pipeline usually destroys async benefits and can even deadlock under the wrong executor conditions. Compose futures instead of blocking to unwrap them.</p>
+    </article><article class="card quiz-card">
+      <div class="card-label">Quiz</div>
+      <h3>Which method should you use when the next step already returns a CompletableFuture?</h3>
+      <div class="quiz-options" data-answer="2"><button class="quiz-option">A. thenRun</button><button class="quiz-option">B. thenAccept</button><button class="quiz-option">C. thenCompose</button><button class="quiz-option">D. thenApply</button></div>
+      <div class="quiz-result"><strong>Answer</strong><span>C is correct because thenCompose flattens a future-returning continuation into a single async pipeline. D would create a nested future. A and B are side-effect oriented and do not model async value composition. The memory phrase is: “apply maps values, compose maps futures.”</span></div>
+    </article>
           </div>
         </div>
       </section>
-      <section class="section " data-section="1">
+      <section class="section" data-section="1">
         <div class="section-inner">
           <div class="hero">
             <div class="section-label">Section 2 of 5 · ~7 mins</div>
             <h2>Combining Futures</h2>
-            <p>Real systems often need to fan out multiple async calls and combine results safely.</p>
+            <p>Backend services often call multiple dependencies in parallel and then merge their responses. CompletableFuture gives explicit tools for that fan-out and fan-in pattern.</p>
           </div>
-
           <div class="card-grid">
             <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Waiting for all teammates</h3>
-              <p>You start a group project. You can only submit once everyone finishes their piece.</p>
-            </article>
+      <div class="card-label">🧒 ELI5</div>
+      <h3>Waiting for all the ingredients before cooking dinner</h3>
+      <p>You can start chopping vegetables and boiling pasta at the same time, but dinner is only ready when both are done. Combining futures is the same idea: independent tasks run in parallel, then their results are joined when you need the finished dish.</p>
+    </article><article class="card analogy">
+      <div class="card-label">🔗 ANALOGY</div>
+      <h3>An itinerary that depends on several flight updates</h3>
+      <p>If you are building a travel dashboard, you may need gate data, baggage status, and weather updates together. Each source can be fetched independently, and then the final dashboard is assembled once the relevant pieces arrive. That is exactly the kind of flow CompletableFuture combination APIs are meant to express.</p>
+    </article><article class="card technical">
+      <div class="card-label">Technical</div>
+      <h3>allOf, anyOf, and thenCombine</h3>
+      <div class="two-col"><div><p><strong>Definition:</strong> Combination methods coordinate multiple asynchronous computations so their results can be merged or raced.</p><p class="deep-note"><code>allOf</code> waits for all supplied futures, which is useful when a response depends on every piece. <code>anyOf</code> completes when the first future finishes, which is helpful for hedged requests or “first answer wins” scenarios. <code>thenCombine</code> is a tidy option when you have exactly two futures and want to merge their values directly.</p><p class="deep-note">The subtle point is that <code>allOf</code> itself returns <code>CompletableFuture&lt;Void&gt;</code>. You still need to read the results from the original futures after it completes.</p><div class="mini-grid"><div class="mini-panel"><h4>Production use</h4><p>Parallelize independent dependency calls to reduce end-to-end latency, but keep timeouts and failure handling explicit.</p></div><div class="mini-panel"><h4>Trade-off</h4><p>The slowest dependency still controls the combined completion time unless you add timeouts, fallbacks, or partial-response logic.</p></div></div><table><thead><tr><th>Method</th><th>Best fit</th></tr></thead><tbody><tr><td><code>thenCombine</code></td><td>Merge two futures into one value.</td></tr><tr><td><code>allOf</code></td><td>Wait for many futures to complete.</td></tr><tr><td><code>anyOf</code></td><td>Accept the first completed result.</td></tr></tbody></table><div class="mini-panel" style="background: rgba(124,58,237,0.12); border-color: rgba(124,58,237,0.35); margin-top: 16px;">
+      <h4>💬 Model Interview Answer</h4>
+      <p>I use CompletableFuture combination methods for fan-out and fan-in patterns. thenCombine is nice for two values, while allOf is better when several independent calls must complete before I build the final response. I also mention that allOf returns Void and that the slowest dependency still determines completion unless I layer in timeouts or fallbacks. That shows I understand both the API and the latency trade-off.</p>
+    </div></div><div></div></div><div class="code-blocks"><div>
+      <div class="code-title">✅ Combine two futures</div>
+      <pre>CompletableFuture&lt;User&gt; userFuture = fetchUser(userId);
+CompletableFuture&lt;Account&gt; accountFuture = fetchAccount(userId);
 
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Flight connections</h3>
-              <p>You need all flights to arrive to assemble the full itinerary.</p>
-            </article>
+CompletableFuture&lt;Profile&gt; profileFuture =
+    userFuture.thenCombine(accountFuture, Profile::new);</pre>
+    </div><div>
+      <div class="code-title">✅ Wait for many futures</div>
+      <pre>CompletableFuture&lt;Void&gt; all = CompletableFuture.allOf(userFuture, accountFuture, settingsFuture);
 
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> allOf waits for all futures, anyOf completes when the first completes.</p>
-                  <p class="deep-note">Combining futures models fan-out and fan-in. It is common when you call multiple services in parallel and then assemble a response.</p>
-                  <p class="deep-note">allOf waits for all tasks so you can aggregate results, while anyOf returns the first completed result for hedged requests or fallback strategies.</p>
-                  <p class="deep-note">A typical use case is pricing + inventory + recommendations in parallel. Fan-in lets you merge results into one response without serial latency.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul>
-                        <li>Fetch from multiple services</li><li>Parallelize independent work</li><li>Combine results safely</li>
-                      </ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common smell</h4>
-                      <ul>
-                        <li>Serial calls for independent tasks</li><li>Blocking joins</li><li>Ignoring slowest task</li>
-                      </ul>
-                    </div>
-                  </div>
-                  <div class="badge-row">
-                    <span class="pill good">allOf for fan-in</span><span class="pill info">thenCombine for pairs</span><span class="pill caution">anyOf for first</span>
-                  </div>
-                  <div class="flow"><span class="flow-step">Start A/B/C</span><span class="flow-arrow">→</span><span class="flow-step">Wait all</span><span class="flow-arrow">→</span><span class="flow-step">Merge results</span><span class="flow-arrow">→</span><span class="flow-step">Return</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“I fan out independent calls and use allOf or thenCombine to aggregate results without blocking.”</p>
-                  <table>
-                    <thead><tr><th>Method</th><th>Behavior</th></tr></thead>
-                    <tbody><tr><td>allOf</td><td><span class="pill good">Wait for all</span></td></tr><tr><td>anyOf</td><td><span class="pill caution">First wins</span></td></tr><tr><td>thenCombine</td><td><span class="pill info">Combine two</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              
-    <div class="code-blocks">
-      
-    <div>
-      <div class="code-title">allOf example</div>
-      <pre><span class="token-comment">CompletableFuture&lt;Void&gt; all = CompletableFuture.allOf(a, b, c);
-List&lt;Result&gt; results = all.thenApply(v -&gt; List.of(a.join(), b.join(), c.join())).join();</span></pre>
-    </div>
-    </div>
-              <p>You still need to handle failures; allOf completes exceptionally if any fail.</p>
-                  <p class="deep-note">CompletableFuture is a pipeline. Prefer chaining and composing over blocking, and always handle exceptions so failures don't silently disappear.</p>
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Beware of join()</h3>
-              <p>join() can throw unchecked exceptions; handle errors explicitly.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>Parallelize independent tasks.</li><li>Use allOf for aggregation.</li><li>Handle failures.</li>
-              </ul>
-            </article>
-
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>Which method waits for all futures?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. anyOf</button><button class="quiz-option">B. allOf</button><button class="quiz-option">C. thenRun</button><button class="quiz-option">D. handle</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>allOf completes only when all futures finish.</span>
-              </div>
-            </article>
+CompletableFuture&lt;Dashboard&gt; dashboardFuture = all.thenApply(ignored -&gt;
+    new Dashboard(userFuture.join(), accountFuture.join(), settingsFuture.join())
+);</pre>
+    </div></div>
+    </article><article class="card warning">
+      <div class="card-label">Warning</div>
+      <h3>Parallelism without failure strategy only moves the problem</h3>
+      <p>Combining futures reduces serial latency, but it does not automatically solve partial failures or slow dependencies. For user-facing systems, you usually also need timeouts, fallbacks, or partial-response decisions.</p>
+    </article><article class="card quiz-card">
+      <div class="card-label">Quiz</div>
+      <h3>What is the most important thing to remember about <code>CompletableFuture.allOf()</code>?</h3>
+      <div class="quiz-options" data-answer="1"><button class="quiz-option">A. It returns a list of results directly.</button><button class="quiz-option">B. It returns Void and you still read results from the original futures.</button><button class="quiz-option">C. It only works with exactly two futures.</button><button class="quiz-option">D. It automatically retries failed futures.</button></div>
+      <div class="quiz-result"><strong>Answer</strong><span>B is correct. allOf coordinates completion, but it does not collect the actual values for you. A, C, and D are false. The interview memory hook is “allOf is a barrier, not a result container.”</span></div>
+    </article>
           </div>
         </div>
       </section>
-      <section class="section " data-section="2">
+      <section class="section" data-section="2">
         <div class="section-inner">
           <div class="hero">
             <div class="section-label">Section 3 of 5 · ~7 mins</div>
             <h2>Errors & Timeouts</h2>
-            <p>Async code fails differently — you must handle exceptions and timeouts explicitly.</p>
+            <p>Asynchronous code crosses thread boundaries, so exceptions do not behave like ordinary try/catch flow. Timeouts and recovery must be made explicit.</p>
           </div>
-
           <div class="card-grid">
             <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Plan B when a helper is late</h3>
-              <p>If someone doesn’t show up, you need a backup plan to finish the work.</p>
-            </article>
-
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Delivery guarantees</h3>
-              <p>If a package doesn’t arrive in time, you cancel and return the money.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> exceptionally and handle provide fallback paths; orTimeout/completeOnTimeout enforce SLAs.</p>
-                  <p class="deep-note">Errors flow through the chain unless you handle them with exceptionally or handle. Try/catch does not work across async boundaries.</p>
-                  <p class="deep-note">Timeouts make SLAs explicit, and fallbacks should return safe defaults rather than hiding critical failures. Treat failures as data in async pipelines.</p>
-                  <p class="deep-note">Use handle when you want to inspect both success and failure, and exceptionally when you only want to map failures. This keeps error flow explicit.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul>
-                        <li>Prevent hanging requests</li><li>Provide graceful fallback</li><li>Surface failures clearly</li>
-                      </ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common smell</h4>
-                      <ul>
-                        <li>Silent failures</li><li>No timeout</li><li>Swallowing exceptions</li>
-                      </ul>
-                    </div>
-                  </div>
-                  <div class="badge-row">
-                    <span class="pill good">exceptionally fallback</span><span class="pill info">orTimeout</span><span class="pill bad">No error handling</span>
-                  </div>
-                  <div class="flow"><span class="flow-step">Start async</span><span class="flow-arrow">→</span><span class="flow-step">Timeout?</span><span class="flow-arrow">→</span><span class="flow-step">Fallback</span><span class="flow-arrow">→</span><span class="flow-step">Return safe result</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“I use exceptionally/handle to recover and orTimeout to enforce SLAs on async work.”</p>
-                  <table>
-                    <thead><tr><th>Operator</th><th>Use</th></tr></thead>
-                    <tbody><tr><td>exceptionally</td><td><span class="pill good">Fallback on error</span></td></tr><tr><td>handle</td><td><span class="pill info">Always run</span></td></tr><tr><td>orTimeout</td><td><span class="pill caution">Fail fast</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              
-    <div class="code-blocks">
-      
-    <div>
-      <div class="code-title">Error handling</div>
-      <pre><span class="token-comment">fetch().orTimeout(200, TimeUnit.MILLISECONDS)
-  .exceptionally(ex -&gt; fallback());</span></pre>
-    </div>
-    </div>
-              <p>Always log or surface exceptions so failures are visible in production.</p>
-                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Don’t hide errors</h3>
-              <p>Fallbacks should be safe and observable. Silent failures are worse.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>Use timeouts.</li><li>Provide fallback.</li><li>Keep errors visible.</li>
-              </ul>
-            </article>
-
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>Which operator runs whether success or failure?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. thenApply</button><button class="quiz-option">B. handle</button><button class="quiz-option">C. thenCompose</button><button class="quiz-option">D. thenRun</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>handle receives value or exception and always runs.</span>
-              </div>
-            </article>
+      <div class="card-label">🧒 ELI5</div>
+      <h3>Having a backup ride when your friend might be late</h3>
+      <p>If you are waiting for a friend to pick you up, you probably decide how long you will wait before calling a cab. You do not stand there forever hoping everything works out. Async code needs the same discipline: know how long you wait and what fallback you use when the plan fails.</p>
+    </article><article class="card analogy">
+      <div class="card-label">🔗 ANALOGY</div>
+      <h3>An online order with a delivery guarantee</h3>
+      <p>A seller may promise delivery within two days or issue a refund. That promise is the equivalent of a timeout plus fallback. CompletableFuture gives you APIs to encode those boundaries directly into the pipeline.</p>
+    </article><article class="card technical">
+      <div class="card-label">Technical</div>
+      <h3>exceptionally, handle, and timeout operators</h3>
+      <div class="two-col"><div><p><strong>Definition:</strong> CompletableFuture error-handling operators allow failures to be transformed, recovered, or observed without collapsing the whole async chain silently.</p><p class="deep-note"><code>exceptionally</code> handles failures only, while <code>handle</code> receives either the value or the exception and always runs. <code>orTimeout</code> fails the future if it takes too long, and <code>completeOnTimeout</code> supplies a default value instead.</p><p class="deep-note">This matters because a plain try/catch around the code that creates the future does not catch errors that happen later on another thread. You have to encode recovery into the async pipeline itself.</p><div class="mini-grid"><div class="mini-panel"><h4>Why it matters</h4><p>Timeouts and explicit recovery prevent hanging requests and make failure behavior visible.</p></div><div class="mini-panel"><h4>Main caution</h4><p>Fallbacks should be safe and observable; they should not hide production incidents.</p></div></div><table><thead><tr><th>Operator</th><th>Meaning</th></tr></thead><tbody><tr><td><code>exceptionally</code></td><td>Recover from failure with a fallback value.</td></tr><tr><td><code>handle</code></td><td>Inspect both success and failure.</td></tr><tr><td><code>orTimeout</code></td><td>Fail fast when work takes too long.</td></tr><tr><td><code>completeOnTimeout</code></td><td>Return a default value on timeout.</td></tr></tbody></table><div class="mini-panel" style="background: rgba(124,58,237,0.12); border-color: rgba(124,58,237,0.35); margin-top: 16px;">
+      <h4>💬 Model Interview Answer</h4>
+      <p>Async exceptions do not behave like normal inline try/catch because the failure often happens later on another thread. I usually mention exceptionally for recovery, handle when I want unified success/failure logic, and timeouts like orTimeout so requests do not hang indefinitely. The important trade-off is that fallbacks should be safe and observable, not silent failure masking.</p>
+    </div></div><div></div></div><div class="code-blocks"><div>
+      <div class="code-title">✅ Timeout plus fallback</div>
+      <pre>CompletableFuture&lt;Product&gt; future = fetchProduct(productId)
+    .orTimeout(300, TimeUnit.MILLISECONDS)
+    .exceptionally(ex -&gt; Product.unavailable(productId));</pre>
+    </div></div>
+    </article><article class="card warning">
+      <div class="card-label">Warning</div>
+      <h3>A fallback that hides incidents can be worse than a visible failure</h3>
+      <p>If every timeout quietly returns an empty result, the system may look healthy while users receive degraded behavior and nobody knows why. Fallbacks should be paired with logging, metrics, or alerts so the failure mode stays observable.</p>
+    </article><article class="card quiz-card">
+      <div class="card-label">Quiz</div>
+      <h3>Why is <code>handle()</code> different from <code>exceptionally()</code>?</h3>
+      <div class="quiz-options" data-answer="1"><button class="quiz-option">A. handle() only runs on timeout.</button><button class="quiz-option">B. handle() runs on both success and failure, while exceptionally() runs only on failure.</button><button class="quiz-option">C. exceptionally() returns void.</button><button class="quiz-option">D. handle() cannot see exceptions.</button></div>
+      <div class="quiz-result"><strong>Answer</strong><span>B is correct because handle receives both the result and the throwable, while exceptionally is only for the failure path. A, C, and D are false. Interview takeaway: use handle for unified branching, exceptionally for targeted recovery.</span></div>
+    </article>
           </div>
         </div>
       </section>
-      <section class="section " data-section="3">
+      <section class="section" data-section="3">
         <div class="section-inner">
           <div class="hero">
             <div class="section-label">Section 4 of 5 · ~7 mins</div>
             <h2>Threading & Avoiding Blocking</h2>
-            <p>Async helps only if you avoid blocking and control which threads do the work.</p>
+            <p>CompletableFuture is only useful when you keep it asynchronous. Blocking joins and careless executor choices can ruin the benefit.</p>
           </div>
-
           <div class="card-grid">
             <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Don’t stop the whole line</h3>
-              <p>If one worker stops the entire line to wait, the rest can’t make progress.</p>
-            </article>
+      <div class="card-label">🧒 ELI5</div>
+      <h3>Do not stop the whole assembly line to wait for one screw</h3>
+      <p>If one worker freezes the line while waiting for a tiny part, the whole factory slows down. It is usually better to keep the line moving and let the part arrive through the normal process. Blocking in async code creates that same kind of traffic jam.</p>
+    </article><article class="card analogy">
+      <div class="card-label">🔗 ANALOGY</div>
+      <h3>A shared office printer for the whole building</h3>
+      <p>If every team sends huge jobs to the same printer, everyone else suffers. The common pool behind some CompletableFuture operations works like that shared printer: it is convenient, but it is also shared, so heavy blocking work there can hurt unrelated parts of the app.</p>
+    </article><article class="card technical">
+      <div class="card-label">Technical</div>
+      <h3>Executors, common pool, and blocking hazards</h3>
+      <div class="two-col"><div><p><strong>Definition:</strong> CompletableFuture async stages may use the ForkJoin common pool unless you supply a dedicated executor.</p><p class="deep-note">That default is fine for small CPU-oriented stages, but it is a poor home for blocking I/O or heavy service integration work. A dedicated executor gives isolation, which is often what production systems need.</p><p class="deep-note">The other major issue is blocking request threads with <code>join()</code> or <code>get()</code>. If you immediately block after starting async work, you may gain none of the throughput benefit and you may starve request-processing threads under load.</p><div class="mini-grid"><div class="mini-panel"><h4>Best practice</h4><p>Use dedicated executors for I/O-heavy work and keep chains composed instead of blocking to unwrap results.</p></div><div class="mini-panel"><h4>Smell</h4><p>Calling join in the middle of a pipeline or on hot request threads often means the async design is not really async.</p></div></div><table><thead><tr><th>Choice</th><th>Effect</th></tr></thead><tbody><tr><td>Common pool default</td><td>Convenient but shared.</td></tr><tr><td>Custom executor</td><td>Better isolation and workload control.</td></tr><tr><td>Blocking join/get</td><td>Can reduce throughput and starve threads.</td></tr></tbody></table><div class="mini-panel" style="background: rgba(124,58,237,0.12); border-color: rgba(124,58,237,0.35); margin-top: 16px;">
+      <h4>💬 Model Interview Answer</h4>
+      <p>I avoid blocking joins in request paths because that often cancels out the benefit of starting work asynchronously. For CPU-light continuations the default pool can be okay, but for I/O-heavy stages I prefer a dedicated executor so I do not block a shared pool. The interview gotcha to mention is that async APIs do not help if you immediately join on them in the hot path.</p>
+    </div></div><div></div></div><div class="code-blocks"><div>
+      <div class="code-title">✅ Dedicated executor for blocking integration work</div>
+      <pre>ExecutorService ioPool = Executors.newFixedThreadPool(16);
 
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Kitchen pass-through</h3>
-              <p>You don’t wait at the pass window; you hand off and keep cooking.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Use custom executors for heavy work and avoid blocking calls on request threads.</p>
-                  <p class="deep-note">Async stages default to the ForkJoin common pool, which is shared across the JVM. That can become a bottleneck when many components use it.</p>
-                  <p class="deep-note">Provide a dedicated Executor for IO-heavy work and avoid blocking calls inside async stages, because blocking can starve the pool and slow unrelated work.</p>
-                  <p class="deep-note">A common beginner mistake is calling join() inside async chains. If you need results, compose futures instead of blocking.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul>
-                        <li>Prevents thread starvation</li><li>Keeps latency predictable</li><li>Isolates heavy tasks</li>
-                      </ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common smell</h4>
-                      <ul>
-                        <li>join() inside web handlers</li><li>Using common pool for I/O</li><li>No executor control</li>
-                      </ul>
-                    </div>
-                  </div>
-                  <div class="badge-row">
-                    <span class="pill good">Custom executor</span><span class="pill caution">Common pool</span><span class="pill bad">Blocking join()</span>
-                  </div>
-                  <div class="flow"><span class="flow-step">Request thread</span><span class="flow-arrow">→</span><span class="flow-step">Delegate async</span><span class="flow-arrow">→</span><span class="flow-step">Background executor</span><span class="flow-arrow">→</span><span class="flow-step">Respond</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“I pass a dedicated executor to supplyAsync for heavy tasks and avoid blocking joins on request threads.”</p>
-                  <table>
-                    <thead><tr><th>Thread choice</th><th>Impact</th></tr></thead>
-                    <tbody><tr><td>Dedicated pool</td><td><span class="pill good">Isolation</span></td></tr><tr><td>ForkJoin common</td><td><span class="pill caution">Shared contention</span></td></tr><tr><td>Blocking wait</td><td><span class="pill bad">Starvation</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              
-    <div class="code-blocks">
-      
-    <div>
-      <div class="code-title">Custom executor</div>
-      <pre><span class="token-comment">ExecutorService ioPool = Executors.newFixedThreadPool(16);
-CompletableFuture.supplyAsync(() -&gt; fetch(), ioPool);</span></pre>
-    </div>
-    </div>
-              <p>Dedicated pools keep I/O work from starving CPU tasks.</p>
-                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Async is not magic</h3>
-              <p>If you block or overload, you still get bottlenecks.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>Use custom executors.</li><li>Avoid blocking joins.</li><li>Keep async truly async.</li>
-              </ul>
-            </article>
-
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>Why avoid join() on request threads?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. It changes thread name</button><button class="quiz-option">B. It blocks and reduces throughput</button><button class="quiz-option">C. It speeds up CPU</button><button class="quiz-option">D. It avoids exceptions</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>Blocking request threads reduces throughput and can cause timeouts.</span>
-              </div>
-            </article>
+CompletableFuture&lt;Customer&gt; customerFuture =
+    CompletableFuture.supplyAsync(() -&gt; customerClient.fetch(customerId), ioPool);</pre>
+    </div></div>
+    </article><article class="card warning">
+      <div class="card-label">Warning</div>
+      <h3>The default common pool is shared infrastructure</h3>
+      <p>Blocking or overloading the common pool can create surprising cross-feature interference inside the JVM. When async work is important to service health, explicit executors are usually easier to reason about and monitor.</p>
+    </article><article class="card quiz-card">
+      <div class="card-label">Quiz</div>
+      <h3>Why can <code>join()</code> in a request handler be a problem?</h3>
+      <div class="quiz-options" data-answer="1"><button class="quiz-option">A. It changes the result type.</button><button class="quiz-option">B. It blocks the current thread and can reduce request throughput.</button><button class="quiz-option">C. It forces the future onto the common pool.</button><button class="quiz-option">D. It disables exception handling.</button></div>
+      <div class="quiz-result"><strong>Answer</strong><span>B is correct because join blocks the calling thread until completion, which can reduce concurrency and increase latency under load. A, C, and D are false. The interview memory hook is: “compose, don’t block, unless you have consciously chosen a synchronous boundary.”</span></div>
+    </article>
           </div>
         </div>
       </section>
-      
-      
       <section class="section" data-section="4">
         <div class="section-inner">
           <div class="hero">
             <div class="section-label">Section 5 of 5 · ~7 mins</div>
             <h2>Deep Dive: Composition, Timeouts, and Cancellation</h2>
-            <p>CompletableFuture shines when you compose independent calls, apply timeouts, and handle cancellation correctly.</p>
+            <p>The strongest CompletableFuture answers combine three themes: composability, bounded waiting, and explicit behavior when work is no longer worth finishing.</p>
           </div>
-
           <div class="card-grid">
             <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Wait for two deliveries</h3>
-              <p>You can cook dinner only after both ingredients arrive, not just one.</p>
-            </article>
+      <div class="card-label">🧒 ELI5</div>
+      <h3>Calling two friends for directions and stopping once you have a safe answer</h3>
+      <p>You might ask two friends for directions at the same time, wait only a reasonable amount of time, and move on with the best answer you received. You do not wait forever, and you do not keep calling if you have already left. That is how good async design thinks about composition, timeout, and cancellation together.</p>
+    </article><article class="card analogy">
+      <div class="card-label">🔗 ANALOGY</div>
+      <h3>An emergency room triage process</h3>
+      <p>The hospital runs multiple steps in parallel, puts time bounds around decisions, and cancels or deprioritizes work that no longer affects the patient outcome. Async systems need that same discipline or they waste resources on stale work while users keep waiting.</p>
+    </article><article class="card technical">
+      <div class="card-label">Technical</div>
+      <h3>Thinking like a systems engineer, not just an API user</h3>
+      <div class="two-col"><div><p><strong>Definition:</strong> Advanced CompletableFuture usage treats async work as a system of dependencies with time budgets, failure policies, and resource ownership.</p><p class="deep-note">A good composition answer does more than mention <code>allOf</code>. It explains what happens when one dependency times out, whether partial results are acceptable, whether stale work should be cancelled, and which executor owns the workload.</p><p class="deep-note">Cancellation is especially important when downstream tasks are expensive and the caller no longer cares about the result. Even if your immediate API does not propagate cancellation perfectly, thinking about stale work is part of mature async design.</p><div class="mini-grid"><div class="mini-panel"><h4>Strong design signals</h4><p>Bounded waiting, explicit fallback, executor isolation, and consideration of stale work cancellation.</p></div><div class="mini-panel"><h4>Weak design signals</h4><p>“We used async because it looked faster,” with no timeout or failure story.</p></div></div><table><thead><tr><th>Concern</th><th>Question to ask</th></tr></thead><tbody><tr><td>Composition</td><td>Which tasks are independent and can fan out?</td></tr><tr><td>Timeout</td><td>How long is the caller willing to wait?</td></tr><tr><td>Fallback</td><td>What safe degraded result can we return?</td></tr><tr><td>Cancellation</td><td>Should stale work keep running after the caller has moved on?</td></tr></tbody></table><div class="mini-panel" style="background: rgba(124,58,237,0.12); border-color: rgba(124,58,237,0.35); margin-top: 16px;">
+      <h4>💬 Model Interview Answer</h4>
+      <p>My senior-level CompletableFuture answer is that async design is not just about syntax — it is about time budgets, composition, and resource ownership. I compose independent calls in parallel, set explicit timeouts, use safe fallbacks, and think about whether stale downstream work should be cancelled. That shows I understand async behavior as a systems concern, not just a language feature.</p>
+    </div></div><div></div></div><div class="code-blocks"><div>
+      <div class="code-title">✅ Parallel composition with timeout and fallback</div>
+      <pre>CompletableFuture&lt;User&gt; userFuture = fetchUser(userId);
+CompletableFuture&lt;Account&gt; accountFuture = fetchAccount(userId);
 
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Package tracking</h3>
-              <p>If one package is delayed, you can cancel or substitute instead of waiting forever.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Compose async tasks with allOf/anyOf, apply timeouts, and propagate cancellations to avoid leaks.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul><li>Prevents stuck requests</li><li>Enables parallelism</li><li>Improves responsiveness</li></ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common pitfall</h4>
-                      <ul><li>Blocking join in the middle</li><li>Ignoring timeouts</li><li>Swallowing exceptions</li></ul>
-                    </div>
-                  </div>
-                  <div class="badge-row"><span class="pill good">allOf</span><span class="pill info">Timeouts</span><span class="pill caution">Cancel</span></div>
-                  <div class="flow"><span class="flow-step">Start tasks</span><span class="flow-arrow">→</span><span class="flow-step">Combine results</span><span class="flow-arrow">→</span><span class="flow-step">Apply timeout</span><span class="flow-arrow">→</span><span class="flow-step">Handle errors</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“I use allOf to combine independent calls, apply timeouts, and return fallbacks on failures.”</p>
-                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
-                  <table>
-                    <thead><tr><th>Method</th><th>Use</th></tr></thead>
-                    <tbody><tr><td>allOf</td><td><span class="pill good">Wait for all</span></td></tr><tr><td>anyOf</td><td><span class="pill info">First response wins</span></td></tr><tr><td>orTimeout</td><td><span class="pill caution">Fail fast</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              <div class="code-blocks">
-    <div>
-      <div class="code-title">Parallel calls with timeout</div>
-      <pre>CompletableFuture&lt;User&gt; user = fetchUser(id);
-CompletableFuture&lt;Account&gt; acct = fetchAccount(id);
-
-return CompletableFuture.allOf(user, acct)
-  .orTimeout(800, TimeUnit.MILLISECONDS)
-  .thenApply(v -&gt; new Profile(user.join(), acct.join()))
-  .exceptionally(ex -&gt; fallbackProfile(id));</pre>
-    </div>
-    </div>
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Timeouts need fallbacks</h3>
-              <p>A timeout without a fallback still fails the request, so define a safe default.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways"><li>Compose independent calls.</li><li>Always set timeouts.</li><li>Use exceptionally/handle for recovery.</li></ul>
-            </article>
-
-            
-          
-            <article class="card technical">
-              <div class="card-label">Edge cases</div>
-              <h3>Edge Cases & Tradeoffs</h3>
-              <ul class="takeaways"><li>Default async uses ForkJoinPool.commonPool (shared).</li><li>Blocking inside async stages can deadlock.</li><li>Exception handling needs handle/exceptionally, not try/catch.</li><li>Cancellation is cooperative and not always effective.</li><li>thenApply vs thenCompose changes nesting and flow.</li></ul>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Checklist</div>
-              <h3>Production Checklist</h3>
-              <ul class="takeaways"><li>Provide an explicit Executor for IO-heavy tasks.</li><li>Use orTimeout/completeOnTimeout for SLAs.</li><li>Always attach error handling at the end.</li><li>Avoid join() in reactive paths; prefer non-blocking chains.</li><li>Compose async boundaries with thenCompose.</li></ul>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Interview</div>
-              <h3>Interview Hooks</h3>
-              <p>Highlight async composition, error handling, and timeouts.</p>
-              <ul class="takeaways"><li>thenApply transforms, thenCompose flattens.</li><li>allOf for fan-in, anyOf for first wins.</li><li>handle/exceptionally for failures and fallbacks.</li></ul>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Advanced Example</div>
-              <div class="code-blocks">
-        <div>
-          <div class="code-title">Compose + timeout + fallback</div>
-          <pre>CompletableFuture&lt;User&gt; cf =
-  fetchUser(id)
-    .thenCompose(this::fetchProfile)
+CompletableFuture&lt;Profile&gt; profileFuture = CompletableFuture
+    .allOf(userFuture, accountFuture)
     .orTimeout(800, TimeUnit.MILLISECONDS)
-    .exceptionally(ex -&gt; User.guest());</pre>
+    .thenApply(ignored -&gt; new Profile(userFuture.join(), accountFuture.join()))
+    .exceptionally(ex -&gt; Profile.fallback(userId));</pre>
+    </div></div>
+    </article><article class="card warning">
+      <div class="card-label">Warning</div>
+      <h3>Async without a timeout is often just indefinite waiting in disguise</h3>
+      <p>Developers sometimes assume a future-based API is automatically resilient. It is not. Without timeouts and explicit failure behavior, you have only moved the waiting to another abstraction layer.</p>
+    </article><article class="card quiz-card">
+      <div class="card-label">Quiz</div>
+      <h3>Which statement sounds most like strong senior judgment about CompletableFuture?</h3>
+      <div class="quiz-options" data-answer="2"><button class="quiz-option">A. Async is always better than synchronous code.</button><button class="quiz-option">B. I use CompletableFuture mainly so the code looks modern.</button><button class="quiz-option">C. I compose independent work, set explicit timeouts, choose executors deliberately, and define fallback or cancellation behavior.</button><button class="quiz-option">D. I avoid all error handling because futures already capture exceptions.</button></div>
+      <div class="quiz-result"><strong>Answer</strong><span>C is correct because it ties the API to concrete system behavior: composition, executor choice, bounded waiting, and failure policy. A and B are superficial, and D is dangerous. The strongest interview answers connect CompletableFuture to latency, reliability, and resource control.</span></div>
+    </article>
+          </div>
+        </div>
+      </section>
+      <section class="section" data-section="5">
+      <div class="section-inner">
+        <div class="hero">
+          <div class="section-label">Completion screen</div>
+          <h2>🎉 CompletableFuture & Async Cheat Sheet</h2>
+          <p>Use this page as a fast interview recap before mock rounds or senior backend interviews.</p>
+        </div>
+        <div class="completion-grid">
+          <article class="card technical">
+            <div class="celebrate">✅</div>
+            <h3>What to remember</h3>
+            <div class="cheat-list"><div class="cheat-item"><h4>Chaining</h4><p>thenApply maps values; thenCompose flattens async continuations.</p></div><div class="cheat-item"><h4>Combination</h4><p>Use thenCombine for two futures and allOf as a completion barrier for many.</p></div><div class="cheat-item"><h4>Errors and timeouts</h4><p>Async failures need pipeline-level handling with exceptionally, handle, or timeout operators.</p></div><div class="cheat-item"><h4>Threading</h4><p>Avoid blocking joins on hot threads and prefer dedicated executors for heavy I/O work.</p></div><div class="cheat-item"><h4>Senior framing</h4><p>Talk about composition, time budgets, fallbacks, cancellation, and executor ownership.</p></div></div>
+          </article>
+          <article class="card warning">
+            <div class="card-label">Most common confusion points</div>
+            <h3>Where people slip</h3>
+            <div class="confusion-list"><div class="confusion-item"><strong>“thenApply is fine even when the next step returns a future.”</strong><p>That creates nested futures; use thenCompose instead.</p></div><div class="confusion-item"><strong>“try/catch around future creation catches async failures.”</strong><p>Failures often occur later on another thread and must be handled in the pipeline.</p></div><div class="confusion-item"><strong>“Async automatically means better throughput.”</strong><p>Not if you block immediately or overload shared executors.</p></div></div>
+          </article>
         </div>
       </div>
-      <p>Keep chains linear and make timeouts explicit.</p>
-            </article><article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>Which method waits for all futures to complete?</h3>
-              <div class="quiz-options" data-answer="2">
-                <button class="quiz-option">A. anyOf</button><button class="quiz-option">B. thenApply</button><button class="quiz-option">C. allOf</button><button class="quiz-option">D. supplyAsync</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: C</strong>
-                <span>allOf completes only when all futures finish.</span>
-              </div>
-            </article></div>
-        </div>
-      </section>
-<section class="section" data-section="5">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Completion screen · Review mode</div>
-            <h2>🎉 CompletableFuture & Async Cheat Sheet</h2>
-            <p>Use this to recall core async operators and error handling patterns.</p>
-          </div>
-
-          <div class="completion-grid">
-            <div class="card technical">
-              <div class="card-label">Cheat sheet</div>
-              <div class="celebrate">🚀</div>
-              <h3>1-line interview answers</h3>
-              <div class="cheat-list">
-    <div class="cheat-item">
-      <h4>Chaining</h4>
-      <p>Use thenCompose for async chaining, thenApply for simple mapping.</p>
-    </div>
-    <div class="cheat-item">
-      <h4>Combining</h4>
-      <p>allOf waits for all, anyOf returns first.</p>
-    </div>
-    <div class="cheat-item">
-      <h4>Errors</h4>
-      <p>exceptionally/handle provide fallback and visibility.</p>
-    </div>
-    <div class="cheat-item">
-      <h4>Threading</h4>
-      <p>Provide your own Executor for heavy work.</p>
-    </div></div>
-            </div>
-
-            <div class="card analogy">
-              <div class="card-label">What to remember</div>
-              <h3>Fast mental model</h3>
-              <ul class="takeaways">
-                <li><strong>thenCompose:</strong> flattens nested futures.</li><li><strong>allOf/anyOf:</strong> combine futures safely.</li><li><strong>exceptionally/handle:</strong> error recovery.</li><li><strong>Avoid blocking:</strong> keep async truly async.</li>
-              </ul>
-              <h3 style="margin-top:22px;">Common traps</h3>
-              <div class="badge-row">
-                <span class="pill bad">Blocking join() in hot path</span><span class="pill bad">Swallowing exceptions</span><span class="pill bad">Using default pool for heavy I/O</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+    </section>
     </main>
 
     <footer class="footer-nav">

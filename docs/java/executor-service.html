@@ -749,571 +749,245 @@
     </header>
 
     <main>
-      
       <section class="section active" data-section="0">
         <div class="section-inner">
           <div class="hero">
             <div class="section-label">Section 1 of 5 · ~7 mins</div>
             <h2>ExecutorService Basics</h2>
-            <p>ExecutorService is the standard way to manage thread pools and submit work without manually creating threads.</p>
+            <p>ExecutorService is the standard Java abstraction for handing work to a managed pool instead of creating a raw thread for every task.</p>
           </div>
-
           <div class="card-grid">
             <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Kitchen order line</h3>
-              <p>Instead of hiring a new cook for every order, you have a kitchen line. You hand orders to the line and the cooks handle them.</p>
-            </article>
-
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Airport check-in desks</h3>
-              <p>You don’t open a new desk per passenger. You route passengers into a managed queue handled by staff.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> ExecutorService manages a pool of threads and a queue so tasks are executed efficiently.</p>
-                  <p class="deep-note">ExecutorService separates task submission from execution. You submit units of work and let a managed pool decide when and where they run, which avoids manual thread creation and reduces resource churn.</p>
-                  <p class="deep-note">Think of it as a queue with workers: tasks are added, a pool picks them up, and you control lifecycle using shutdown and awaitTermination. This makes concurrency easier to reason about and easier to test.</p>
-                  <p class="deep-note">For beginners, the key takeaway is you rarely want to call new Thread() in application code; you want a managed pool that can be monitored and tuned.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul>
-                        <li>Avoids creating too many threads</li><li>Gives control over concurrency</li><li>Centralizes lifecycle management</li>
-                      </ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common smell</h4>
-                      <ul>
-                        <li>Spawning new Thread() everywhere</li><li>No shutdown handling</li><li>Unbounded task submission</li>
-                      </ul>
-                    </div>
-                  </div>
-                  <div class="badge-row">
-                    <span class="pill good">submit() with Future</span><span class="pill info">execute() for fire-and-forget</span><span class="pill bad">new Thread per task</span>
-                  </div>
-                  <div class="flow"><span class="flow-step">Submit task</span><span class="flow-arrow">→</span><span class="flow-step">Queue</span><span class="flow-arrow">→</span><span class="flow-step">Worker thread runs</span><span class="flow-arrow">→</span><span class="flow-step">Future completes</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“ExecutorService lets me manage thread pools and submit tasks without manual thread creation. I use submit for Futures and execute for fire-and-forget.”</p>
-                  <table>
-                    <thead><tr><th>Call</th><th>Result</th></tr></thead>
-                    <tbody><tr><td>execute()</td><td><span class="pill caution">No return value</span></td></tr><tr><td>submit()</td><td><span class="pill good">Returns Future</span></td></tr><tr><td>invokeAll()</td><td><span class="pill info">Batch execution</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              
-    <div class="code-blocks">
-      
-    <div>
-      <div class="code-title">Basic usage</div>
-      <pre><span class="token-comment">ExecutorService pool = Executors.newFixedThreadPool(8);
-Future&lt;Integer&gt; f = pool.submit(() -&gt; 42);
-Integer value = f.get();
-pool.shutdown();</span></pre>
-    </div>
-    </div>
-              <p>The pool handles thread reuse and you control the shutdown lifecycle.</p>
-                  <p class="deep-note">Thread pools are about throughput and backpressure. Size depends on CPU vs I/O, and the queue plus rejection policy determines behavior under load.</p>
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Always shut down</h3>
-              <p>If you never shut down pools, threads linger and apps don’t exit cleanly.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>Pool manages threads for you.</li><li>submit() gives a Future.</li><li>Always shutdown gracefully.</li>
-              </ul>
-            </article>
-
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>Which call returns a Future?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. execute()</button><button class="quiz-option">B. submit()</button><button class="quiz-option">C. shutdown()</button><button class="quiz-option">D. awaitTermination()</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>submit() returns a Future that represents the result.</span>
-              </div>
-            </article>
+      <div class="card-label">🧒 ELI5</div>
+      <h3>A restaurant with a fixed number of cooks</h3>
+      <p>When orders come in, the restaurant does not hire a brand-new cook for every plate. It has a known team of cooks and a waiting queue for orders. That makes the kitchen predictable and avoids chaos. ExecutorService does the same for tasks and threads.</p>
+    </article><article class="card analogy">
+      <div class="card-label">🔗 ANALOGY</div>
+      <h3>An airport with gates and a boarding queue</h3>
+      <p>Passengers line up, gates open as staff become available, and the airport controls flow instead of creating a new gate for every passenger. Thread pools exist for the same reason: reuse expensive workers and keep concurrency manageable.</p>
+    </article><article class="card technical">
+      <div class="card-label">Technical</div>
+      <h3>Why raw threads are rarely the right default</h3>
+      <div class="two-col"><div><p><strong>Definition:</strong> ExecutorService manages worker threads and a task queue so that work can be submitted independently of when it actually runs.</p><p class="deep-note">Creating threads manually is expensive and spreads lifecycle logic everywhere. ExecutorService centralizes submission, execution, and shutdown, which makes concurrency easier to reason about and easier to tune.</p><p class="deep-note">Use <code>execute()</code> for fire-and-forget tasks and <code>submit()</code> when you need a <code>Future</code>. The pool owns thread reuse, while your code owns task intent.</p><div class="mini-grid"><div class="mini-panel"><h4>Why it matters in production</h4><p>Thread creation cost stays controlled, throughput is easier to tune, and shutdown behavior can be made predictable.</p></div><div class="mini-panel"><h4>Mental model</h4><p>You are submitting work to a managed system, not creating a personal thread every time you need background work.</p></div></div><table><thead><tr><th>Method</th><th>Meaning</th></tr></thead><tbody><tr><td><code>execute</code></td><td>Run a task without a return value.</td></tr><tr><td><code>submit</code></td><td>Run a task and receive a Future.</td></tr><tr><td><code>shutdown</code></td><td>Stop accepting new tasks and drain existing work.</td></tr></tbody></table><div class="mini-panel" style="background: rgba(124,58,237,0.12); border-color: rgba(124,58,237,0.35); margin-top: 16px;">
+      <h4>💬 Model Interview Answer</h4>
+      <p>ExecutorService decouples task submission from thread management. I use it because creating raw threads per task is expensive and hard to tune, while a pool gives me reuse, centralized lifecycle control, and predictable concurrency. I usually mention execute for fire-and-forget and submit when I need a Future. The big gotcha is forgetting shutdown or using the wrong pool type for the workload.</p>
+    </div></div><div></div></div><div class="code-blocks"><div>
+      <div class="code-title">❌ Wrong: raw thread creation scattered through app code</div>
+      <pre>for (Email email : emails) {
+    new Thread(() -&gt; emailSender.send(email)).start();
+}</pre>
+    </div><div>
+      <div class="code-title">✅ Right: submit work to a managed pool</div>
+      <pre>ExecutorService pool = Executors.newFixedThreadPool(8);
+try {
+    for (Email email : emails) {
+        pool.execute(() -&gt; emailSender.send(email));
+    }
+} finally {
+    pool.shutdown();
+}</pre>
+    </div></div>
+    </article><article class="card warning">
+      <div class="card-label">Warning</div>
+      <h3>Not shutting down a pool can keep the JVM alive and leak resources</h3>
+      <p>An ExecutorService owns threads, and those threads stay alive until the pool is shut down. In services that create temporary pools, forgetting shutdown is a real operational bug. Prefer application-managed pools, not request-scoped pools.</p>
+    </article><article class="card quiz-card">
+      <div class="card-label">Quiz</div>
+      <h3>Which statement best describes why ExecutorService exists?</h3>
+      <div class="quiz-options" data-answer="2"><button class="quiz-option">A. It makes every task run in parallel immediately.</button><button class="quiz-option">B. It replaces the need for synchronization everywhere.</button><button class="quiz-option">C. It manages thread reuse and task execution so callers do not create raw threads for each unit of work.</button><button class="quiz-option">D. It is only useful for UI applications.</button></div>
+      <div class="quiz-result"><strong>Answer</strong><span>C is correct because the core value of ExecutorService is managed execution and thread reuse. A is false because tasks may queue. B is false because shared-state coordination is still your responsibility. D is false because ExecutorService is heavily used in backend systems. In interviews, describe it as “managed execution plus lifecycle control.”</span></div>
+    </article>
           </div>
         </div>
       </section>
-      <section class="section " data-section="1">
+      <section class="section" data-section="1">
         <div class="section-inner">
           <div class="hero">
             <div class="section-label">Section 2 of 5 · ~7 mins</div>
             <h2>ThreadPoolExecutor Tuning</h2>
-            <p>ThreadPoolExecutor gives full control over pool sizing, queues, and rejection policies.</p>
+            <p>ThreadPoolExecutor is where real production decisions happen: core size, max size, queue type, keep-alive time, and rejection policy.</p>
           </div>
-
           <div class="card-grid">
             <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Decide how many cooks and waiting chairs</h3>
-              <p>You choose how many cooks work and how many customers can wait before you turn people away.</p>
-            </article>
-
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Concert security lines</h3>
-              <p>You staff a number of gates and decide how many people can queue before you stop entry.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> ThreadPoolExecutor controls core/max threads, queue capacity, keep-alive, and rejection policy.</p>
-                  <p class="deep-note">ThreadPoolExecutor is the tuning surface: core size keeps threads warm, max size handles bursts, and the queue controls how quickly you apply backpressure. Each choice affects latency and throughput.</p>
-                  <p class="deep-note">Small queues push pressure upstream early, while large queues smooth spikes but can hide overload and create long tail latency. Pick a policy that reflects how much delay you can tolerate.</p>
-                  <p class="deep-note">A practical example is API request handling: too large a queue means slow responses during spikes, while too small means rejected work. The right choice depends on SLAs.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul>
-                        <li>Match workload type</li><li>Avoid latency spikes</li><li>Protect downstream systems</li>
-                      </ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common smell</h4>
-                      <ul>
-                        <li>Unbounded LinkedBlockingQueue</li><li>Core/max set too high</li><li>No rejection policy</li>
-                      </ul>
-                    </div>
-                  </div>
-                  <div class="badge-row">
-                    <span class="pill good">Bounded queue</span><span class="pill caution">CallerRunsPolicy</span><span class="pill bad">Unbounded queue</span>
-                  </div>
-                  <div class="flow"><span class="flow-step">Task arrives</span><span class="flow-arrow">→</span><span class="flow-step">Queue if core busy</span><span class="flow-arrow">→</span><span class="flow-step">Grow to max</span><span class="flow-arrow">→</span><span class="flow-step">Reject if saturated</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“I tune core, max, and queue sizes based on workload and use a rejection policy to apply backpressure.”</p>
-                  <table>
-                    <thead><tr><th>Queue</th><th>Behavior</th></tr></thead>
-                    <tbody><tr><td>ArrayBlockingQueue</td><td><span class="pill good">Bounded backpressure</span></td></tr><tr><td>SynchronousQueue</td><td><span class="pill info">Direct handoff</span></td></tr><tr><td>LinkedBlockingQueue</td><td><span class="pill bad">Unbounded risk</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              
-    <div class="code-blocks">
-      
-    <div>
-      <div class="code-title">Custom pool</div>
-      <pre><span class="token-comment">ExecutorService pool = new ThreadPoolExecutor(8, 32, 60, TimeUnit.SECONDS,
-  new ArrayBlockingQueue&lt;&gt;(500), new ThreadPoolExecutor.CallerRunsPolicy());</span></pre>
-    </div>
-    </div>
-              <p>CallerRunsPolicy slows the caller when the pool is saturated, creating natural backpressure.</p>
-                  <p class="deep-note">Thread pools are about throughput and backpressure. Size depends on CPU vs I/O, and the queue plus rejection policy determines behavior under load.</p>
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Overprovisioning hurts</h3>
-              <p>Too many threads can increase context switching and reduce throughput.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>Bound queues prevent overload.</li><li>Rejection policies matter.</li><li>Tune with metrics.</li>
-              </ul>
-            </article>
-
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>Which queue choice risks unbounded memory growth?</h3>
-              <div class="quiz-options" data-answer="2">
-                <button class="quiz-option">A. ArrayBlockingQueue</button><button class="quiz-option">B. SynchronousQueue</button><button class="quiz-option">C. LinkedBlockingQueue (unbounded)</button><button class="quiz-option">D. DelayQueue</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: C</strong>
-                <span>An unbounded LinkedBlockingQueue can grow without limit and hide overload.</span>
-              </div>
-            </article>
+      <div class="card-label">🧒 ELI5</div>
+      <h3>Deciding how many checkout counters and how long the waiting line can get</h3>
+      <p>If a store has too few counters, customers wait forever. If it opens too many, staff stand idle and the store wastes money. If the waiting line is unlimited, the store may not realize it is overloaded until things are already broken. ThreadPoolExecutor asks those same questions for background work.</p>
+    </article><article class="card analogy">
+      <div class="card-label">🔗 ANALOGY</div>
+      <h3>A highway ramp meter controlling traffic inflow</h3>
+      <p>Cars are allowed onto the highway at a controlled pace so traffic stays stable. A queue and rejection policy in a thread pool play a similar role: they decide how much load enters and what happens when the system is saturated.</p>
+    </article><article class="card technical">
+      <div class="card-label">Technical</div>
+      <h3>Core threads, max threads, queues, and rejection policies</h3>
+      <div class="two-col"><div><p><strong>Definition:</strong> ThreadPoolExecutor is the low-level configurable executor that lets you control worker counts, task queuing, thread lifetime, and overload behavior.</p><p class="deep-note">The most important design choice is not just thread count — it is the combination of thread count plus queue behavior. A huge queue can hide overload while latency quietly grows. A bounded queue exposes overload sooner and lets you apply backpressure intentionally.</p><p class="deep-note">Rejection policy is also part of system behavior. <code>CallerRunsPolicy</code> slows producers, which can be useful backpressure. <code>AbortPolicy</code> fails fast. Silent discard policies are dangerous unless the work is truly optional.</p><div class="mini-grid"><div class="mini-panel"><h4>Why it matters</h4><p>You are defining the pool’s overload behavior, not just its happy path speed.</p></div><div class="mini-panel"><h4>Key mindset</h4><p>A queue is not free capacity. It is delayed work and growing latency.</p></div></div><table><thead><tr><th>Choice</th><th>Effect</th></tr></thead><tbody><tr><td>Bounded queue</td><td>Applies backpressure and protects memory.</td></tr><tr><td>Unbounded queue</td><td>Can hide overload and grow latency/memory usage.</td></tr><tr><td>CallerRunsPolicy</td><td>Slows submitter and provides natural pressure.</td></tr><tr><td>AbortPolicy</td><td>Fails fast when saturated.</td></tr></tbody></table><div class="mini-panel" style="background: rgba(124,58,237,0.12); border-color: rgba(124,58,237,0.35); margin-top: 16px;">
+      <h4>💬 Model Interview Answer</h4>
+      <p>ThreadPoolExecutor tuning is really about overload management. I look at pool size, queue capacity, and rejection policy together, because a pool is only as healthy as its saturation behavior. For CPU-heavy tasks I keep thread count near core count; for I/O I may go higher, but I still want a bounded queue and clear rejection behavior. The gotcha is using an unbounded queue and assuming everything is fine while latency quietly explodes.</p>
+    </div></div><div></div></div><div class="code-blocks"><div>
+      <div class="code-title">✅ Configured pool with bounded queue and backpressure</div>
+      <pre>ExecutorService pool = new ThreadPoolExecutor(
+    8,
+    16,
+    30,
+    TimeUnit.SECONDS,
+    new ArrayBlockingQueue&lt;&gt;(200),
+    new ThreadPoolExecutor.CallerRunsPolicy()
+);</pre>
+    </div></div>
+    </article><article class="card warning">
+      <div class="card-label">Warning</div>
+      <h3>An unbounded queue can be worse than a rejection</h3>
+      <p>Teams often fear rejections and choose an unbounded queue instead. That can turn a short overload into a memory problem and long-tail latency disaster. In many systems, a visible rejection is healthier than invisible overload.</p>
+    </article><article class="card quiz-card">
+      <div class="card-label">Quiz</div>
+      <h3>Why is an unbounded queue risky in a thread pool?</h3>
+      <div class="quiz-options" data-answer="1"><button class="quiz-option">A. It forces all tasks to run synchronously.</button><button class="quiz-option">B. It may hide overload while memory use and latency grow.</button><button class="quiz-option">C. It disables Future results.</button><button class="quiz-option">D. It prevents retries.</button></div>
+      <div class="quiz-result"><strong>Answer</strong><span>B is correct because an unbounded queue lets tasks pile up without pressure, which often leads to delayed failure through high latency or memory pressure. A, C, and D are unrelated. The interview lesson is that overload should be surfaced intentionally, not hidden in a giant queue.</span></div>
+    </article>
           </div>
         </div>
       </section>
-      <section class="section " data-section="2">
+      <section class="section" data-section="2">
         <div class="section-inner">
           <div class="hero">
             <div class="section-label">Section 3 of 5 · ~7 mins</div>
             <h2>Futures, Callables, and Cancellation</h2>
-            <p>Futures represent async results and let you cancel or time out work.</p>
+            <p>Once work leaves the calling thread, you need a way to observe completion, get results, set timeouts, and cancel tasks when they are no longer useful.</p>
           </div>
-
           <div class="card-grid">
             <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Claim ticket at the counter</h3>
-              <p>You get a ticket for your order. You can wait for it, check later, or cancel if you leave.</p>
-            </article>
+      <div class="card-label">🧒 ELI5</div>
+      <h3>A numbered ticket at a coffee shop</h3>
+      <p>You hand in your order and get ticket number 42. You can wait for it, check whether it is ready, or leave if you are running late. A Future is like that ticket: it represents work that is happening elsewhere and may finish later.</p>
+    </article><article class="card analogy">
+      <div class="card-label">🔗 ANALOGY</div>
+      <h3>A package tracking number with a delivery deadline</h3>
+      <p>You do not need to stand at the warehouse waiting. You track the parcel, set expectations for when it should arrive, and sometimes cancel or reroute it. Futures exist to bring that same control to asynchronous work.</p>
+    </article><article class="card technical">
+      <div class="card-label">Technical</div>
+      <h3>Results, timeouts, and cooperative interruption</h3>
+      <div class="two-col"><div><p><strong>Definition:</strong> A <code>Callable</code> returns a value and may throw checked exceptions; submitting it to an executor returns a <code>Future</code> that tracks completion.</p><p class="deep-note">The most important operational habit is to avoid unbounded waits. <code>Future.get()</code> with no timeout can block forever if the task hangs. Senior engineers usually mention timeouts and cancellation when explaining Futures.</p><p class="deep-note">Cancellation is cooperative. Calling <code>cancel(true)</code> interrupts the worker thread, but the task must respect interruption or the cancellation may not stop the work promptly.</p><div class="mini-grid"><div class="mini-panel"><h4>Why it matters</h4><p>You need control over async results so calling threads do not hang forever and stale work does not keep running.</p></div><div class="mini-panel"><h4>Gotcha</h4><p>Swallowing <code>InterruptedException</code> breaks cooperative cancellation and is a common concurrency bug.</p></div></div><table><thead><tr><th>API</th><th>Why use it</th></tr></thead><tbody><tr><td><code>submit(Callable)</code></td><td>Run background work that returns a result.</td></tr><tr><td><code>get(timeout, unit)</code></td><td>Bound how long callers wait.</td></tr><tr><td><code>cancel(true)</code></td><td>Try to stop stale or unnecessary work.</td></tr></tbody></table><div class="mini-panel" style="background: rgba(124,58,237,0.12); border-color: rgba(124,58,237,0.35); margin-top: 16px;">
+      <h4>💬 Model Interview Answer</h4>
+      <p>Futures give me a handle to asynchronous work. I use Callable when I need a return value, and I usually mention timeouts because an unbounded get() is dangerous in backend systems. I also treat cancellation as cooperative, which means my tasks need to respect interrupts. That interruption-awareness point is often what separates a basic answer from a stronger one.</p>
+    </div></div><div></div></div><div class="code-blocks"><div>
+      <div class="code-title">✅ Callable with timeout and interruption-aware task</div>
+      <pre>Future&lt;String&gt; future = pool.submit(() -&gt; {
+    while (!Thread.currentThread().isInterrupted()) {
+        if (dataReady()) {
+            return loadData();
+        }
+        Thread.sleep(50);
+    }
+    throw new InterruptedException(&quot;Task cancelled&quot;);
+});
 
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Package tracking number</h3>
-              <p>A tracking number tells you if the package is ready, delayed, or canceled.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Callable returns a result, and submit() gives a Future to control that execution.</p>
-                  <p class="deep-note">Futures represent results that arrive later. Callables allow you to return values and throw checked exceptions, which makes them a better fit for real work than Runnable.</p>
-                  <p class="deep-note">Use timeouts on get() to avoid indefinite waits, and remember cancel() is cooperative: tasks must handle interruption to stop. Without that, cancellations often do nothing.</p>
-                  <p class="deep-note">If you need to process tasks as they complete, look at CompletionService. It avoids blocking on the slowest task when you can handle early results.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul>
-                        <li>Return results from async work</li><li>Support cancellation</li><li>Add timeouts</li>
-                      </ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common smell</h4>
-                      <ul>
-                        <li>Blocking forever on get()</li><li>Ignoring cancel()</li><li>Swallowing InterruptedException</li>
-                      </ul>
-                    </div>
-                  </div>
-                  <div class="badge-row">
-                    <span class="pill good">Future with timeout</span><span class="pill caution">Blocking get()</span><span class="pill bad">Ignore interrupts</span>
-                  </div>
-                  <div class="flow"><span class="flow-step">Submit callable</span><span class="flow-arrow">→</span><span class="flow-step">Future created</span><span class="flow-arrow">→</span><span class="flow-step">Wait/timeout</span><span class="flow-arrow">→</span><span class="flow-step">Cancel if needed</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“I use Callable with submit() for results, and I always set timeouts and handle cancellations.”</p>
-                  <table>
-                    <thead><tr><th>Method</th><th>Use case</th></tr></thead>
-                    <tbody><tr><td>get()</td><td><span class="pill caution">Blocks</span></td></tr><tr><td>get(timeout)</td><td><span class="pill good">Bounded wait</span></td></tr><tr><td>cancel(true)</td><td><span class="pill info">Interrupt work</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              
-    <div class="code-blocks">
-      
-    <div>
-      <div class="code-title">Future timeout</div>
-      <pre><span class="token-comment">Future&lt;String&gt; f = pool.submit(() -&gt; fetch());
-String v = f.get(200, TimeUnit.MILLISECONDS);</span></pre>
-    </div>
-    </div>
-              <p>Timeouts protect the calling thread and prevent cascading latency.</p>
-                  <p class="deep-note">CompletableFuture is a pipeline. Prefer chaining and composing over blocking, and always handle exceptions so failures don't silently disappear.</p>
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Do not block in request threads</h3>
-              <p>Blocking on Future.get() in an HTTP handler can collapse throughput.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>Callable returns results.</li><li>Use timeouts.</li><li>Handle cancellation and interrupts.</li>
-              </ul>
-            </article>
-
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>Which call prevents unbounded waiting?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. get()</button><button class="quiz-option">B. get(timeout)</button><button class="quiz-option">C. isDone()</button><button class="quiz-option">D. submit()</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>get(timeout) bounds how long you wait.</span>
-              </div>
-            </article>
+String value = future.get(500, TimeUnit.MILLISECONDS);</pre>
+    </div></div>
+    </article><article class="card warning">
+      <div class="card-label">Warning</div>
+      <h3>Blocking on Future.get() inside request handlers can collapse throughput</h3>
+      <p>If a request thread blocks waiting for a background result, you may gain no real throughput improvement at all. Futures are useful, but blindly blocking on them in the hot request path often recreates the same bottleneck with extra complexity.</p>
+    </article><article class="card quiz-card">
+      <div class="card-label">Quiz</div>
+      <h3>Why is <code>Future.cancel(true)</code> only part of the solution?</h3>
+      <div class="quiz-options" data-answer="1"><button class="quiz-option">A. Because cancel() never interrupts.</button><button class="quiz-option">B. Because cancellation is cooperative and the task must respond to interruption.</button><button class="quiz-option">C. Because Future only works with Runnable.</button><button class="quiz-option">D. Because cancel() automatically retries the task.</button></div>
+      <div class="quiz-result"><strong>Answer</strong><span>B is correct. Cancelling with <code>true</code> requests interruption, but the running task must check interruption or call interruptible APIs for that request to matter. A is false, C is false, and D is unrelated. The interview phrase to remember is “cancellation is cooperative.”</span></div>
+    </article>
           </div>
         </div>
       </section>
-      <section class="section " data-section="3">
+      <section class="section" data-section="3">
         <div class="section-inner">
           <div class="hero">
             <div class="section-label">Section 4 of 5 · ~7 mins</div>
             <h2>Sizing & Backpressure</h2>
-            <p>Pool sizing should reflect CPU vs I/O workloads, and backpressure protects the system.</p>
+            <p>Thread pools should reflect workload shape. CPU-bound tasks, I/O-bound tasks, and user-facing latency targets all push sizing in different directions.</p>
           </div>
-
           <div class="card-grid">
             <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Don’t invite 100 people into a small room</h3>
-              <p>If too many people enter, no one can move. You limit entry to keep things working.</p>
-            </article>
-
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Highway on-ramp meter</h3>
-              <p>On-ramp lights slow cars entering a highway to prevent gridlock.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Backpressure controls how much work enters the system when workers are saturated.</p>
-                  <p class="deep-note">Sizing depends on workload type: CPU-bound pools should be near the number of cores, while IO-bound pools can be larger because threads spend time waiting on network or disk.</p>
-                  <p class="deep-note">Backpressure matters. Bounded queues and explicit rejection policies make overload visible, so you fail fast instead of slowly degrading the entire system.</p>
-                  <p class="deep-note">A simple rule is: start with cores for CPU, then measure. For IO, multiply by the expected wait ratio and always validate with load tests.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul>
-                        <li>Keeps latency predictable</li><li>Prevents resource exhaustion</li><li>Protects downstream dependencies</li>
-                      </ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common smell</h4>
-                      <ul>
-                        <li>Queues growing indefinitely</li><li>No rejection strategy</li><li>CPU pegged at 100%</li>
-                      </ul>
-                    </div>
-                  </div>
-                  <div class="badge-row">
-                    <span class="pill good">Bounded queues</span><span class="pill info">CallerRunsPolicy</span><span class="pill bad">Unlimited submission</span>
-                  </div>
-                  <div class="flow"><span class="flow-step">Incoming load</span><span class="flow-arrow">→</span><span class="flow-step">Queue fills</span><span class="flow-arrow">→</span><span class="flow-step">Backpressure triggers</span><span class="flow-arrow">→</span><span class="flow-step">System stabilizes</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“I size pools based on CPU or I/O characteristics and use bounded queues with backpressure to avoid overload.”</p>
-                  <table>
-                    <thead><tr><th>Workload</th><th>Rule of thumb</th></tr></thead>
-                    <tbody><tr><td>CPU-bound</td><td><span class="pill good">~#cores</span></td></tr><tr><td>I/O-bound</td><td><span class="pill info">cores * (1 + wait/compute)</span></td></tr><tr><td>Unknown</td><td><span class="pill caution">Start small + measure</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              
-    <div class="code-blocks">
-      
-    <div>
-      <div class="code-title">Backpressure with CallerRunsPolicy</div>
-      <pre><span class="token-comment">new ThreadPoolExecutor(8, 16, 30, TimeUnit.SECONDS,
-  new ArrayBlockingQueue&lt;&gt;(200), new ThreadPoolExecutor.CallerRunsPolicy());</span></pre>
-    </div>
-    </div>
-              <p>CallerRunsPolicy slows producers, which is often better than dropping work silently.</p>
-                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Dropping tasks silently is dangerous</h3>
-              <p>If you discard work without visibility, correctness bugs appear later.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>Size pools by workload.</li><li>Use bounded queues.</li><li>Apply backpressure deliberately.</li>
-              </ul>
-            </article>
-
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>Which policy adds backpressure by slowing the caller?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. AbortPolicy</button><button class="quiz-option">B. CallerRunsPolicy</button><button class="quiz-option">C. DiscardPolicy</button><button class="quiz-option">D. DiscardOldestPolicy</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>CallerRunsPolicy executes in the caller thread, slowing submissions.</span>
-              </div>
-            </article>
+      <div class="card-label">🧒 ELI5</div>
+      <h3>Letting only the right number of people into a small room</h3>
+      <p>If too many people enter at once, the room becomes unusable. If too few enter, the room sits underused. Good traffic control keeps the room productive without becoming chaotic. Backpressure is that traffic control for software.</p>
+    </article><article class="card analogy">
+      <div class="card-label">🔗 ANALOGY</div>
+      <h3>A water dam with gates</h3>
+      <p>The dam controls how much water passes through at once so downstream systems are not overwhelmed. In concurrency, backpressure serves the same role: it slows or rejects new work before the system collapses under load.</p>
+    </article><article class="card technical">
+      <div class="card-label">Technical</div>
+      <h3>CPU pools, I/O pools, and why backpressure protects the system</h3>
+      <div class="two-col"><div><p><strong>Definition:</strong> Backpressure is any mechanism that prevents a producer from overwhelming the executor or the systems behind it.</p><p class="deep-note">CPU-bound workloads usually want a pool size near the number of cores, because too many runnable threads just create context switching. I/O-bound workloads can tolerate more threads because they spend time waiting, but that does not mean “infinite threads” is safe.</p><p class="deep-note">Bounded queues, rate limits, and rejection policies are all forms of backpressure. They force the system to expose overload early rather than masking it until memory, latency, or downstream services start failing.</p><div class="mini-grid"><div class="mini-panel"><h4>Production rule of thumb</h4><p>Start with the workload type, then validate with load testing and operational metrics like queue depth, active thread count, and tail latency.</p></div><div class="mini-panel"><h4>Important trade-off</h4><p>Higher concurrency may improve utilization, but beyond a point it often harms latency and stability.</p></div></div><table><thead><tr><th>Workload</th><th>Sizing intuition</th></tr></thead><tbody><tr><td>CPU-bound</td><td>Near core count; avoid too many runnable threads.</td></tr><tr><td>I/O-bound</td><td>Can be higher, but still needs queue bounds and pressure.</td></tr><tr><td>User-facing path</td><td>Bias toward bounded latency and explicit overload handling.</td></tr></tbody></table><div class="mini-panel" style="background: rgba(124,58,237,0.12); border-color: rgba(124,58,237,0.35); margin-top: 16px;">
+      <h4>💬 Model Interview Answer</h4>
+      <p>I size pools based on the nature of the work, not on a magic default. CPU-heavy tasks usually stay near core count, while I/O-heavy tasks can go higher because threads spend time waiting. But the bigger lesson is backpressure: I want bounded queues and a clear overload story so the system fails early instead of degrading invisibly. That is often more important than the exact thread number.</p>
+    </div></div><div></div></div>
+    </article><article class="card warning">
+      <div class="card-label">Warning</div>
+      <h3>Silent discard policies are dangerous for important work</h3>
+      <p>If tasks represent business actions like payments, emails, or state updates, silently dropping them can create correctness bugs that appear much later. Only discard work when it is explicitly non-critical and observable elsewhere.</p>
+    </article><article class="card quiz-card">
+      <div class="card-label">Quiz</div>
+      <h3>What is the main goal of backpressure in executor design?</h3>
+      <div class="quiz-options" data-answer="1"><button class="quiz-option">A. Make every task faster.</button><button class="quiz-option">B. Prevent the system from being overwhelmed by more work than it can safely handle.</button><button class="quiz-option">C. Remove the need for queues.</button><button class="quiz-option">D. Guarantee zero latency.</button></div>
+      <div class="quiz-result"><strong>Answer</strong><span>B is correct because backpressure is about protecting system stability under load. It does not make every task faster, remove queues entirely, or guarantee zero latency. In interview language: backpressure is controlled resistance that keeps overload from turning into collapse.</span></div>
+    </article>
           </div>
         </div>
       </section>
-      
-      
       <section class="section" data-section="4">
         <div class="section-inner">
           <div class="hero">
             <div class="section-label">Section 5 of 5 · ~7 mins</div>
             <h2>Deep Dive: Thread Pool Tuning & Backpressure</h2>
-            <p>Real systems need careful pool sizing, queue strategy, and rejection policies to prevent overload.</p>
+            <p>Senior-level concurrency answers should connect executor settings to service behavior: throughput, tail latency, failure modes, and protection of downstream dependencies.</p>
           </div>
-
           <div class="card-grid">
             <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Too many chefs</h3>
-              <p>If you hire too many chefs for one kitchen, they bump into each other and slow everything down.</p>
-            </article>
-
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Call center lines</h3>
-              <p>A queue of callers is fine, but if the queue is infinite, you never realize you are overwhelmed.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> ExecutorService performance depends on pool size, queue capacity, and rejection policy.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul><li>Prevents latency spikes</li><li>Protects CPU and memory</li><li>Keeps throughput stable</li></ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common pitfall</h4>
-                      <ul><li>Unbounded queue</li><li>Fixed pool for IO-heavy workloads</li><li>No monitoring of queue depth</li></ul>
-                    </div>
-                  </div>
-                  <div class="badge-row"><span class="pill good">Pool size</span><span class="pill info">Queue strategy</span><span class="pill caution">Rejection</span></div>
-                  <div class="flow"><span class="flow-step">Submit task</span><span class="flow-arrow">→</span><span class="flow-step">Queue or execute</span><span class="flow-arrow">→</span><span class="flow-step">Worker runs</span><span class="flow-arrow">→</span><span class="flow-step">Reject if saturated</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“I tune pool size based on CPU vs IO, cap queues, and use a rejection policy to apply backpressure.”</p>
-                  <p class="deep-note">Thread pools are about throughput and backpressure. Size depends on CPU vs I/O, and the queue plus rejection policy determines behavior under load.</p>
-                  <table>
-                    <thead><tr><th>Queue</th><th>Behavior</th></tr></thead>
-                    <tbody><tr><td>Unbounded</td><td><span class="pill bad">Memory risk</span></td></tr><tr><td>Bounded</td><td><span class="pill good">Backpressure</span></td></tr><tr><td>SynchronousQueue</td><td><span class="pill info">Direct handoff</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              <div class="code-blocks">
-    <div>
-      <div class="code-title">Custom ThreadPoolExecutor</div>
-      <pre>ExecutorService pool = new ThreadPoolExecutor(
-  8, 32,
-  60, TimeUnit.SECONDS,
-  new ArrayBlockingQueue&lt;&gt;(500),
-  new ThreadPoolExecutor.CallerRunsPolicy()
-);</pre>
-    </div>
-    </div>
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Unbounded queues hide overload</h3>
-              <p>If you never reject, latency grows until the system falls over.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways"><li>Size pools by workload type.</li><li>Use bounded queues.</li><li>Monitor queue length and active threads.</li></ul>
-            </article>
-
-            
-          
-            <article class="card technical">
-              <div class="card-label">Edge cases</div>
-              <h3>Edge Cases & Tradeoffs</h3>
-              <ul class="takeaways"><li>Unbounded queues hide backpressure and cause OOM.</li><li>Thread leaks happen if you never shutdown pools.</li><li>Blocking tasks can starve CPU-bound pools.</li><li>RejectedExecutionHandler defaults may silently drop work.</li><li>ThreadLocal context is not propagated automatically.</li></ul>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Checklist</div>
-              <h3>Production Checklist</h3>
-              <ul class="takeaways"><li>Pick pool type based on workload (CPU vs IO).</li><li>Use bounded queues and explicit rejection policy.</li><li>Name threads with a ThreadFactory for debugging.</li><li>Always shutdown() and awaitTermination().</li><li>Use timeouts on futures to avoid indefinite waits.</li></ul>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Interview</div>
-              <h3>Interview Hooks</h3>
-              <p>Show you understand sizing, backpressure, and lifecycle management.</p>
-              <ul class="takeaways"><li>Explain submit() vs execute() and future handling.</li><li>Describe how you size pools for CPU vs IO.</li><li>Mention why Executors.newCachedThreadPool is risky.</li></ul>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Advanced Example</div>
-              <div class="code-blocks">
-        <div>
-          <div class="code-title">Bounded ThreadPoolExecutor</div>
-          <pre>BlockingQueue&lt;Runnable&gt; queue = new ArrayBlockingQueue&lt;&gt;(200);
-ThreadFactory tf = r -&gt; new Thread(r, "api-worker");
-ExecutorService pool = new ThreadPoolExecutor(
-  8, 16, 30, TimeUnit.SECONDS, queue, tf,
-  new ThreadPoolExecutor.CallerRunsPolicy()
-);</pre>
+      <div class="card-label">🧒 ELI5</div>
+      <h3>A busy road with traffic lights tuned for rush hour</h3>
+      <p>The road works best when lights, lane counts, and entry ramps are tuned together. If you only widen one lane but ignore every intersection, the traffic jam just moves. Thread pool tuning is the same: thread count, queue size, and overload behavior must be designed together.</p>
+    </article><article class="card analogy">
+      <div class="card-label">🔗 ANALOGY</div>
+      <h3>A call center managing peak demand</h3>
+      <p>The call center decides how many agents are always staffed, how many extra can join during spikes, how long callers can wait, and what happens when demand exceeds capacity. Those are exactly the questions a real executor design must answer.</p>
+    </article><article class="card technical">
+      <div class="card-label">Technical</div>
+      <h3>From configuration knobs to system behavior</h3>
+      <div class="two-col"><div><p><strong>Definition:</strong> Executor tuning is the practice of mapping business requirements like latency and reliability to concrete pool and queue behavior.</p><p class="deep-note">A thread pool is not just an implementation detail. Its configuration directly affects how quickly users get responses, how much memory the service uses during spikes, and whether downstream systems are protected or hammered when demand surges.</p><p class="deep-note">That is why the best tuning answers talk about metrics. Queue depth, active thread count, rejection count, and p95/p99 latency tell you whether the design is healthy. Tuning without measurement is guesswork.</p><div class="mini-grid"><div class="mini-panel"><h4>What interviewers like to hear</h4><p>Bounded queues, explicit rejection behavior, workload-aware sizing, and measurement-driven tuning.</p></div><div class="mini-panel"><h4>Operational smell</h4><p>“We picked 200 threads because it seemed fast” is weaker than explaining how the number relates to CPU, I/O, and latency goals.</p></div></div><table><thead><tr><th>Metric</th><th>What it tells you</th></tr></thead><tbody><tr><td>Queue depth</td><td>Whether work is piling up faster than workers can drain it.</td></tr><tr><td>Active thread count</td><td>How saturated the pool is.</td></tr><tr><td>Rejections</td><td>Whether overload is visible and being handled.</td></tr><tr><td>Tail latency</td><td>Whether user experience is degrading under load.</td></tr></tbody></table><div class="mini-panel" style="background: rgba(124,58,237,0.12); border-color: rgba(124,58,237,0.35); margin-top: 16px;">
+      <h4>💬 Model Interview Answer</h4>
+      <p>For senior interviews, I describe executor tuning as a systems decision, not just a Java API choice. I connect pool size and queue bounds to workload type, tail latency, and overload protection. I also mention rejection counts and queue depth because tuning should be driven by metrics, not instinct. That shows I understand the operational side of concurrency, not just the syntax.</p>
+    </div></div><div></div></div>
+    </article><article class="card warning">
+      <div class="card-label">Warning</div>
+      <h3>More threads is not the same as more capacity</h3>
+      <p>Beyond a certain point, extra threads just add context switching, contention, and longer queues. When a service is overloaded, throwing more threads at it can make the failure mode noisier rather than safer.</p>
+    </article><article class="card quiz-card">
+      <div class="card-label">Quiz</div>
+      <h3>Which answer sounds strongest in a senior interview about executor tuning?</h3>
+      <div class="quiz-options" data-answer="1"><button class="quiz-option">A. I always use the largest pool my server can handle.</button><button class="quiz-option">B. I pick a pool size, queue bound, and rejection policy based on workload shape and validate with queue depth and latency metrics.</button><button class="quiz-option">C. I use unbounded queues so nothing is rejected.</button><button class="quiz-option">D. I avoid thread pools because raw threads are simpler.</button></div>
+      <div class="quiz-result"><strong>Answer</strong><span>B is correct because it connects tuning to workload, overload behavior, and measurement. A and C ignore stability, and D throws away the benefits of managed execution. The strongest interview language is “workload-aware sizing plus metrics-driven validation.”</span></div>
+    </article>
+          </div>
+        </div>
+      </section>
+      <section class="section" data-section="5">
+      <div class="section-inner">
+        <div class="hero">
+          <div class="section-label">Completion screen</div>
+          <h2>🎉 ExecutorService & Thread Pools Cheat Sheet</h2>
+          <p>Use this page as a fast interview recap before mock rounds or senior backend interviews.</p>
+        </div>
+        <div class="completion-grid">
+          <article class="card technical">
+            <div class="celebrate">✅</div>
+            <h3>What to remember</h3>
+            <div class="cheat-list"><div class="cheat-item"><h4>ExecutorService</h4><p>Submit work to managed threads instead of creating raw threads for every task.</p></div><div class="cheat-item"><h4>ThreadPoolExecutor</h4><p>Tune core/max threads, queue capacity, keep-alive, and rejection policy together.</p></div><div class="cheat-item"><h4>Futures</h4><p>Use timeouts and interruption-aware tasks; cancellation is cooperative.</p></div><div class="cheat-item"><h4>Backpressure</h4><p>Bounded queues and explicit rejection behavior protect the service during overload.</p></div><div class="cheat-item"><h4>Senior framing</h4><p>Connect pool settings to latency, queue depth, rejection counts, and downstream protection.</p></div></div>
+          </article>
+          <article class="card warning">
+            <div class="card-label">Most common confusion points</div>
+            <h3>Where people slip</h3>
+            <div class="confusion-list"><div class="confusion-item"><strong>“More threads always means more throughput.”</strong><p>Not true — too many threads can increase context switching and degrade latency.</p></div><div class="confusion-item"><strong>“Unbounded queues are safer because nothing is rejected.”</strong><p>They often hide overload until memory and latency become the real failure mode.</p></div><div class="confusion-item"><strong>“cancel(true) always stops the task.”</strong><p>Only if the task is interruption-aware and cooperates with cancellation.</p></div></div>
+          </article>
         </div>
       </div>
-      <p>CallerRunsPolicy provides backpressure when the queue is full.</p>
-            </article><article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>Which queue choice provides the clearest backpressure?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. LinkedBlockingQueue (unbounded)</button><button class="quiz-option">B. ArrayBlockingQueue (bounded)</button><button class="quiz-option">C. DelayQueue</button><button class="quiz-option">D. PriorityBlockingQueue</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>Bounded queues force rejection or caller-runs when saturated.</span>
-              </div>
-            </article></div>
-        </div>
-      </section>
-<section class="section" data-section="5">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Completion screen · Review mode</div>
-            <h2>🎉 ExecutorService & Thread Pools Cheat Sheet</h2>
-            <p>Use this to recall pool types, Futures, and sizing trade-offs quickly.</p>
-          </div>
-
-          <div class="completion-grid">
-            <div class="card technical">
-              <div class="card-label">Cheat sheet</div>
-              <div class="celebrate">🚀</div>
-              <h3>1-line interview answers</h3>
-              <div class="cheat-list">
-    <div class="cheat-item">
-      <h4>Pool basics</h4>
-      <p>Use ExecutorService to manage threads and submit tasks safely.</p>
-    </div>
-    <div class="cheat-item">
-      <h4>Pool types</h4>
-      <p>Fixed for stability, cached for bursts, scheduled for timers.</p>
-    </div>
-    <div class="cheat-item">
-      <h4>Futures</h4>
-      <p>Callable + submit gives a Future you can cancel or timeout.</p>
-    </div>
-    <div class="cheat-item">
-      <h4>Sizing</h4>
-      <p>Tune with core/max/queue; prefer backpressure over latency spikes.</p>
-    </div></div>
-            </div>
-
-            <div class="card analogy">
-              <div class="card-label">What to remember</div>
-              <h3>Fast mental model</h3>
-              <ul class="takeaways">
-                <li><strong>ExecutorService:</strong> separates submission from execution.</li><li><strong>ThreadPoolExecutor:</strong> core/max/queue policies define behavior.</li><li><strong>Futures:</strong> represent async results.</li><li><strong>Backpressure:</strong> prefer bounded queues with clear rejection.</li>
-              </ul>
-              <h3 style="margin-top:22px;">Common traps</h3>
-              <div class="badge-row">
-                <span class="pill bad">Unbounded queues</span><span class="pill bad">Ignoring shutdown</span><span class="pill bad">Blocking on Future in hot path</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+    </section>
     </main>
 
     <footer class="footer-nav">

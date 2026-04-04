@@ -1,13 +1,14 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>JPA & Hibernate Learning Module</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>JPA &amp; Hibernate Learning Module</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&amp;family=Syne:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<style>
 :root {
       --bg: #0a0e1a;
       --surface-1: #111827;
@@ -717,611 +718,201 @@
   </style>
 </head>
 <body>
-  <div class="app">
-    <header class="topbar">
-      <div class="topbar-inner">
-        <div class="topbar-row">
-          <div class="brand">
-            <h1>JPA & Hibernate</h1>
-            <small>Interactive 35-minute learning module</small>
-          </div>
-                <div class="topbar-row">
-          <div class="breadcrumb">
-            <a href="../index.html">Home</a>
-            <span>›</span>
-            <a href="index.html">Spring Boot</a>
-            <span>›</span>
-            <span>JPA & Hibernate</span>
-          </div>
-        </div>
-          <div class="timer-wrap" aria-live="polite">
-            <span class="timer-label">Time Left</span>
-            <span class="timer" id="timer">35:00</span>
-          </div>
-        </div>
-        <div class="topbar-row">
-                    <nav class="nav-dots" aria-label="Section navigation"><button class="nav-dot active" data-index="0" aria-label="Go to section 1">1</button><button class="nav-dot" data-index="1" aria-label="Go to section 2">2</button><button class="nav-dot" data-index="2" aria-label="Go to section 3">3</button><button class="nav-dot" data-index="3" aria-label="Go to section 4">4</button><button class="nav-dot" data-index="4" aria-label="Go to section 5">5</button><button class="nav-dot" data-index="5" aria-label="Go to completion screen">6</button></nav>
-        </div>
-        <div class="progress-shell" aria-hidden="true">
-          <div class="progress-bar" id="progressBar"></div>
-        </div>
-      </div>
-    </header>
+<div class="app">
+<header class="topbar">
+<div class="topbar-inner">
+<div class="topbar-row">
+<div class="brand">
+<h1>JPA &amp; Hibernate</h1>
+<small>Interactive 35-minute learning module</small>
+</div>
+<div class="topbar-row">
+<div class="breadcrumb">
+<a href="../index.html">Home</a>
+<span>›</span>
+<a href="index.html">Spring Boot</a>
+<span>›</span>
+<span>JPA &amp; Hibernate</span>
+</div>
+</div>
+<div aria-live="polite" class="timer-wrap">
+<span class="timer-label">Time Left</span>
+<span class="timer" id="timer">35:00</span>
+</div>
+</div>
+<div class="topbar-row">
+<nav aria-label="Section navigation" class="nav-dots"><button aria-label="Go to section 1" class="nav-dot active" data-index="0">1</button><button aria-label="Go to section 2" class="nav-dot" data-index="1">2</button><button aria-label="Go to section 3" class="nav-dot" data-index="2">3</button><button aria-label="Go to section 4" class="nav-dot" data-index="3">4</button><button aria-label="Go to section 5" class="nav-dot" data-index="4">5</button><button aria-label="Go to completion screen" class="nav-dot" data-index="5">6</button></nav>
+</div>
+<div aria-hidden="true" class="progress-shell">
+<div class="progress-bar" id="progressBar"></div>
+</div>
+</div>
+</header>
+<main>
 
-    <main>
-      
-      <section class="section active" data-section="0">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 1 of 5 · ~7 mins</div>
-            <h2>Entity Mapping & Relationships</h2>
-            <p>JPA mappings define how objects translate to tables and how relationships are stored.</p>
-          </div>
 
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Friends list in a notebook</h3>
-              <p>You write a friend’s name once and reference it instead of copying it everywhere.</p>
-            </article>
 
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Library catalog</h3>
-              <p>A book references an author entry instead of repeating the author data in every row.</p>
-            </article>
 
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Relationships like @ManyToOne and @OneToMany map foreign keys between tables.</p>
-                  <p class="deep-note">Entity mapping defines how object graphs translate into tables. The owning side of a relationship controls the foreign key and must be chosen carefully.</p>
-                  <p class="deep-note">Cascade options decide how operations propagate. Using cascade without understanding ownership can cause unexpected deletes or inserts.</p>
-                  <p class="deep-note">A simple rule: only cascade from parent to child when it is truly a lifecycle dependency (like Order -&gt; OrderItem).</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul>
-                        <li>Clear domain modeling</li><li>Avoid duplicate data</li><li>Supports navigation in code</li>
-                      </ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common smell</h4>
-                      <ul>
-                        <li>No owning side defined</li><li>Both sides controlling FK</li><li>Confusing cascades</li>
-                      </ul>
-                    </div>
-                  </div>
-                  <div class="badge-row">
-                    <span class="pill good">Owning side</span><span class="pill info">MappedBy</span><span class="pill caution">Cascade with care</span>
-                  </div>
-                  <div class="flow"><span class="flow-step">Define entity</span><span class="flow-arrow">→</span><span class="flow-step">Map relation</span><span class="flow-arrow">→</span><span class="flow-step">Set owning side</span><span class="flow-arrow">→</span><span class="flow-step">Persist</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“The owning side owns the foreign key. I use mappedBy on the inverse side.”</p>
-                  <table>
-                    <thead><tr><th>Annotation</th><th>Meaning</th></tr></thead>
-                    <tbody><tr><td>@ManyToOne</td><td><span class="pill info">FK on this table</span></td></tr><tr><td>@OneToMany(mappedBy)</td><td><span class="pill good">Inverse side</span></td></tr><tr><td>@JoinColumn</td><td><span class="pill good">FK column</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              
-    <div class="code-blocks">
-      
-    <div>
-      <div class="code-title">Mapping example</div>
-      <pre>@Entity
-class Order {
-  @ManyToOne
-  @JoinColumn(name="example")
-  private Customer customer;
-}</pre>
-    </div>
-    </div>
-              <p>The side with @JoinColumn is the owning side.</p>
-                  <p class="deep-note">Pay attention to the persistence context: managed entities are tracked and flushed at commit, while detached ones require merge. Fetch strategy (lazy vs eager) is the biggest source of performance surprises.</p>
-            </article>
 
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Cascade can delete data</h3>
-              <p>CascadeType.REMOVE can remove child rows unexpectedly.</p>
-            </article>
 
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>Owning side controls FK.</li><li>mappedBy marks inverse.</li><li>Use cascades carefully.</li>
-              </ul>
-            </article>
+</main>
+<section class="section" data-section="0">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Section 1 · Core concept</div>
+<h2>Entity Mapping &amp; Relationships</h2>
+<p>Entity Mapping &amp; Relationships is a high-value senior interview topic because it reveals whether you understand the underlying mechanism, the default behavior, and the trade-offs in production.</p>
+</div>
+<div class="card-grid">
+<article class="card eli5"><div class="card-label">🧒 ELI5</div><h3>A simple mental picture</h3><p>Imagine a busy workplace where one small rule determines whether the whole team moves smoothly or keeps stepping on each other. JPA maps Java objects to relational tables and lets you express relationships such as one-to-many or many-to-one in the domain model. works like that kind of rule: it tells the system how to behave before small mistakes turn into bigger production problems.</p><p>It matters because it reduces boilerplate while keeping the object model aligned with persistence rules. Without that rule, engineers often discover the problem only after the app is under load, when the bug is expensive and confusing.</p><p>The useful mental shortcut is to ask: “What is the system trying to coordinate here, and what breaks when that coordination is missing?” That question usually reveals why this feature exists.</p></article><article class="card analogy"><div class="card-label">🔗 ANALOGY</div><h3>Why the rule exists</h3><p>Think of entity mapping &amp; relationships as a piece of operating policy, not just a syntax feature. The policy exists to make decisions repeatable across the whole system instead of relying on every individual class to remember the rule.</p><p>If you ignore that policy, the most common smell is sloppy entity boundaries or relationships that do not match ownership clearly. In real applications, that smell usually shows up as flaky behavior, hidden coupling, or painful debugging.</p></article><article class="card technical"><div class="card-label">Technical</div><div class="two-col"><div><h3>How it works under the hood</h3><p><strong>Definition:</strong> JPA maps Java objects to relational tables and lets you express relationships such as one-to-many or many-to-one in the domain model.</p><p class="deep-note">JPA maps Java objects to relational tables and lets you express relationships such as one-to-many or many-to-one in the domain model. Under the hood, Spring or the underlying infrastructure usually applies the behavior around your code rather than by changing your business logic directly.</p><p class="deep-note">The production question is not “can I enable it?” but “where is the right boundary and what problem am I actually solving?”</p><p class="deep-note">Good engineering here comes from matching the mechanism to the use case, then watching the trade-off instead of blindly turning the feature on everywhere.</p><div class="mini-grid"><div class="mini-panel"><h4>Why it matters in production</h4><ul><li>it reduces boilerplate while keeping the object model aligned with persistence rules</li><li>Makes jpa &amp; hibernate behavior explicit</li><li>Gives you a clearer story in debugging and interviews</li></ul></div><div class="mini-panel"><h4>Common smell</h4><ul><li>sloppy entity boundaries or relationships that do not match ownership clearly</li><li>Using the mechanism as a band-aid for design issues</li><li>Forgetting what the default behavior actually is</li></ul></div></div><div class="badge-row"><span class="pill good">Explicit intent</span><span class="pill info">Know the default</span><span class="pill caution">Trade-offs matter</span></div><div class="flow"><span class="flow-step">Call enters boundary</span><span class="flow-arrow">→</span><span class="flow-step">Framework applies rule</span><span class="flow-arrow">→</span><span class="flow-step">Your code runs</span><span class="flow-arrow">→</span><span class="flow-step">Outcome follows configured behavior</span></div></div><div><h3>💬 Model Interview Answer</h3><p>“Entity Mapping &amp; Relationships in JPA &amp; Hibernate is really about jpa maps java objects to relational tables and lets you express relationships such as one-to-many or many-to-one in the domain model. I explain it as a mechanism that enforces a policy around my code so the application behaves consistently. The important trade-off is sloppy entity boundaries or relationships that do not match ownership clearly, so I use it deliberately and I make the boundary clear instead of relying on accidental defaults.”</p><table><thead><tr><th>Scenario</th><th>What to watch</th></tr></thead><tbody><tr><td>Owning side</td><td>Controls FK updates</td></tr><tr><td>mappedBy</td><td>Inverse side reference</td></tr><tr><td>Association design</td><td>Affects SQL and lifecycle</td></tr></tbody></table></div></div><div class="code-blocks"><div><div class="code-title">❌ Wrong</div><pre>@Entity
+public class Order {
+    @OneToMany
+    private List&lt;OrderItem&gt; items;
+}</pre></div><div><div class="code-title">✅ Right</div><pre>@Entity
+public class Order {
 
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>Which side controls the foreign key?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. mappedBy side</button><button class="quiz-option">B. Owning side with @JoinColumn</button><button class="quiz-option">C. Both sides</button><button class="quiz-option">D. Neither side</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>The owning side defines @JoinColumn and controls the FK.</span>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-      <section class="section " data-section="1">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 2 of 5 · ~7 mins</div>
-            <h2>Lazy vs Eager & N+1</h2>
-            <p>Fetching strategy drives query count and performance.</p>
-          </div>
+    @Id
+    @GeneratedValue
+    private Long id;
 
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Order now or later</h3>
-              <p>You can bring all groceries home at once (eager) or fetch them when needed (lazy).</p>
-            </article>
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List&lt;OrderItem&gt; items = new ArrayList&lt;&gt;();
+}
 
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Streaming vs download</h3>
-              <p>Streaming loads data on demand; downloading grabs everything upfront.</p>
-            </article>
+@Entity
+public class OrderItem {
 
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Lazy loads related data when accessed; N+1 happens when each access triggers a query.</p>
-                  <p class="deep-note">Lazy loading defers relationship queries until you access the data, which saves work but can create N+1 query problems.</p>
-                  <p class="deep-note">Eager loading can over-fetch. Fetch joins or entity graphs let you specify exactly which relationships you need for a given use case.</p>
-                  <p class="deep-note">If you see many similar queries in logs, it is often a sign of N+1 and a missing fetch join.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul>
-                        <li>Avoid unnecessary queries</li><li>Control performance</li><li>Reduce memory usage</li>
-                      </ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common smell</h4>
-                      <ul>
-                        <li>Multiple queries per row</li><li>Eager everywhere</li><li>Slow list screens</li>
-                      </ul>
-                    </div>
-                  </div>
-                  <div class="badge-row">
-                    <span class="pill good">Fetch join</span><span class="pill info">Entity graph</span><span class="pill bad">N+1</span>
-                  </div>
-                  <div class="flow"><span class="flow-step">Load list</span><span class="flow-arrow">→</span><span class="flow-step">Access relation</span><span class="flow-arrow">→</span><span class="flow-step">Extra query per row</span><span class="flow-arrow">→</span><span class="flow-step">N+1</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“I prefer lazy defaults and fix N+1 with fetch joins or entity graphs.”</p>
-                  <table>
-                    <thead><tr><th>Strategy</th><th>Impact</th></tr></thead>
-                    <tbody><tr><td>Lazy</td><td><span class="pill good">On-demand</span></td></tr><tr><td>Eager</td><td><span class="pill caution">More data</span></td></tr><tr><td>Fetch join</td><td><span class="pill info">Single query</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              
-    <div class="code-blocks">
-      
-    <div>
-      <div class="code-title">Fetch join</div>
-      <pre>@Query("example")
-List&lt;Order&gt; findAllWithCustomer();</pre>
-    </div>
-    </div>
-              <p>Fetch joins load relationships in a single query.</p>
-                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
-            </article>
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id")
+    private Order order;
+}</pre></div></div><p>Use entity mapping &amp; relationships where the rule belongs in architecture, not just where it happens to fix one failing test or one bug report.</p><p class="deep-note">The safest mental model is that Spring gives you a framework feature only when your call crosses the Spring-managed boundary and the surrounding infrastructure can participate.</p></article><article class="card warning"><div class="card-label">Warning</div><h3>Common misunderstanding</h3><p>The dangerous misunderstanding is treating entity mapping &amp; relationships like a magic switch instead of a mechanism with boundaries and defaults. That is how teams end up with sloppy entity boundaries or relationships that do not match ownership clearly.</p><p>A safer pattern is to make the intent explicit, keep the scope narrow, and choose the smallest mechanism that actually solves the problem.</p><div class="code-blocks"><div><div class="code-title">Broken pattern</div><pre>@Entity
+public class Order {
+    @OneToMany
+    private List&lt;OrderItem&gt; items;
+}</pre></div><div><div class="code-title">Safer pattern</div><pre>@Entity
+public class Order {
 
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Eager can explode</h3>
-              <p>Eager loading can multiply rows and memory usage.</p>
-            </article>
+    @Id
+    @GeneratedValue
+    private Long id;
 
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>Lazy by default.</li><li>Use fetch joins for N+1.</li><li>Measure query counts.</li>
-              </ul>
-            </article>
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List&lt;OrderItem&gt; items = new ArrayList&lt;&gt;();
+}
 
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>What is the N+1 problem?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. One query per table</button><button class="quiz-option">B. One query plus N extra queries</button><button class="quiz-option">C. N tables plus one join</button><button class="quiz-option">D. One query with N joins</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>N+1 means 1 query for list plus N queries for each relation.</span>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-      <section class="section " data-section="2">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 3 of 5 · ~7 mins</div>
-            <h2>Persistence Context & Dirty Checking</h2>
-            <p>Hibernate tracks entity changes and flushes them at transaction boundaries.</p>
-          </div>
+@Entity
+public class OrderItem {
 
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>A smart notebook</h3>
-              <p>You write notes, and the notebook remembers what changed so it can update later.</p>
-            </article>
-
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Auto-save document</h3>
-              <p>Changes are tracked and saved when you click save, not after every keystroke.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Managed entities are tracked in the persistence context; changes are flushed on commit.</p>
-                  <p class="deep-note">The persistence context is the first-level cache that tracks entity identity and changes. Dirty checking detects changes and flushes them at transaction boundaries.</p>
-                  <p class="deep-note">Detach and merge control whether entities remain managed. Understanding these states prevents surprise updates or stale data.</p>
-                  <p class="deep-note">For beginners, remember: if the entity is managed, changes are saved automatically. If detached, you must merge or update manually.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul>
-                        <li>Automatic updates</li><li>Consistent unit of work</li><li>Less manual SQL</li>
-                      </ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common smell</h4>
-                      <ul>
-                        <li>Detached entity updates lost</li><li>Unexpected updates</li><li>Entity outside transaction</li>
-                      </ul>
-                    </div>
-                  </div>
-                  <div class="badge-row">
-                    <span class="pill good">Managed entity</span><span class="pill info">Dirty checking</span><span class="pill caution">Detach risk</span>
-                  </div>
-                  <div class="flow"><span class="flow-step">Load entity</span><span class="flow-arrow">→</span><span class="flow-step">Modify</span><span class="flow-arrow">→</span><span class="flow-step">Commit</span><span class="flow-arrow">→</span><span class="flow-step">Flush SQL</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“Hibernate tracks managed entities and writes changes on flush/commit, so I keep updates inside transactions.”</p>
-                  <table>
-                    <thead><tr><th>State</th><th>Meaning</th></tr></thead>
-                    <tbody><tr><td>Managed</td><td><span class="pill good">Tracked</span></td></tr><tr><td>Detached</td><td><span class="pill caution">Not tracked</span></td></tr><tr><td>Transient</td><td><span class="pill bad">Not persisted</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              
-    <div class="code-blocks">
-      
-    <div>
-      <div class="code-title">Dirty checking</div>
-      <pre>@Transactional
-public void rename(Long id){
-  Order o = repo.findById(id).get();
-  o.setStatus("SHIPPED");
-} // dirty checking flushes on commit</pre>
-    </div>
-    </div>
-              <p>No explicit save needed if the entity is managed.</p>
-                  <p class="deep-note">Pay attention to the persistence context: managed entities are tracked and flushed at commit, while detached ones require merge. Fetch strategy (lazy vs eager) is the biggest source of performance surprises.</p>
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Detached entities need merge</h3>
-              <p>Outside the persistence context, changes are ignored unless merged.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>Managed entities are tracked.</li><li>Changes flush at commit.</li><li>Detach breaks tracking.</li>
-              </ul>
-            </article>
-
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>When does dirty checking write SQL?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. Immediately on setter</button><button class="quiz-option">B. On transaction commit/flush</button><button class="quiz-option">C. Only on save()</button><button class="quiz-option">D. Never</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>Dirty checking flushes changes at commit/flush.</span>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-      <section class="section " data-section="3">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 4 of 5 · ~7 mins</div>
-            <h2>Performance Tuning</h2>
-            <p>JPA performance improves with batching, pagination, and DTO projections.</p>
-          </div>
-
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Carry groceries in batches</h3>
-              <p>You bring groceries in bags, not one item at a time.</p>
-            </article>
-
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Bulk shipping</h3>
-              <p>Shipping in bulk is cheaper and faster than many tiny shipments.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Use batch size, pagination, and projections to reduce SQL and memory overhead.</p>
-                  <p class="deep-note">Performance tuning starts with query shape: use indexes, pagination, and batch size to reduce round-trips and memory usage.</p>
-                  <p class="deep-note">Second-level cache can help read-heavy systems, but you must consider consistency and invalidation costs before enabling it.</p>
-                  <p class="deep-note">Start by fixing slow queries with indexes and proper fetch plans before reaching for caching.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul>
-                        <li>Less memory usage</li><li>Fewer SQL statements</li><li>Predictable performance</li>
-                      </ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common smell</h4>
-                      <ul>
-                        <li>Loading huge lists</li><li>N+1 everywhere</li><li>Unbounded fetch</li>
-                      </ul>
-                    </div>
-                  </div>
-                  <div class="badge-row">
-                    <span class="pill good">Pagination</span><span class="pill info">DTO projection</span><span class="pill bad">Load everything</span>
-                  </div>
-                  <div class="flow"><span class="flow-step">Query page</span><span class="flow-arrow">→</span><span class="flow-step">Fetch join (safe)</span><span class="flow-arrow">→</span><span class="flow-step">Map DTO</span><span class="flow-arrow">→</span><span class="flow-step">Return</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“I paginate, use fetch joins carefully, and project DTOs for read-heavy screens.”</p>
-                  <table>
-                    <thead><tr><th>Technique</th><th>Benefit</th></tr></thead>
-                    <tbody><tr><td>Pagination</td><td><span class="pill good">Stable memory</span></td></tr><tr><td>Batch size</td><td><span class="pill info">Fewer queries</span></td></tr><tr><td>DTO projection</td><td><span class="pill info">Less data</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              
-    <div class="code-blocks">
-      
-    <div>
-      <div class="code-title">DTO projection</div>
-      <pre>@Query("example")
-List&lt;OrderRow&gt; rows();</pre>
-    </div>
-    </div>
-              <p>DTO projections avoid loading full entities when you only need a subset.</p>
-                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Fetch joins + pagination</h3>
-              <p>Some databases handle pagination with fetch joins poorly; verify behavior.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>Paginate large queries.</li><li>Use DTOs for read screens.</li><li>Tune batch size.</li>
-              </ul>
-            </article>
-
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>Which technique reduces memory for list screens?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. Eager fetch all</button><button class="quiz-option">B. DTO projection</button><button class="quiz-option">C. Disable indexes</button><button class="quiz-option">D. Use SELECT *</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>DTO projections fetch only required fields.</span>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-      
-      
-      <section class="section" data-section="4">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 5 of 5 · ~7 mins</div>
-            <h2>Deep Dive: Fetch Plans, N+1, and Transactions</h2>
-            <p>JPA performance depends on fetch strategy, entity graphs, and transaction boundaries.</p>
-          </div>
-
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>One trip to the store</h3>
-              <p>If you keep going back for each item, shopping takes forever.</p>
-            </article>
-
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Restaurant orders</h3>
-              <p>It is faster to bring all dishes in one trip instead of one plate at a time.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Lazy loading can trigger N+1 queries; use fetch joins or entity graphs when you know you need related data.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul><li>Avoids query explosions</li><li>Improves response time</li><li>Keeps ORM efficient</li></ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common pitfall</h4>
-                      <ul><li>N+1 in logs</li><li>Open Session in View everywhere</li><li>Big object graphs</li></ul>
-                    </div>
-                  </div>
-                  <div class="badge-row"><span class="pill good">Fetch join</span><span class="pill info">Entity graph</span><span class="pill caution">N+1</span></div>
-                  <div class="flow"><span class="flow-step">Query root</span><span class="flow-arrow">→</span><span class="flow-step">Access relation</span><span class="flow-arrow">→</span><span class="flow-step">Lazy fetch</span><span class="flow-arrow">→</span><span class="flow-step">N+1 risk</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“I detect N+1 via logs and fix it with fetch joins or entity graphs.”</p>
-                  <p class="deep-note">Transactions are enforced via proxies, so propagation and rollback rules only apply when calls cross the proxy boundary. Always call transactional methods through Spring-managed beans, and be explicit about checked-exception rollback behavior.</p>
-                  <table>
-                    <thead><tr><th>Strategy</th><th>Trade-off</th></tr></thead>
-                    <tbody><tr><td>Fetch join</td><td><span class="pill good">Single query</span></td></tr><tr><td>Entity graph</td><td><span class="pill info">Reusable plan</span></td></tr><tr><td>EAGER mapping</td><td><span class="pill bad">Unexpected loads</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              <div class="code-blocks">
-    <div>
-      <div class="code-title">Fetch join query</div>
-      <pre>@Query("select o from Order o join fetch o.items where o.id = :id")
-Optional&lt;Order&gt; findWithItems(Long id);</pre>
-    </div>
-    </div>
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>EAGER can explode data</h3>
-              <p>EAGER fetch loads even when you do not need the relationship.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways"><li>Measure queries in logs.</li><li>Prefer lazy + explicit fetch.</li><li>Control transactions around data access.</li></ul>
-            </article>
-
-            
-          
-            <article class="card technical">
-              <div class="card-label">Edge cases</div>
-              <h3>Edge Cases & Tradeoffs</h3>
-              <ul class="takeaways"><li>N+1 queries from lazy collections.</li><li>LazyInitializationException outside transactions.</li><li>Bidirectional mappings can cause recursion in JSON.</li><li>equals/hashCode using ID before persistence.</li><li>Cascades can delete more than intended.</li></ul>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Checklist</div>
-              <h3>Production Checklist</h3>
-              <ul class="takeaways"><li>Use fetch joins or entity graphs for reads.</li><li>Keep transactions around lazy access.</li><li>Map DTOs for API responses.</li><li>Define indexes for hot queries.</li><li>Use batch size for collections.</li></ul>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Interview</div>
-              <h3>Interview Hooks</h3>
-              <p>Focus on entity lifecycle and performance traps.</p>
-              <ul class="takeaways"><li>Entity states: transient, managed, detached.</li><li>Dirty checking and persistence context.</li><li>First vs second level cache.</li></ul>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Advanced Example</div>
-              <div class="code-blocks">
-        <div>
-          <div class="code-title">Fetch join to avoid N+1</div>
-          <pre>@Query("select o from Order o join fetch o.items where o.id = :id")
-Order loadWithItems(@Param("id") Long id);</pre>
-        </div>
-      </div>
-      <p>Fetch joins hydrate relationships in one query.</p>
-            </article><article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>What is the common fix for N+1?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. Enable EAGER everywhere</button><button class="quiz-option">B. Use fetch join/entity graph</button><button class="quiz-option">C. Disable transactions</button><button class="quiz-option">D. Use native queries only</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>Fetch joins and entity graphs load related data in fewer queries.</span>
-              </div>
-            </article></div>
-        </div>
-      </section>
-<section class="section" data-section="5">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Completion screen · Review mode</div>
-            <h2>🎉 JPA & Hibernate Cheat Sheet</h2>
-            <p>Use this to recall entity mapping, fetching, and performance tuning.</p>
-          </div>
-
-          <div class="completion-grid">
-            <div class="card technical">
-              <div class="card-label">Cheat sheet</div>
-              <div class="celebrate">🚀</div>
-              <h3>1-line interview answers</h3>
-              <div class="cheat-list">
-    <div class="cheat-item">
-      <h4>Relationships</h4>
-      <p>Define owning side with @JoinColumn.</p>
-    </div>
-    <div class="cheat-item">
-      <h4>Fetching</h4>
-      <p>Use fetch joins or entity graphs to avoid N+1.</p>
-    </div>
-    <div class="cheat-item">
-      <h4>Persistence context</h4>
-      <p>Entities are managed and auto-flushed.</p>
-    </div>
-    <div class="cheat-item">
-      <h4>Performance</h4>
-      <p>Batch, paginate, and project DTOs.</p>
-    </div></div>
-            </div>
-
-            <div class="card analogy">
-              <div class="card-label">What to remember</div>
-              <h3>Fast mental model</h3>
-              <ul class="takeaways">
-                <li><strong>Mapping:</strong> owning side controls FK.</li><li><strong>Fetching:</strong> lazy vs eager impacts queries.</li><li><strong>N+1:</strong> fix with fetch join/entity graph.</li><li><strong>Persistence context:</strong> dirty checking at commit.</li>
-              </ul>
-              <h3 style="margin-top:22px;">Common traps</h3>
-              <div class="badge-row">
-                <span class="pill bad">N+1 queries</span><span class="pill bad">Eager everything</span><span class="pill bad">Detached entity confusion</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    </main>
-
-    <footer class="footer-nav">
-      <div class="footer-nav-inner">
-        <button class="btn" id="prevBtn">← Back</button>
-        <button class="btn primary" id="nextBtn">Next →</button>
-      </div>
-    </footer>
-  </div>
-
-  <script>
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id")
+    private Order order;
+}</pre></div></div></article><article class="card technical"><div class="card-label">Mini takeaway</div><ul class="takeaways"><li>Entity Mapping &amp; Relationships exists to make a policy explicit</li><li>Defaults are useful, but interviews reward knowing the boundary and trade-off</li><li>If you see sloppy entity boundaries or relationships that do not match ownership clearly, revisit the design before adding more framework annotations</li></ul></article><article class="card quiz-card"><div class="card-label">Quiz</div><h3>What is one of the first design questions in JPA relationships?</h3><div class="quiz-options" data-answer="0"><button class="quiz-option">A. Which side owns the relationship and writes the foreign key</button><button class="quiz-option">B. Which controller returns the entity</button><button class="quiz-option">C. Whether to disable transactions</button><button class="quiz-option">D. Whether every association should be eager</button></div><div class="quiz-result"><strong>Correct answer: A</strong><span>A is correct because it matches how entity mapping &amp; relationships is intended to work in a production-grade Spring application. The wrong choices are plausible because they sound framework-ish, but they either ignore the real boundary, confuse this feature with another one, or assume a stronger guarantee than the mechanism actually provides. In an interview, tie your answer back to the concrete failure mode you are preventing.</span></div></article></div></div></section><section class="section" data-section="1">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Section 2 · Fetch strategy</div>
+<h2>Lazy vs Eager &amp; N+1</h2>
+<p>Lazy vs Eager &amp; N+1 is a high-value senior interview topic because it reveals whether you understand the underlying mechanism, the default behavior, and the trade-offs in production.</p>
+</div>
+<div class="card-grid">
+<article class="card eli5"><div class="card-label">🧒 ELI5</div><h3>A simple mental picture</h3><p>Imagine a busy workplace where one small rule determines whether the whole team moves smoothly or keeps stepping on each other. Fetch strategy controls when associations load, and the N+1 problem appears when one initial query triggers many follow-up queries unexpectedly. works like that kind of rule: it tells the system how to behave before small mistakes turn into bigger production problems.</p><p>It matters because poor fetch strategy silently destroys performance under real data size. Without that rule, engineers often discover the problem only after the app is under load, when the bug is expensive and confusing.</p><p>The useful mental shortcut is to ask: “What is the system trying to coordinate here, and what breaks when that coordination is missing?” That question usually reveals why this feature exists.</p></article><article class="card analogy"><div class="card-label">🔗 ANALOGY</div><h3>Why the rule exists</h3><p>Think of lazy vs eager &amp; n+1 as a piece of operating policy, not just a syntax feature. The policy exists to make decisions repeatable across the whole system instead of relying on every individual class to remember the rule.</p><p>If you ignore that policy, the most common smell is looping over entities and lazily triggering one query per row. In real applications, that smell usually shows up as flaky behavior, hidden coupling, or painful debugging.</p></article><article class="card technical"><div class="card-label">Technical</div><div class="two-col"><div><h3>How it works under the hood</h3><p><strong>Definition:</strong> Fetch strategy controls when associations load, and the N+1 problem appears when one initial query triggers many follow-up queries unexpectedly.</p><p class="deep-note">Fetch strategy controls when associations load, and the N+1 problem appears when one initial query triggers many follow-up queries unexpectedly. Under the hood, Spring or the underlying infrastructure usually applies the behavior around your code rather than by changing your business logic directly.</p><p class="deep-note">The production question is not “can I enable it?” but “where is the right boundary and what problem am I actually solving?”</p><p class="deep-note">Good engineering here comes from matching the mechanism to the use case, then watching the trade-off instead of blindly turning the feature on everywhere.</p><div class="mini-grid"><div class="mini-panel"><h4>Why it matters in production</h4><ul><li>poor fetch strategy silently destroys performance under real data size</li><li>Makes jpa &amp; hibernate behavior explicit</li><li>Gives you a clearer story in debugging and interviews</li></ul></div><div class="mini-panel"><h4>Common smell</h4><ul><li>looping over entities and lazily triggering one query per row</li><li>Using the mechanism as a band-aid for design issues</li><li>Forgetting what the default behavior actually is</li></ul></div></div><div class="badge-row"><span class="pill good">Explicit intent</span><span class="pill info">Know the default</span><span class="pill caution">Trade-offs matter</span></div><div class="flow"><span class="flow-step">Call enters boundary</span><span class="flow-arrow">→</span><span class="flow-step">Framework applies rule</span><span class="flow-arrow">→</span><span class="flow-step">Your code runs</span><span class="flow-arrow">→</span><span class="flow-step">Outcome follows configured behavior</span></div></div><div><h3>💬 Model Interview Answer</h3><p>“Lazy vs Eager &amp; N+1 in JPA &amp; Hibernate is really about fetch strategy controls when associations load, and the n+1 problem appears when one initial query triggers many follow-up queries unexpectedly. I explain it as a mechanism that enforces a policy around my code so the application behaves consistently. The important trade-off is looping over entities and lazily triggering one query per row, so I use it deliberately and I make the boundary clear instead of relying on accidental defaults.”</p><table><thead><tr><th>Scenario</th><th>What to watch</th></tr></thead><tbody><tr><td>LAZY</td><td>Loads when accessed</td></tr><tr><td>EAGER</td><td>Loads immediately</td></tr><tr><td>join fetch / entity graph</td><td>Targeted fix for read shape</td></tr></tbody></table></div></div><div class="code-blocks"><div><div class="code-title">❌ Wrong</div><pre>List&lt;Order&gt; orders = orderRepository.findAll();
+for (Order order : orders) {
+    System.out.println(order.getItems().size()); // N+1 risk
+}</pre></div><div><div class="code-title">✅ Right</div><pre>@Query("select o from Order o join fetch o.items where o.id = :id")
+Optional&lt;Order&gt; findWithItems(@Param("id") Long id);</pre></div></div><p>Use lazy vs eager &amp; n+1 where the rule belongs in architecture, not just where it happens to fix one failing test or one bug report.</p><p class="deep-note">The safest mental model is that Spring gives you a framework feature only when your call crosses the Spring-managed boundary and the surrounding infrastructure can participate.</p></article><article class="card warning"><div class="card-label">Warning</div><h3>Common misunderstanding</h3><p>The dangerous misunderstanding is treating lazy vs eager &amp; n+1 like a magic switch instead of a mechanism with boundaries and defaults. That is how teams end up with looping over entities and lazily triggering one query per row.</p><p>A safer pattern is to make the intent explicit, keep the scope narrow, and choose the smallest mechanism that actually solves the problem.</p><div class="code-blocks"><div><div class="code-title">Broken pattern</div><pre>List&lt;Order&gt; orders = orderRepository.findAll();
+for (Order order : orders) {
+    System.out.println(order.getItems().size()); // N+1 risk
+}</pre></div><div><div class="code-title">Safer pattern</div><pre>@Query("select o from Order o join fetch o.items where o.id = :id")
+Optional&lt;Order&gt; findWithItems(@Param("id") Long id);</pre></div></div></article><article class="card technical"><div class="card-label">Mini takeaway</div><ul class="takeaways"><li>Lazy vs Eager &amp; N+1 exists to make a policy explicit</li><li>Defaults are useful, but interviews reward knowing the boundary and trade-off</li><li>If you see looping over entities and lazily triggering one query per row, revisit the design before adding more framework annotations</li></ul></article><article class="card quiz-card"><div class="card-label">Quiz</div><h3>What is the N+1 problem?</h3><div class="quiz-options" data-answer="1"><button class="quiz-option">A. One insert causing many deletes</button><button class="quiz-option">B. One parent query followed by one extra query per row for children</button><button class="quiz-option">C. One cache hit causing many misses</button><button class="quiz-option">D. One bean creating many proxies</button></div><div class="quiz-result"><strong>Correct answer: B</strong><span>B is correct because it matches how lazy vs eager &amp; n+1 is intended to work in a production-grade Spring application. The wrong choices are plausible because they sound framework-ish, but they either ignore the real boundary, confuse this feature with another one, or assume a stronger guarantee than the mechanism actually provides. In an interview, tie your answer back to the concrete failure mode you are preventing.</span></div></article></div></div></section><section class="section" data-section="2">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Section 3 · Persistence model</div>
+<h2>Persistence Context &amp; Dirty Checking</h2>
+<p>Persistence Context &amp; Dirty Checking is a high-value senior interview topic because it reveals whether you understand the underlying mechanism, the default behavior, and the trade-offs in production.</p>
+</div>
+<div class="card-grid">
+<article class="card eli5"><div class="card-label">🧒 ELI5</div><h3>A simple mental picture</h3><p>Imagine a busy workplace where one small rule determines whether the whole team moves smoothly or keeps stepping on each other. The persistence context tracks managed entities, and dirty checking lets Hibernate detect changed fields and generate SQL automatically at flush time. works like that kind of rule: it tells the system how to behave before small mistakes turn into bigger production problems.</p><p>It matters because it explains why updates happen even when you never call save again on a managed entity. Without that rule, engineers often discover the problem only after the app is under load, when the bug is expensive and confusing.</p><p>The useful mental shortcut is to ask: “What is the system trying to coordinate here, and what breaks when that coordination is missing?” That question usually reveals why this feature exists.</p></article><article class="card analogy"><div class="card-label">🔗 ANALOGY</div><h3>Why the rule exists</h3><p>Think of persistence context &amp; dirty checking as a piece of operating policy, not just a syntax feature. The policy exists to make decisions repeatable across the whole system instead of relying on every individual class to remember the rule.</p><p>If you ignore that policy, the most common smell is not knowing whether an entity is managed, detached, or newly created. In real applications, that smell usually shows up as flaky behavior, hidden coupling, or painful debugging.</p></article><article class="card technical"><div class="card-label">Technical</div><div class="two-col"><div><h3>How it works under the hood</h3><p><strong>Definition:</strong> The persistence context tracks managed entities, and dirty checking lets Hibernate detect changed fields and generate SQL automatically at flush time.</p><p class="deep-note">The persistence context tracks managed entities, and dirty checking lets Hibernate detect changed fields and generate SQL automatically at flush time. Under the hood, Spring or the underlying infrastructure usually applies the behavior around your code rather than by changing your business logic directly.</p><p class="deep-note">The production question is not “can I enable it?” but “where is the right boundary and what problem am I actually solving?”</p><p class="deep-note">Good engineering here comes from matching the mechanism to the use case, then watching the trade-off instead of blindly turning the feature on everywhere.</p><div class="mini-grid"><div class="mini-panel"><h4>Why it matters in production</h4><ul><li>it explains why updates happen even when you never call save again on a managed entity</li><li>Makes jpa &amp; hibernate behavior explicit</li><li>Gives you a clearer story in debugging and interviews</li></ul></div><div class="mini-panel"><h4>Common smell</h4><ul><li>not knowing whether an entity is managed, detached, or newly created</li><li>Using the mechanism as a band-aid for design issues</li><li>Forgetting what the default behavior actually is</li></ul></div></div><div class="badge-row"><span class="pill good">Explicit intent</span><span class="pill info">Know the default</span><span class="pill caution">Trade-offs matter</span></div><div class="flow"><span class="flow-step">Call enters boundary</span><span class="flow-arrow">→</span><span class="flow-step">Framework applies rule</span><span class="flow-arrow">→</span><span class="flow-step">Your code runs</span><span class="flow-arrow">→</span><span class="flow-step">Outcome follows configured behavior</span></div></div><div><h3>💬 Model Interview Answer</h3><p>“Persistence Context &amp; Dirty Checking in JPA &amp; Hibernate is really about the persistence context tracks managed entities, and dirty checking lets hibernate detect changed fields and generate sql automatically at flush time. I explain it as a mechanism that enforces a policy around my code so the application behaves consistently. The important trade-off is not knowing whether an entity is managed, detached, or newly created, so I use it deliberately and I make the boundary clear instead of relying on accidental defaults.”</p><table><thead><tr><th>Scenario</th><th>What to watch</th></tr></thead><tbody><tr><td>Managed entity</td><td>Tracked by persistence context</td></tr><tr><td>Dirty checking</td><td>Flushes changed fields</td></tr><tr><td>Detached entity</td><td>Changes are not tracked automatically</td></tr></tbody></table></div></div><div class="code-blocks"><div><div class="code-title">❌ Wrong</div><pre>@Transactional
+public void renameUser(Long id, String newName) {
+    User user = userRepository.findById(id).orElseThrow();
+    user.setName(newName);
+    // developer expects nothing to happen because there is no save()
+}</pre></div><div><div class="code-title">✅ Right</div><pre>@Transactional
+public void renameUser(Long id, String newName) {
+    User user = userRepository.findById(id).orElseThrow();
+    user.setName(newName); // dirty checking will flush UPDATE on commit
+}</pre></div></div><p>Use persistence context &amp; dirty checking where the rule belongs in architecture, not just where it happens to fix one failing test or one bug report.</p><p class="deep-note">The safest mental model is that Spring gives you a framework feature only when your call crosses the Spring-managed boundary and the surrounding infrastructure can participate.</p></article><article class="card warning"><div class="card-label">Warning</div><h3>Common misunderstanding</h3><p>The dangerous misunderstanding is treating persistence context &amp; dirty checking like a magic switch instead of a mechanism with boundaries and defaults. That is how teams end up with not knowing whether an entity is managed, detached, or newly created.</p><p>A safer pattern is to make the intent explicit, keep the scope narrow, and choose the smallest mechanism that actually solves the problem.</p><div class="code-blocks"><div><div class="code-title">Broken pattern</div><pre>@Transactional
+public void renameUser(Long id, String newName) {
+    User user = userRepository.findById(id).orElseThrow();
+    user.setName(newName);
+    // developer expects nothing to happen because there is no save()
+}</pre></div><div><div class="code-title">Safer pattern</div><pre>@Transactional
+public void renameUser(Long id, String newName) {
+    User user = userRepository.findById(id).orElseThrow();
+    user.setName(newName); // dirty checking will flush UPDATE on commit
+}</pre></div></div></article><article class="card technical"><div class="card-label">Mini takeaway</div><ul class="takeaways"><li>Persistence Context &amp; Dirty Checking exists to make a policy explicit</li><li>Defaults are useful, but interviews reward knowing the boundary and trade-off</li><li>If you see not knowing whether an entity is managed, detached, or newly created, revisit the design before adding more framework annotations</li></ul></article><article class="card quiz-card"><div class="card-label">Quiz</div><h3>Why can Hibernate issue an UPDATE even if you did not call save() again inside a transaction?</h3><div class="quiz-options" data-answer="0"><button class="quiz-option">A. Because dirty checking tracks changes on managed entities</button><button class="quiz-option">B. Because every getter writes to the DB</button><button class="quiz-option">C. Because LAZY fetch forces updates</button><button class="quiz-option">D. Because @Entity makes every field static</button></div><div class="quiz-result"><strong>Correct answer: A</strong><span>A is correct because it matches how persistence context &amp; dirty checking is intended to work in a production-grade Spring application. The wrong choices are plausible because they sound framework-ish, but they either ignore the real boundary, confuse this feature with another one, or assume a stronger guarantee than the mechanism actually provides. In an interview, tie your answer back to the concrete failure mode you are preventing.</span></div></article></div></div></section><section class="section" data-section="3">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Section 4 · Performance mindset</div>
+<h2>Performance Tuning</h2>
+<p>Performance Tuning is a high-value senior interview topic because it reveals whether you understand the underlying mechanism, the default behavior, and the trade-offs in production.</p>
+</div>
+<div class="card-grid">
+<article class="card eli5"><div class="card-label">🧒 ELI5</div><h3>A simple mental picture</h3><p>Imagine a busy workplace where one small rule determines whether the whole team moves smoothly or keeps stepping on each other. Good JPA performance comes from controlling query shape, fetch size, batching, and projection strategy instead of assuming the ORM will always do the optimal thing. works like that kind of rule: it tells the system how to behave before small mistakes turn into bigger production problems.</p><p>It matters because orm abstractions are productive but they do not remove database cost. Without that rule, engineers often discover the problem only after the app is under load, when the bug is expensive and confusing.</p><p>The useful mental shortcut is to ask: “What is the system trying to coordinate here, and what breaks when that coordination is missing?” That question usually reveals why this feature exists.</p></article><article class="card analogy"><div class="card-label">🔗 ANALOGY</div><h3>Why the rule exists</h3><p>Think of performance tuning as a piece of operating policy, not just a syntax feature. The policy exists to make decisions repeatable across the whole system instead of relying on every individual class to remember the rule.</p><p>If you ignore that policy, the most common smell is treating entity loading as free regardless of row count and graph size. In real applications, that smell usually shows up as flaky behavior, hidden coupling, or painful debugging.</p></article><article class="card technical"><div class="card-label">Technical</div><div class="two-col"><div><h3>How it works under the hood</h3><p><strong>Definition:</strong> Good JPA performance comes from controlling query shape, fetch size, batching, and projection strategy instead of assuming the ORM will always do the optimal thing.</p><p class="deep-note">Good JPA performance comes from controlling query shape, fetch size, batching, and projection strategy instead of assuming the ORM will always do the optimal thing. Under the hood, Spring or the underlying infrastructure usually applies the behavior around your code rather than by changing your business logic directly.</p><p class="deep-note">The production question is not “can I enable it?” but “where is the right boundary and what problem am I actually solving?”</p><p class="deep-note">Good engineering here comes from matching the mechanism to the use case, then watching the trade-off instead of blindly turning the feature on everywhere.</p><div class="mini-grid"><div class="mini-panel"><h4>Why it matters in production</h4><ul><li>ORM abstractions are productive but they do not remove database cost</li><li>Makes jpa &amp; hibernate behavior explicit</li><li>Gives you a clearer story in debugging and interviews</li></ul></div><div class="mini-panel"><h4>Common smell</h4><ul><li>treating entity loading as free regardless of row count and graph size</li><li>Using the mechanism as a band-aid for design issues</li><li>Forgetting what the default behavior actually is</li></ul></div></div><div class="badge-row"><span class="pill good">Explicit intent</span><span class="pill info">Know the default</span><span class="pill caution">Trade-offs matter</span></div><div class="flow"><span class="flow-step">Call enters boundary</span><span class="flow-arrow">→</span><span class="flow-step">Framework applies rule</span><span class="flow-arrow">→</span><span class="flow-step">Your code runs</span><span class="flow-arrow">→</span><span class="flow-step">Outcome follows configured behavior</span></div></div><div><h3>💬 Model Interview Answer</h3><p>“Performance Tuning in JPA &amp; Hibernate is really about good jpa performance comes from controlling query shape, fetch size, batching, and projection strategy instead of assuming the orm will always do the optimal thing. I explain it as a mechanism that enforces a policy around my code so the application behaves consistently. The important trade-off is treating entity loading as free regardless of row count and graph size, so I use it deliberately and I make the boundary clear instead of relying on accidental defaults.”</p><table><thead><tr><th>Scenario</th><th>What to watch</th></tr></thead><tbody><tr><td>Entity graph</td><td>Good for mutation workflows</td></tr><tr><td>Projection/DTO</td><td>Good for read models</td></tr><tr><td>Batching</td><td>Important for bulk insert/update patterns</td></tr></tbody></table></div></div><div class="code-blocks"><div><div class="code-title">❌ Wrong</div><pre>List&lt;User&gt; users = userRepository.findAll();</pre></div><div><div class="code-title">✅ Right</div><pre>@Query("select new com.example.UserSummary(u.id, u.name) from User u")
+List&lt;UserSummary&gt; findAllSummaries();</pre></div></div><p>Use performance tuning where the rule belongs in architecture, not just where it happens to fix one failing test or one bug report.</p><p class="deep-note">The safest mental model is that Spring gives you a framework feature only when your call crosses the Spring-managed boundary and the surrounding infrastructure can participate.</p></article><article class="card warning"><div class="card-label">Warning</div><h3>Common misunderstanding</h3><p>The dangerous misunderstanding is treating performance tuning like a magic switch instead of a mechanism with boundaries and defaults. That is how teams end up with treating entity loading as free regardless of row count and graph size.</p><p>A safer pattern is to make the intent explicit, keep the scope narrow, and choose the smallest mechanism that actually solves the problem.</p><div class="code-blocks"><div><div class="code-title">Broken pattern</div><pre>List&lt;User&gt; users = userRepository.findAll();</pre></div><div><div class="code-title">Safer pattern</div><pre>@Query("select new com.example.UserSummary(u.id, u.name) from User u")
+List&lt;UserSummary&gt; findAllSummaries();</pre></div></div></article><article class="card technical"><div class="card-label">Mini takeaway</div><ul class="takeaways"><li>Performance Tuning exists to make a policy explicit</li><li>Defaults are useful, but interviews reward knowing the boundary and trade-off</li><li>If you see treating entity loading as free regardless of row count and graph size, revisit the design before adding more framework annotations</li></ul></article><article class="card quiz-card"><div class="card-label">Quiz</div><h3>Which move is often best when you only need a small read model, not a full entity graph?</h3><div class="quiz-options" data-answer="0"><button class="quiz-option">A. Use a projection or DTO query</button><button class="quiz-option">B. Force every association eager</button><button class="quiz-option">C. Disable indexes</button><button class="quiz-option">D. Mark the repository method @Primary</button></div><div class="quiz-result"><strong>Correct answer: A</strong><span>A is correct because it matches how performance tuning is intended to work in a production-grade Spring application. The wrong choices are plausible because they sound framework-ish, but they either ignore the real boundary, confuse this feature with another one, or assume a stronger guarantee than the mechanism actually provides. In an interview, tie your answer back to the concrete failure mode you are preventing.</span></div></article></div></div></section><section class="section" data-section="4">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Section 5 · Interview deep dive</div>
+<h2>Deep Dive: Fetch Plans, N+1, and Transactions</h2>
+<p>This deep dive connects the mechanics of jpa &amp; hibernate with the production decisions senior engineers are expected to explain clearly.</p>
+</div>
+<div class="card-grid">
+<article class="card eli5"><div class="card-label">🧒 ELI5</div><h3>A bigger real-world picture</h3><p>In a larger system, the hard part is not knowing the vocabulary. The hard part is deciding which rule belongs where so the whole operation still makes sense when something unexpected happens.</p><p>That is why matching fetch plan to use case and understanding that transaction boundaries affect what can still be loaded lazily. The mechanism has to support the story your system tells under stress, not just the happy path.</p><p>This is where interviewers are listening for judgment: not just what the feature does, but how you would keep the design honest when multiple moving parts are involved.</p></article><article class="card analogy"><div class="card-label">🔗 ANALOGY</div><h3>Why senior engineers care</h3><p>matching fetch plan to use case and understanding that transaction boundaries affect what can still be loaded lazily usually sits at the intersection of framework behavior, business requirements, and operational trade-offs.</p><p>When teams get this wrong, the system may still compile and even pass local tests, but production behavior becomes surprising.</p></article><article class="card technical"><div class="card-label">Technical</div><div class="two-col"><div><h3>What to optimize for</h3><p><strong>Definition:</strong> matching fetch plan to use case and understanding that transaction boundaries affect what can still be loaded lazily</p><p class="deep-note">Senior-level answers usually mention boundaries, defaults, observability, and trade-offs in the same breath.</p><p class="deep-note">The safest pattern is usually to keep the mechanism narrow, explicit, and easy to reason about.</p><p class="deep-note">If a framework feature starts compensating for unclear ownership, unclear state, or unclear flow, the real problem is probably design, not syntax.</p><div class="mini-grid"><div class="mini-panel"><h4>What senior engineers optimize for</h4><ul><li>Optimize for clarity of boundary</li><li>Prefer explicit over accidental behavior</li><li>Choose the smallest mechanism that solves the real problem</li></ul></div><div class="mini-panel"><h4>Trade-offs</h4><ul><li>Magic defaults can hide surprises</li><li>Cross-cutting features can mask weak design</li><li>More power usually means more room for misuse</li></ul></div></div><div class="badge-row"><span class="pill good">Clear boundary</span><span class="pill info">Explain the why</span><span class="pill bad">Framework cargo-culting</span></div><div class="flow"><span class="flow-step">Requirement appears</span><span class="flow-arrow">→</span><span class="flow-step">Choose boundary</span><span class="flow-arrow">→</span><span class="flow-step">Apply mechanism</span><span class="flow-arrow">→</span><span class="flow-step">Observe real outcome</span></div></div><div><h3>💬 Model Interview Answer</h3><p>“When I talk about jpa &amp; hibernate at a senior level, I focus on the boundary, the default behavior, and the production trade-off. I want the design to make the intent obvious even to the next engineer reading the code. The smell I watch for is using framework features to hide a design problem instead of clarifying one.”</p><table><thead><tr><th>Decision point</th><th>Senior answer</th></tr></thead><tbody><tr><td>Boundary</td><td>State it explicitly</td></tr><tr><td>Default behavior</td><td>Know it by memory</td></tr><tr><td>Trade-off</td><td>Say what you pay for the guarantee</td></tr></tbody></table></div></div><div class="code-blocks"><div><div class="code-title">❌ Wrong: implicit or leaky design</div><pre>@Transactional(readOnly = true)
+public List&lt;Order&gt; findOrders() {
+    return orderRepository.findAll();
+}
+// later outside transaction:
+orders.get(0).getItems().size(); // LazyInitializationException risk</pre></div><div><div class="code-title">✅ Right: explicit design</div><pre>@EntityGraph(attributePaths = {"items"})
+@Query("select o from Order o")
+List&lt;Order&gt; findAllWithItems();</pre></div></div></article><article class="card warning"><div class="card-label">Warning</div><h3>The biggest trap</h3><p>The hardest bugs here come from systems that “mostly work” until traffic, retries, concurrency, or environment differences expose the hidden assumption.</p><p>A good fix usually makes the intent more explicit instead of adding one more annotation and hoping the framework figures it out.</p><div class="code-blocks"><div><div class="code-title">Broken pattern</div><pre>@Transactional(readOnly = true)
+public List&lt;Order&gt; findOrders() {
+    return orderRepository.findAll();
+}
+// later outside transaction:
+orders.get(0).getItems().size(); // LazyInitializationException risk</pre></div><div><div class="code-title">Safer pattern</div><pre>@EntityGraph(attributePaths = {"items"})
+@Query("select o from Order o")
+List&lt;Order&gt; findAllWithItems();</pre></div></div></article><article class="card technical"><div class="card-label">Edge cases</div><h3>Edge Cases &amp; Tradeoffs</h3><ul class="takeaways"><li>Defaults can differ across libraries or underlying infrastructure.</li><li>A passing unit test does not prove the boundary is correct in production.</li><li>Observability is often what reveals misuse first.</li><li>Keep side effects and lifetime of state in view when designing the boundary.</li><li>Explain what would happen under failure, not just success.</li></ul></article><article class="card technical"><div class="card-label">Checklist</div><h3>Production Checklist</h3><ul class="takeaways"><li>Name the real invariant or guarantee you care about</li><li>Choose the narrowest boundary that enforces it</li><li>Know the default behavior and the override you would use</li><li>Keep the design easy to test and easy to observe</li><li>Call out one concrete gotcha in interviews</li></ul></article><article class="card technical"><div class="card-label">Interview</div><h3>Interview Hooks</h3><ul class="takeaways"><li>What is the default behavior?</li><li>What is the most common production mistake?</li><li>What trade-off are you accepting for the guarantee?</li></ul></article><article class="card technical"><div class="card-label">Advanced Example</div><h3>Advanced example</h3><div class="code-blocks"><div><div class="code-title">Advanced example</div><pre>@BatchSize(size = 50)
+@ManyToOne(fetch = FetchType.LAZY)
+private Product product;</pre></div></div></article><article class="card quiz-card"><div class="card-label">Quiz</div><h3>What is a healthier fix for a lazy-loading issue than flipping everything to EAGER?</h3><div class="quiz-options" data-answer="0"><button class="quiz-option">A. Use a query or entity graph that matches the specific read shape</button><button class="quiz-option">B. Disable transactions</button><button class="quiz-option">C. Return entities directly from every API forever</button><button class="quiz-option">D. Put every association in the same table</button></div><div class="quiz-result"><strong>Correct answer: A</strong><span>A is correct because it reflects the mature design choice for this kind of boundary. The distractors all represent common mistakes: pushing responsibility to the wrong layer, assuming defaults are stronger than they are, or using a framework feature as a substitute for clear design. In an interview, explain not only which answer is right, but what failure mode the wrong answers would create.</span></div></article></div></div></section><section class="section" data-section="5">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Completion screen · Review mode</div>
+<h2>🎉 JPA &amp; Hibernate Cheat Sheet</h2>
+<p>Use this cheat sheet to recall the core mental model for jpa &amp; hibernate and the most common traps.</p>
+</div>
+<div class="completion-grid">
+<div class="card technical">
+<div class="card-label">Cheat sheet</div>
+<div class="celebrate">🚀</div>
+<h3>1-line interview answers</h3>
+<div class="cheat-list"><div class="cheat-item"><h4>Mapping</h4><p>Know owning side, cascade, and orphan rules.</p></div><div class="cheat-item"><h4>Fetch</h4><p>Lazy is common, but query shape must match the use case.</p></div><div class="cheat-item"><h4>Dirty checking</h4><p>Managed entities flush updates on commit.</p></div><div class="cheat-item"><h4>Performance</h4><p>Use DTOs, entity graphs, and batching intentionally.</p></div></div>
+</div>
+<div class="card analogy">
+<div class="card-label">What to remember</div>
+<h3>Fast mental model</h3>
+<ul class="takeaways"><li><strong>Mapping:</strong> Know owning side, cascade, and orphan rules.</li><li><strong>Fetch:</strong> Lazy is common, but query shape must match the use case.</li><li><strong>Dirty checking:</strong> Managed entities flush updates on commit.</li><li><strong>Performance:</strong> Use DTOs, entity graphs, and batching intentionally.</li></ul>
+<h3 style="margin-top:22px;">Common traps</h3>
+<div class="badge-row"><span class="pill bad">EAGER everywhere</span><span class="pill bad">N+1 loops</span><span class="pill bad">Ignoring persistence-context state</span></div>
+</div>
+</div>
+</div>
+</section><footer class="footer-nav">
+<div class="footer-nav-inner">
+<button class="btn" id="prevBtn">← Back</button>
+<button class="btn primary" id="nextBtn">Next →</button>
+</div>
+</footer>
+</div>
+<script>
 const sections = Array.from(document.querySelectorAll('.section'));
     const dots = Array.from(document.querySelectorAll('.nav-dot'));
     const prevBtn = document.getElementById('prevBtn');

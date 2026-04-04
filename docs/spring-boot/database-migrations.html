@@ -1,13 +1,14 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Database Migrations Learning Module</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Database Migrations Learning Module</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&amp;family=Syne:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<style>
 :root {
       --bg: #0a0e1a;
       --surface-1: #111827;
@@ -728,618 +729,177 @@
   </style>
 </head>
 <body>
-  <div class="app">
-    <header class="topbar">
-      <div class="topbar-inner">
-        <div class="topbar-row">
-          <div class="brand">
-            <h1>Database Migrations</h1>
-            <small>Interactive 35-minute learning module</small>
-          </div>
-                <div class="topbar-row">
-          <div class="breadcrumb">
-            <a href="../index.html">Home</a>
-            <span>›</span>
-            <a href="index.html">Spring Boot</a>
-            <span>›</span>
-            <span>Database Migrations</span>
-          </div>
-        </div>
-          <div class="timer-wrap" aria-live="polite">
-            <span class="timer-label">Time Left</span>
-            <span class="timer" id="timer">35:00</span>
-          </div>
-        </div>
-        <div class="topbar-row">
-                    <nav class="nav-dots" aria-label="Section navigation"><button class="nav-dot active" data-index="0" aria-label="Go to section 1">1</button><button class="nav-dot" data-index="1" aria-label="Go to section 2">2</button><button class="nav-dot" data-index="2" aria-label="Go to section 3">3</button><button class="nav-dot" data-index="3" aria-label="Go to section 4">4</button><button class="nav-dot" data-index="4" aria-label="Go to section 5">5</button><button class="nav-dot" data-index="5" aria-label="Go to completion screen">6</button></nav>
-        </div>
-        <div class="progress-shell" aria-hidden="true">
-          <div class="progress-bar" id="progressBar"></div>
-        </div>
-      </div>
-    </header>
+<div class="app">
+<header class="topbar">
+<div class="topbar-inner">
+<div class="topbar-row">
+<div class="brand">
+<h1>Database Migrations</h1>
+<small>Interactive 35-minute learning module</small>
+</div>
+<div class="topbar-row">
+<div class="breadcrumb">
+<a href="../index.html">Home</a>
+<span>›</span>
+<a href="index.html">Spring Boot</a>
+<span>›</span>
+<span>Database Migrations</span>
+</div>
+</div>
+<div aria-live="polite" class="timer-wrap">
+<span class="timer-label">Time Left</span>
+<span class="timer" id="timer">35:00</span>
+</div>
+</div>
+<div class="topbar-row">
+<nav aria-label="Section navigation" class="nav-dots"><button aria-label="Go to section 1" class="nav-dot active" data-index="0">1</button><button aria-label="Go to section 2" class="nav-dot" data-index="1">2</button><button aria-label="Go to section 3" class="nav-dot" data-index="2">3</button><button aria-label="Go to section 4" class="nav-dot" data-index="3">4</button><button aria-label="Go to section 5" class="nav-dot" data-index="4">5</button><button aria-label="Go to completion screen" class="nav-dot" data-index="5">6</button></nav>
+</div>
+<div aria-hidden="true" class="progress-shell">
+<div class="progress-bar" id="progressBar"></div>
+</div>
+</div>
+</header>
+<main>
 
-    <main>
-      
-      <section class="section active" data-section="0">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 1 of 5 · ~7 mins</div>
-            <h2>Why Migrations Exist</h2>
-            <p>Migrations keep schema changes consistent across environments and teams.</p>
-            <a class="back-link" href="index.html">← Back to Spring Boot</a>
-          </div>
 
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Recipe history</h3>
-              <p>You keep a record of every recipe change so everyone cooks the same dish.</p>
-            </article>
 
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Blueprint revisions</h3>
-              <p>Every building change is recorded so crews stay in sync.</p>
-            </article>
 
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Migrations are ordered, versioned schema changes applied automatically at startup or deploy time.</p>
-                  <p class="deep-note">Migrations give you a versioned history of schema changes so every environment is predictable.</p>
-                  <p class="deep-note">They also provide a reviewable audit trail of how the database evolved over time.</p>
-                  <p class="deep-note">For beginners, think of migrations as source control for your database schema.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul>
-                        <li>Consistent schema</li><li>Repeatable deployments</li><li>Auditable history</li>
-                      </ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common pitfall</h4>
-                      <ul>
-                        <li>Manual SQL in prod</li><li>Missing history</li><li>Environment drift</li>
-                      </ul>
-                    </div>
-                  </div>
-                  <div class="badge-row"><span class="pill good">Versioned</span><span class="pill info">Repeatable</span><span class="pill caution">Auditable</span></div>
-                  
-                  <div class="flow"><span class="flow-step">Detect version</span><span class="flow-arrow">→</span><span class="flow-step">Apply migrations</span><span class="flow-arrow">→</span><span class="flow-step">Update history</span><span class="flow-arrow">→</span><span class="flow-step">App starts</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“Migrations keep schema changes consistent and auditable across environments.”</p>
-                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
-                  
-                  <table>
-                    <thead><tr><th>Benefit</th><th>Why it matters</th></tr></thead>
-                    <tbody><tr><td>Consistency</td><td><span class="pill good">Same schema everywhere</span></td></tr><tr><td>Audit trail</td><td><span class="pill info">Track changes</span></td></tr><tr><td>Rollback</td><td><span class="pill caution">Safer deploys</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              
-    <div class="code-blocks">
-    <div>
-      <div class="code-title">Flyway baseline config</div>
-      <pre>spring:
-  flyway:
-    baseline-on-migrate: true</pre>
-    </div>
-    </div>
-              
-            </article>
 
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Manual prod changes drift</h3>
-              <p>Manual SQL changes create inconsistencies that are hard to reproduce.</p>
-            </article>
 
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>Migrations give repeatable schema changes.</li><li>Avoid manual prod SQL.</li><li>Keep history in the DB.</li>
-              </ul>
-            </article>
-
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>What is the key purpose of migrations?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. Faster queries</button><button class="quiz-option">B. Consistent schema changes</button><button class="quiz-option">C. Cache invalidation</button><button class="quiz-option">D. API versioning</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>Migrations provide consistent, ordered schema changes.</span>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section class="section" data-section="1">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 2 of 5 · ~7 mins</div>
-            <h2>Flyway Basics</h2>
-            <p>Flyway runs SQL migrations in version order and tracks them in a schema history table.</p>
-            
-          </div>
-
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Numbered steps</h3>
-              <p>You follow steps 1, 2, 3 so the project is built in the right order.</p>
-            </article>
-
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Staircase</h3>
-              <p>You climb one step at a time; skipping steps makes you fall.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Flyway uses versioned files like V1__init.sql and records checksums in flyway_schema_history.</p>
-                  <p class="deep-note">Flyway uses versioned SQL scripts with naming conventions and records applied versions and checksums.</p>
-                  <p class="deep-note">Because checksums are enforced, you must never edit applied scripts in production.</p>
-                  <p class="deep-note">If you need a change, add a new migration instead of rewriting history.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul>
-                        <li>Simple SQL</li><li>Automatic tracking</li><li>Fast startup</li>
-                      </ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common pitfall</h4>
-                      <ul>
-                        <li>Renaming applied files</li><li>Editing old migrations</li><li>No baseline</li>
-                      </ul>
-                    </div>
-                  </div>
-                  <div class="badge-row"><span class="pill good">V1__</span><span class="pill info">Checksum</span><span class="pill caution">History table</span></div>
-                  
-                  <div class="flow"><span class="flow-step">Find migrations</span><span class="flow-arrow">→</span><span class="flow-step">Sort by version</span><span class="flow-arrow">→</span><span class="flow-step">Apply pending</span><span class="flow-arrow">→</span><span class="flow-step">Record checksum</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“Flyway runs ordered SQL scripts and tracks them with checksums in its schema history table.”</p>
-                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
-                  
-                  <table>
-                    <thead><tr><th>File</th><th>Meaning</th></tr></thead>
-                    <tbody><tr><td>V1__init.sql</td><td><span class="pill good">Versioned</span></td></tr><tr><td>R__seed.sql</td><td><span class="pill info">Repeatable</span></td></tr><tr><td>schema_history</td><td><span class="pill caution">Audit log</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              
-    <div class="code-blocks">
-    <div>
-      <div class="code-title">Flyway migration file name</div>
-      <pre>V3__add_order_status.sql</pre>
-    </div>
-    </div>
-              
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Never edit applied migrations</h3>
-              <p>Changing old migrations breaks checksums and risks production drift.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>Use versioned SQL files.</li><li>Do not change applied migrations.</li><li>Let Flyway track history.</li>
-              </ul>
-            </article>
-
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>Where does Flyway record applied migrations?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. application.yml</button><button class="quiz-option">B. flyway_schema_history</button><button class="quiz-option">C. log files</button><button class="quiz-option">D. build.gradle</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>Flyway stores migration metadata in the flyway_schema_history table.</span>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section class="section" data-section="2">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 3 of 5 · ~7 mins</div>
-            <h2>Liquibase Basics</h2>
-            <p>Liquibase uses changelogs with change sets that can be rolled back and audited.</p>
-            
-          </div>
-
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Change log book</h3>
-              <p>You write every change in a notebook so you can undo or reapply it.</p>
-            </article>
-
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Cookbook revisions</h3>
-              <p>Each change to the recipe is recorded with a note so you can revert.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Liquibase uses XML/YAML/JSON changelogs with changesets, checksums, and optional rollback rules.</p>
-                  <p class="deep-note">Liquibase uses changelogs with IDs and authors, allowing rollback definitions and structured changes.</p>
-                  <p class="deep-note">It is more verbose than Flyway but useful for teams that need explicit rollback support.</p>
-                  <p class="deep-note">A good beginner use case is when compliance requires clear rollback plans for each change.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul>
-                        <li>Structured changes</li><li>Rollback support</li><li>Supports multiple DBs</li>
-                      </ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common pitfall</h4>
-                      <ul>
-                        <li>Editing applied changesets</li><li>No rollback plan</li><li>One massive changeset</li>
-                      </ul>
-                    </div>
-                  </div>
-                  <div class="badge-row"><span class="pill good">ChangeSet</span><span class="pill info">Rollback</span><span class="pill caution">Changelog</span></div>
-                  
-                  <div class="flow"><span class="flow-step">Load changelog</span><span class="flow-arrow">→</span><span class="flow-step">Apply changesets</span><span class="flow-arrow">→</span><span class="flow-step">Record checksums</span><span class="flow-arrow">→</span><span class="flow-step">Support rollback</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“Liquibase uses changelogs with change sets, and supports rollback for safer migrations.”</p>
-                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
-                  
-                  <table>
-                    <thead><tr><th>Feature</th><th>Benefit</th></tr></thead>
-                    <tbody><tr><td>Rollback</td><td><span class="pill good">Safe undo</span></td></tr><tr><td>Checksums</td><td><span class="pill info">Detect drift</span></td></tr><tr><td>DB support</td><td><span class="pill caution">Multiple vendors</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              
-    <div class="code-blocks">
-    <div>
-      <div class="code-title">Liquibase changelog snippet</div>
-      <pre>databaseChangeLog:
+</main>
+<section class="section" data-section="0">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Section 1 · Core concept</div>
+<h2>Why Migrations Exist</h2>
+<p>Why Migrations Exist is a high-value senior interview topic because it reveals whether you understand the underlying mechanism, the default behavior, and the trade-offs in production.</p>
+</div>
+<div class="card-grid">
+<article class="card eli5"><div class="card-label">🧒 ELI5</div><h3>A simple mental picture</h3><p>Imagine a busy workplace where one small rule determines whether the whole team moves smoothly or keeps stepping on each other. Database migrations make schema change an explicit, versioned part of delivery instead of a tribal manual step. works like that kind of rule: it tells the system how to behave before small mistakes turn into bigger production problems.</p><p>It matters because it keeps environments consistent and lets schema evolution travel safely with code. Without that rule, engineers often discover the problem only after the app is under load, when the bug is expensive and confusing.</p><p>The useful mental shortcut is to ask: “What is the system trying to coordinate here, and what breaks when that coordination is missing?” That question usually reveals why this feature exists.</p></article><article class="card analogy"><div class="card-label">🔗 ANALOGY</div><h3>Why the rule exists</h3><p>Think of why migrations exist as a piece of operating policy, not just a syntax feature. The policy exists to make decisions repeatable across the whole system instead of relying on every individual class to remember the rule.</p><p>If you ignore that policy, the most common smell is hand-editing production databases or sharing undocumented sql in chat. In real applications, that smell usually shows up as flaky behavior, hidden coupling, or painful debugging.</p></article><article class="card technical"><div class="card-label">Technical</div><div class="two-col"><div><h3>How it works under the hood</h3><p><strong>Definition:</strong> Database migrations make schema change an explicit, versioned part of delivery instead of a tribal manual step.</p><p class="deep-note">Database migrations make schema change an explicit, versioned part of delivery instead of a tribal manual step. Under the hood, Spring or the underlying infrastructure usually applies the behavior around your code rather than by changing your business logic directly.</p><p class="deep-note">The production question is not “can I enable it?” but “where is the right boundary and what problem am I actually solving?”</p><p class="deep-note">Good engineering here comes from matching the mechanism to the use case, then watching the trade-off instead of blindly turning the feature on everywhere.</p><div class="mini-grid"><div class="mini-panel"><h4>Why it matters in production</h4><ul><li>it keeps environments consistent and lets schema evolution travel safely with code</li><li>Makes database migrations behavior explicit</li><li>Gives you a clearer story in debugging and interviews</li></ul></div><div class="mini-panel"><h4>Common smell</h4><ul><li>hand-editing production databases or sharing undocumented SQL in chat</li><li>Using the mechanism as a band-aid for design issues</li><li>Forgetting what the default behavior actually is</li></ul></div></div><div class="badge-row"><span class="pill good">Explicit intent</span><span class="pill info">Know the default</span><span class="pill caution">Trade-offs matter</span></div><div class="flow"><span class="flow-step">Call enters boundary</span><span class="flow-arrow">→</span><span class="flow-step">Framework applies rule</span><span class="flow-arrow">→</span><span class="flow-step">Your code runs</span><span class="flow-arrow">→</span><span class="flow-step">Outcome follows configured behavior</span></div></div><div><h3>💬 Model Interview Answer</h3><p>“Why Migrations Exist in Database Migrations is really about database migrations make schema change an explicit, versioned part of delivery instead of a tribal manual step. I explain it as a mechanism that enforces a policy around my code so the application behaves consistently. The important trade-off is hand-editing production databases or sharing undocumented sql in chat, so I use it deliberately and I make the boundary clear instead of relying on accidental defaults.”</p><table><thead><tr><th>Scenario</th><th>What to watch</th></tr></thead><tbody><tr><td>Manual SQL</td><td>Error-prone and inconsistent</td></tr><tr><td>Versioned migration</td><td>Repeatable, reviewable change</td></tr><tr><td>Code + schema</td><td>Delivered together</td></tr></tbody></table></div></div><div class="code-blocks"><div><div class="code-title">❌ Wrong</div><pre>-- "Run this manually in prod"
+ALTER TABLE orders ADD COLUMN status VARCHAR(30);</pre></div><div><div class="code-title">✅ Right</div><pre>-- V3__add_order_status.sql
+ALTER TABLE orders ADD COLUMN status VARCHAR(30) NOT NULL DEFAULT 'PENDING';</pre></div></div><p>Use why migrations exist where the rule belongs in architecture, not just where it happens to fix one failing test or one bug report.</p><p class="deep-note">The safest mental model is that Spring gives you a framework feature only when your call crosses the Spring-managed boundary and the surrounding infrastructure can participate.</p></article><article class="card warning"><div class="card-label">Warning</div><h3>Common misunderstanding</h3><p>The dangerous misunderstanding is treating why migrations exist like a magic switch instead of a mechanism with boundaries and defaults. That is how teams end up with hand-editing production databases or sharing undocumented sql in chat.</p><p>A safer pattern is to make the intent explicit, keep the scope narrow, and choose the smallest mechanism that actually solves the problem.</p><div class="code-blocks"><div><div class="code-title">Broken pattern</div><pre>-- "Run this manually in prod"
+ALTER TABLE orders ADD COLUMN status VARCHAR(30);</pre></div><div><div class="code-title">Safer pattern</div><pre>-- V3__add_order_status.sql
+ALTER TABLE orders ADD COLUMN status VARCHAR(30) NOT NULL DEFAULT 'PENDING';</pre></div></div></article><article class="card technical"><div class="card-label">Mini takeaway</div><ul class="takeaways"><li>Why Migrations Exist exists to make a policy explicit</li><li>Defaults are useful, but interviews reward knowing the boundary and trade-off</li><li>If you see hand-editing production databases or sharing undocumented sql in chat, revisit the design before adding more framework annotations</li></ul></article><article class="card quiz-card"><div class="card-label">Quiz</div><h3>Why are migrations essential in mature systems?</h3><div class="quiz-options" data-answer="1"><button class="quiz-option">A. They replace backups</button><button class="quiz-option">B. They version and automate schema changes across environments</button><button class="quiz-option">C. They remove the need for DBAs</button><button class="quiz-option">D. They only matter for microservices</button></div><div class="quiz-result"><strong>Correct answer: B</strong><span>B is correct because it matches how why migrations exist is intended to work in a production-grade Spring application. The wrong choices are plausible because they sound framework-ish, but they either ignore the real boundary, confuse this feature with another one, or assume a stronger guarantee than the mechanism actually provides. In an interview, tie your answer back to the concrete failure mode you are preventing.</span></div></article></div></div></section><section class="section" data-section="1">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Section 2 · Tooling</div>
+<h2>Flyway Basics</h2>
+<p>Flyway Basics is a high-value senior interview topic because it reveals whether you understand the underlying mechanism, the default behavior, and the trade-offs in production.</p>
+</div>
+<div class="card-grid">
+<article class="card eli5"><div class="card-label">🧒 ELI5</div><h3>A simple mental picture</h3><p>Imagine a busy workplace where one small rule determines whether the whole team moves smoothly or keeps stepping on each other. Flyway applies ordered, versioned migrations at startup or deployment time and tracks which ones already ran. works like that kind of rule: it tells the system how to behave before small mistakes turn into bigger production problems.</p><p>It matters because it gives teams a simple linear model for schema evolution. Without that rule, engineers often discover the problem only after the app is under load, when the bug is expensive and confusing.</p><p>The useful mental shortcut is to ask: “What is the system trying to coordinate here, and what breaks when that coordination is missing?” That question usually reveals why this feature exists.</p></article><article class="card analogy"><div class="card-label">🔗 ANALOGY</div><h3>Why the rule exists</h3><p>Think of flyway basics as a piece of operating policy, not just a syntax feature. The policy exists to make decisions repeatable across the whole system instead of relying on every individual class to remember the rule.</p><p>If you ignore that policy, the most common smell is editing an old migration after it already ran somewhere. In real applications, that smell usually shows up as flaky behavior, hidden coupling, or painful debugging.</p></article><article class="card technical"><div class="card-label">Technical</div><div class="two-col"><div><h3>How it works under the hood</h3><p><strong>Definition:</strong> Flyway applies ordered, versioned migrations at startup or deployment time and tracks which ones already ran.</p><p class="deep-note">Flyway applies ordered, versioned migrations at startup or deployment time and tracks which ones already ran. Under the hood, Spring or the underlying infrastructure usually applies the behavior around your code rather than by changing your business logic directly.</p><p class="deep-note">The production question is not “can I enable it?” but “where is the right boundary and what problem am I actually solving?”</p><p class="deep-note">Good engineering here comes from matching the mechanism to the use case, then watching the trade-off instead of blindly turning the feature on everywhere.</p><div class="mini-grid"><div class="mini-panel"><h4>Why it matters in production</h4><ul><li>it gives teams a simple linear model for schema evolution</li><li>Makes database migrations behavior explicit</li><li>Gives you a clearer story in debugging and interviews</li></ul></div><div class="mini-panel"><h4>Common smell</h4><ul><li>editing an old migration after it already ran somewhere</li><li>Using the mechanism as a band-aid for design issues</li><li>Forgetting what the default behavior actually is</li></ul></div></div><div class="badge-row"><span class="pill good">Explicit intent</span><span class="pill info">Know the default</span><span class="pill caution">Trade-offs matter</span></div><div class="flow"><span class="flow-step">Call enters boundary</span><span class="flow-arrow">→</span><span class="flow-step">Framework applies rule</span><span class="flow-arrow">→</span><span class="flow-step">Your code runs</span><span class="flow-arrow">→</span><span class="flow-step">Outcome follows configured behavior</span></div></div><div><h3>💬 Model Interview Answer</h3><p>“Flyway Basics in Database Migrations is really about flyway applies ordered, versioned migrations at startup or deployment time and tracks which ones already ran. I explain it as a mechanism that enforces a policy around my code so the application behaves consistently. The important trade-off is editing an old migration after it already ran somewhere, so I use it deliberately and I make the boundary clear instead of relying on accidental defaults.”</p><table><thead><tr><th>Scenario</th><th>What to watch</th></tr></thead><tbody><tr><td>Applied migration</td><td>Treat as immutable history</td></tr><tr><td>New schema change</td><td>Create a new versioned file</td></tr><tr><td>Schema history table</td><td>Records what ran</td></tr></tbody></table></div></div><div class="code-blocks"><div><div class="code-title">❌ Wrong</div><pre>-- V2__create_user_table.sql
+-- edited weeks later after it already ran in staging</pre></div><div><div class="code-title">✅ Right</div><pre>-- V3__add_user_status.sql
+ALTER TABLE users ADD COLUMN status VARCHAR(30);</pre></div></div><p>Use flyway basics where the rule belongs in architecture, not just where it happens to fix one failing test or one bug report.</p><p class="deep-note">The safest mental model is that Spring gives you a framework feature only when your call crosses the Spring-managed boundary and the surrounding infrastructure can participate.</p></article><article class="card warning"><div class="card-label">Warning</div><h3>Common misunderstanding</h3><p>The dangerous misunderstanding is treating flyway basics like a magic switch instead of a mechanism with boundaries and defaults. That is how teams end up with editing an old migration after it already ran somewhere.</p><p>A safer pattern is to make the intent explicit, keep the scope narrow, and choose the smallest mechanism that actually solves the problem.</p><div class="code-blocks"><div><div class="code-title">Broken pattern</div><pre>-- V2__create_user_table.sql
+-- edited weeks later after it already ran in staging</pre></div><div><div class="code-title">Safer pattern</div><pre>-- V3__add_user_status.sql
+ALTER TABLE users ADD COLUMN status VARCHAR(30);</pre></div></div></article><article class="card technical"><div class="card-label">Mini takeaway</div><ul class="takeaways"><li>Flyway Basics exists to make a policy explicit</li><li>Defaults are useful, but interviews reward knowing the boundary and trade-off</li><li>If you see editing an old migration after it already ran somewhere, revisit the design before adding more framework annotations</li></ul></article><article class="card quiz-card"><div class="card-label">Quiz</div><h3>What is the key Flyway habit that keeps migration history trustworthy?</h3><div class="quiz-options" data-answer="1"><button class="quiz-option">A. Modify old applied migrations whenever requirements change</button><button class="quiz-option">B. Add a new migration instead of rewriting history</button><button class="quiz-option">C. Keep all schema changes manual in production</button><button class="quiz-option">D. Run migrations only on developer laptops</button></div><div class="quiz-result"><strong>Correct answer: B</strong><span>B is correct because it matches how flyway basics is intended to work in a production-grade Spring application. The wrong choices are plausible because they sound framework-ish, but they either ignore the real boundary, confuse this feature with another one, or assume a stronger guarantee than the mechanism actually provides. In an interview, tie your answer back to the concrete failure mode you are preventing.</span></div></article></div></div></section><section class="section" data-section="2">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Section 3 · Alternate tooling</div>
+<h2>Liquibase Basics</h2>
+<p>Liquibase Basics is a high-value senior interview topic because it reveals whether you understand the underlying mechanism, the default behavior, and the trade-offs in production.</p>
+</div>
+<div class="card-grid">
+<article class="card eli5"><div class="card-label">🧒 ELI5</div><h3>A simple mental picture</h3><p>Imagine a busy workplace where one small rule determines whether the whole team moves smoothly or keeps stepping on each other. Liquibase manages schema change through change sets and can express them in XML, YAML, JSON, or SQL with richer metadata options. works like that kind of rule: it tells the system how to behave before small mistakes turn into bigger production problems.</p><p>It matters because it is useful when teams need more structured change tracking, rollback metadata, or database portability features. Without that rule, engineers often discover the problem only after the app is under load, when the bug is expensive and confusing.</p><p>The useful mental shortcut is to ask: “What is the system trying to coordinate here, and what breaks when that coordination is missing?” That question usually reveals why this feature exists.</p></article><article class="card analogy"><div class="card-label">🔗 ANALOGY</div><h3>Why the rule exists</h3><p>Think of liquibase basics as a piece of operating policy, not just a syntax feature. The policy exists to make decisions repeatable across the whole system instead of relying on every individual class to remember the rule.</p><p>If you ignore that policy, the most common smell is choosing a tool for hype instead of matching team workflow. In real applications, that smell usually shows up as flaky behavior, hidden coupling, or painful debugging.</p></article><article class="card technical"><div class="card-label">Technical</div><div class="two-col"><div><h3>How it works under the hood</h3><p><strong>Definition:</strong> Liquibase manages schema change through change sets and can express them in XML, YAML, JSON, or SQL with richer metadata options.</p><p class="deep-note">Liquibase manages schema change through change sets and can express them in XML, YAML, JSON, or SQL with richer metadata options. Under the hood, Spring or the underlying infrastructure usually applies the behavior around your code rather than by changing your business logic directly.</p><p class="deep-note">The production question is not “can I enable it?” but “where is the right boundary and what problem am I actually solving?”</p><p class="deep-note">Good engineering here comes from matching the mechanism to the use case, then watching the trade-off instead of blindly turning the feature on everywhere.</p><div class="mini-grid"><div class="mini-panel"><h4>Why it matters in production</h4><ul><li>it is useful when teams need more structured change tracking, rollback metadata, or database portability features</li><li>Makes database migrations behavior explicit</li><li>Gives you a clearer story in debugging and interviews</li></ul></div><div class="mini-panel"><h4>Common smell</h4><ul><li>choosing a tool for hype instead of matching team workflow</li><li>Using the mechanism as a band-aid for design issues</li><li>Forgetting what the default behavior actually is</li></ul></div></div><div class="badge-row"><span class="pill good">Explicit intent</span><span class="pill info">Know the default</span><span class="pill caution">Trade-offs matter</span></div><div class="flow"><span class="flow-step">Call enters boundary</span><span class="flow-arrow">→</span><span class="flow-step">Framework applies rule</span><span class="flow-arrow">→</span><span class="flow-step">Your code runs</span><span class="flow-arrow">→</span><span class="flow-step">Outcome follows configured behavior</span></div></div><div><h3>💬 Model Interview Answer</h3><p>“Liquibase Basics in Database Migrations is really about liquibase manages schema change through change sets and can express them in xml, yaml, json, or sql with richer metadata options. I explain it as a mechanism that enforces a policy around my code so the application behaves consistently. The important trade-off is choosing a tool for hype instead of matching team workflow, so I use it deliberately and I make the boundary clear instead of relying on accidental defaults.”</p><table><thead><tr><th>Scenario</th><th>What to watch</th></tr></thead><tbody><tr><td>Flyway</td><td>Simple ordered migrations</td></tr><tr><td>Liquibase</td><td>Structured change sets</td></tr><tr><td>Decision</td><td>Team workflow and complexity</td></tr></tbody></table></div></div><div class="code-blocks"><div><div class="code-title">❌ Wrong</div><pre>&lt;!-- giant mixed change set doing unrelated schema and data fixes together --&gt;</pre></div><div><div class="code-title">✅ Right</div><pre>databaseChangeLog:
   - changeSet:
-      id: 1
-      author: team
+      id: add-user-status
+      author: hemanth
       changes:
         - addColumn:
             tableName: users
             columns:
               - column:
                   name: status
-                  type: varchar(20)</pre>
-    </div>
-    </div>
-              
-            </article>
+                  type: varchar(30)</pre></div></div><p>Use liquibase basics where the rule belongs in architecture, not just where it happens to fix one failing test or one bug report.</p><p class="deep-note">The safest mental model is that Spring gives you a framework feature only when your call crosses the Spring-managed boundary and the surrounding infrastructure can participate.</p></article><article class="card warning"><div class="card-label">Warning</div><h3>Common misunderstanding</h3><p>The dangerous misunderstanding is treating liquibase basics like a magic switch instead of a mechanism with boundaries and defaults. That is how teams end up with choosing a tool for hype instead of matching team workflow.</p><p>A safer pattern is to make the intent explicit, keep the scope narrow, and choose the smallest mechanism that actually solves the problem.</p><div class="code-blocks"><div><div class="code-title">Broken pattern</div><pre>&lt;!-- giant mixed change set doing unrelated schema and data fixes together --&gt;</pre></div><div><div class="code-title">Safer pattern</div><pre>databaseChangeLog:
+  - changeSet:
+      id: add-user-status
+      author: hemanth
+      changes:
+        - addColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: status
+                  type: varchar(30)</pre></div></div></article><article class="card technical"><div class="card-label">Mini takeaway</div><ul class="takeaways"><li>Liquibase Basics exists to make a policy explicit</li><li>Defaults are useful, but interviews reward knowing the boundary and trade-off</li><li>If you see choosing a tool for hype instead of matching team workflow, revisit the design before adding more framework annotations</li></ul></article><article class="card quiz-card"><div class="card-label">Quiz</div><h3>Why might a team choose Liquibase instead of Flyway?</h3><div class="quiz-options" data-answer="1"><button class="quiz-option">A. Because Liquibase eliminates the need for code review</button><button class="quiz-option">B. Because it supports richer structured change metadata and formats</button><button class="quiz-option">C. Because Flyway cannot run SQL</button><button class="quiz-option">D. Because Liquibase disables rollbacks</button></div><div class="quiz-result"><strong>Correct answer: B</strong><span>B is correct because it matches how liquibase basics is intended to work in a production-grade Spring application. The wrong choices are plausible because they sound framework-ish, but they either ignore the real boundary, confuse this feature with another one, or assume a stronger guarantee than the mechanism actually provides. In an interview, tie your answer back to the concrete failure mode you are preventing.</span></div></article></div></div></section><section class="section" data-section="3">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Section 4 · Safety</div>
+<h2>Safe Migration Practices</h2>
+<p>Safe Migration Practices is a high-value senior interview topic because it reveals whether you understand the underlying mechanism, the default behavior, and the trade-offs in production.</p>
+</div>
+<div class="card-grid">
+<article class="card eli5"><div class="card-label">🧒 ELI5</div><h3>A simple mental picture</h3><p>Imagine a busy workplace where one small rule determines whether the whole team moves smoothly or keeps stepping on each other. Safe migrations separate schema evolution into small reversible steps and avoid breaking running code while old and new versions may coexist. works like that kind of rule: it tells the system how to behave before small mistakes turn into bigger production problems.</p><p>It matters because real deployments often overlap old and new application versions during rollout. Without that rule, engineers often discover the problem only after the app is under load, when the bug is expensive and confusing.</p><p>The useful mental shortcut is to ask: “What is the system trying to coordinate here, and what breaks when that coordination is missing?” That question usually reveals why this feature exists.</p></article><article class="card analogy"><div class="card-label">🔗 ANALOGY</div><h3>Why the rule exists</h3><p>Think of safe migration practices as a piece of operating policy, not just a syntax feature. The policy exists to make decisions repeatable across the whole system instead of relying on every individual class to remember the rule.</p><p>If you ignore that policy, the most common smell is single-step destructive changes that assume perfect coordination. In real applications, that smell usually shows up as flaky behavior, hidden coupling, or painful debugging.</p></article><article class="card technical"><div class="card-label">Technical</div><div class="two-col"><div><h3>How it works under the hood</h3><p><strong>Definition:</strong> Safe migrations separate schema evolution into small reversible steps and avoid breaking running code while old and new versions may coexist.</p><p class="deep-note">Safe migrations separate schema evolution into small reversible steps and avoid breaking running code while old and new versions may coexist. Under the hood, Spring or the underlying infrastructure usually applies the behavior around your code rather than by changing your business logic directly.</p><p class="deep-note">The production question is not “can I enable it?” but “where is the right boundary and what problem am I actually solving?”</p><p class="deep-note">Good engineering here comes from matching the mechanism to the use case, then watching the trade-off instead of blindly turning the feature on everywhere.</p><div class="mini-grid"><div class="mini-panel"><h4>Why it matters in production</h4><ul><li>real deployments often overlap old and new application versions during rollout</li><li>Makes database migrations behavior explicit</li><li>Gives you a clearer story in debugging and interviews</li></ul></div><div class="mini-panel"><h4>Common smell</h4><ul><li>single-step destructive changes that assume perfect coordination</li><li>Using the mechanism as a band-aid for design issues</li><li>Forgetting what the default behavior actually is</li></ul></div></div><div class="badge-row"><span class="pill good">Explicit intent</span><span class="pill info">Know the default</span><span class="pill caution">Trade-offs matter</span></div><div class="flow"><span class="flow-step">Call enters boundary</span><span class="flow-arrow">→</span><span class="flow-step">Framework applies rule</span><span class="flow-arrow">→</span><span class="flow-step">Your code runs</span><span class="flow-arrow">→</span><span class="flow-step">Outcome follows configured behavior</span></div></div><div><h3>💬 Model Interview Answer</h3><p>“Safe Migration Practices in Database Migrations is really about safe migrations separate schema evolution into small reversible steps and avoid breaking running code while old and new versions may coexist. I explain it as a mechanism that enforces a policy around my code so the application behaves consistently. The important trade-off is single-step destructive changes that assume perfect coordination, so I use it deliberately and I make the boundary clear instead of relying on accidental defaults.”</p><table><thead><tr><th>Scenario</th><th>What to watch</th></tr></thead><tbody><tr><td>Additive first</td><td>Safer for rolling deploys</td></tr><tr><td>Backfill</td><td>Do separately and observably</td></tr><tr><td>Drop old column later</td><td>Only after reads/writes moved</td></tr></tbody></table></div></div><div class="code-blocks"><div><div class="code-title">❌ Wrong</div><pre>ALTER TABLE orders DROP COLUMN legacy_status;</pre></div><div><div class="code-title">✅ Right</div><pre>-- deploy 1: add new column, write to both
+ALTER TABLE orders ADD COLUMN status VARCHAR(30);
 
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Rollback must be tested</h3>
-              <p>Define rollback steps and test them or you may not be able to recover quickly.</p>
-            </article>
+-- later deploy: backfill + switch reads
 
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>Liquibase uses changelogs.</li><li>Rollback is a key feature.</li><li>Test rollback paths.</li>
-              </ul>
-            </article>
+-- final deploy: drop old column only after the app no longer uses it</pre></div></div><p>Use safe migration practices where the rule belongs in architecture, not just where it happens to fix one failing test or one bug report.</p><p class="deep-note">The safest mental model is that Spring gives you a framework feature only when your call crosses the Spring-managed boundary and the surrounding infrastructure can participate.</p></article><article class="card warning"><div class="card-label">Warning</div><h3>Common misunderstanding</h3><p>The dangerous misunderstanding is treating safe migration practices like a magic switch instead of a mechanism with boundaries and defaults. That is how teams end up with single-step destructive changes that assume perfect coordination.</p><p>A safer pattern is to make the intent explicit, keep the scope narrow, and choose the smallest mechanism that actually solves the problem.</p><div class="code-blocks"><div><div class="code-title">Broken pattern</div><pre>ALTER TABLE orders DROP COLUMN legacy_status;</pre></div><div><div class="code-title">Safer pattern</div><pre>-- deploy 1: add new column, write to both
+ALTER TABLE orders ADD COLUMN status VARCHAR(30);
 
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>What is a Liquibase changeset?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. A cache entry</button><button class="quiz-option">B. A unit of schema change</button><button class="quiz-option">C. A profile file</button><button class="quiz-option">D. A bean definition</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>A changeset is a single unit of change in a Liquibase changelog.</span>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
+-- later deploy: backfill + switch reads
 
-      <section class="section" data-section="3">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 4 of 5 · ~7 mins</div>
-            <h2>Safe Migration Practices</h2>
-            <p>Production migrations need review, backups, and careful rollout strategies.</p>
-            
-          </div>
+-- final deploy: drop old column only after the app no longer uses it</pre></div></div></article><article class="card technical"><div class="card-label">Mini takeaway</div><ul class="takeaways"><li>Safe Migration Practices exists to make a policy explicit</li><li>Defaults are useful, but interviews reward knowing the boundary and trade-off</li><li>If you see single-step destructive changes that assume perfect coordination, revisit the design before adding more framework annotations</li></ul></article><article class="card quiz-card"><div class="card-label">Quiz</div><h3>What is the safest mindset for production schema change?</h3><div class="quiz-options" data-answer="1"><button class="quiz-option">A. Make destructive changes immediately so the schema stays tidy</button><button class="quiz-option">B. Prefer additive, staged changes that support rolling deploys</button><button class="quiz-option">C. Never migrate data</button><button class="quiz-option">D. Always combine schema and data backfill in one giant script</button></div><div class="quiz-result"><strong>Correct answer: B</strong><span>B is correct because it matches how safe migration practices is intended to work in a production-grade Spring application. The wrong choices are plausible because they sound framework-ish, but they either ignore the real boundary, confuse this feature with another one, or assume a stronger guarantee than the mechanism actually provides. In an interview, tie your answer back to the concrete failure mode you are preventing.</span></div></article></div></div></section><section class="section" data-section="4">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Section 5 · Interview deep dive</div>
+<h2>Deep Dive: Zero‑Downtime Migrations</h2>
+<p>This deep dive connects the mechanics of database migrations with the production decisions senior engineers are expected to explain clearly.</p>
+</div>
+<div class="card-grid">
+<article class="card eli5"><div class="card-label">🧒 ELI5</div><h3>A bigger real-world picture</h3><p>In a larger system, the hard part is not knowing the vocabulary. The hard part is deciding which rule belongs where so the whole operation still makes sense when something unexpected happens.</p><p>That is why designing schema changes so old and new application versions can coexist during rollout without breaking reads or writes. The mechanism has to support the story your system tells under stress, not just the happy path.</p><p>This is where interviewers are listening for judgment: not just what the feature does, but how you would keep the design honest when multiple moving parts are involved.</p></article><article class="card analogy"><div class="card-label">🔗 ANALOGY</div><h3>Why senior engineers care</h3><p>designing schema changes so old and new application versions can coexist during rollout without breaking reads or writes usually sits at the intersection of framework behavior, business requirements, and operational trade-offs.</p><p>When teams get this wrong, the system may still compile and even pass local tests, but production behavior becomes surprising.</p></article><article class="card technical"><div class="card-label">Technical</div><div class="two-col"><div><h3>What to optimize for</h3><p><strong>Definition:</strong> designing schema changes so old and new application versions can coexist during rollout without breaking reads or writes</p><p class="deep-note">Senior-level answers usually mention boundaries, defaults, observability, and trade-offs in the same breath.</p><p class="deep-note">The safest pattern is usually to keep the mechanism narrow, explicit, and easy to reason about.</p><p class="deep-note">If a framework feature starts compensating for unclear ownership, unclear state, or unclear flow, the real problem is probably design, not syntax.</p><div class="mini-grid"><div class="mini-panel"><h4>What senior engineers optimize for</h4><ul><li>Optimize for clarity of boundary</li><li>Prefer explicit over accidental behavior</li><li>Choose the smallest mechanism that solves the real problem</li></ul></div><div class="mini-panel"><h4>Trade-offs</h4><ul><li>Magic defaults can hide surprises</li><li>Cross-cutting features can mask weak design</li><li>More power usually means more room for misuse</li></ul></div></div><div class="badge-row"><span class="pill good">Clear boundary</span><span class="pill info">Explain the why</span><span class="pill bad">Framework cargo-culting</span></div><div class="flow"><span class="flow-step">Requirement appears</span><span class="flow-arrow">→</span><span class="flow-step">Choose boundary</span><span class="flow-arrow">→</span><span class="flow-step">Apply mechanism</span><span class="flow-arrow">→</span><span class="flow-step">Observe real outcome</span></div></div><div><h3>💬 Model Interview Answer</h3><p>“When I talk about database migrations at a senior level, I focus on the boundary, the default behavior, and the production trade-off. I want the design to make the intent obvious even to the next engineer reading the code. The smell I watch for is using framework features to hide a design problem instead of clarifying one.”</p><table><thead><tr><th>Decision point</th><th>Senior answer</th></tr></thead><tbody><tr><td>Boundary</td><td>State it explicitly</td></tr><tr><td>Default behavior</td><td>Know it by memory</td></tr><tr><td>Trade-off</td><td>Say what you pay for the guarantee</td></tr></tbody></table></div></div><div class="code-blocks"><div><div class="code-title">❌ Wrong: implicit or leaky design</div><pre>-- Release expects old code to stop instantly
+ALTER TABLE users RENAME COLUMN name TO full_name;</pre></div><div><div class="code-title">✅ Right: explicit design</div><pre>-- Step 1
+ALTER TABLE users ADD COLUMN full_name VARCHAR(255);
 
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Safety checks</h3>
-              <p>You check your helmet and brakes before riding downhill.</p>
-            </article>
+-- Step 2 application writes both name and full_name
 
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Bridge inspection</h3>
-              <p>Engineers inspect a bridge before letting cars drive over it.</p>
-            </article>
+-- Step 3 backfill data
 
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Safe migrations include validation, backups, and release sequencing to reduce risk.</p>
-                  <p class="deep-note">Safe migrations require discipline: backups, staging tests, and small, reversible changes.</p>
-                  <p class="deep-note">Plan for locks and downtime when altering large tables or hot indexes.</p>
-                  <p class="deep-note">A practical tip is to add new columns first, deploy code that writes both, then backfill and remove the old column later.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul>
-                        <li>Avoid data loss</li><li>Prevent downtime</li><li>Enable rollback</li>
-                      </ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common pitfall</h4>
-                      <ul>
-                        <li>No backups</li><li>Hotfix SQL in prod</li><li>Skipping reviews</li>
-                      </ul>
-                    </div>
-                  </div>
-                  <div class="badge-row"><span class="pill good">Validation</span><span class="pill info">Backup</span><span class="pill caution">Rollback</span></div>
-                  
-                  <div class="flow"><span class="flow-step">Review script</span><span class="flow-arrow">→</span><span class="flow-step">Apply in staging</span><span class="flow-arrow">→</span><span class="flow-step">Backup prod</span><span class="flow-arrow">→</span><span class="flow-step">Run migration</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“I review migrations, test in staging, and ensure rollback/backup before production.”</p>
-                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
-                  
-                  <table>
-                    <thead><tr><th>Practice</th><th>Reason</th></tr></thead>
-                    <tbody><tr><td>Staging run</td><td><span class="pill good">Catch issues</span></td></tr><tr><td>Backups</td><td><span class="pill info">Restore data</span></td></tr><tr><td>Feature flags</td><td><span class="pill caution">Safe rollout</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              
-    <div class="code-blocks">
-    <div>
-      <div class="code-title">Disable in prod for manual control</div>
-      <pre>spring:
-  flyway:
-    enabled: false</pre>
-    </div>
-    </div>
-              
-            </article>
+-- Step 4 reads switch to full_name
 
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Never skip staging</h3>
-              <p>Skipping staging runs increases the chance of downtime or data loss.</p>
-            </article>
+-- Step 5 drop old column later</pre></div></div></article><article class="card warning"><div class="card-label">Warning</div><h3>The biggest trap</h3><p>The hardest bugs here come from systems that “mostly work” until traffic, retries, concurrency, or environment differences expose the hidden assumption.</p><p>A good fix usually makes the intent more explicit instead of adding one more annotation and hoping the framework figures it out.</p><div class="code-blocks"><div><div class="code-title">Broken pattern</div><pre>-- Release expects old code to stop instantly
+ALTER TABLE users RENAME COLUMN name TO full_name;</pre></div><div><div class="code-title">Safer pattern</div><pre>-- Step 1
+ALTER TABLE users ADD COLUMN full_name VARCHAR(255);
 
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>Test migrations in staging.</li><li>Keep backups.</li><li>Plan rollback steps.</li>
-              </ul>
-            </article>
+-- Step 2 application writes both name and full_name
 
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>Which practice is safest for production migrations?</h3>
-              <div class="quiz-options" data-answer="2">
-                <button class="quiz-option">A. Edit applied migrations</button><button class="quiz-option">B. Run untested SQL in prod</button><button class="quiz-option">C. Test in staging first</button><button class="quiz-option">D. Disable history tracking</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: C</strong>
-                <span>Staging tests reduce production migration risks.</span>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-      
-      
-      <section class="section" data-section="4">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 5 of 5 · ~7 mins</div>
-            <h2>Deep Dive: Zero‑Downtime Migrations</h2>
-            <p>Production migrations must avoid locking and support rolling deployments.</p>
-          </div>
+-- Step 3 backfill data
 
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Fix the road while cars drive</h3>
-              <p>You repair one lane at a time so traffic keeps moving.</p>
-            </article>
+-- Step 4 reads switch to full_name
 
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Hotel renovation</h3>
-              <p>You renovate floor by floor so guests can still stay.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Use expand/contract patterns: add new columns, deploy code, backfill, then remove old columns.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul><li>Avoids downtime</li><li>Supports rollbacks</li><li>Safe deployments</li></ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common pitfall</h4>
-                      <ul><li>Dropping columns immediately</li><li>Large table locks</li><li>Big-bang migrations</li></ul>
-                    </div>
-                  </div>
-                  <div class="badge-row"><span class="pill good">Expand/contract</span><span class="pill info">Backfill</span><span class="pill caution">Lock risk</span></div>
-                  <div class="flow"><span class="flow-step">Add column</span><span class="flow-arrow">→</span><span class="flow-step">Deploy code</span><span class="flow-arrow">→</span><span class="flow-step">Backfill data</span><span class="flow-arrow">→</span><span class="flow-step">Remove old</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“I use expand/contract so schema changes don’t break running services.”</p>
-                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
-                  <table>
-                    <thead><tr><th>Step</th><th>Purpose</th></tr></thead>
-                    <tbody><tr><td>Add nullable column</td><td><span class="pill info">Compatibility</span></td></tr><tr><td>Backfill</td><td><span class="pill good">Data migration</span></td></tr><tr><td>Drop old column</td><td><span class="pill caution">Cleanup</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              <div class="code-blocks">
-    <div>
-      <div class="code-title">Expand phase migration</div>
-      <pre>ALTER TABLE users ADD COLUMN status varchar(20);</pre>
-    </div>
-    </div>
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Large locks cause outages</h3>
-              <p>Avoid schema changes that lock tables for long periods.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways"><li>Use expand/contract.</li><li>Backfill safely.</li><li>Monitor locks.</li></ul>
-            </article>
-
-            
-          
-            <article class="card technical">
-              <div class="card-label">Edge cases</div>
-              <h3>Edge Cases & Tradeoffs</h3>
-              <ul class="takeaways"><li>Changing old migrations breaks checksums.</li><li>Out-of-order migrations can surprise prod.</li><li>Rollback support is limited in Flyway.</li><li>Prod drift happens without validation.</li><li>Large migrations can lock tables.</li></ul>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Checklist</div>
-              <h3>Production Checklist</h3>
-              <ul class="takeaways"><li>Never edit applied migrations.</li><li>Use repeatable migrations for views/functions.</li><li>Validate on startup in CI/CD.</li><li>Use baseline for legacy databases.</li><li>Split large migrations to reduce locks.</li></ul>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Interview</div>
-              <h3>Interview Hooks</h3>
-              <p>Explain versioned vs repeatable migrations.</p>
-              <ul class="takeaways"><li>Flyway uses checksums to detect drift.</li><li>Liquibase supports rollback more naturally.</li><li>Order migrations by version and test in staging.</li></ul>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Advanced Example</div>
-              <div class="code-blocks">
-        <div>
-          <div class="code-title">Flyway config snippet</div>
-          <pre>spring.flyway.enabled=true
-spring.flyway.validate-on-migrate=true
-spring.flyway.baseline-on-migrate=true</pre>
-        </div>
-      </div>
-      <p>Validation prevents silent schema drift.</p>
-            </article><article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>Which approach is best for zero-downtime migrations?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. Drop and recreate</button><button class="quiz-option">B. Expand/contract</button><button class="quiz-option">C. Disable DB</button><button class="quiz-option">D. No migrations</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>Expand/contract keeps services compatible during rollout.</span>
-              </div>
-            </article></div>
-        </div>
-      </section>
-<section class="section" data-section="5">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Completion screen · Review mode</div>
-            <h2>🎉 Database Migrations Cheat Sheet</h2>
-            <p>Use this to recall Flyway/Liquibase basics and safe migration practices.</p>
-          </div>
-
-          <div class="completion-grid">
-            <div class="card technical">
-              <div class="card-label">Cheat sheet</div>
-              <div class="celebrate">🚀</div>
-              <h3>1-line interview answers</h3>
-              <div class="cheat-list">
-    <div class="cheat-item">
-      <h4>Flyway</h4>
-      <p>Versioned SQL migrations run on startup.</p>
-    </div>
-    <div class="cheat-item">
-      <h4>Liquibase</h4>
-      <p>Changelogs with rollback support.</p>
-    </div>
-    <div class="cheat-item">
-      <h4>Checksum</h4>
-      <p>Applied migrations should not change.</p>
-    </div>
-    <div class="cheat-item">
-      <h4>Safety</h4>
-      <p>Validate and baseline carefully.</p>
-    </div>
-              </div>
-            </div>
-
-            <div class="card analogy">
-              <div class="card-label">What to remember</div>
-              <h3>Fast mental model</h3>
-              <ul class="takeaways">
-                <li><strong>Versioning</strong>: track schema changes.</li><li><strong>Flyway</strong>: SQL-based migrations.</li><li><strong>Liquibase</strong>: changelogs and rollback.</li><li><strong>Safety</strong>: never edit applied migrations.</li>
-              </ul>
-              <h3 style="margin-top:22px;">Common traps</h3>
-              <div class="badge-row">
-                <span class="pill bad">Editing old migrations</span><span class="pill bad">Running in prod without review</span><span class="pill bad">No baseline</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    </main>
-
-    <footer class="footer-nav">
-      <div class="footer-nav-inner">
-        <button class="btn" id="prevBtn">← Back</button>
-        <button class="btn primary" id="nextBtn">Next →</button>
-      </div>
-    </footer>
-  </div>
-
-  <script>
+-- Step 5 drop old column later</pre></div></div></article><article class="card technical"><div class="card-label">Edge cases</div><h3>Edge Cases &amp; Tradeoffs</h3><ul class="takeaways"><li>Defaults can differ across libraries or underlying infrastructure.</li><li>A passing unit test does not prove the boundary is correct in production.</li><li>Observability is often what reveals misuse first.</li><li>Keep side effects and lifetime of state in view when designing the boundary.</li><li>Explain what would happen under failure, not just success.</li></ul></article><article class="card technical"><div class="card-label">Checklist</div><h3>Production Checklist</h3><ul class="takeaways"><li>Name the real invariant or guarantee you care about</li><li>Choose the narrowest boundary that enforces it</li><li>Know the default behavior and the override you would use</li><li>Keep the design easy to test and easy to observe</li><li>Call out one concrete gotcha in interviews</li></ul></article><article class="card technical"><div class="card-label">Interview</div><h3>Interview Hooks</h3><ul class="takeaways"><li>What is the default behavior?</li><li>What is the most common production mistake?</li><li>What trade-off are you accepting for the guarantee?</li></ul></article><article class="card technical"><div class="card-label">Advanced Example</div><h3>Advanced example</h3><div class="code-blocks"><div><div class="code-title">Advanced example</div><pre>-- Example backfill in batches
+UPDATE users
+SET full_name = name
+WHERE full_name IS NULL
+LIMIT 1000;</pre></div></div></article><article class="card quiz-card"><div class="card-label">Quiz</div><h3>Why are additive migrations preferred in rolling deployments?</h3><div class="quiz-options" data-answer="0"><button class="quiz-option">A. Because they let multiple app versions coexist safely for a period</button><button class="quiz-option">B. Because they always run faster</button><button class="quiz-option">C. Because they remove the need for data validation</button><button class="quiz-option">D. Because they work only in PostgreSQL</button></div><div class="quiz-result"><strong>Correct answer: A</strong><span>A is correct because it reflects the mature design choice for this kind of boundary. The distractors all represent common mistakes: pushing responsibility to the wrong layer, assuming defaults are stronger than they are, or using a framework feature as a substitute for clear design. In an interview, explain not only which answer is right, but what failure mode the wrong answers would create.</span></div></article></div></div></section><section class="section" data-section="5">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Completion screen · Review mode</div>
+<h2>🎉 Database Migrations Cheat Sheet</h2>
+<p>Use this cheat sheet to recall the core mental model for database migrations and the most common traps.</p>
+</div>
+<div class="completion-grid">
+<div class="card technical">
+<div class="card-label">Cheat sheet</div>
+<div class="celebrate">🚀</div>
+<h3>1-line interview answers</h3>
+<div class="cheat-list"><div class="cheat-item"><h4>Versioned change</h4><p>Treat schema change like code, not like a manual side quest.</p></div><div class="cheat-item"><h4>Flyway</h4><p>Simple linear migration history.</p></div><div class="cheat-item"><h4>Liquibase</h4><p>Structured change-set option with richer metadata.</p></div><div class="cheat-item"><h4>Zero downtime</h4><p>Prefer additive, staged changes over destructive one-shots.</p></div></div>
+</div>
+<div class="card analogy">
+<div class="card-label">What to remember</div>
+<h3>Fast mental model</h3>
+<ul class="takeaways"><li><strong>Versioned change:</strong> Treat schema change like code, not like a manual side quest.</li><li><strong>Flyway:</strong> Simple linear migration history.</li><li><strong>Liquibase:</strong> Structured change-set option with richer metadata.</li><li><strong>Zero downtime:</strong> Prefer additive, staged changes over destructive one-shots.</li></ul>
+<h3 style="margin-top:22px;">Common traps</h3>
+<div class="badge-row"><span class="pill bad">Edited old migrations</span><span class="pill bad">Manual prod SQL</span><span class="pill bad">Immediate destructive changes</span></div>
+</div>
+</div>
+</div>
+</section><footer class="footer-nav">
+<div class="footer-nav-inner">
+<button class="btn" id="prevBtn">← Back</button>
+<button class="btn primary" id="nextBtn">Next →</button>
+</div>
+</footer>
+</div>
+<script>
 const sections = Array.from(document.querySelectorAll('.section'));
     const dots = Array.from(document.querySelectorAll('.nav-dot'));
     const prevBtn = document.getElementById('prevBtn');

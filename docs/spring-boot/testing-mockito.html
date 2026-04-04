@@ -1,13 +1,14 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Testing with Mockito Learning Module</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Testing with Mockito Learning Module</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&amp;family=Syne:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<style>
 :root {
       --bg: #0a0e1a;
       --surface-1: #111827;
@@ -717,619 +718,185 @@
   </style>
 </head>
 <body>
-  <div class="app">
-    <header class="topbar">
-      <div class="topbar-inner">
-        <div class="topbar-row">
-          <div class="brand">
-            <h1>Testing with Mockito</h1>
-            <small>Interactive 35-minute learning module</small>
-          </div>
-                <div class="topbar-row">
-          <div class="breadcrumb">
-            <a href="../index.html">Home</a>
-            <span>›</span>
-            <a href="index.html">Spring Boot</a>
-            <span>›</span>
-            <span>Testing with Mockito</span>
-          </div>
-        </div>
-          <div class="timer-wrap" aria-live="polite">
-            <span class="timer-label">Time Left</span>
-            <span class="timer" id="timer">35:00</span>
-          </div>
-        </div>
-        <div class="topbar-row">
-                    <nav class="nav-dots" aria-label="Section navigation"><button class="nav-dot active" data-index="0" aria-label="Go to section 1">1</button><button class="nav-dot" data-index="1" aria-label="Go to section 2">2</button><button class="nav-dot" data-index="2" aria-label="Go to section 3">3</button><button class="nav-dot" data-index="3" aria-label="Go to section 4">4</button><button class="nav-dot" data-index="4" aria-label="Go to section 5">5</button><button class="nav-dot" data-index="5" aria-label="Go to completion screen">6</button></nav>
-        </div>
-        <div class="progress-shell" aria-hidden="true">
-          <div class="progress-bar" id="progressBar"></div>
-        </div>
-      </div>
-    </header>
+<div class="app">
+<header class="topbar">
+<div class="topbar-inner">
+<div class="topbar-row">
+<div class="brand">
+<h1>Testing with Mockito</h1>
+<small>Interactive 35-minute learning module</small>
+</div>
+<div class="topbar-row">
+<div class="breadcrumb">
+<a href="../index.html">Home</a>
+<span>›</span>
+<a href="index.html">Spring Boot</a>
+<span>›</span>
+<span>Testing with Mockito</span>
+</div>
+</div>
+<div aria-live="polite" class="timer-wrap">
+<span class="timer-label">Time Left</span>
+<span class="timer" id="timer">35:00</span>
+</div>
+</div>
+<div class="topbar-row">
+<nav aria-label="Section navigation" class="nav-dots"><button aria-label="Go to section 1" class="nav-dot active" data-index="0">1</button><button aria-label="Go to section 2" class="nav-dot" data-index="1">2</button><button aria-label="Go to section 3" class="nav-dot" data-index="2">3</button><button aria-label="Go to section 4" class="nav-dot" data-index="3">4</button><button aria-label="Go to section 5" class="nav-dot" data-index="4">5</button><button aria-label="Go to completion screen" class="nav-dot" data-index="5">6</button></nav>
+</div>
+<div aria-hidden="true" class="progress-shell">
+<div class="progress-bar" id="progressBar"></div>
+</div>
+</div>
+</header>
+<main>
 
-    <main>
-      
-      <section class="section active" data-section="0">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 1 of 5 · ~7 mins</div>
-            <h2>Test Types & Slices</h2>
-            <p>Choose the right test type to balance speed and confidence.</p>
-          </div>
 
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Check one part vs whole toy</h3>
-              <p>Sometimes you test a wheel, sometimes you test the whole toy car.</p>
-            </article>
 
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Kitchen tasting</h3>
-              <p>You taste the sauce alone, then the full dish later.</p>
-            </article>
 
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Slice tests load only a layer (like web or data), while integration tests load more context.</p>
-                  <p class="deep-note">Test slices verify one layer at a time and keep tests fast. For example, @WebMvcTest focuses on controllers without loading the full context.</p>
-                  <p class="deep-note">Integration tests should be fewer but high value, covering the main user flows and cross-layer behavior.</p>
-                  <p class="deep-note">As a beginner, aim for many small unit/slice tests and a handful of full-stack tests to catch wiring issues.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul>
-                        <li>Fast feedback</li><li>Isolate failures</li><li>Confidence at different layers</li>
-                      </ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common smell</h4>
-                      <ul>
-                        <li>Only slow integration tests</li><li>Only unit tests</li><li>No coverage for wiring</li>
-                      </ul>
-                    </div>
-                  </div>
-                  <div class="badge-row">
-                    <span class="pill good">Slice tests</span><span class="pill info">Integration tests</span><span class="pill caution">Balance needed</span>
-                  </div>
-                  <div class="flow"><span class="flow-step">Unit test</span><span class="flow-arrow">→</span><span class="flow-step">Slice test</span><span class="flow-arrow">→</span><span class="flow-step">Integration test</span><span class="flow-arrow">→</span><span class="flow-step">Confidence</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“I use unit tests for logic, slice tests for layers, and a few integration tests for wiring.”</p>
-                  <table>
-                    <thead><tr><th>Test</th><th>Scope</th></tr></thead>
-                    <tbody><tr><td>Unit</td><td><span class="pill good">Pure logic</span></td></tr><tr><td>@WebMvcTest</td><td><span class="pill info">Web layer</span></td></tr><tr><td>@SpringBootTest</td><td><span class="pill caution">Full context</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              
-    <div class="code-blocks">
-      
-    <div>
-      <div class="code-title">Web slice</div>
-      <pre>@WebMvcTest(UserController.class)
+
+
+</main>
+<section class="section" data-section="0">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Section 1 · Test strategy</div>
+<h2>Test Types &amp; Slices</h2>
+<p>Test Types &amp; Slices is a high-value senior interview topic because it reveals whether you understand the underlying mechanism, the default behavior, and the trade-offs in production.</p>
+</div>
+<div class="card-grid">
+<article class="card eli5"><div class="card-label">🧒 ELI5</div><h3>A simple mental picture</h3><p>Imagine a busy workplace where one small rule determines whether the whole team moves smoothly or keeps stepping on each other. Good Spring testing uses the right level of test—unit, slice, or full integration—so feedback stays fast while confidence stays meaningful. works like that kind of rule: it tells the system how to behave before small mistakes turn into bigger production problems.</p><p>It matters because one giant @springboottest for everything is slow and noisy. Without that rule, engineers often discover the problem only after the app is under load, when the bug is expensive and confusing.</p><p>The useful mental shortcut is to ask: “What is the system trying to coordinate here, and what breaks when that coordination is missing?” That question usually reveals why this feature exists.</p></article><article class="card analogy"><div class="card-label">🔗 ANALOGY</div><h3>Why the rule exists</h3><p>Think of test types &amp; slices as a piece of operating policy, not just a syntax feature. The policy exists to make decisions repeatable across the whole system instead of relying on every individual class to remember the rule.</p><p>If you ignore that policy, the most common smell is using the full application context when a focused test slice would do. In real applications, that smell usually shows up as flaky behavior, hidden coupling, or painful debugging.</p></article><article class="card technical"><div class="card-label">Technical</div><div class="two-col"><div><h3>How it works under the hood</h3><p><strong>Definition:</strong> Good Spring testing uses the right level of test—unit, slice, or full integration—so feedback stays fast while confidence stays meaningful.</p><p class="deep-note">Good Spring testing uses the right level of test—unit, slice, or full integration—so feedback stays fast while confidence stays meaningful. Under the hood, Spring or the underlying infrastructure usually applies the behavior around your code rather than by changing your business logic directly.</p><p class="deep-note">The production question is not “can I enable it?” but “where is the right boundary and what problem am I actually solving?”</p><p class="deep-note">Good engineering here comes from matching the mechanism to the use case, then watching the trade-off instead of blindly turning the feature on everywhere.</p><div class="mini-grid"><div class="mini-panel"><h4>Why it matters in production</h4><ul><li>one giant @SpringBootTest for everything is slow and noisy</li><li>Makes testing with mockito behavior explicit</li><li>Gives you a clearer story in debugging and interviews</li></ul></div><div class="mini-panel"><h4>Common smell</h4><ul><li>using the full application context when a focused test slice would do</li><li>Using the mechanism as a band-aid for design issues</li><li>Forgetting what the default behavior actually is</li></ul></div></div><div class="badge-row"><span class="pill good">Explicit intent</span><span class="pill info">Know the default</span><span class="pill caution">Trade-offs matter</span></div><div class="flow"><span class="flow-step">Call enters boundary</span><span class="flow-arrow">→</span><span class="flow-step">Framework applies rule</span><span class="flow-arrow">→</span><span class="flow-step">Your code runs</span><span class="flow-arrow">→</span><span class="flow-step">Outcome follows configured behavior</span></div></div><div><h3>💬 Model Interview Answer</h3><p>“Test Types &amp; Slices in Testing with Mockito is really about good spring testing uses the right level of test—unit, slice, or full integration—so feedback stays fast while confidence stays meaningful. I explain it as a mechanism that enforces a policy around my code so the application behaves consistently. The important trade-off is using the full application context when a focused test slice would do, so I use it deliberately and I make the boundary clear instead of relying on accidental defaults.”</p><table><thead><tr><th>Scenario</th><th>What to watch</th></tr></thead><tbody><tr><td>Unit test</td><td>Fast, no Spring context needed</td></tr><tr><td>Slice test</td><td>Focused Spring layer</td></tr><tr><td>Integration test</td><td>Broader wiring confidence</td></tr></tbody></table></div></div><div class="code-blocks"><div><div class="code-title">❌ Wrong</div><pre>@SpringBootTest
 class UserControllerTest {
-  @Autowired MockMvc mvc;
-}</pre>
-    </div>
-    </div>
-              <p>Slice tests are fast and isolate one layer.</p>
-                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Don’t skip integration tests</h3>
-              <p>You still need a few tests to confirm wiring and config.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>Use multiple test layers.</li><li>Slice tests are fast.</li><li>Integration for wiring.</li>
-              </ul>
-            </article>
-
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>Which test loads only MVC components?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. @SpringBootTest</button><button class="quiz-option">B. @WebMvcTest</button><button class="quiz-option">C. @DataJpaTest</button><button class="quiz-option">D. @MockBean</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>@WebMvcTest is a web slice test.</span>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-      <section class="section " data-section="1">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 2 of 5 · ~7 mins</div>
-            <h2>@Mock vs @MockBean</h2>
-            <p>Mockito has two common modes in Spring tests: plain mocks and Spring-managed mocks.</p>
-          </div>
-
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Pretend tool vs real tool in the toolbox</h3>
-              <p>You can pretend a tool exists, or you can place a fake tool in the toolbox everyone uses.</p>
-            </article>
-
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Stand-in actor</h3>
-              <p>Sometimes you just need a stand-in actor in your scene; sometimes the whole set uses them.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> @Mock is a plain Mockito mock; @MockBean replaces a Spring bean in the context.</p>
-                  <p class="deep-note">@Mock is for plain unit tests, while @MockBean replaces a Spring-managed bean within a test context.</p>
-                  <p class="deep-note">Use @MockBean when you want Spring wiring but need to isolate an external dependency like a database or API client.</p>
-                  <p class="deep-note">A simple rule: if Spring is creating the object, use @MockBean; otherwise use @Mock.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul>
-                        <li>Mock dependencies cleanly</li><li>Control behavior</li><li>Isolate the layer under test</li>
-                      </ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common smell</h4>
-                      <ul>
-                        <li>Confusing @Mock with @MockBean</li><li>Mocking too much</li><li>Mocking the class under test</li>
-                      </ul>
-                    </div>
-                  </div>
-                  <div class="badge-row">
-                    <span class="pill good">@MockBean in Spring</span><span class="pill info">@Mock for unit tests</span><span class="pill bad">Mock everything</span>
-                  </div>
-                  <div class="flow"><span class="flow-step">Create mock</span><span class="flow-arrow">→</span><span class="flow-step">Inject into bean</span><span class="flow-arrow">→</span><span class="flow-step">Run test</span><span class="flow-arrow">→</span><span class="flow-step">Verify</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“@Mock is plain Mockito; @MockBean replaces a Spring bean in the application context.”</p>
-                  <table>
-                    <thead><tr><th>Annotation</th><th>Effect</th></tr></thead>
-                    <tbody><tr><td>@Mock</td><td><span class="pill info">No Spring</span></td></tr><tr><td>@MockBean</td><td><span class="pill good">Replaces bean</span></td></tr><tr><td>@InjectMocks</td><td><span class="pill caution">Mockito injection</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              
-    <div class="code-blocks">
-      
-    <div>
-      <div class="code-title">@MockBean example</div>
-      <pre>@WebMvcTest(UserController.class)
+    // loads the whole world just to test one controller mapping
+}</pre></div><div><div class="code-title">✅ Right</div><pre>@WebMvcTest(UserController.class)
 class UserControllerTest {
-  @MockBean UserService service;
-}</pre>
-    </div>
-    </div>
-              <p>@MockBean lets Spring inject the mock into the test context.</p>
-                  <p class="deep-note">DI keeps construction separate from behavior. Constructor injection is safest, qualifiers resolve ambiguity, and scopes decide lifecycle and caching.</p>
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Avoid mocking everything</h3>
-              <p>Over-mocking makes tests brittle and detached from reality.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>@MockBean replaces Spring beans.</li><li>@Mock is for unit tests.</li><li>Mock strategically.</li>
-              </ul>
-            </article>
-
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>Which annotation replaces a Spring bean?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. @Mock</button><button class="quiz-option">B. @MockBean</button><button class="quiz-option">C. @Spy</button><button class="quiz-option">D. @Autowired</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>@MockBean replaces a bean in the Spring context.</span>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-      <section class="section " data-section="2">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 3 of 5 · ~7 mins</div>
-            <h2>MockMvc Patterns</h2>
-            <p>MockMvc lets you test controllers without starting a full server.</p>
-          </div>
-
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Practice match</h3>
-              <p>You practice plays without the full stadium. It’s faster but still realistic.</p>
-            </article>
-
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Flight simulator</h3>
-              <p>You test the controls without flying a real plane.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> MockMvc executes controller endpoints in-memory, letting you assert responses.</p>
-                  <p class="deep-note">MockMvc tests controllers without running a server, which makes them faster and easier to maintain.</p>
-                  <p class="deep-note">Use JSON path assertions to validate key fields and avoid brittle full-response comparisons.</p>
-                  <p class="deep-note">When endpoints are secured, include authentication in MockMvc tests so you validate both security and behavior.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul>
-                        <li>Fast HTTP tests</li><li>Validates routing and JSON</li><li>Avoids full server startup</li>
-                      </ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common smell</h4>
-                      <ul>
-                        <li>Testing only service logic</li><li>No controller tests</li><li>Overusing integration tests</li>
-                      </ul>
-                    </div>
-                  </div>
-                  <div class="badge-row">
-                    <span class="pill good">Fast HTTP checks</span><span class="pill info">JSON asserts</span><span class="pill caution">Not full stack</span>
-                  </div>
-                  <div class="flow"><span class="flow-step">Build request</span><span class="flow-arrow">→</span><span class="flow-step">Perform</span><span class="flow-arrow">→</span><span class="flow-step">Assert status/body</span><span class="flow-arrow">→</span><span class="flow-step">Verify</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“MockMvc gives fast controller tests without running an actual server.”</p>
-                  <table>
-                    <thead><tr><th>Check</th><th>Example</th></tr></thead>
-                    <tbody><tr><td>Status</td><td><span class="pill good">isOk()</span></td></tr><tr><td>JSON</td><td><span class="pill info">jsonPath()</span></td></tr><tr><td>Headers</td><td><span class="pill info">header()</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              
-    <div class="code-blocks">
-      
-    <div>
-      <div class="code-title">MockMvc example</div>
-      <pre>mvc.perform(get("example"))
-  .andExpect(status().isOk())
-  .andExpect(jsonPath("example").value(1));</pre>
-    </div>
-    </div>
-              <p>MockMvc validates routing, serialization, and response structure.</p>
-                  <p class="deep-note">Tests should slice the surface you're validating. Use @WebMvcTest for controllers, @MockBean for collaborators, and keep full integration tests minimal.</p>
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>MockMvc is not a full integration test</h3>
-              <p>It doesn’t load the full server or external dependencies.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>MockMvc is fast.</li><li>Test JSON shape.</li><li>Use integration for wiring.</li>
-              </ul>
-            </article>
-
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>What does MockMvc test?</h3>
-              <div class="quiz-options" data-answer="0">
-                <button class="quiz-option">A. Controller layer</button><button class="quiz-option">B. Database schema</button><button class="quiz-option">C. Network latency</button><button class="quiz-option">D. JVM tuning</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: A</strong>
-                <span>MockMvc exercises controller endpoints in-memory.</span>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-      <section class="section " data-section="3">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 4 of 5 · ~7 mins</div>
-            <h2>Stubbing & Verification</h2>
-            <p>Mockito stubbing defines behavior; verification confirms interactions.</p>
-          </div>
-
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Telling a toy how to respond</h3>
-              <p>You decide how the toy reacts when a button is pressed, then check if it was pressed.</p>
-            </article>
-
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Stage rehearsal</h3>
-              <p>You practice expected lines, then check if the actor said them.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Stub with when/thenReturn; verify with verify() to confirm interactions.</p>
-                  <p class="deep-note">Stubbing defines behavior, verification checks interactions. Over-verification can make tests fragile by locking in implementation details.</p>
-                  <p class="deep-note">Use ArgumentCaptor when you need to inspect complex inputs rather than duplicating the production logic in test assertions.</p>
-                  <p class="deep-note">A good mindset is to verify outcomes first, and only verify interactions when the interaction itself is the contract.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul>
-                        <li>Control dependencies</li><li>Assert collaboration</li><li>Avoid flaky tests</li>
-                      </ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common smell</h4>
-                      <ul>
-                        <li>Verifying every method</li><li>Overly strict order</li><li>Testing implementation details</li>
-                      </ul>
-                    </div>
-                  </div>
-                  <div class="badge-row">
-                    <span class="pill good">Stub only needed</span><span class="pill info">Verify key calls</span><span class="pill bad">Verify everything</span>
-                  </div>
-                  <div class="flow"><span class="flow-step">Stub behavior</span><span class="flow-arrow">→</span><span class="flow-step">Run test</span><span class="flow-arrow">→</span><span class="flow-step">Verify critical calls</span><span class="flow-arrow">→</span><span class="flow-step">Assert output</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“I stub external dependencies and verify the key interactions that matter to behavior.”</p>
-                  <table>
-                    <thead><tr><th>Mockito</th><th>Use</th></tr></thead>
-                    <tbody><tr><td>when().thenReturn()</td><td><span class="pill good">Stub</span></td></tr><tr><td>verify()</td><td><span class="pill info">Interaction</span></td></tr><tr><td>verifyNoMore()</td><td><span class="pill caution">Use sparingly</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              
-    <div class="code-blocks">
-      
-    <div>
-      <div class="code-title">Stub + verify</div>
-      <pre><span class="token-comment">when(repo.findById(1L)).thenReturn(Optional.of(user));
-service.loadUser(1L);
-verify(repo).findById(1L);</span></pre>
-    </div>
-    </div>
-              <p>Focus verification on the interactions that matter to behavior.</p>
-                  <p class="deep-note">As you study this, focus on what Spring/Java is doing on your behalf versus what you must configure explicitly. That mental split makes the API feel predictable instead of magical.</p>
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Don’t over-verify</h3>
-              <p>Tests become brittle if they assert every internal call.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways">
-                <li>Stub to control behavior.</li><li>Verify key interactions only.</li><li>Avoid over-asserting.</li>
-              </ul>
-            </article>
-
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>Which call checks interactions?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. when()</button><button class="quiz-option">B. verify()</button><button class="quiz-option">C. thenReturn()</button><button class="quiz-option">D. assertEquals()</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>verify() checks that a method was called.</span>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-      
-      
-      <section class="section" data-section="4">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 5 of 5 · ~7 mins</div>
-            <h2>Deep Dive: Test Slices & Mocking Strategy</h2>
-            <p>Pick the smallest Spring test slice that still validates the behavior you care about.</p>
-          </div>
-
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Test one room</h3>
-              <p>You don’t test the entire house when checking a light switch.</p>
-            </article>
-
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Car diagnostics</h3>
-              <p>Check the brakes without rebuilding the entire car.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Use @WebMvcTest for controllers, @DataJpaTest for repositories, and @SpringBootTest for full integration.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul><li>Faster tests</li><li>Clearer intent</li><li>Less flaky infra</li></ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common pitfall</h4>
-                      <ul><li>Using @SpringBootTest everywhere</li><li>Mocking too much</li><li>No assertion of interactions</li></ul>
-                    </div>
-                  </div>
-                  <div class="badge-row"><span class="pill good">Test slice</span><span class="pill info">Mock boundaries</span><span class="pill caution">Integration</span></div>
-                  <div class="flow"><span class="flow-step">Pick slice</span><span class="flow-arrow">→</span><span class="flow-step">Mock dependencies</span><span class="flow-arrow">→</span><span class="flow-step">Run assertions</span><span class="flow-arrow">→</span><span class="flow-step">Verify interactions</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“I use narrow slices for unit-style tests and @SpringBootTest only for end-to-end behavior.”</p>
-                  <p class="deep-note">Resilience patterns protect downstreams and your own service. Always pair retries with timeouts and circuit breakers to avoid cascading failure.</p>
-                  <table>
-                    <thead><tr><th>Annotation</th><th>Scope</th></tr></thead>
-                    <tbody><tr><td>@WebMvcTest</td><td><span class="pill good">Controller only</span></td></tr><tr><td>@DataJpaTest</td><td><span class="pill info">JPA layer</span></td></tr><tr><td>@SpringBootTest</td><td><span class="pill caution">Full context</span></td></tr></tbody>
-                  </table>
-                </div>
-              </div>
-              <div class="code-blocks">
-    <div>
-      <div class="code-title">Controller slice with MockMvc</div>
-      <pre>@WebMvcTest(OrderController.class)
-class OrderControllerTest {
-  @Autowired MockMvc mvc;
-  @MockBean OrderService service;
-
-  @Test void listOrders() throws Exception {
-    when(service.list()).thenReturn(List.of());
-    mvc.perform(get("/orders")).andExpect(status().isOk());
-  }
-}</pre>
-    </div>
-    </div>
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Too many mocks hide real bugs</h3>
-              <p>If you mock everything, you can miss wiring or serialization issues.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways"><li>Use the smallest slice.</li><li>Mock external boundaries.</li><li>Add a few full integration tests.</li></ul>
-            </article>
-
-            
-          
-            <article class="card technical">
-              <div class="card-label">Edge cases</div>
-              <h3>Edge Cases & Tradeoffs</h3>
-              <ul class="takeaways"><li>Over-mocking hides real integration bugs.</li><li>Stubbing unused interactions can mask regressions.</li><li>Final classes require inline mocking or PowerMockito.</li><li>Argument matchers mixed with raw values cause errors.</li><li>Async code needs deterministic scheduling.</li></ul>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Checklist</div>
-              <h3>Production Checklist</h3>
-              <ul class="takeaways"><li>Mock external boundaries, not core logic.</li><li>Use @ExtendWith(MockitoExtension).</li><li>Prefer verify() for behavior, not internal calls.</li><li>Use ArgumentCaptor for complex args.</li><li>Keep tests fast and focused.</li></ul>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Interview</div>
-              <h3>Interview Hooks</h3>
-              <p>Show you know when to mock and when to integrate.</p>
-              <ul class="takeaways"><li>Mock vs spy vs fake tradeoffs.</li><li>Stubbing with when/thenReturn and BDDMockito.</li><li>Avoid testing implementation details.</li></ul>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Advanced Example</div>
-              <div class="code-blocks">
-        <div>
-          <div class="code-title">Captor example</div>
-          <pre>@Captor ArgumentCaptor&lt;Email&gt; captor;
-verify(mailer).send(captor.capture());
-assertEquals("welcome", captor.getValue().subject());</pre>
-        </div>
-      </div>
-      <p>Captors validate arguments without over-specifying behavior.</p>
-            </article><article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>Which annotation is best for controller-only tests?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. @SpringBootTest</button><button class="quiz-option">B. @WebMvcTest</button><button class="quiz-option">C. @DataJpaTest</button><button class="quiz-option">D. @MockBean</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>@WebMvcTest limits the context to MVC components.</span>
-              </div>
-            </article></div>
-        </div>
-      </section>
-<section class="section" data-section="5">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Completion screen · Review mode</div>
-            <h2>🎉 Testing with Mockito Cheat Sheet</h2>
-            <p>Use this to recall test types, mocking patterns, and when to use each.</p>
-          </div>
-
-          <div class="completion-grid">
-            <div class="card technical">
-              <div class="card-label">Cheat sheet</div>
-              <div class="celebrate">🚀</div>
-              <h3>1-line interview answers</h3>
-              <div class="cheat-list">
-    <div class="cheat-item">
-      <h4>Test types</h4>
-      <p>Unit tests for logic, slice tests for layer, integration for wiring.</p>
-    </div>
-    <div class="cheat-item">
-      <h4>@MockBean</h4>
-      <p>Replaces a Spring bean in the context.</p>
-    </div>
-    <div class="cheat-item">
-      <h4>MockMvc</h4>
-      <p>Test controllers without full server.</p>
-    </div>
-    <div class="cheat-item">
-      <h4>Mockito</h4>
-      <p>Stub behavior and verify interactions.</p>
-    </div></div>
-            </div>
-
-            <div class="card analogy">
-              <div class="card-label">What to remember</div>
-              <h3>Fast mental model</h3>
-              <ul class="takeaways">
-                <li><strong>Slice tests:</strong> fast, focused.</li><li><strong>@MockBean:</strong> Spring-managed mock.</li><li><strong>MockMvc:</strong> HTTP layer tests.</li><li><strong>Verify:</strong> ensure behavior.</li>
-              </ul>
-              <h3 style="margin-top:22px;">Common traps</h3>
-              <div class="badge-row">
-                <span class="pill bad">Over-mocking</span><span class="pill bad">No integration tests</span><span class="pill bad">Verifying every call</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    </main>
-
-    <footer class="footer-nav">
-      <div class="footer-nav-inner">
-        <button class="btn" id="prevBtn">← Back</button>
-        <button class="btn primary" id="nextBtn">Next →</button>
-      </div>
-    </footer>
-  </div>
-
-  <script>
+    // focused MVC slice for controller behavior
+}</pre></div></div><p>Use test types &amp; slices where the rule belongs in architecture, not just where it happens to fix one failing test or one bug report.</p><p class="deep-note">The safest mental model is that Spring gives you a framework feature only when your call crosses the Spring-managed boundary and the surrounding infrastructure can participate.</p></article><article class="card warning"><div class="card-label">Warning</div><h3>Common misunderstanding</h3><p>The dangerous misunderstanding is treating test types &amp; slices like a magic switch instead of a mechanism with boundaries and defaults. That is how teams end up with using the full application context when a focused test slice would do.</p><p>A safer pattern is to make the intent explicit, keep the scope narrow, and choose the smallest mechanism that actually solves the problem.</p><div class="code-blocks"><div><div class="code-title">Broken pattern</div><pre>@SpringBootTest
+class UserControllerTest {
+    // loads the whole world just to test one controller mapping
+}</pre></div><div><div class="code-title">Safer pattern</div><pre>@WebMvcTest(UserController.class)
+class UserControllerTest {
+    // focused MVC slice for controller behavior
+}</pre></div></div></article><article class="card technical"><div class="card-label">Mini takeaway</div><ul class="takeaways"><li>Test Types &amp; Slices exists to make a policy explicit</li><li>Defaults are useful, but interviews reward knowing the boundary and trade-off</li><li>If you see using the full application context when a focused test slice would do, revisit the design before adding more framework annotations</li></ul></article><article class="card quiz-card"><div class="card-label">Quiz</div><h3>Why are test slices valuable in Spring testing?</h3><div class="quiz-options" data-answer="0"><button class="quiz-option">A. They give focused confidence without loading the entire application</button><button class="quiz-option">B. They remove the need for mocks</button><button class="quiz-option">C. They replace integration tests completely</button><button class="quiz-option">D. They make repositories faster in production</button></div><div class="quiz-result"><strong>Correct answer: A</strong><span>A is correct because it matches how test types &amp; slices is intended to work in a production-grade Spring application. The wrong choices are plausible because they sound framework-ish, but they either ignore the real boundary, confuse this feature with another one, or assume a stronger guarantee than the mechanism actually provides. In an interview, tie your answer back to the concrete failure mode you are preventing.</span></div></article></div></div></section><section class="section" data-section="1">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Section 2 · Mocking boundaries</div>
+<h2>@Mock vs @MockBean</h2>
+<p>@Mock vs @MockBean is a high-value senior interview topic because it reveals whether you understand the underlying mechanism, the default behavior, and the trade-offs in production.</p>
+</div>
+<div class="card-grid">
+<article class="card eli5"><div class="card-label">🧒 ELI5</div><h3>A simple mental picture</h3><p>Imagine a busy workplace where one small rule determines whether the whole team moves smoothly or keeps stepping on each other. @Mock is a plain Mockito mock for unit tests, while @MockBean replaces a bean inside a Spring test context. works like that kind of rule: it tells the system how to behave before small mistakes turn into bigger production problems.</p><p>It matters because mixing them up leads to confusing tests that either load too much or fail to wire correctly. Without that rule, engineers often discover the problem only after the app is under load, when the bug is expensive and confusing.</p><p>The useful mental shortcut is to ask: “What is the system trying to coordinate here, and what breaks when that coordination is missing?” That question usually reveals why this feature exists.</p></article><article class="card analogy"><div class="card-label">🔗 ANALOGY</div><h3>Why the rule exists</h3><p>Think of @mock vs @mockbean as a piece of operating policy, not just a syntax feature. The policy exists to make decisions repeatable across the whole system instead of relying on every individual class to remember the rule.</p><p>If you ignore that policy, the most common smell is using @mockbean in a pure unit test or @mock where the spring context expects a bean. In real applications, that smell usually shows up as flaky behavior, hidden coupling, or painful debugging.</p></article><article class="card technical"><div class="card-label">Technical</div><div class="two-col"><div><h3>How it works under the hood</h3><p><strong>Definition:</strong> @Mock is a plain Mockito mock for unit tests, while @MockBean replaces a bean inside a Spring test context.</p><p class="deep-note">@Mock is a plain Mockito mock for unit tests, while @MockBean replaces a bean inside a Spring test context. Under the hood, Spring or the underlying infrastructure usually applies the behavior around your code rather than by changing your business logic directly.</p><p class="deep-note">The production question is not “can I enable it?” but “where is the right boundary and what problem am I actually solving?”</p><p class="deep-note">Good engineering here comes from matching the mechanism to the use case, then watching the trade-off instead of blindly turning the feature on everywhere.</p><div class="mini-grid"><div class="mini-panel"><h4>Why it matters in production</h4><ul><li>mixing them up leads to confusing tests that either load too much or fail to wire correctly</li><li>Makes testing with mockito behavior explicit</li><li>Gives you a clearer story in debugging and interviews</li></ul></div><div class="mini-panel"><h4>Common smell</h4><ul><li>using @MockBean in a pure unit test or @Mock where the Spring context expects a bean</li><li>Using the mechanism as a band-aid for design issues</li><li>Forgetting what the default behavior actually is</li></ul></div></div><div class="badge-row"><span class="pill good">Explicit intent</span><span class="pill info">Know the default</span><span class="pill caution">Trade-offs matter</span></div><div class="flow"><span class="flow-step">Call enters boundary</span><span class="flow-arrow">→</span><span class="flow-step">Framework applies rule</span><span class="flow-arrow">→</span><span class="flow-step">Your code runs</span><span class="flow-arrow">→</span><span class="flow-step">Outcome follows configured behavior</span></div></div><div><h3>💬 Model Interview Answer</h3><p>“@Mock vs @MockBean in Testing with Mockito is really about @mock is a plain mockito mock for unit tests, while @mockbean replaces a bean inside a spring test context. I explain it as a mechanism that enforces a policy around my code so the application behaves consistently. The important trade-off is using @mockbean in a pure unit test or @mock where the spring context expects a bean, so I use it deliberately and I make the boundary clear instead of relying on accidental defaults.”</p><table><thead><tr><th>Scenario</th><th>What to watch</th></tr></thead><tbody><tr><td>@Mock</td><td>Pure Mockito object</td></tr><tr><td>@MockBean</td><td>Spring-context bean replacement</td></tr><tr><td>Choice</td><td>Depends on whether Spring context is involved</td></tr></tbody></table></div></div><div class="code-blocks"><div><div class="code-title">❌ Wrong</div><pre>@WebMvcTest(UserController.class)
+class UserControllerTest {
+    @Mock
+    private UserService userService; // controller bean still has no Spring replacement
+}</pre></div><div><div class="code-title">✅ Right</div><pre>@WebMvcTest(UserController.class)
+class UserControllerTest {
+    @MockBean
+    private UserService userService;
+}</pre></div></div><p>Use @mock vs @mockbean where the rule belongs in architecture, not just where it happens to fix one failing test or one bug report.</p><p class="deep-note">The safest mental model is that Spring gives you a framework feature only when your call crosses the Spring-managed boundary and the surrounding infrastructure can participate.</p></article><article class="card warning"><div class="card-label">Warning</div><h3>Common misunderstanding</h3><p>The dangerous misunderstanding is treating @mock vs @mockbean like a magic switch instead of a mechanism with boundaries and defaults. That is how teams end up with using @mockbean in a pure unit test or @mock where the spring context expects a bean.</p><p>A safer pattern is to make the intent explicit, keep the scope narrow, and choose the smallest mechanism that actually solves the problem.</p><div class="code-blocks"><div><div class="code-title">Broken pattern</div><pre>@WebMvcTest(UserController.class)
+class UserControllerTest {
+    @Mock
+    private UserService userService; // controller bean still has no Spring replacement
+}</pre></div><div><div class="code-title">Safer pattern</div><pre>@WebMvcTest(UserController.class)
+class UserControllerTest {
+    @MockBean
+    private UserService userService;
+}</pre></div></div></article><article class="card technical"><div class="card-label">Mini takeaway</div><ul class="takeaways"><li>@Mock vs @MockBean exists to make a policy explicit</li><li>Defaults are useful, but interviews reward knowing the boundary and trade-off</li><li>If you see using @mockbean in a pure unit test or @mock where the spring context expects a bean, revisit the design before adding more framework annotations</li></ul></article><article class="card quiz-card"><div class="card-label">Quiz</div><h3>What is the key difference between @Mock and @MockBean?</h3><div class="quiz-options" data-answer="0"><button class="quiz-option">A. @MockBean replaces a bean in the Spring context, @Mock does not</button><button class="quiz-option">B. @Mock works only for interfaces</button><button class="quiz-option">C. @MockBean disables Mockito verification</button><button class="quiz-option">D. They are identical</button></div><div class="quiz-result"><strong>Correct answer: A</strong><span>A is correct because it matches how @mock vs @mockbean is intended to work in a production-grade Spring application. The wrong choices are plausible because they sound framework-ish, but they either ignore the real boundary, confuse this feature with another one, or assume a stronger guarantee than the mechanism actually provides. In an interview, tie your answer back to the concrete failure mode you are preventing.</span></div></article></div></div></section><section class="section" data-section="2">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Section 3 · Web testing</div>
+<h2>MockMvc Patterns</h2>
+<p>MockMvc Patterns is a high-value senior interview topic because it reveals whether you understand the underlying mechanism, the default behavior, and the trade-offs in production.</p>
+</div>
+<div class="card-grid">
+<article class="card eli5"><div class="card-label">🧒 ELI5</div><h3>A simple mental picture</h3><p>Imagine a busy workplace where one small rule determines whether the whole team moves smoothly or keeps stepping on each other. MockMvc lets you test Spring MVC controller behavior—routing, validation, status codes, and JSON shape—without starting a real server. works like that kind of rule: it tells the system how to behave before small mistakes turn into bigger production problems.</p><p>It matters because controller tests should verify http behavior, not just method calls. Without that rule, engineers often discover the problem only after the app is under load, when the bug is expensive and confusing.</p><p>The useful mental shortcut is to ask: “What is the system trying to coordinate here, and what breaks when that coordination is missing?” That question usually reveals why this feature exists.</p></article><article class="card analogy"><div class="card-label">🔗 ANALOGY</div><h3>Why the rule exists</h3><p>Think of mockmvc patterns as a piece of operating policy, not just a syntax feature. The policy exists to make decisions repeatable across the whole system instead of relying on every individual class to remember the rule.</p><p>If you ignore that policy, the most common smell is testing controller internals instead of observable http contract. In real applications, that smell usually shows up as flaky behavior, hidden coupling, or painful debugging.</p></article><article class="card technical"><div class="card-label">Technical</div><div class="two-col"><div><h3>How it works under the hood</h3><p><strong>Definition:</strong> MockMvc lets you test Spring MVC controller behavior—routing, validation, status codes, and JSON shape—without starting a real server.</p><p class="deep-note">MockMvc lets you test Spring MVC controller behavior—routing, validation, status codes, and JSON shape—without starting a real server. Under the hood, Spring or the underlying infrastructure usually applies the behavior around your code rather than by changing your business logic directly.</p><p class="deep-note">The production question is not “can I enable it?” but “where is the right boundary and what problem am I actually solving?”</p><p class="deep-note">Good engineering here comes from matching the mechanism to the use case, then watching the trade-off instead of blindly turning the feature on everywhere.</p><div class="mini-grid"><div class="mini-panel"><h4>Why it matters in production</h4><ul><li>controller tests should verify HTTP behavior, not just method calls</li><li>Makes testing with mockito behavior explicit</li><li>Gives you a clearer story in debugging and interviews</li></ul></div><div class="mini-panel"><h4>Common smell</h4><ul><li>testing controller internals instead of observable HTTP contract</li><li>Using the mechanism as a band-aid for design issues</li><li>Forgetting what the default behavior actually is</li></ul></div></div><div class="badge-row"><span class="pill good">Explicit intent</span><span class="pill info">Know the default</span><span class="pill caution">Trade-offs matter</span></div><div class="flow"><span class="flow-step">Call enters boundary</span><span class="flow-arrow">→</span><span class="flow-step">Framework applies rule</span><span class="flow-arrow">→</span><span class="flow-step">Your code runs</span><span class="flow-arrow">→</span><span class="flow-step">Outcome follows configured behavior</span></div></div><div><h3>💬 Model Interview Answer</h3><p>“MockMvc Patterns in Testing with Mockito is really about mockmvc lets you test spring mvc controller behavior—routing, validation, status codes, and json shape—without starting a real server. I explain it as a mechanism that enforces a policy around my code so the application behaves consistently. The important trade-off is testing controller internals instead of observable http contract, so I use it deliberately and I make the boundary clear instead of relying on accidental defaults.”</p><table><thead><tr><th>Scenario</th><th>What to watch</th></tr></thead><tbody><tr><td>Route + status</td><td>Easy to verify</td></tr><tr><td>Validation</td><td>Part of the HTTP contract</td></tr><tr><td>Serialization</td><td>Observed through JSON expectations</td></tr></tbody></table></div></div><div class="code-blocks"><div><div class="code-title">❌ Wrong</div><pre>// directly call controller method and skip validation / serialization behavior
+controller.createUser(request);</pre></div><div><div class="code-title">✅ Right</div><pre>mockMvc.perform(post("/users")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content("""
+            {"name":"Hemanth"}
+        """))
+        .andExpect(status().isCreated());</pre></div></div><p>Use mockmvc patterns where the rule belongs in architecture, not just where it happens to fix one failing test or one bug report.</p><p class="deep-note">The safest mental model is that Spring gives you a framework feature only when your call crosses the Spring-managed boundary and the surrounding infrastructure can participate.</p></article><article class="card warning"><div class="card-label">Warning</div><h3>Common misunderstanding</h3><p>The dangerous misunderstanding is treating mockmvc patterns like a magic switch instead of a mechanism with boundaries and defaults. That is how teams end up with testing controller internals instead of observable http contract.</p><p>A safer pattern is to make the intent explicit, keep the scope narrow, and choose the smallest mechanism that actually solves the problem.</p><div class="code-blocks"><div><div class="code-title">Broken pattern</div><pre>// directly call controller method and skip validation / serialization behavior
+controller.createUser(request);</pre></div><div><div class="code-title">Safer pattern</div><pre>mockMvc.perform(post("/users")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content("""
+            {"name":"Hemanth"}
+        """))
+        .andExpect(status().isCreated());</pre></div></div></article><article class="card technical"><div class="card-label">Mini takeaway</div><ul class="takeaways"><li>MockMvc Patterns exists to make a policy explicit</li><li>Defaults are useful, but interviews reward knowing the boundary and trade-off</li><li>If you see testing controller internals instead of observable http contract, revisit the design before adding more framework annotations</li></ul></article><article class="card quiz-card"><div class="card-label">Quiz</div><h3>Why is MockMvc useful for controller testing?</h3><div class="quiz-options" data-answer="0"><button class="quiz-option">A. It exercises MVC behavior without needing a real servlet container</button><button class="quiz-option">B. It replaces repository tests</button><button class="quiz-option">C. It guarantees production security config is perfect</button><button class="quiz-option">D. It disables JSON serialization</button></div><div class="quiz-result"><strong>Correct answer: A</strong><span>A is correct because it matches how mockmvc patterns is intended to work in a production-grade Spring application. The wrong choices are plausible because they sound framework-ish, but they either ignore the real boundary, confuse this feature with another one, or assume a stronger guarantee than the mechanism actually provides. In an interview, tie your answer back to the concrete failure mode you are preventing.</span></div></article></div></div></section><section class="section" data-section="3">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Section 4 · Mockito usage</div>
+<h2>Stubbing &amp; Verification</h2>
+<p>Stubbing &amp; Verification is a high-value senior interview topic because it reveals whether you understand the underlying mechanism, the default behavior, and the trade-offs in production.</p>
+</div>
+<div class="card-grid">
+<article class="card eli5"><div class="card-label">🧒 ELI5</div><h3>A simple mental picture</h3><p>Imagine a busy workplace where one small rule determines whether the whole team moves smoothly or keeps stepping on each other. Mockito lets you stub collaborator behavior and verify interaction boundaries so unit tests can focus on the class under test. works like that kind of rule: it tells the system how to behave before small mistakes turn into bigger production problems.</p><p>It matters because good stubbing keeps tests precise while over-mocking makes them brittle. Without that rule, engineers often discover the problem only after the app is under load, when the bug is expensive and confusing.</p><p>The useful mental shortcut is to ask: “What is the system trying to coordinate here, and what breaks when that coordination is missing?” That question usually reveals why this feature exists.</p></article><article class="card analogy"><div class="card-label">🔗 ANALOGY</div><h3>Why the rule exists</h3><p>Think of stubbing &amp; verification as a piece of operating policy, not just a syntax feature. The policy exists to make decisions repeatable across the whole system instead of relying on every individual class to remember the rule.</p><p>If you ignore that policy, the most common smell is verifying every tiny interaction instead of the behavior that matters. In real applications, that smell usually shows up as flaky behavior, hidden coupling, or painful debugging.</p></article><article class="card technical"><div class="card-label">Technical</div><div class="two-col"><div><h3>How it works under the hood</h3><p><strong>Definition:</strong> Mockito lets you stub collaborator behavior and verify interaction boundaries so unit tests can focus on the class under test.</p><p class="deep-note">Mockito lets you stub collaborator behavior and verify interaction boundaries so unit tests can focus on the class under test. Under the hood, Spring or the underlying infrastructure usually applies the behavior around your code rather than by changing your business logic directly.</p><p class="deep-note">The production question is not “can I enable it?” but “where is the right boundary and what problem am I actually solving?”</p><p class="deep-note">Good engineering here comes from matching the mechanism to the use case, then watching the trade-off instead of blindly turning the feature on everywhere.</p><div class="mini-grid"><div class="mini-panel"><h4>Why it matters in production</h4><ul><li>good stubbing keeps tests precise while over-mocking makes them brittle</li><li>Makes testing with mockito behavior explicit</li><li>Gives you a clearer story in debugging and interviews</li></ul></div><div class="mini-panel"><h4>Common smell</h4><ul><li>verifying every tiny interaction instead of the behavior that matters</li><li>Using the mechanism as a band-aid for design issues</li><li>Forgetting what the default behavior actually is</li></ul></div></div><div class="badge-row"><span class="pill good">Explicit intent</span><span class="pill info">Know the default</span><span class="pill caution">Trade-offs matter</span></div><div class="flow"><span class="flow-step">Call enters boundary</span><span class="flow-arrow">→</span><span class="flow-step">Framework applies rule</span><span class="flow-arrow">→</span><span class="flow-step">Your code runs</span><span class="flow-arrow">→</span><span class="flow-step">Outcome follows configured behavior</span></div></div><div><h3>💬 Model Interview Answer</h3><p>“Stubbing &amp; Verification in Testing with Mockito is really about mockito lets you stub collaborator behavior and verify interaction boundaries so unit tests can focus on the class under test. I explain it as a mechanism that enforces a policy around my code so the application behaves consistently. The important trade-off is verifying every tiny interaction instead of the behavior that matters, so I use it deliberately and I make the boundary clear instead of relying on accidental defaults.”</p><table><thead><tr><th>Scenario</th><th>What to watch</th></tr></thead><tbody><tr><td>Stubbing</td><td>Control collaborator behavior</td></tr><tr><td>Verification</td><td>Check meaningful interaction</td></tr><tr><td>Brittleness</td><td>Comes from over-specifying internals</td></tr></tbody></table></div></div><div class="code-blocks"><div><div class="code-title">❌ Wrong</div><pre>verify(repository).findById(id);
+verify(repository).save(user);
+verify(logger).info(anyString());
+verify(mapper).map(any(), any());
+// test becomes coupled to implementation details</pre></div><div><div class="code-title">✅ Right</div><pre>when(repository.findById(id)).thenReturn(Optional.of(user));
+service.renameUser(id, "new-name");
+verify(repository).save(user);</pre></div></div><p>Use stubbing &amp; verification where the rule belongs in architecture, not just where it happens to fix one failing test or one bug report.</p><p class="deep-note">The safest mental model is that Spring gives you a framework feature only when your call crosses the Spring-managed boundary and the surrounding infrastructure can participate.</p></article><article class="card warning"><div class="card-label">Warning</div><h3>Common misunderstanding</h3><p>The dangerous misunderstanding is treating stubbing &amp; verification like a magic switch instead of a mechanism with boundaries and defaults. That is how teams end up with verifying every tiny interaction instead of the behavior that matters.</p><p>A safer pattern is to make the intent explicit, keep the scope narrow, and choose the smallest mechanism that actually solves the problem.</p><div class="code-blocks"><div><div class="code-title">Broken pattern</div><pre>verify(repository).findById(id);
+verify(repository).save(user);
+verify(logger).info(anyString());
+verify(mapper).map(any(), any());
+// test becomes coupled to implementation details</pre></div><div><div class="code-title">Safer pattern</div><pre>when(repository.findById(id)).thenReturn(Optional.of(user));
+service.renameUser(id, "new-name");
+verify(repository).save(user);</pre></div></div></article><article class="card technical"><div class="card-label">Mini takeaway</div><ul class="takeaways"><li>Stubbing &amp; Verification exists to make a policy explicit</li><li>Defaults are useful, but interviews reward knowing the boundary and trade-off</li><li>If you see verifying every tiny interaction instead of the behavior that matters, revisit the design before adding more framework annotations</li></ul></article><article class="card quiz-card"><div class="card-label">Quiz</div><h3>What is a healthy Mockito habit?</h3><div class="quiz-options" data-answer="1"><button class="quiz-option">A. Verify every helper call possible</button><button class="quiz-option">B. Stub only what matters and verify meaningful boundaries</button><button class="quiz-option">C. Mock Java collections</button><button class="quiz-option">D. Replace all integration tests with Mockito</button></div><div class="quiz-result"><strong>Correct answer: B</strong><span>B is correct because it matches how stubbing &amp; verification is intended to work in a production-grade Spring application. The wrong choices are plausible because they sound framework-ish, but they either ignore the real boundary, confuse this feature with another one, or assume a stronger guarantee than the mechanism actually provides. In an interview, tie your answer back to the concrete failure mode you are preventing.</span></div></article></div></div></section><section class="section" data-section="4">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Section 5 · Interview deep dive</div>
+<h2>Deep Dive: Test Slices &amp; Mocking Strategy</h2>
+<p>This deep dive connects the mechanics of testing with mockito with the production decisions senior engineers are expected to explain clearly.</p>
+</div>
+<div class="card-grid">
+<article class="card eli5"><div class="card-label">🧒 ELI5</div><h3>A bigger real-world picture</h3><p>In a larger system, the hard part is not knowing the vocabulary. The hard part is deciding which rule belongs where so the whole operation still makes sense when something unexpected happens.</p><p>That is why choosing the smallest useful test scope while still proving the behavior that can actually break in production. The mechanism has to support the story your system tells under stress, not just the happy path.</p><p>This is where interviewers are listening for judgment: not just what the feature does, but how you would keep the design honest when multiple moving parts are involved.</p></article><article class="card analogy"><div class="card-label">🔗 ANALOGY</div><h3>Why senior engineers care</h3><p>choosing the smallest useful test scope while still proving the behavior that can actually break in production usually sits at the intersection of framework behavior, business requirements, and operational trade-offs.</p><p>When teams get this wrong, the system may still compile and even pass local tests, but production behavior becomes surprising.</p></article><article class="card technical"><div class="card-label">Technical</div><div class="two-col"><div><h3>What to optimize for</h3><p><strong>Definition:</strong> choosing the smallest useful test scope while still proving the behavior that can actually break in production</p><p class="deep-note">Senior-level answers usually mention boundaries, defaults, observability, and trade-offs in the same breath.</p><p class="deep-note">The safest pattern is usually to keep the mechanism narrow, explicit, and easy to reason about.</p><p class="deep-note">If a framework feature starts compensating for unclear ownership, unclear state, or unclear flow, the real problem is probably design, not syntax.</p><div class="mini-grid"><div class="mini-panel"><h4>What senior engineers optimize for</h4><ul><li>Optimize for clarity of boundary</li><li>Prefer explicit over accidental behavior</li><li>Choose the smallest mechanism that solves the real problem</li></ul></div><div class="mini-panel"><h4>Trade-offs</h4><ul><li>Magic defaults can hide surprises</li><li>Cross-cutting features can mask weak design</li><li>More power usually means more room for misuse</li></ul></div></div><div class="badge-row"><span class="pill good">Clear boundary</span><span class="pill info">Explain the why</span><span class="pill bad">Framework cargo-culting</span></div><div class="flow"><span class="flow-step">Requirement appears</span><span class="flow-arrow">→</span><span class="flow-step">Choose boundary</span><span class="flow-arrow">→</span><span class="flow-step">Apply mechanism</span><span class="flow-arrow">→</span><span class="flow-step">Observe real outcome</span></div></div><div><h3>💬 Model Interview Answer</h3><p>“When I talk about testing with mockito at a senior level, I focus on the boundary, the default behavior, and the production trade-off. I want the design to make the intent obvious even to the next engineer reading the code. The smell I watch for is using framework features to hide a design problem instead of clarifying one.”</p><table><thead><tr><th>Decision point</th><th>Senior answer</th></tr></thead><tbody><tr><td>Boundary</td><td>State it explicitly</td></tr><tr><td>Default behavior</td><td>Know it by memory</td></tr><tr><td>Trade-off</td><td>Say what you pay for the guarantee</td></tr></tbody></table></div></div><div class="code-blocks"><div><div class="code-title">❌ Wrong: implicit or leaky design</div><pre>@SpringBootTest
+class EverythingTest {
+    // mixes controller, DB, security, and messaging concerns in one slow test
+}</pre></div><div><div class="code-title">✅ Right: explicit design</div><pre>// Use:
+// - unit test for pure service logic
+// - @WebMvcTest for controller contract
+// - @DataJpaTest for repository behavior
+// - focused integration test for cross-layer wiring</pre></div></div></article><article class="card warning"><div class="card-label">Warning</div><h3>The biggest trap</h3><p>The hardest bugs here come from systems that “mostly work” until traffic, retries, concurrency, or environment differences expose the hidden assumption.</p><p>A good fix usually makes the intent more explicit instead of adding one more annotation and hoping the framework figures it out.</p><div class="code-blocks"><div><div class="code-title">Broken pattern</div><pre>@SpringBootTest
+class EverythingTest {
+    // mixes controller, DB, security, and messaging concerns in one slow test
+}</pre></div><div><div class="code-title">Safer pattern</div><pre>// Use:
+// - unit test for pure service logic
+// - @WebMvcTest for controller contract
+// - @DataJpaTest for repository behavior
+// - focused integration test for cross-layer wiring</pre></div></div></article><article class="card technical"><div class="card-label">Edge cases</div><h3>Edge Cases &amp; Tradeoffs</h3><ul class="takeaways"><li>Defaults can differ across libraries or underlying infrastructure.</li><li>A passing unit test does not prove the boundary is correct in production.</li><li>Observability is often what reveals misuse first.</li><li>Keep side effects and lifetime of state in view when designing the boundary.</li><li>Explain what would happen under failure, not just success.</li></ul></article><article class="card technical"><div class="card-label">Checklist</div><h3>Production Checklist</h3><ul class="takeaways"><li>Name the real invariant or guarantee you care about</li><li>Choose the narrowest boundary that enforces it</li><li>Know the default behavior and the override you would use</li><li>Keep the design easy to test and easy to observe</li><li>Call out one concrete gotcha in interviews</li></ul></article><article class="card technical"><div class="card-label">Interview</div><h3>Interview Hooks</h3><ul class="takeaways"><li>What is the default behavior?</li><li>What is the most common production mistake?</li><li>What trade-off are you accepting for the guarantee?</li></ul></article><article class="card technical"><div class="card-label">Advanced Example</div><h3>Advanced example</h3><div class="code-blocks"><div><div class="code-title">Advanced example</div><pre>@DataJpaTest
+class UserRepositoryTest {
+    @Autowired
+    private UserRepository userRepository;
+}</pre></div></div></article><article class="card quiz-card"><div class="card-label">Quiz</div><h3>What is the mature testing mindset for Spring applications?</h3><div class="quiz-options" data-answer="1"><button class="quiz-option">A. Use one heavy test style for everything</button><button class="quiz-option">B. Match test scope to the risk and behavior being proven</button><button class="quiz-option">C. Mock every dependency in every layer</button><button class="quiz-option">D. Avoid integration tests entirely</button></div><div class="quiz-result"><strong>Correct answer: B</strong><span>B is correct because it reflects the mature design choice for this kind of boundary. The distractors all represent common mistakes: pushing responsibility to the wrong layer, assuming defaults are stronger than they are, or using a framework feature as a substitute for clear design. In an interview, explain not only which answer is right, but what failure mode the wrong answers would create.</span></div></article></div></div></section><section class="section" data-section="5">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Completion screen · Review mode</div>
+<h2>🎉 Testing with Mockito Cheat Sheet</h2>
+<p>Use this cheat sheet to recall the core mental model for testing with mockito and the most common traps.</p>
+</div>
+<div class="completion-grid">
+<div class="card technical">
+<div class="card-label">Cheat sheet</div>
+<div class="celebrate">🚀</div>
+<h3>1-line interview answers</h3>
+<div class="cheat-list"><div class="cheat-item"><h4>Scope</h4><p>Use unit, slice, and integration tests for different risks.</p></div><div class="cheat-item"><h4>@Mock vs @MockBean</h4><p>Know whether Spring context is involved.</p></div><div class="cheat-item"><h4>MockMvc</h4><p>Test controller HTTP behavior, not just method calls.</p></div><div class="cheat-item"><h4>Mockito</h4><p>Stub and verify what matters, not every internal detail.</p></div></div>
+</div>
+<div class="card analogy">
+<div class="card-label">What to remember</div>
+<h3>Fast mental model</h3>
+<ul class="takeaways"><li><strong>Scope:</strong> Use unit, slice, and integration tests for different risks.</li><li><strong>@Mock vs @MockBean:</strong> Know whether Spring context is involved.</li><li><strong>MockMvc:</strong> Test controller HTTP behavior, not just method calls.</li><li><strong>Mockito:</strong> Stub and verify what matters, not every internal detail.</li></ul>
+<h3 style="margin-top:22px;">Common traps</h3>
+<div class="badge-row"><span class="pill bad">Everything is @SpringBootTest</span><span class="pill bad">Over-verification</span><span class="pill bad">Controller tests that skip HTTP behavior</span></div>
+</div>
+</div>
+</div>
+</section><footer class="footer-nav">
+<div class="footer-nav-inner">
+<button class="btn" id="prevBtn">← Back</button>
+<button class="btn primary" id="nextBtn">Next →</button>
+</div>
+</footer>
+</div>
+<script>
 const sections = Array.from(document.querySelectorAll('.section'));
     const dots = Array.from(document.querySelectorAll('.nav-dot'));
     const prevBtn = document.getElementById('prevBtn');
