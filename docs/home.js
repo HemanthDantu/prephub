@@ -20,6 +20,55 @@ function tagEl(t) {
   return `<span class="tag">${t}</span>`;
 }
 
+function normalizeText(str) {
+  return (str || '')
+    .toLowerCase()
+    .replace(/&/g, ' and ')
+    .replace(/[^a-z0-9+]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function buildSearchIndex() {
+  const index = {};
+  SITE_DATA.topics.forEach(topic => {
+    const concepts = [];
+    topic.groups.forEach(group => {
+      group.concepts.forEach(concept => {
+        const conceptText = [
+          concept.title,
+          concept.subtitle || '',
+          (concept.tags || []).join(' '),
+          group.name
+        ].join(' ');
+        concepts.push({
+          title: concept.title,
+          subtitle: concept.subtitle || '',
+          tags: concept.tags || [],
+          status: concept.status,
+          file: concept.file,
+          search: normalizeText(conceptText)
+        });
+      });
+    });
+
+    const topicText = [
+      topic.title,
+      topic.description,
+      (topic.tags || []).join(' '),
+      concepts.map(c => `${c.title} ${c.subtitle} ${c.tags.join(' ')}`).join(' ')
+    ].join(' ');
+
+    index[topic.id] = {
+      searchText: normalizeText(topicText),
+      concepts
+    };
+  });
+  return index;
+}
+
+const SEARCH_INDEX = buildSearchIndex();
+
 /* ── Recently Visited (localStorage) ────────────────────── */
 
 const HISTORY_KEY = 'iph_history';
@@ -166,6 +215,7 @@ function buildTopicCard(topic) {
   const newBadge  = topic.isNew ? badge('New', 'new') : '';
   const diffBadgeEl = diffBadge(topic.difficulty);
   const topicIndexPath = topic.path.endsWith('/') ? `${topic.path}index.html` : `${topic.path}/index.html`;
+  const searchText = SEARCH_INDEX[topic.id] ? SEARCH_INDEX[topic.id].searchText : '';
 
   return `
     <div class="topic-card animate-in"
@@ -174,6 +224,7 @@ function buildTopicCard(topic) {
          data-topic-tags="${topic.tags.join(',')}"
          data-topic-difficulty="${topic.difficulty}"
          data-topic-title="${topic.title.toLowerCase()}"
+         data-topic-search="${searchText}"
          data-topic-href="${topicIndexPath}"
          role="link"
          tabindex="0"
@@ -222,6 +273,11 @@ function renderTopicCards() {
     const href = card.dataset.topicHref;
     if (!href) return;
 
+    const previewList = card.querySelector('.preview-list');
+    if (previewList) {
+      card.dataset.previewDefault = previewList.innerHTML;
+    }
+
     card.addEventListener('click', (e) => {
       if (e.target.closest('a')) return;
       window.location.href = href;
@@ -254,15 +310,56 @@ function getCards() {
   return Array.from(document.querySelectorAll('.topic-card'));
 }
 
+function getSearchTerms() {
+  return searchQuery ? searchQuery.split(' ').filter(Boolean) : [];
+}
+
+function matchesTerms(text, terms) {
+  if (!terms.length) return true;
+  return terms.every(term => text.includes(term));
+}
+
+function updatePreviewForSearch(card, terms) {
+  const previewList = card.querySelector('.preview-list');
+  if (!previewList) return;
+
+  const defaultHtml = card.dataset.previewDefault || previewList.innerHTML;
+  if (!terms.length) {
+    previewList.innerHTML = defaultHtml;
+    return;
+  }
+
+  const topicId = card.dataset.topicId;
+  const index = SEARCH_INDEX[topicId];
+  if (!index) return;
+
+  const matches = index.concepts.filter(c => matchesTerms(c.search, terms));
+  if (!matches.length) {
+    previewList.innerHTML = defaultHtml;
+    return;
+  }
+
+  const shown = matches.slice(0, 4);
+  const rest = matches.length - shown.length;
+  const items = shown.map(c => {
+    const statusClass = c.status === 'available' ? 'available' : 'pending';
+    const matchClass = c.status === 'available' ? 'match' : 'match pending';
+    return `<div class="preview-item ${statusClass} ${matchClass}">${c.title}</div>`;
+  }).join('');
+  const more = rest > 0 ? `<div class="preview-more">+${rest} more matches</div>` : '';
+  previewList.innerHTML = items + more;
+}
+
 function applyFilters() {
   const cards  = getCards();
   const noRes  = document.getElementById('no-results');
   let visible  = 0;
+  const terms  = getSearchTerms();
 
   cards.forEach(card => {
+    const searchText = card.dataset.topicSearch || '';
     const titleMatch = searchQuery
-      ? card.dataset.topicTitle.includes(searchQuery) ||
-        card.dataset.topicTags.includes(searchQuery)
+      ? matchesTerms(searchText, terms)
       : true;
 
     const filterMatch = activeFilter === 'all'
@@ -274,6 +371,8 @@ function applyFilters() {
     const show = titleMatch && filterMatch;
     card.style.display = show ? '' : 'none';
     if (show) visible++;
+
+    updatePreviewForSearch(card, terms);
   });
 
   if (noRes) noRes.classList.toggle('visible', visible === 0);
@@ -288,7 +387,7 @@ function initSearch() {
   input.addEventListener('input', () => {
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(() => {
-      searchQuery = input.value.trim().toLowerCase();
+      searchQuery = normalizeText(input.value);
       applyFilters();
     }, 160);
   });
