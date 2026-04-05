@@ -263,6 +263,21 @@ const SITE_DATA = {
               status:     'available'
             }
           ]
+        },
+        {
+          name: 'Reference',
+          concepts: [
+            {
+              title:      'Java Study Plan',
+              subtitle:   'Pomodoro-based path to complete the module',
+              difficulty: 'beginner',
+              time:       '15 min',
+              tags:       ['plan', 'schedule', 'study'],
+              file:       'study-plan.html',
+              status:     'available',
+              featured:   true
+            }
+          ]
         }
       ]
     },
@@ -630,6 +645,17 @@ const SITE_DATA = {
         {
           name: 'Reference',
           concepts: [
+
+            {
+              title:      'SQL Study Plan',
+              subtitle:   'Pomodoro-based path to complete the module',
+              difficulty: 'beginner',
+              time:       '15 min',
+              tags:       ['plan', 'schedule', 'study'],
+              file:       'study-plan.html',
+              status:     'available',
+              featured:   true
+            },
             {
               title:      'DB Interview Reference Sheet',
               subtitle:   'SQL, NoSQL, transactions, indexes — comprehensive database interview cheatsheet',
@@ -792,6 +818,21 @@ const SITE_DATA = {
               status:     'placeholder'
             }
           ]
+        },
+        {
+          name: 'Reference',
+          concepts: [
+            {
+              title:      'System Design Study Plan',
+              subtitle:   'Pomodoro-based path to complete the module',
+              difficulty: 'beginner',
+              time:       '15 min',
+              tags:       ['plan', 'schedule', 'study'],
+              file:       'study-plan.html',
+              status:     'available',
+              featured:   true
+            }
+          ]
         }
       ]
     },
@@ -895,6 +936,21 @@ const SITE_DATA = {
               tags:       ['modules', 'bundling'],
               file:       'modules.html',
               status:     'placeholder'
+            }
+          ]
+        },
+        {
+          name: 'Reference',
+          concepts: [
+            {
+              title:      'JavaScript Study Plan',
+              subtitle:   'Pomodoro-based path to complete the module',
+              difficulty: 'beginner',
+              time:       '15 min',
+              tags:       ['plan', 'schedule', 'study'],
+              file:       'study-plan.html',
+              status:     'available',
+              featured:   true
             }
           ]
         }
@@ -1001,6 +1057,21 @@ const SITE_DATA = {
               tags:       ['next.js', 'rendering'],
               file:       'rendering-strategies.html',
               status:     'placeholder'
+            }
+          ]
+        },
+        {
+          name: 'Reference',
+          concepts: [
+            {
+              title:      'React / Next.js Study Plan',
+              subtitle:   'Pomodoro-based path to complete the module',
+              difficulty: 'beginner',
+              time:       '15 min',
+              tags:       ['plan', 'schedule', 'study'],
+              file:       'study-plan.html',
+              status:     'available',
+              featured:   true
             }
           ]
         }
@@ -1113,6 +1184,21 @@ const SITE_DATA = {
               status:     'available'
             }
           ]
+        },
+        {
+          name: 'Reference',
+          concepts: [
+            {
+              title:      'Cloud & DevOps Study Plan',
+              subtitle:   'Pomodoro-based path to complete the module',
+              difficulty: 'beginner',
+              time:       '15 min',
+              tags:       ['plan', 'schedule', 'study'],
+              file:       'study-plan.html',
+              status:     'available',
+              featured:   true
+            }
+          ]
         }
       ]
     },
@@ -1214,8 +1300,23 @@ const SITE_DATA = {
               status:     'placeholder'
             }
           ]
+        },
+        {
+          name: 'Reference',
+          concepts: [
+            {
+              title:      'Behavioral Study Plan',
+              subtitle:   'Pomodoro-based path to complete the module',
+              difficulty: 'beginner',
+              time:       '15 min',
+              tags:       ['plan', 'schedule', 'study'],
+              file:       'study-plan.html',
+              status:     'available',
+              featured:   true
+            }
+          ]
         }
-      ]
+]
     }
 
   ] // end topics

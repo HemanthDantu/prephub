@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>React / Next.js — Study Plan</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0e1a;
+      --surface-1: #111827;
+      --surface-2: #1a2235;
+      --surface-3: #1e2d45;
+      --border: rgba(255,255,255,0.08);
+      --text: #e2e8f0;
+      --muted: #9aa6bf;
+      --accent: #38bdf8;
+      --cyan: #00d4ff;
+      --green: #10b981;
+      --amber: #f59e0b;
+      --red: #ef4444;
+      --shadow: 0 20px 60px rgba(0,0,0,0.35);
+      --radius-lg: 18px;
+      --radius-md: 12px;
+      --radius-sm: 8px;
+      --max: 1100px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Syne', system-ui, sans-serif;
+      color: var(--text);
+      background: radial-gradient(1200px 700px at 20% -10%, #14213b 0%, #0a0e1a 60%);
+    }
+    a { color: inherit; text-decoration: none; }
+
+    .shell {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 28px 22px 60px;
+    }
+
+    .top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .crumbs {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      font-size: 0.95rem;
+      color: var(--muted);
+    }
+    .crumbs a { color: var(--cyan); }
+    .badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(0,0,0,0.2);
+      color: var(--accent);
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+
+    .hero {
+      background: linear-gradient(135deg, rgba(0,0,0,0.2), rgba(0,0,0,0.35));
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 26px;
+      box-shadow: var(--shadow);
+      margin-bottom: 22px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      top: -40px;
+      right: -40px;
+      width: 180px;
+      height: 180px;
+      background: radial-gradient(circle, #38bdf855 0%, transparent 70%);
+      opacity: 0.6;
+    }
+    .hero h1 {
+      margin: 0 0 10px;
+      font-size: 2.35rem;
+    }
+    .hero p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+      max-width: 780px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }
+    .stat {
+      background: var(--surface-2);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      padding: 14px;
+    }
+    .stat .label {
+      color: var(--muted);
+      font-size: 0.85rem;
+      margin-bottom: 6px;
+    }
+    .stat .value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.1rem;
+      color: var(--cyan);
+    }
+
+    .plan { display: grid; gap: 18px; }
+
+    .phase {
+      background: var(--surface-1);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+    }
+    .phase h2 { margin: 0 0 8px; font-size: 1.4rem; }
+    .phase p { margin: 0 0 16px; color: var(--muted); line-height: 1.6; }
+
+    .pomo-list { display: grid; gap: 12px; }
+    .pomo {
+      display: grid;
+      grid-template-columns: 28px 1fr auto;
+      gap: 12px;
+      align-items: center;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px;
+    }
+    .pomo input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--green);
+    }
+    .pomo .meta {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .meta-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .pomo .title { font-weight: 600; font-size: 1rem; }
+    .status {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+    .status.ready {
+      color: #9af3d1;
+      border-color: rgba(16,185,129,0.5);
+      background: rgba(16,185,129,0.12);
+    }
+    .status.pending {
+      color: #facc15;
+      border-color: rgba(245,158,11,0.5);
+      background: rgba(245,158,11,0.12);
+    }
+    .pomo .desc { color: var(--muted); font-size: 0.92rem; }
+    .pomo .links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 0.92rem;
+      color: var(--cyan);
+    }
+    .pomo .links a {
+      color: var(--cyan);
+      border-bottom: 1px dashed rgba(0,212,255,0.35);
+    }
+    .link-disabled {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+    .pomo .time {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--muted);
+      font-size: 0.85rem;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .progress {
+      margin-top: 18px;
+      background: var(--surface-1);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      display: grid;
+      gap: 12px;
+    }
+    .progress-bar {
+      height: 8px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .progress-bar span {
+      display: block;
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--cyan));
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+    .progress-meta {
+      display: flex;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+    .reset {
+      border: 1px solid rgba(239,68,68,0.5);
+      color: #fecaca;
+      background: rgba(239,68,68,0.12);
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      cursor: pointer;
+      justify-self: flex-start;
+    }
+
+    .note {
+      margin-top: 18px;
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 0.95rem;
+    }
+    .note strong { color: var(--text); }
+
+    @media (max-width: 700px) {
+      .pomo { grid-template-columns: 28px 1fr; }
+      .pomo .time { grid-column: 1 / -1; justify-self: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="top">
+      <div class="crumbs">
+        <a href="../index.html">Home</a>
+        <span>›</span>
+        <a href="index.html">React / Next.js</a>
+        <span>›</span>
+        <span>Study Plan</span>
+      </div>
+      <span class="badge">9 Pomodoros · 4.5 hrs</span>
+    </div>
+
+    <section class="hero">
+      <h1>React / Next.js — Study Plan</h1>
+      <p>
+        This plan is structured to build knowledge in the right order so each concept has the context it needs.
+        Use the checkboxes to track progress and move through the phases sequentially.
+      </p>
+      <div class="stats">
+        <div class="stat">
+          <div class="label">Focus Blocks</div>
+          <div class="value">9 × 30 min</div>
+        </div>
+        <div class="stat">
+          <div class="label">Estimated Completion</div>
+          <div class="value">4.5 hrs</div>
+        </div>
+        <div class="stat">
+          <div class="label">Recommended Pomodoro</div>
+          <div class="value">30 / 5</div>
+        </div>
+        <div class="stat">
+          <div class="label">Checkpoint Reviews</div>
+          <div class="value">After each phase</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="plan">
+
+      <div class="phase">
+        <h2>Phase 1 — Hooks</h2>
+        <p>Hooks are the core mental model for React; learn them first and thoroughly.</p>
+        <div class="pomo-list">
+          <label class="pomo">
+            <input type="checkbox" data-key="p1" />
+            <div class="meta">
+              <div class="meta-row">
+                <div class="title">P1 · useState & useEffect</div>
+                <span class="status pending">Coming soon</span>
+              </div>
+              <div class="desc">State management, effect lifecycle, cleanup functions, dependency arrays</div>
+              <div class="links"><span class="link-disabled">Study page not available yet</span></div>
+            </div>
+            <div class="time">30 min</div>
+          </label>
+
+          <label class="pomo">
+            <input type="checkbox" data-key="p2" />
+            <div class="meta">
+              <div class="meta-row">
+                <div class="title">P2 · useContext & useReducer</div>
+                <span class="status pending">Coming soon</span>
+              </div>
+              <div class="desc">Context API, reducer pattern, when to use vs Redux or Zustand</div>
+              <div class="links"><span class="link-disabled">Study page not available yet</span></div>
+            </div>
+            <div class="time">30 min</div>
+          </label>
+
+          <label class="pomo">
+            <input type="checkbox" data-key="p3" />
+            <div class="meta">
+              <div class="meta-row">
+                <div class="title">P3 · useMemo & useCallback</div>
+                <span class="status pending">Coming soon</span>
+              </div>
+              <div class="desc">Memoization, referential equality, when to optimize and when not to</div>
+              <div class="links"><span class="link-disabled">Study page not available yet</span></div>
+            </div>
+            <div class="time">20 min</div>
+          </label>
+
+          <label class="pomo">
+            <input type="checkbox" data-key="p4" />
+            <div class="meta">
+              <div class="meta-row">
+                <div class="title">P4 · Custom Hooks</div>
+                <span class="status pending">Coming soon</span>
+              </div>
+              <div class="desc">Extracting logic, composition patterns, real-world hook examples</div>
+              <div class="links"><span class="link-disabled">Study page not available yet</span></div>
+            </div>
+            <div class="time">25 min</div>
+          </label>
+        </div>
+      </div>
+
+      <div class="phase">
+        <h2>Phase 2 — Rendering & Performance</h2>
+        <p>Sharpen query and system performance reasoning: indexes, EXPLAIN plans, and tuning trade-offs.</p>
+        <div class="pomo-list">
+          <label class="pomo">
+            <input type="checkbox" data-key="p5" />
+            <div class="meta">
+              <div class="meta-row">
+                <div class="title">P5 · Virtual DOM & Reconciliation</div>
+                <span class="status pending">Coming soon</span>
+              </div>
+              <div class="desc">Diffing algorithm, fiber architecture, keys, batching updates</div>
+              <div class="links"><span class="link-disabled">Study page not available yet</span></div>
+            </div>
+            <div class="time">30 min</div>
+          </label>
+
+          <label class="pomo">
+            <input type="checkbox" data-key="p6" />
+            <div class="meta">
+              <div class="meta-row">
+                <div class="title">P6 · React Server Components</div>
+                <span class="status pending">Coming soon</span>
+              </div>
+              <div class="desc">RSC vs Client Components, data fetching patterns, streaming with Suspense</div>
+              <div class="links"><span class="link-disabled">Study page not available yet</span></div>
+            </div>
+            <div class="time">45 min</div>
+          </label>
+        </div>
+      </div>
+
+      <div class="phase">
+        <h2>Phase 3 — Next.js</h2>
+        <p>Layer Next.js concepts after core React behavior is comfortable.</p>
+        <div class="pomo-list">
+          <label class="pomo">
+            <input type="checkbox" data-key="p7" />
+            <div class="meta">
+              <div class="meta-row">
+                <div class="title">P7 · App Router & File Conventions</div>
+                <span class="status pending">Coming soon</span>
+              </div>
+              <div class="desc">Layouts, loading states, error boundaries, route groups, parallel routes</div>
+              <div class="links"><span class="link-disabled">Study page not available yet</span></div>
+            </div>
+            <div class="time">45 min</div>
+          </label>
+
+          <label class="pomo">
+            <input type="checkbox" data-key="p8" />
+            <div class="meta">
+              <div class="meta-row">
+                <div class="title">P8 · SSR vs SSG vs ISR</div>
+                <span class="status pending">Coming soon</span>
+              </div>
+              <div class="desc">Rendering strategies, when to use each, generateStaticParams, revalidation</div>
+              <div class="links"><span class="link-disabled">Study page not available yet</span></div>
+            </div>
+            <div class="time">30 min</div>
+          </label>
+        </div>
+      </div>
+
+      <div class="phase">
+        <h2>Phase 4 — Reference</h2>
+        <p>Use this as a capstone recap and fast interview review.</p>
+        <div class="pomo-list">
+          <label class="pomo">
+            <input type="checkbox" data-key="p9" />
+            <div class="meta">
+              <div class="meta-row">
+                <div class="title">P9 · React / Next.js Study Plan</div>
+                <span class="status ready">Ready</span>
+              </div>
+              <div class="desc">Pomodoro-based path to complete the module</div>
+              <div class="links"><a href="study-plan.html">Open: React / Next.js Study Plan</a></div>
+            </div>
+            <div class="time">15 min</div>
+          </label>
+        </div>
+      </div>
+    </section>
+
+    <section class="progress">
+      <div class="progress-meta">
+        <span id="progressText">0 of 9 completed</span>
+        <span id="progressPercent">0%</span>
+      </div>
+      <div class="progress-bar"><span id="progressFill"></span></div>
+      <button class="reset" id="resetBtn">Reset Progress</button>
+    </section>
+
+    <p class="note">
+      <strong>Tip:</strong> If a block is heavy, split it into two pomodoros and take quick notes.
+      The goal is consistency, not speed.
+    </p>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'iph_plan_react_v1';
+    const checkboxes = Array.from(document.querySelectorAll('input[type="checkbox"][data-key]'));
+    const progressText = document.getElementById('progressText');
+    const progressPercent = document.getElementById('progressPercent');
+    const progressFill = document.getElementById('progressFill');
+    const resetBtn = document.getElementById('resetBtn');
+
+    function loadState() {
+      try {
+        return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+      } catch (e) {
+        return {};
+      }
+    }
+
+    function saveState(state) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function updateProgress(state) {
+      const total = checkboxes.length;
+      const done = checkboxes.filter((box) => box.checked).length;
+      const pct = total === 0 ? 0 : Math.round((done / total) * 100);
+      progressText.textContent = done + ' of ' + total + ' completed';
+      progressPercent.textContent = pct + '%';
+      progressFill.style.width = pct + '%';
+      saveState(state);
+    }
+
+    const state = loadState();
+    checkboxes.forEach((box) => {
+      const key = box.dataset.key;
+      box.checked = Boolean(state[key]);
+      box.addEventListener('change', () => {
+        state[key] = box.checked;
+        updateProgress(state);
+      });
+    });
+
+    resetBtn.addEventListener('click', () => {
+      checkboxes.forEach((box) => {
+        box.checked = false;
+        state[box.dataset.key] = false;
+      });
+      updateProgress(state);
+    });
+
+    updateProgress(state);
+  </script>
+</body>
+</html>
