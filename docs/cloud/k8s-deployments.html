@@ -1,13 +1,14 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Kubernetes Deployments & Scaling Learning Module</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Kubernetes Deployments &amp; Scaling Learning Module</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&amp;family=Syne:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<style>
 :root {
       --bg: #0a0e1a;
       --surface-1: #111827;
@@ -711,280 +712,259 @@
   </style>
 </head>
 <body>
-  <div class="app">
-    <header class="topbar">
-      <div class="topbar-inner">
-        <div class="topbar-row">
-          <div class="brand">
-            <h1>Kubernetes Deployments & Scaling</h1>
-            <small>Interactive 35-minute learning module</small>
-          </div>
-                <div class="topbar-row">
-          <div class="breadcrumb">
-            <a href="../index.html">Home</a>
-            <span>›</span>
-            <a href="index.html">Cloud</a>
-            <span>›</span>
-            <span>Kubernetes Deployments & Scaling</span>
-          </div>
-        </div>
-          <div class="timer-wrap" aria-live="polite">
-            <span class="timer-label">Time Left</span>
-            <span class="timer" id="timer">35:00</span>
-          </div>
-        </div>
-        <div class="topbar-row">
-                    <nav class="nav-dots" aria-label="Section navigation"><button class="nav-dot active" data-index="0" aria-label="Go to section 1">1</button><button class="nav-dot" data-index="1" aria-label="Go to section 2">2</button><button class="nav-dot" data-index="2" aria-label="Go to section 3">3</button><button class="nav-dot" data-index="3" aria-label="Go to section 4">4</button><button class="nav-dot" data-index="4" aria-label="Go to section 5">5</button><button class="nav-dot" data-index="5" aria-label="Go to completion screen">6</button></nav>
-        </div>
-        <div class="progress-shell" aria-hidden="true">
-          <div class="progress-bar" id="progressBar"></div>
-        </div>
-      </div>
-    </header>
-
-    <main>
-
-      <section class="section active" data-section="0">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 1 of 5 · ~6 mins</div>
-            <h2>Deployment Core Mechanics</h2>
-            <p>Deployments manage ReplicaSets which in turn manage Pods. You define desired state and Kubernetes reconciles it.</p>
-          </div>
-
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Robot manager</h3>
-              <p>You tell the robot how many toys you want, and it keeps fixing the shelf if any fall.</p>
-            </article>
-
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Factory line</h3>
-              <p>A supervisor ensures the correct number of workers are always on the line.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> A Deployment is a controller that ensures a desired number of Pod replicas through ReplicaSets.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul><li>Declarative updates</li><li>Automated rollbacks</li><li>Self-healing pods</li></ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common pitfall</h4>
-                      <ul><li>Imperative kubectl apply without review</li><li>No labels/selector hygiene</li><li>Replica drift</li></ul>
-                    </div>
-                  </div>
-                  <div class="badge-row"><span class="pill good">Deployment</span><span class="pill info">ReplicaSet</span><span class="pill caution">Pod</span></div>
-                  <div class="flow"><span class="flow-step">Define spec</span><span class="flow-arrow">→</span><span class="flow-step">ReplicaSet created</span><span class="flow-arrow">→</span><span class="flow-step">Pods scheduled</span><span class="flow-arrow">→</span><span class="flow-step">Controller reconciles</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“A Deployment defines desired state and manages ReplicaSets to keep Pods healthy and updated.”</p>
-                  <table><thead><tr><th>Resource</th><th>Purpose</th></tr></thead><tbody><tr><td>Deployment</td><td><span class="pill good">Desired state</span></td></tr><tr><td>ReplicaSet</td><td><span class="pill info">Replica manager</span></td></tr></tbody></table>
-                </div>
-              </div>
-              <div class="code-blocks">
-    <div>
-      <div class="code-title">Basic Deployment</div>
-      <pre>apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: api-service
-spec:
-  replicas: 3
-  selector:
-    matchLabels:
-      app: api
+<div class="app">
+<header class="topbar">
+<div class="topbar-inner">
+<div class="topbar-row">
+<div class="brand">
+<h1>Kubernetes Deployments &amp; Scaling</h1>
+<small>Interactive 35-minute learning module</small>
+</div>
+<div class="topbar-row">
+<div class="breadcrumb">
+<a href="../index.html">Home</a>
+<span>›</span>
+<a href="index.html">Cloud</a>
+<span>›</span>
+<span>Kubernetes Deployments &amp; Scaling</span>
+</div>
+</div>
+<div aria-live="polite" class="timer-wrap">
+<span class="timer-label">Time Left</span>
+<span class="timer" id="timer">35:00</span>
+</div>
+</div>
+<div class="topbar-row">
+<nav aria-label="Section navigation" class="nav-dots"><button aria-label="Go to section 1" class="nav-dot active" data-index="0">1</button><button aria-label="Go to section 2" class="nav-dot" data-index="1">2</button><button aria-label="Go to section 3" class="nav-dot" data-index="2">3</button><button aria-label="Go to section 4" class="nav-dot" data-index="3">4</button><button aria-label="Go to section 5" class="nav-dot" data-index="4">5</button><button aria-label="Go to completion screen" class="nav-dot" data-index="5">6</button></nav>
+</div>
+<div aria-hidden="true" class="progress-shell">
+<div class="progress-bar" id="progressBar"></div>
+</div>
+</div>
+</header>
+<main>
+<section class="section active" data-section="0">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Section 1 of 5 · ~6 mins</div>
+<h2>Deployment Core Mechanics</h2>
+<p>Deployments are the day-to-day controller for most stateless services, so this section focuses on the reconciliation chain from Deployment to ReplicaSet to Pod.</p>
+</div>
+<div class="card-grid">
+<article class="card eli5">
+<div class="card-label">🧒 ELI5</div>
+<h3>Event planner and backup chairs</h3>
+<p>An event planner does not arrange only one chair. They decide how many chairs should exist, check whether some are broken, and replace missing ones so the room stays ready.</p><p>A Deployment does that same kind of supervision for Pods. You ask for a certain number of identical instances, and Kubernetes keeps working until that number exists.</p><p>That is why Deployments are more than just “start three containers.”</p>
+</article>
+<article class="card analogy">
+<div class="card-label">🔗 ANALOGY</div>
+<h3>Printing press and batches</h3>
+<p>A printing press creates a batch of flyers from one template, and a supervisor ensures the right batch stays active while old batches get replaced carefully.</p><p>ReplicaSets are the batches and Deployments are the supervisor controlling which batch should be live.</p>
+</article>
+<article class="card technical">
+<div class="card-label">Technical</div>
+<div class="two-col">
+<div>
+<h3>What it means in real code</h3>
+<p><strong>Definition:</strong> A Deployment is a controller that manages ReplicaSets and their pod templates to maintain the desired number of replicas and perform declarative updates.</p>
+<p class="deep-note">When you update a Deployment, Kubernetes creates a new ReplicaSet with the new pod template and scales old and new ReplicaSets according to the rollout strategy. The controller loop keeps reconciling until the desired state is reached or a rollout is paused or failed.</p>
+<p class="deep-note">In production, this matters because the Deployment, not the individual Pod, is the durable management boundary. You debug Pods, but you change Deployments and images to fix the system.</p>
+<div class="mini-grid">
+<div class="mini-panel">
+<h4>Why it matters</h4>
+<ul><li>Provides replica management and rolling update control</li><li>Keeps the desired state in one declarative object</li><li>Makes rollback and rollout history possible</li></ul>
+</div>
+<div class="mini-panel">
+<h4>Common pitfall</h4>
+<ul><li>Editing Pods directly instead of the Deployment</li><li>Mismatched selectors and labels</li><li>Forgetting that a Deployment owns ReplicaSets, not Pods in isolation</li></ul>
+</div>
+</div>
+<div class="badge-row"><span class="pill good">Deployment spec</span><span class="pill info">ReplicaSet history</span><span class="pill caution">Selectors</span><span class="pill bad">Manual Pod patching</span></div>
+<div class="flow"><span class="flow-step">Apply Deployment</span><span class="flow-arrow">→</span><span class="flow-step">ReplicaSet created</span><span class="flow-arrow">→</span><span class="flow-step">Pods launched</span><span class="flow-arrow">→</span><span class="flow-step">Controller maintains desired count</span></div>
+</div>
+<div>
+<h3>Interview-ready view</h3>
+<div class="mini-panel" style="background:rgba(124,58,237,0.12); border-color:rgba(124,58,237,0.26);">
+<h4>💬 Model Interview Answer</h4>
+<p>I usually explain Deployments as the declarative controller for stateless application replicas. They create and manage ReplicaSets, which in turn manage Pods from a specific template version. The gotcha is that any fix applied only to a live Pod is temporary because the Deployment will recreate Pods from its own template.</p>
+</div>
+<table><thead><tr><th>Object</th><th>Role</th></tr></thead><tbody><tr><td>Deployment</td><td>Desired state and rollout controller</td></tr><tr><td>ReplicaSet</td><td>Maintains pods for one template version</td></tr><tr><td>Pod</td><td>Actual running workload instance</td></tr></tbody></table>
+</div>
+</div>
+<div class="code-blocks"><div><div class="code-title">❌ Wrong: fix only the live Pod</div><pre>kubectl edit pod api-7c8d9f5c6b-abc12
+# Change env vars or image directly on the Pod</pre></div><div><div class="code-title">✅ Right: update the Deployment</div><pre>kubectl set image deployment/api api=myorg/api:1.4.2
+# or update the manifest and kubectl apply -f deployment.yaml</pre></div></div>
+<p>Changing the Deployment updates the desired template so replacement Pods keep the fix.</p>
+</article>
+<article class="card warning">
+<div class="card-label">⚠️ Warning</div>
+<h3>Pod-level fixes disappear during normal reconciliation</h3>
+<p>The dangerous misunderstanding is seeing a live Pod as the source of truth. It is not. The Deployment template is. Always push fixes into the image or Deployment spec so the next rollout or restart does not erase your work.</p>
+</article>
+<article class="card technical">
+<div class="card-label">Mini takeaway</div>
+<ul class="takeaways"><li>Treat Deployment as the source of truth</li><li>Respect selector/label hygiene</li><li>Expect Pods to be replaced</li><li>Use rollout history for change tracking</li></ul>
+</article>
+<article class="card quiz-card">
+<div class="card-label">Quiz</div>
+<h3>Why is changing a live Pod usually the wrong long-term fix for a Deployment-managed app?</h3>
+<div class="quiz-options" data-answer="1">
+<button class="quiz-option">Because Pods cannot be edited at all.</button><button class="quiz-option">Because the Deployment controller will recreate Pods from its template, so Pod-only changes are temporary.</button><button class="quiz-option">Because only Services may be updated in Kubernetes.</button><button class="quiz-option">Because ReplicaSets prevent all image changes.</button>
+</div>
+<div class="quiz-result">
+<strong>Correct answer: B</strong><span>B is correct because the controller reconciles toward the Deployment template, not your ad-hoc Pod edits. A is not entirely true because some fields can change. C and D are unrelated to how Deployments work.</span>
+</div>
+</article>
+</div>
+</div>
+</section>
+<section class="section" data-section="1">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Section 2 of 5 · ~6 mins</div>
+<h2>Rolling Updates &amp; Rollbacks</h2>
+<p>This section focuses on how Kubernetes replaces old replicas gradually while trying to preserve availability.</p>
+</div>
+<div class="card-grid">
+<article class="card eli5">
+<div class="card-label">🧒 ELI5</div>
+<h3>Changing tires while the bus keeps moving</h3>
+<p>If you had to replace every tire at once, the bus would stop completely. A safer plan is to replace them gradually while enough tires remain to keep moving.</p><p>Rolling updates use that same idea. Kubernetes adds some new Pods and removes some old Pods in a controlled pattern.</p><p>The exact pace depends on surge and unavailable settings.</p>
+</article>
+<article class="card analogy">
+<div class="card-label">🔗 ANALOGY</div>
+<h3>Shift handoff</h3>
+<p>A new shift should arrive before the old shift leaves if the store must stay open the whole time. If the handoff is sloppy, customers feel the gap immediately.</p><p>Rollout strategy settings define that handoff quality.</p>
+</article>
+<article class="card technical">
+<div class="card-label">Technical</div>
+<div class="two-col">
+<div>
+<h3>What it means in real code</h3>
+<p><strong>Definition:</strong> A rolling update is a Deployment strategy that gradually replaces old Pods with new Pods while respecting availability constraints such as maxSurge and maxUnavailable.</p>
+<p class="deep-note">Kubernetes creates a new ReplicaSet for the updated template, then scales it up and scales the old ReplicaSet down according to the strategy. Rollout health is influenced by readiness probes; Pods that are not ready should not count as available traffic endpoints.</p>
+<p class="deep-note">In production, this matters because a rollout is only as safe as its readiness signals and disruption settings. A perfect image can still create downtime if the rollout strategy is too aggressive or readiness is misleading.</p>
+<div class="mini-grid">
+<div class="mini-panel">
+<h4>Why it matters</h4>
+<ul><li>Reduces deployment-induced downtime</li><li>Supports controlled rollback when metrics worsen</li><li>Makes deployment speed a configurable trade-off</li></ul>
+</div>
+<div class="mini-panel">
+<h4>Common pitfall</h4>
+<ul><li>No readiness probe during rollout</li><li>Aggressive maxUnavailable causing capacity dip</li><li>Assuming kubectl apply equals a safe rollout automatically</li></ul>
+</div>
+</div>
+<div class="badge-row"><span class="pill good">maxSurge/maxUnavailable</span><span class="pill info">rollout history</span><span class="pill caution">readiness gate</span><span class="pill bad">all-at-once replacement</span></div>
+<div class="flow"><span class="flow-step">New ReplicaSet created</span><span class="flow-arrow">→</span><span class="flow-step">New pods become ready</span><span class="flow-arrow">→</span><span class="flow-step">Old ReplicaSet scaled down</span><span class="flow-arrow">→</span><span class="flow-step">Rollout completes or rolls back</span></div>
+</div>
+<div>
+<h3>Interview-ready view</h3>
+<div class="mini-panel" style="background:rgba(124,58,237,0.12); border-color:rgba(124,58,237,0.26);">
+<h4>💬 Model Interview Answer</h4>
+<p>I explain rolling updates as controlled replacement of one pod template with another while maintaining service availability. maxSurge and maxUnavailable let you choose between speed and spare capacity, but readiness probes are what make the math real. The gotcha is that a pod marked ready too early can make a rollout look healthy while real traffic is failing.</p>
+</div>
+<table><thead><tr><th>Setting</th><th>Impact</th></tr></thead><tbody><tr><td>maxSurge</td><td>How many extra pods may be created during rollout</td></tr><tr><td>maxUnavailable</td><td>How many desired replicas may be missing during rollout</td></tr><tr><td>readiness probe</td><td>Controls when a new pod is considered safe for traffic</td></tr></tbody></table>
+</div>
+</div>
+<div class="code-blocks"><div><div class="code-title">❌ Wrong: rollout without realistic readiness</div><pre>spec:
+  strategy:
+    type: RollingUpdate
   template:
-    metadata:
-      labels:
-        app: api
     spec:
       containers:
         - name: api
-          image: myrepo/api:1.0.0
-          ports:
-            - containerPort: 8080</pre>
-    </div>
-    </div>
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Selector mismatches</h3>
-              <p>If selectors do not match template labels, rollouts break or orphan Pods.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways"><li>Deployments drive ReplicaSets.</li><li>Label consistency matters.</li><li>Use declarative updates.</li></ul>
-            </article>
-
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>What does a Deployment directly manage?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. Services</button><button class="quiz-option">B. ReplicaSets</button><button class="quiz-option">C. Nodes</button><button class="quiz-option">D. Ingress</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>Deployments create and manage ReplicaSets, which create Pods.</span>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section class="section" data-section="1">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 2 of 5 · ~6 mins</div>
-            <h2>Rolling Updates & Rollbacks</h2>
-            <p>Rollouts replace old Pods with new ones while maintaining availability through surge and unavailable limits.</p>
-          </div>
-
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Change tires while driving</h3>
-              <p>Replace one tire at a time so the car keeps moving.</p>
-            </article>
-
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Shift handoff</h3>
-              <p>New workers come in before the old shift leaves.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Rolling updates use maxSurge and maxUnavailable to control rollout pace and availability.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul><li>Zero/low downtime deploys</li><li>Controlled risk</li><li>Easy rollback</li></ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common pitfall</h4>
-                      <ul><li>maxUnavailable too high</li><li>No readiness checks</li><li>No monitoring during rollout</li></ul>
-                    </div>
-                  </div>
-                  <div class="badge-row"><span class="pill good">maxSurge</span><span class="pill caution">maxUnavailable</span><span class="pill info">rollback</span></div>
-                  <div class="flow"><span class="flow-step">Create new RS</span><span class="flow-arrow">→</span><span class="flow-step">Scale up new Pods</span><span class="flow-arrow">→</span><span class="flow-step">Scale down old Pods</span><span class="flow-arrow">→</span><span class="flow-step">Complete rollout</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“Rolling updates balance availability and speed using maxSurge/maxUnavailable; rollbacks revert to previous ReplicaSet.”</p>
-                  <table><thead><tr><th>Setting</th><th>Effect</th></tr></thead><tbody><tr><td>maxSurge</td><td><span class="pill good">Extra pods allowed</span></td></tr><tr><td>maxUnavailable</td><td><span class="pill bad">Pods allowed down</span></td></tr></tbody></table>
-                </div>
-              </div>
-              <div class="code-blocks">
-    <div>
-      <div class="code-title">Rolling update strategy</div>
-      <pre>strategy:
-  type: RollingUpdate
-  rollingUpdate:
-    maxSurge: 25%
-    maxUnavailable: 25%</pre>
-    </div>
-    </div>
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>No rollback without history</h3>
-              <p>If you prune ReplicaSet history, rollback targets disappear.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways"><li>Tune maxSurge/maxUnavailable.</li><li>Monitor readiness.</li><li>Keep rollout history.</li></ul>
-            </article>
-
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>What controls how many extra Pods can be created during a rollout?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. maxUnavailable</button><button class="quiz-option">B. maxSurge</button><button class="quiz-option">C. replicas</button><button class="quiz-option">D. revisionHistoryLimit</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>maxSurge specifies extra Pods above desired replicas.</span>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section class="section" data-section="2">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 3 of 5 · ~7 mins</div>
-            <h2>Autoscaling with HPA</h2>
-            <p>Horizontal Pod Autoscaler adjusts replica count based on metrics and resource requests.</p>
-          </div>
-
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>More checkout lanes</h3>
-              <p>Open more lanes when the line gets long.</p>
-            </article>
-
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Elastic team</h3>
-              <p>You add contractors when demand spikes.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> HPA scales replicas based on metrics (CPU, memory, or custom) relative to requested resources.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul><li>Keeps latency stable</li><li>Saves cost</li><li>Responds to demand</li></ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common pitfall</h4>
-                      <ul><li>No requests/limits</li><li>Wrong metrics</li><li>Thundering herd scaling</li></ul>
-                    </div>
-                  </div>
-                  <div class="badge-row"><span class="pill good">HPA</span><span class="pill info">metrics</span><span class="pill caution">requests</span></div>
-                  <div class="flow"><span class="flow-step">Collect metrics</span><span class="flow-arrow">→</span><span class="flow-step">Compare to target</span><span class="flow-arrow">→</span><span class="flow-step">Adjust replicas</span><span class="flow-arrow">→</span><span class="flow-step">Stabilize</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“HPA scales Pods based on metrics, relying on resource requests as baseline.”</p>
-                  <table><thead><tr><th>Metric</th><th>Use</th></tr></thead><tbody><tr><td>CPU %</td><td><span class="pill info">Default metric</span></td></tr><tr><td>Custom</td><td><span class="pill good">App-specific</span></td></tr></tbody></table>
-                </div>
-              </div>
-              <div class="code-blocks">
-    <div>
-      <div class="code-title">HPA example</div>
-      <pre>apiVersion: autoscaling/v2
+          image: myorg/api:2.0
+          # no readinessProbe</pre></div><div><div class="code-title">✅ Right: rollout with readiness and controlled pacing</div><pre>spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    spec:
+      containers:
+        - name: api
+          image: myorg/api:2.0
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8080</pre></div></div>
+<p>The second version ensures new Pods prove readiness before the rollout removes old healthy capacity.</p>
+</article>
+<article class="card warning">
+<div class="card-label">⚠️ Warning</div>
+<h3>A rollout strategy is only as safe as the readiness signal behind it</h3>
+<p>Teams often tune surge and unavailable counts but ignore whether readiness truly means “can serve production traffic.” If the readiness probe checks too little, Kubernetes may move traffic and terminate old pods before the new version is actually safe.</p>
+</article>
+<article class="card technical">
+<div class="card-label">Mini takeaway</div>
+<ul class="takeaways"><li>Use readiness probes during rollouts</li><li>Choose surge/unavailable trade-offs intentionally</li><li>Watch rollout status, not just apply success</li><li>Be ready to rollback quickly</li></ul>
+</article>
+<article class="card quiz-card">
+<div class="card-label">Quiz</div>
+<h3>What makes maxUnavailable=0 meaningful during a rolling update?</h3>
+<div class="quiz-options" data-answer="1">
+<button class="quiz-option">It guarantees zero downtime no matter how bad the app is.</button><button class="quiz-option">It tells Kubernetes not to intentionally reduce available replicas below the desired count during the rollout.</button><button class="quiz-option">It disables readiness probes.</button><button class="quiz-option">It prevents any new Pods from being created.</button>
+</div>
+<div class="quiz-result">
+<strong>Correct answer: B</strong><span>B is correct because maxUnavailable=0 preserves desired availability during the rollout, at least from the controller’s perspective. A overpromises because bad readiness signals can still hurt users. C and D misstate what the field controls.</span>
+</div>
+</article>
+</div>
+</div>
+</section>
+<section class="section" data-section="2">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Section 3 of 5 · ~6 mins</div>
+<h2>Autoscaling with HPA</h2>
+<p>Horizontal Pod Autoscaling is where desired state meets metrics, and the interview value is understanding what signal drives scaling and what the controller can and cannot infer.</p>
+</div>
+<div class="card-grid">
+<article class="card eli5">
+<div class="card-label">🧒 ELI5</div>
+<h3>Adding cashiers when the line grows</h3>
+<p>If a grocery store sees long checkout lines, it opens more registers. When the rush is over, it closes some of them again.</p><p>That is the idea behind horizontal scaling: change the number of identical workers based on demand.</p><p>The hard part is picking the right signal, because the wrong signal opens or closes registers at the wrong time.</p>
+</article>
+<article class="card analogy">
+<div class="card-label">🔗 ANALOGY</div>
+<h3>Thermostat with delayed feedback</h3>
+<p>A thermostat reacts to temperature readings, but if the sensor is wrong or slow, the room can swing too hot and too cold.</p><p>Autoscaling has the same challenge: the metric and its delay matter as much as the scaling rule itself.</p>
+</article>
+<article class="card technical">
+<div class="card-label">Technical</div>
+<div class="two-col">
+<div>
+<h3>What it means in real code</h3>
+<p><strong>Definition:</strong> A Horizontal Pod Autoscaler adjusts replica count for a workload based on observed metrics such as CPU, memory, or custom/external metrics.</p>
+<p class="deep-note">The HPA controller periodically reads metrics and compares current utilization to target utilization. It then updates the replica count on the target Deployment or ReplicaSet, subject to stabilization windows and scaling policies if configured.</p>
+<p class="deep-note">In production, this matters because scaling based on the wrong metric can amplify problems. CPU is easy to start with, but queue depth or request rate may better match user pain for some systems.</p>
+<div class="mini-grid">
+<div class="mini-panel">
+<h4>Why it matters</h4>
+<ul><li>Matches capacity to changing demand</li><li>Improves cost efficiency compared with fixed overprovisioning</li><li>Lets workloads absorb bursts without permanent replica inflation</li></ul>
+</div>
+<div class="mini-panel">
+<h4>Common pitfall</h4>
+<ul><li>No resource requests defined, so CPU utilization is misleading</li><li>Scaling on a metric that does not correlate with user impact</li><li>Expecting HPA to fix slow startup instantly</li></ul>
+</div>
+</div>
+<div class="badge-row"><span class="pill good">Resource requests</span><span class="pill info">Custom metrics</span><span class="pill caution">Stabilization window</span><span class="pill bad">Blind CPU-only assumption</span></div>
+<div class="flow"><span class="flow-step">Metrics collected</span><span class="flow-arrow">→</span><span class="flow-step">HPA compares to target</span><span class="flow-arrow">→</span><span class="flow-step">Replica count updated</span><span class="flow-arrow">→</span><span class="flow-step">Deployment reconciles new count</span></div>
+</div>
+<div>
+<h3>Interview-ready view</h3>
+<div class="mini-panel" style="background:rgba(124,58,237,0.12); border-color:rgba(124,58,237,0.26);">
+<h4>💬 Model Interview Answer</h4>
+<p>I explain HPA as a controller that changes replica count based on metrics, not as magic elasticity. The important detail is that target utilization is usually relative to resource requests, so those requests need to be realistic. The common gotcha is enabling HPA without good requests or without choosing a metric that actually reflects demand.</p>
+</div>
+<table><thead><tr><th>Question</th><th>Why it matters</th></tr></thead><tbody><tr><td>What metric drives scaling?</td><td>It determines whether scaling matches real demand</td></tr><tr><td>Are requests set well?</td><td>Utilization-based autoscaling depends on them</td></tr><tr><td>How fast can pods become ready?</td><td>Scaling policy only helps if new capacity becomes usable soon enough</td></tr></tbody></table>
+</div>
+</div>
+<div class="code-blocks"><div><div class="code-title">❌ Wrong: HPA without sane requests</div><pre>apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
-metadata:
-  name: api-hpa
 spec:
-  scaleTargetRef:
-    apiVersion: apps/v1
-    kind: Deployment
-    name: api-service
-  minReplicas: 3
+  minReplicas: 1
   maxReplicas: 10
   metrics:
     - type: Resource
@@ -992,272 +972,266 @@ spec:
         name: cpu
         target:
           type: Utilization
-          averageUtilization: 70</pre>
-    </div>
-    </div>
-            </article>
+          averageUtilization: 70
+# Deployment has no cpu requests defined</pre></div><div><div class="code-title">✅ Right: HPA with explicit requests</div><pre>resources:
+  requests:
+    cpu: "250m"
+    memory: "512Mi"
 
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Missing resource requests</h3>
-              <p>Without CPU/memory requests, HPA decisions are unreliable.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways"><li>Define requests.</li><li>Tune targets.</li><li>Use custom metrics for business KPIs.</li></ul>
-            </article>
-
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>HPA uses which baseline to calculate utilization?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. Limits</button><button class="quiz-option">B. Requests</button><button class="quiz-option">C. Node capacity</button><button class="quiz-option">D. Pod count</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>Utilization is based on resource requests, not limits.</span>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section class="section" data-section="3">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 4 of 5 · ~6 mins</div>
-            <h2>Health Probes & PodDisruptionBudgets</h2>
-            <p>Readiness, liveness, and startup probes gate traffic and restarts. PDBs prevent too many Pods from going down at once.</p>
-          </div>
-
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Doctor checkups</h3>
-              <p>You only let healthy kids go to the playground.</p>
-            </article>
-
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Event safety staff</h3>
-              <p>A minimum number of staff must always stay for safety.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Probes signal whether a container is ready/live; PDBs limit voluntary disruptions.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul><li>Safe rollouts</li><li>Avoids serving bad pods</li><li>Controls maintenance impact</li></ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common pitfall</h4>
-                      <ul><li>No readiness probe</li><li>Long liveness timeout</li><li>PDB too strict blocking node drain</li></ul>
-                    </div>
-                  </div>
-                  <div class="badge-row"><span class="pill good">readiness</span><span class="pill info">liveness</span><span class="pill caution">PDB</span></div>
-                  <div class="flow"><span class="flow-step">Startup probe</span><span class="flow-arrow">→</span><span class="flow-step">Readiness gate</span><span class="flow-arrow">→</span><span class="flow-step">Liveness restarts</span><span class="flow-arrow">→</span><span class="flow-step">PDB protects</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“Readiness gates traffic, liveness restarts stuck pods, PDBs ensure a minimum number stay available.”</p>
-                  <table><thead><tr><th>Probe</th><th>Purpose</th></tr></thead><tbody><tr><td>Readiness</td><td><span class="pill good">Traffic gate</span></td></tr><tr><td>Liveness</td><td><span class="pill bad">Restart stuck pods</span></td></tr></tbody></table>
-                </div>
-              </div>
-              <div class="code-blocks">
-    <div>
-      <div class="code-title">Probe + PDB</div>
-      <pre>readinessProbe:
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+spec:
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70</pre></div></div>
+<p>Requests create a meaningful baseline for utilization-based scaling instead of comparing against an undefined target.</p>
+</article>
+<article class="card warning">
+<div class="card-label">⚠️ Warning</div>
+<h3>Autoscaling quality depends on metric quality</h3>
+<p>HPA can only react to the signal you feed it. If the signal is noisy, delayed, or unrelated to actual user pain, scaling becomes noisy too. Pair HPA with realistic requests, a sensible min replica count, and a demand signal that matches what “busy” really means for the service.</p>
+</article>
+<article class="card technical">
+<div class="card-label">Mini takeaway</div>
+<ul class="takeaways"><li>Define requests before CPU-based HPA</li><li>Choose a metric that matches demand</li><li>Set minimum replicas intentionally</li><li>Remember scaling takes time to become useful</li></ul>
+</article>
+<article class="card quiz-card">
+<div class="card-label">Quiz</div>
+<h3>Why are resource requests important when using an HPA target based on CPU utilization?</h3>
+<div class="quiz-options" data-answer="0">
+<button class="quiz-option">Because HPA reads utilization relative to the requested resources, so missing or unrealistic requests distort the signal.</button><button class="quiz-option">Because requests are required to create a Service.</button><button class="quiz-option">Because requests determine Pod labels.</button><button class="quiz-option">Because HPA only works on nodes with GPUs.</button>
+</div>
+<div class="quiz-result">
+<strong>Correct answer: A</strong><span>A is correct because utilization targets depend on the request baseline. B, C, and D are unrelated. Without sane requests, CPU-based scaling can behave unpredictably.</span>
+</div>
+</article>
+</div>
+</div>
+</section>
+<section class="section" data-section="3">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Section 4 of 5 · ~6 mins</div>
+<h2>Health Probes &amp; PodDisruptionBudgets</h2>
+<p>This section combines two availability controls: probes for container health and PDBs for voluntary disruption management.</p>
+</div>
+<div class="card-grid">
+<article class="card eli5">
+<div class="card-label">🧒 ELI5</div>
+<h3>Doctor checkup and minimum staff rule</h3>
+<p>A school nurse checks whether each student is actually healthy enough to join class, and the principal may set a rule that at least a certain number of teachers must remain present during planned events.</p><p>Kubernetes health probes decide whether a Pod should receive traffic or be restarted, while a PodDisruptionBudget protects how many replicas can be unavailable during voluntary disruptions.</p><p>Together they protect both correctness and availability.</p>
+</article>
+<article class="card analogy">
+<div class="card-label">🔗 ANALOGY</div>
+<h3>Hotel inspection plus fire-drill staffing</h3>
+<p>A hotel inspects rooms before assigning guests, and during planned drills it still keeps enough staff on duty so the building can operate.</p><p>That is the mental split between probes and disruption budgets.</p>
+</article>
+<article class="card technical">
+<div class="card-label">Technical</div>
+<div class="two-col">
+<div>
+<h3>What it means in real code</h3>
+<p><strong>Definition:</strong> Readiness, liveness, and startup probes report container health for routing and restart decisions, while a PodDisruptionBudget limits how many replicas can be voluntarily disrupted at once.</p>
+<p class="deep-note">Readiness determines whether a Pod should receive traffic, liveness determines whether Kubernetes should restart the container, and startup probes delay other probe failures until slow boot logic finishes. PDBs affect voluntary actions such as drain or rollout-related evictions, not every possible outage.</p>
+<p class="deep-note">In production, this matters because many outages come from false health signals or maintenance events that remove too much capacity at once. Probes and PDBs turn those risks into explicit policy rather than operator luck.</p>
+<div class="mini-grid">
+<div class="mini-panel">
+<h4>Why it matters</h4>
+<ul><li>Improves safe traffic routing</li><li>Supports automatic recovery from stuck processes</li><li>Protects availability during maintenance and node draining</li></ul>
+</div>
+<div class="mini-panel">
+<h4>Common pitfall</h4>
+<ul><li>Using one shallow endpoint for every probe type</li><li>Expecting PDBs to prevent hardware failure or all outages</li><li>Liveness probes that kill slow-starting apps repeatedly</li></ul>
+</div>
+</div>
+<div class="badge-row"><span class="pill good">Readiness for routing</span><span class="pill info">Liveness for restarts</span><span class="pill caution">Startup probe</span><span class="pill bad">PDB solves everything</span></div>
+<div class="flow"><span class="flow-step">Pod starts</span><span class="flow-arrow">→</span><span class="flow-step">Startup/readiness checked</span><span class="flow-arrow">→</span><span class="flow-step">Traffic allowed</span><span class="flow-arrow">→</span><span class="flow-step">PDB guards voluntary disruptions</span></div>
+</div>
+<div>
+<h3>Interview-ready view</h3>
+<div class="mini-panel" style="background:rgba(124,58,237,0.12); border-color:rgba(124,58,237,0.26);">
+<h4>💬 Model Interview Answer</h4>
+<p>I usually explain readiness as “can take traffic now?” and liveness as “should be restarted because it is broken?” Then I add that PDBs protect availability during voluntary disruptions like drain operations. The gotcha is over-aggressive liveness probes, which can turn a slow-starting but healthy app into a permanent crash loop.</p>
+</div>
+<table><thead><tr><th>Mechanism</th><th>Protects against</th></tr></thead><tbody><tr><td>Readiness probe</td><td>Sending traffic to not-yet-ready pods</td></tr><tr><td>Liveness probe</td><td>Processes that are alive at OS level but functionally stuck</td></tr><tr><td>PDB</td><td>Too many replicas evicted during planned disruption</td></tr></tbody></table>
+</div>
+</div>
+<div class="code-blocks"><div><div class="code-title">❌ Wrong: one-size-fits-all probe</div><pre>livenessProbe:
   httpGet:
-    path: /health/ready
+    path: /health
     port: 8080
-  initialDelaySeconds: 5
-  periodSeconds: 10
+  initialDelaySeconds: 2
+readinessProbe:
+  httpGet:
+    path: /health
+    port: 8080</pre></div><div><div class="code-title">✅ Right: differentiated health policy</div><pre>readinessProbe:
+  httpGet:
+    path: /ready
+    port: 8080
+livenessProbe:
+  httpGet:
+    path: /live
+    port: 8080
+startupProbe:
+  httpGet:
+    path: /startup
+    port: 8080
+
 ---
 apiVersion: policy/v1
 kind: PodDisruptionBudget
-metadata:
-  name: api-pdb
 spec:
   minAvailable: 2
   selector:
     matchLabels:
-      app: api</pre>
-    </div>
-    </div>
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>PDBs can block node drains</h3>
-              <p>If minAvailable is too high, nodes cannot be drained during maintenance.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways"><li>Add readiness probes.</li><li>Use PDBs carefully.</li><li>Separate startup and liveness checks.</li></ul>
-            </article>
-
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>Which probe controls when a Pod can receive traffic?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. Liveness</button><button class="quiz-option">B. Readiness</button><button class="quiz-option">C. Startup</button><button class="quiz-option">D. None</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>Readiness determines if the Pod is ready to receive traffic.</span>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section class="section" data-section="4">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 5 of 5 · ~7 mins</div>
-            <h2>Requests, Limits & QoS</h2>
-            <p>Resource requests and limits define scheduling and throttling behavior; they also determine QoS classes.</p>
-          </div>
-
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Seat reservations</h3>
-              <p>You reserve seats so everyone fits, and set rules for snacks.</p>
-            </article>
-
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Restaurant bookings</h3>
-              <p>Requests guarantee a table; limits stop a party from taking over.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Requests guarantee minimum CPU/memory; limits cap usage and influence QoS (Guaranteed/Burstable/BestEffort).</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul><li>Stable scheduling</li><li>HPA accuracy</li><li>Prevents noisy neighbors</li></ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common pitfall</h4>
-                      <ul><li>No limits for bursty apps</li><li>Requests too low</li><li>QoS mismatch</li></ul>
-                    </div>
-                  </div>
-                  <div class="badge-row"><span class="pill good">requests</span><span class="pill caution">limits</span><span class="pill info">QoS</span></div>
-                  <div class="flow"><span class="flow-step">Set requests</span><span class="flow-arrow">→</span><span class="flow-step">Scheduler places pod</span><span class="flow-arrow">→</span><span class="flow-step">Limits enforce caps</span><span class="flow-arrow">→</span><span class="flow-step">QoS class assigned</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“Requests drive scheduling and autoscaling; limits cap usage and define QoS.”</p>
-                  <table><thead><tr><th>QoS</th><th>Criteria</th></tr></thead><tbody><tr><td>Guaranteed</td><td><span class="pill good">Requests = limits</span></td></tr><tr><td>Burstable</td><td><span class="pill info">Requests < limits</span></td></tr></tbody></table>
-                </div>
-              </div>
-              <div class="code-blocks">
-    <div>
-      <div class="code-title">Requests and limits</div>
-      <pre>resources:
+      app: api</pre></div></div>
+<p>Separate signals let Kubernetes make better decisions, and the PDB protects minimum capacity during voluntary disruptions.</p>
+</article>
+<article class="card warning">
+<div class="card-label">⚠️ Warning</div>
+<h3>Liveness probe misuse can create the outage it was meant to prevent</h3>
+<p>The biggest misunderstanding is using liveness as a general “health” check without thinking about startup time or temporary dependency issues. If your app needs extra boot time, add a startup probe and keep readiness focused on traffic safety. Use PDBs to protect planned disruptions, but remember they are not a force field against all failures.</p>
+</article>
+<article class="card technical">
+<div class="card-label">Mini takeaway</div>
+<ul class="takeaways"><li>Keep readiness and liveness semantics separate</li><li>Use startup probes for slow boots</li><li>Apply PDBs to important replicated workloads</li><li>Do not overclaim what PDBs can protect</li></ul>
+</article>
+<article class="card quiz-card">
+<div class="card-label">Quiz</div>
+<h3>What is the main purpose of a readiness probe?</h3>
+<div class="quiz-options" data-answer="0">
+<button class="quiz-option">To decide whether the Pod should receive traffic.</button><button class="quiz-option">To permanently delete a Deployment.</button><button class="quiz-option">To choose which node the Pod runs on.</button><button class="quiz-option">To replace the need for Services.</button>
+</div>
+<div class="quiz-result">
+<strong>Correct answer: A</strong><span>A is correct because readiness controls whether the Pod is considered available for routing. B, C, and D are unrelated. Liveness and startup probes solve different problems than readiness.</span>
+</div>
+</article>
+</div>
+</div>
+</section>
+<section class="section" data-section="4">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Section 5 of 5 · ~6 mins</div>
+<h2>Requests, Limits &amp; QoS</h2>
+<p>Resource requests and limits shape scheduling, autoscaling, and eviction behavior, so this section ties them to real operational outcomes.</p>
+</div>
+<div class="card-grid">
+<article class="card eli5">
+<div class="card-label">🧒 ELI5</div>
+<h3>Reserved seats and buffet cap</h3>
+<p>If guests reserve seats at a dinner, the host can plan the room properly. If one guest tries to eat the entire buffet, the host may need rules to keep the event fair.</p><p>Requests are the reserved seats: the scheduler uses them to plan capacity. Limits are the buffet cap: they constrain how much a container may consume.</p><p>Without realistic requests, both scheduling and autoscaling signals get distorted.</p>
+</article>
+<article class="card analogy">
+<div class="card-label">🔗 ANALOGY</div>
+<h3>Warehouse space booking</h3>
+<p>A shipping company books trailer space before loading trucks. If one team lies about how much space it needs, the whole schedule gets sloppy.</p><p>That is why resource declarations are as much about cluster fairness as they are about one service.</p>
+</article>
+<article class="card technical">
+<div class="card-label">Technical</div>
+<div class="two-col">
+<div>
+<h3>What it means in real code</h3>
+<p><strong>Definition:</strong> Requests tell Kubernetes what resources a Pod needs for scheduling and baseline reservation, while limits cap the maximum resource usage and influence QoS and eviction behavior.</p>
+<p class="deep-note">The scheduler uses requests to place pods onto nodes. Limits can throttle CPU or cause memory OOM termination if exceeded, and the combination of requests and limits contributes to the Pod’s QoS class such as Guaranteed, Burstable, or BestEffort.</p>
+<p class="deep-note">In production, this matters because resource declarations are not just bookkeeping. They affect autoscaling math, noisy-neighbor control, bin-packing efficiency, and which pods get evicted first when a node is under pressure.</p>
+<div class="mini-grid">
+<div class="mini-panel">
+<h4>Why it matters</h4>
+<ul><li>Improves scheduling accuracy</li><li>Supports predictable autoscaling and capacity planning</li><li>Reduces noisy-neighbor risk</li></ul>
+</div>
+<div class="mini-panel">
+<h4>Common pitfall</h4>
+<ul><li>No requests defined</li><li>Limits set unrealistically low causing OOMs or throttling</li><li>Requests copied blindly without measuring actual behavior</li></ul>
+</div>
+</div>
+<div class="badge-row"><span class="pill good">Measured requests</span><span class="pill info">QoS class</span><span class="pill caution">CPU throttling</span><span class="pill bad">BestEffort by accident</span></div>
+<div class="flow"><span class="flow-step">Declare requests/limits</span><span class="flow-arrow">→</span><span class="flow-step">Scheduler places pods</span><span class="flow-arrow">→</span><span class="flow-step">Runtime enforces limits</span><span class="flow-arrow">→</span><span class="flow-step">Eviction/QoS behavior follows</span></div>
+</div>
+<div>
+<h3>Interview-ready view</h3>
+<div class="mini-panel" style="background:rgba(124,58,237,0.12); border-color:rgba(124,58,237,0.26);">
+<h4>💬 Model Interview Answer</h4>
+<p>I usually say requests are for scheduling and limits are for runtime boundaries, but the real value is how they influence cluster behavior. Reasonable requests make autoscaling and bin-packing meaningful, while careless limits can throttle or OOM a healthy service. The gotcha is copying numbers from another app without measuring actual usage patterns.</p>
+</div>
+<table><thead><tr><th>Field</th><th>Primary effect</th></tr></thead><tbody><tr><td>Request</td><td>Scheduling baseline and utilization denominator</td></tr><tr><td>Limit</td><td>Upper runtime boundary</td></tr><tr><td>QoS class</td><td>Influences eviction priority under pressure</td></tr></tbody></table>
+</div>
+</div>
+<div class="code-blocks"><div><div class="code-title">❌ Wrong: missing or unrealistic resource policy</div><pre>resources:
+  limits:
+    cpu: "100m"
+    memory: "128Mi"
+# no requests, and limits may be far below real app needs</pre></div><div><div class="code-title">✅ Right: measured resource declaration</div><pre>resources:
   requests:
-    cpu: "500m"
+    cpu: "250m"
     memory: "512Mi"
   limits:
-    cpu: "1"
-    memory: "1Gi"</pre>
-    </div>
-    </div>
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Throttling surprises</h3>
-              <p>CPU limits can throttle throughput and increase latency.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways"><li>Set realistic requests.</li><li>Use limits intentionally.</li><li>Know QoS impact.</li></ul>
-            </article>
-
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>Which QoS class requires requests to equal limits?</h3>
-              <div class="quiz-options" data-answer="2">
-                <button class="quiz-option">A. BestEffort</button><button class="quiz-option">B. Burstable</button><button class="quiz-option">C. Guaranteed</button><button class="quiz-option">D. Elastic</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: C</strong>
-                <span>Guaranteed QoS requires requests equal limits for CPU/memory.</span>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section class="section" data-section="5">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Completion screen · Review mode</div>
-            <h2>🎉 Kubernetes Deployments & Scaling Cheat Sheet</h2>
-            <p>Master rollouts, autoscaling, and reliability patterns in Kubernetes deployments.</p>
-          </div>
-
-          <div class="completion-grid">
-            <div class="card technical">
-              <div class="card-label">Cheat sheet</div>
-              <div class="celebrate">🚀</div>
-              <h3>1-line interview answers</h3>
-              <div class="cheat-list">
-    <div class="cheat-item">
-      <h4>Deployment</h4>
-      <p>Declarative desired state for ReplicaSets and Pods.</p>
-    </div>
-    <div class="cheat-item">
-      <h4>Rolling update</h4>
-      <p>Gradually replaces Pods with maxSurge/maxUnavailable.</p>
-    </div>
-    <div class="cheat-item">
-      <h4>HPA</h4>
-      <p>Scales replicas based on metrics like CPU or custom metrics.</p>
-    </div>
-    <div class="cheat-item">
-      <h4>PDB</h4>
-      <p>Protects minimum available Pods during disruptions.</p>
-    </div>
-              </div>
-            </div>
-
-            <div class="card analogy">
-              <div class="card-label">What to remember</div>
-              <h3>Fast mental model</h3>
-              <ul class="takeaways"><li><strong>Declarative</strong>: you set desired state; controller converges.</li><li><strong>Rollouts</strong>: control speed + safety of updates.</li><li><strong>Autoscale</strong>: HPA + metrics + resource requests.</li><li><strong>Resilience</strong>: probes + PDBs + budgets.</li></ul>
-              <h3 style="margin-top:22px;">Common traps</h3>
-              <div class="badge-row"><span class="pill bad">Missing resource requests</span><span class="pill bad">Aggressive maxUnavailable</span><span class="pill bad">No readiness probes</span></div>
-            </div>
-          </div>
-        </div>
-      </section>
-    </main>
-
-    <footer class="footer-nav">
-      <div class="footer-nav-inner">
-        <button class="btn" id="prevBtn">← Back</button>
-        <button class="btn primary" id="nextBtn">Next →</button>
-      </div>
-    </footer>
-  </div>
-
-  <script>
+    cpu: "1000m"
+    memory: "1Gi"</pre></div></div>
+<p>The second version gives the scheduler a real baseline and leaves operational headroom while still bounding usage.</p>
+</article>
+<article class="card warning">
+<div class="card-label">⚠️ Warning</div>
+<h3>Resource declarations are part of correctness, not just optimization</h3>
+<p>The easy mistake is treating requests and limits as numbers you can set later after production. In reality they shape scheduling, scaling, and eviction behavior from day one. Measure real usage, set requests intentionally, and be careful with memory limits because OOM kills are abrupt.</p>
+</article>
+<article class="card technical">
+<div class="card-label">Mini takeaway</div>
+<ul class="takeaways"><li>Set measured requests</li><li>Use limits with care</li><li>Understand QoS implications</li><li>Remember requests influence HPA and scheduler behavior</li></ul>
+</article>
+<article class="card quiz-card">
+<div class="card-label">Quiz</div>
+<h3>Which statement about Kubernetes resource requests is most accurate?</h3>
+<div class="quiz-options" data-answer="1">
+<button class="quiz-option">They are ignored by the scheduler and only used for billing.</button><button class="quiz-option">They influence scheduling and form the baseline for some autoscaling/utilization calculations.</button><button class="quiz-option">They force the application to use exactly that much CPU and memory.</button><button class="quiz-option">They replace the need for health probes.</button>
+</div>
+<div class="quiz-result">
+<strong>Correct answer: B</strong><span>B is correct because requests matter for scheduling and for relative utilization calculations such as CPU-based HPA. A is false. C confuses requests with hard enforcement. D mixes unrelated concerns.</span>
+</div>
+</article>
+</div>
+</div>
+</section>
+<section class="section" data-section="5">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Completion screen · Review mode</div>
+<h2>🎉 Kubernetes Deployments &amp; Scaling Cheat Sheet</h2>
+<p>Review of rollout mechanics, autoscaling, probes, disruption budgets, and resource sizing.</p>
+</div>
+<div class="completion-grid">
+<div class="card technical">
+<div class="card-label">Cheat sheet</div>
+<div class="celebrate">🚀</div>
+<h3>1-line interview answers</h3>
+<div class="cheat-list"><div class="cheat-item"><h4>Deployment chain</h4><p>Deployment -&gt; ReplicaSet -&gt; Pod is the core rollout hierarchy.</p></div><div class="cheat-item"><h4>Rolling update</h4><p>Safety depends on readiness plus sensible surge/unavailable settings.</p></div><div class="cheat-item"><h4>HPA</h4><p>Scaling quality depends on good metrics and realistic requests.</p></div><div class="cheat-item"><h4>Probes and PDB</h4><p>Probes govern health and routing; PDBs protect planned disruptions.</p></div><div class="cheat-item"><h4>Requests/limits</h4><p>They shape scheduling, QoS, autoscaling, throttling, and eviction.</p></div></div>
+</div>
+<div class="card analogy">
+<div class="card-label">What to remember</div>
+<h3>Fast mental model</h3>
+<ul class="takeaways"><li><strong>Controller-first</strong>: Change the Deployment, not the individual Pod</li><li><strong>Safe rollout</strong>: Readiness is part of deployment correctness</li><li><strong>Elasticity</strong>: Autoscaling is only as good as the metric and the pod startup time</li><li><strong>Resource policy</strong>: Requests and limits are operational control inputs</li></ul>
+<h3 style="margin-top:22px;">Common traps</h3>
+<div class="badge-row"><span class="pill bad">Pod-only fixes</span><span class="pill bad">aggressive liveness checks</span><span class="pill bad">missing requests with CPU-based HPA</span></div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<footer class="footer-nav">
+<div class="footer-nav-inner">
+<button class="btn" id="prevBtn">← Back</button>
+<button class="btn primary" id="nextBtn">Next →</button>
+</div>
+</footer>
+</div>
+<script>
 const sections = Array.from(document.querySelectorAll('.section'));
     const dots = Array.from(document.querySelectorAll('.nav-dot'));
     const prevBtn = document.getElementById('prevBtn');

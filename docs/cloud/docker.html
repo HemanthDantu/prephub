@@ -1,13 +1,14 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Docker Fundamentals Learning Module</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Docker Fundamentals Learning Module</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&amp;family=Syne:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<style>
 :root {
       --bg: #0a0e1a;
       --surface-1: #111827;
@@ -722,420 +723,398 @@
   </style>
 </head>
 <body>
-  <div class="app">
-    <header class="topbar">
-      <div class="topbar-inner">
-        <div class="topbar-row">
-          <div class="brand">
-            <h1>Docker Fundamentals</h1>
-            <small>Interactive 28-minute learning module</small>
-          </div>
-                <div class="topbar-row">
-          <div class="breadcrumb">
-            <a href="../index.html">Home</a>
-            <span>›</span>
-            <a href="index.html">Cloud</a>
-            <span>›</span>
-            <span>Docker Fundamentals</span>
-          </div>
-        </div>
-          <div class="timer-wrap" aria-live="polite">
-            <span class="timer-label">Time Left</span>
-            <span class="timer" id="timer">28:00</span>
-          </div>
-        </div>
-        <div class="topbar-row">
-                    <nav class="nav-dots" aria-label="Section navigation"><button class="nav-dot active" data-index="0" aria-label="Go to section 1">1</button><button class="nav-dot" data-index="1" aria-label="Go to section 2">2</button><button class="nav-dot" data-index="2" aria-label="Go to section 3">3</button><button class="nav-dot" data-index="3" aria-label="Go to section 4">4</button><button class="nav-dot" data-index="4" aria-label="Go to completion screen">5</button></nav>
-        </div>
-        <div class="progress-shell" aria-hidden="true">
-          <div class="progress-bar" id="progressBar"></div>
-        </div>
-      </div>
-    </header>
-
-    <main>
-      
-      <section class="section active" data-section="0">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 1 of 4 · ~7 mins</div>
-            <h2>Images vs Containers</h2>
-            <p>Images are immutable templates; containers are running instances.</p>
-          </div>
-
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Recipe vs meal</h3>
-              <p>A recipe is the plan, the meal is the result.</p>
-            </article>
-
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Blueprint vs building</h3>
-              <p>A blueprint becomes a building when constructed.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Docker images are layered filesystems; containers add a writable layer at runtime.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul><li>Portable runtime</li><li>Consistent environments</li><li>Fast deployments</li></ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common pitfall</h4>
-                      <ul><li>Mutating containers</li><li>No versioned images</li><li>Environment drift</li></ul>
-                    </div>
-                  </div>
-                  <div class="badge-row"><span class="pill good">Image</span><span class="pill info">Container</span><span class="pill caution">Layer</span></div>
-                  <div class="flow"><span class="flow-step">Build image</span><span class="flow-arrow">→</span><span class="flow-step">Run container</span><span class="flow-arrow">→</span><span class="flow-step">Expose ports</span><span class="flow-arrow">→</span><span class="flow-step">Stop/replace</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“Images are immutable; containers are disposable. Rebuild rather than patch.”</p>
-                  <table><thead><tr><th>Artifact</th><th>Meaning</th></tr></thead><tbody><tr><td>Image</td><td><span class="pill info">Template</span></td></tr><tr><td>Container</td><td><span class="pill good">Running instance</span></td></tr></tbody></table>
-                </div>
-              </div>
-              <div class="code-blocks">
-    <div>
-      <div class="code-title">Build and run</div>
-      <pre>docker build -t app:1.0 .
-docker run -p 8080:8080 app:1.0</pre>
-    </div>
-    </div>
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Do not treat containers like pets</h3>
-              <p>They should be disposable and reproducible.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways"><li>Images are immutable.</li><li>Containers are ephemeral.</li><li>Rebuild often.</li></ul>
-            </article>
-
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>What is a container?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. A VM</button><button class="quiz-option">B. A running image instance</button><button class="quiz-option">C. A Dockerfile</button><button class="quiz-option">D. A registry</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>A container is a running instance of an image.</span>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section class="section" data-section="1">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 2 of 4 · ~7 mins</div>
-            <h2>Dockerfile and Layers</h2>
-            <p>Dockerfiles define how images are built. Each line creates a cached layer.</p>
-          </div>
-
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Stack of pancakes</h3>
-              <p>Each pancake is a layer; you can reuse layers for speed.</p>
-            </article>
-
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Assembly line steps</h3>
-              <p>Each step adds to the final product.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Each Dockerfile instruction creates a layer; caching speeds rebuilds.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul><li>Faster builds</li><li>Smaller images</li><li>Deterministic releases</li></ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common pitfall</h4>
-                      <ul><li>Large base images</li><li>Copying everything early</li><li>No .dockerignore</li></ul>
-                    </div>
-                  </div>
-                  <div class="badge-row"><span class="pill good">Layers</span><span class="pill info">Cache</span><span class="pill caution">Slim base</span></div>
-                  <div class="flow"><span class="flow-step">Choose base</span><span class="flow-arrow">→</span><span class="flow-step">Copy files</span><span class="flow-arrow">→</span><span class="flow-step">Install deps</span><span class="flow-arrow">→</span><span class="flow-step">Set CMD</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“I order Dockerfile steps to maximize cache and reduce image size.”</p>
-                  <table><thead><tr><th>Tip</th><th>Benefit</th></tr></thead><tbody><tr><td>Use slim base</td><td><span class="pill info">Smaller image</span></td></tr><tr><td>Copy deps first</td><td><span class="pill good">Cache reuse</span></td></tr></tbody></table>
-                </div>
-              </div>
-              <div class="code-blocks">
-    <div>
-      <div class="code-title">Optimized Dockerfile</div>
-      <pre>FROM eclipse-temurin:21-jre
+<div class="app">
+<header class="topbar">
+<div class="topbar-inner">
+<div class="topbar-row">
+<div class="brand">
+<h1>Docker Fundamentals</h1>
+<small>Interactive 28-minute learning module</small>
+</div>
+<div class="topbar-row">
+<div class="breadcrumb">
+<a href="../index.html">Home</a>
+<span>›</span>
+<a href="index.html">Cloud</a>
+<span>›</span>
+<span>Docker Fundamentals</span>
+</div>
+</div>
+<div aria-live="polite" class="timer-wrap">
+<span class="timer-label">Time Left</span>
+<span class="timer" id="timer">28:00</span>
+</div>
+</div>
+<div class="topbar-row">
+<nav aria-label="Section navigation" class="nav-dots"><button aria-label="Go to section 1" class="nav-dot active" data-index="0">1</button><button aria-label="Go to section 2" class="nav-dot" data-index="1">2</button><button aria-label="Go to section 3" class="nav-dot" data-index="2">3</button><button aria-label="Go to section 4" class="nav-dot" data-index="3">4</button><button aria-label="Go to completion screen" class="nav-dot" data-index="4">5</button></nav>
+</div>
+<div aria-hidden="true" class="progress-shell">
+<div class="progress-bar" id="progressBar"></div>
+</div>
+</div>
+</header>
+<main>
+<section class="section active" data-section="0">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Section 1 of 4 · ~6 mins</div>
+<h2>Images vs Containers</h2>
+<p>This section builds the core mental model: an image is the packaged artifact, and a container is a running instance of that artifact.</p>
+</div>
+<div class="card-grid">
+<article class="card eli5">
+<div class="card-label">🧒 ELI5</div>
+<h3>Recipe card vs lunch box</h3>
+<p>A recipe tells you exactly how to make a dish, but you cannot eat the recipe itself. You need to actually cook it to get food on the table.</p><p>If you change the lunch after it is served, that does not change the recipe for the next lunch. The next meal still starts from the same original instructions.</p><p>Docker works the same way: the image is the repeatable recipe, and the container is the one running copy created from it.</p>
+</article>
+<article class="card analogy">
+<div class="card-label">🔗 ANALOGY</div>
+<h3>Movie master file vs screening</h3>
+<p>A studio keeps one master copy of a movie, then runs many screenings from it. If one screening projector breaks, you start another screening from the same master.</p><p>That is why containers are treated as disposable runtime instances rather than precious pets you patch by hand.</p>
+</article>
+<article class="card technical">
+<div class="card-label">Technical</div>
+<div class="two-col">
+<div>
+<h3>What it means in real code</h3>
+<p><strong>Definition:</strong> An image is an immutable, versioned filesystem snapshot plus metadata, while a container is a runtime process that adds a temporary writable layer on top of that image.</p>
+<p class="deep-note">When you run docker run, the container runtime mounts the image layers read-only, adds a thin writable layer, then starts the configured ENTRYPOINT or CMD as PID 1 inside isolated namespaces and cgroups.</p>
+<p class="deep-note">In production this matters because reproducibility comes from rebuilding and redeploying images, not from logging into a running container and “fixing” it. Teams that mutate containers create drift between environments and make rollbacks unpredictable.</p>
+<div class="mini-grid">
+<div class="mini-panel">
+<h4>Why it matters</h4>
+<ul><li>Keeps environments reproducible</li><li>Makes rollback a tag change instead of a manual repair</li><li>Supports fast scale-out because containers are disposable</li></ul>
+</div>
+<div class="mini-panel">
+<h4>Common pitfall</h4>
+<ul><li>SSH-ing into containers and patching them live</li><li>Using latest tags everywhere</li><li>Treating container filesystem changes as persistent state</li></ul>
+</div>
+</div>
+<div class="badge-row"><span class="pill good">Immutable image</span><span class="pill info">Disposable runtime</span><span class="pill caution">Writable layer</span><span class="pill bad">Pet container</span></div>
+<div class="flow"><span class="flow-step">Write Dockerfile</span><span class="flow-arrow">→</span><span class="flow-step">Build image</span><span class="flow-arrow">→</span><span class="flow-step">Run container</span><span class="flow-arrow">→</span><span class="flow-step">Replace on change</span></div>
+</div>
+<div>
+<h3>Interview-ready view</h3>
+<div class="mini-panel" style="background:rgba(124,58,237,0.12); border-color:rgba(124,58,237,0.26);">
+<h4>💬 Model Interview Answer</h4>
+<p>An image is the immutable artifact and a container is the running process created from it. I usually explain that images should be versioned and containers should be replaceable. The common gotcha is teams debugging by changing files inside a live container, which fixes one instance but destroys reproducibility.</p>
+</div>
+<table><thead><tr><th>Concept</th><th>What to remember</th></tr></thead><tbody><tr><td>Image</td><td>Immutable template with layers and runtime metadata</td></tr><tr><td>Container</td><td>One running instance with a writable layer</td></tr><tr><td>Best practice</td><td>Rebuild and redeploy instead of patching live</td></tr></tbody></table>
+</div>
+</div>
+<div class="code-blocks"><div><div class="code-title">❌ Wrong: patching a running container</div><pre>docker run -d --name api myorg/api:latest
+docker exec -it api sh
+# Edit files inside the container to "fix" production
+vi /app/config.yml</pre></div><div><div class="code-title">✅ Right: rebuild and replace</div><pre>docker build -t myorg/api:1.4.2 .
+docker run -d --name api-v2 -p 8080:8080 myorg/api:1.4.2
+# After validation, stop and remove the old container
+docker stop api &amp;&amp; docker rm api</pre></div></div>
+<p>The right pattern preserves a versioned artifact and makes rollback a simple image tag swap.</p>
+</article>
+<article class="card warning">
+<div class="card-label">⚠️ Warning</div>
+<h3>Container drift is the real trap</h3>
+<p>The most dangerous misunderstanding is thinking container filesystem changes are durable application state. They disappear when the container is recreated, and worse, they make the running instance different from the source-controlled build. Persist data in volumes or external systems, and rebuild images for code changes.</p>
+</article>
+<article class="card technical">
+<div class="card-label">Mini takeaway</div>
+<ul class="takeaways"><li>Images are immutable artifacts</li><li>Containers are replaceable runtime instances</li><li>Persist state outside the container</li><li>Version image tags explicitly</li></ul>
+</article>
+<article class="card quiz-card">
+<div class="card-label">Quiz</div>
+<h3>Which statement is the best production mental model for Docker?</h3>
+<div class="quiz-options" data-answer="1">
+<button class="quiz-option">A container is the golden source and the image is just a cache.</button><button class="quiz-option">An image is the immutable artifact and containers are disposable instances of it.</button><button class="quiz-option">A container should be manually patched to keep deployments fast.</button><button class="quiz-option">Images and containers are basically the same thing with different names.</button>
+</div>
+<div class="quiz-result">
+<strong>Correct answer: B</strong><span>B is correct because images are the repeatable build artifact and containers are runtime instances created from them. A is backwards: the container should not become the source of truth. C creates drift and breaks rollback discipline. D misses the key operational difference that makes Docker useful in real deployment pipelines.</span>
+</div>
+</article>
+</div>
+</div>
+</section>
+<section class="section" data-section="1">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Section 2 of 4 · ~6 mins</div>
+<h2>Dockerfile and Layers</h2>
+<p>This section explains how image layers are built, cached, and optimized for smaller, faster builds.</p>
+</div>
+<div class="card-grid">
+<article class="card eli5">
+<div class="card-label">🧒 ELI5</div>
+<h3>Stacking transparent sheets</h3>
+<p>Imagine drawing a picture on clear plastic sheets stacked on top of each other. If you change only the top sheet, you do not redraw the whole stack.</p><p>That is why ordering matters. Put the parts that change rarely near the bottom, and the parts that change often near the top.</p><p>Docker build caching works the same way, so the order of instructions affects build speed a lot.</p>
+</article>
+<article class="card analogy">
+<div class="card-label">🔗 ANALOGY</div>
+<h3>Packing a suitcase in the right order</h3>
+<p>If you put daily-use items on top, you can swap them quickly without repacking the whole bag. If you bury them at the bottom, every tiny change forces a full repack.</p><p>A badly ordered Dockerfile destroys cache reuse and makes CI slow for every developer.</p>
+</article>
+<article class="card technical">
+<div class="card-label">Technical</div>
+<div class="two-col">
+<div>
+<h3>What it means in real code</h3>
+<p><strong>Definition:</strong> A Dockerfile builds an image as an ordered sequence of cached layers, where each instruction can reuse or invalidate the cache of the instructions that follow.</p>
+<p class="deep-note">Each RUN, COPY, or ADD can create a new layer. If a layer changes, Docker must rebuild that layer and every subsequent layer, which is why copying the whole source tree before dependency installation is often expensive.</p>
+<p class="deep-note">In production and CI, careful layer ordering reduces build time, registry bandwidth, and attack surface. Multi-stage builds also let you compile with heavy tooling but ship a smaller runtime image.</p>
+<div class="mini-grid">
+<div class="mini-panel">
+<h4>Why it matters</h4>
+<ul><li>Faster CI builds through cache reuse</li><li>Smaller images with multi-stage builds</li><li>Lower vulnerability surface by shipping only runtime dependencies</li></ul>
+</div>
+<div class="mini-panel">
+<h4>Common pitfall</h4>
+<ul><li>COPY . . before installing dependencies</li><li>Using one huge base image for convenience</li><li>Leaving package manager caches and build tools in the final image</li></ul>
+</div>
+</div>
+<div class="badge-row"><span class="pill good">Multi-stage build</span><span class="pill info">Layer cache</span><span class="pill caution">Instruction order</span><span class="pill bad">Bloated image</span></div>
+<div class="flow"><span class="flow-step">Choose base image</span><span class="flow-arrow">→</span><span class="flow-step">Install deps with cache-friendly order</span><span class="flow-arrow">→</span><span class="flow-step">Copy source</span><span class="flow-arrow">→</span><span class="flow-step">Build final runtime image</span></div>
+</div>
+<div>
+<h3>Interview-ready view</h3>
+<div class="mini-panel" style="background:rgba(124,58,237,0.12); border-color:rgba(124,58,237,0.26);">
+<h4>💬 Model Interview Answer</h4>
+<p>Dockerfile optimization is mostly about cache boundaries and image size. I usually install dependencies before copying the rest of the application if the dependency manifest changes less often than the source. A common gotcha is copying the full repo too early, which invalidates the cache and makes every commit rebuild from scratch.</p>
+</div>
+<table><thead><tr><th>Pattern</th><th>Effect</th></tr></thead><tbody><tr><td>Multi-stage build</td><td>Keeps build tools out of the final image</td></tr><tr><td>Stable dependency layer</td><td>Speeds up rebuilds</td></tr><tr><td>Small base image</td><td>Reduces pull time and security noise</td></tr></tbody></table>
+</div>
+</div>
+<div class="code-blocks"><div><div class="code-title">❌ Wrong: cache-unfriendly Dockerfile</div><pre>FROM eclipse-temurin:21-jdk
 WORKDIR /app
-COPY build/libs/app.jar app.jar
-EXPOSE 8080
-CMD ["java","-jar","app.jar"]</pre>
-    </div>
-    </div>
-            </article>
+COPY . .
+RUN ./mvnw clean package -DskipTests
+CMD ["java","-jar","target/app.jar"]</pre></div><div><div class="code-title">✅ Right: multi-stage and cache-friendly</div><pre>FROM maven:3.9-eclipse-temurin-21 AS build
+WORKDIR /workspace
+COPY pom.xml .
+RUN mvn -q -DskipTests dependency:go-offline
+COPY src ./src
+RUN mvn -q -DskipTests package
 
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Large images slow deployments</h3>
-              <p>Big images increase transfer time and cold starts.</p>
-            </article>
+FROM eclipse-temurin:21-jre
+WORKDIR /app
+COPY --from=build /workspace/target/app.jar app.jar
+ENTRYPOINT ["java","-jar","/app/app.jar"]</pre></div></div>
+<p>The second version preserves cache reuse on dependencies and ships only the JRE plus the built jar.</p>
+</article>
+<article class="card warning">
+<div class="card-label">⚠️ Warning</div>
+<h3>Layer order is the easiest place to waste CI time</h3>
+<p>The common failure is not understanding that one changed layer invalidates the ones after it. If you COPY the full repository before dependency install, even a README change can force a full Maven or npm reinstall. Move stable inputs earlier, use multi-stage builds, and keep the final image minimal.</p>
+</article>
+<article class="card technical">
+<div class="card-label">Mini takeaway</div>
+<ul class="takeaways"><li>Instruction order controls cache reuse</li><li>Multi-stage builds shrink runtime images</li><li>Copy stable files first</li><li>Ship only runtime artifacts</li></ul>
+</article>
+<article class="card quiz-card">
+<div class="card-label">Quiz</div>
+<h3>Why does copying the whole source tree before dependency installation often slow builds?</h3>
+<div class="quiz-options" data-answer="1">
+<button class="quiz-option">Because Docker cannot cache RUN instructions at all.</button><button class="quiz-option">Because the earlier COPY invalidates the cache for later layers whenever any source file changes.</button><button class="quiz-option">Because Maven and npm refuse to run inside containers.</button><button class="quiz-option">Because ENTRYPOINT must come before COPY.</button>
+</div>
+<div class="quiz-result">
+<strong>Correct answer: B</strong><span>B is correct because Docker layer caching is sequential: when an earlier layer changes, later layers must be rebuilt. A is false because RUN layers are cached normally. C is obviously not true in production systems. D mixes unrelated instructions and does not explain cache invalidation.</span>
+</div>
+</article>
+</div>
+</div>
+</section>
+<section class="section" data-section="2">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Section 3 of 4 · ~6 mins</div>
+<h2>Volumes and Networking</h2>
+<p>This section covers where persistent data belongs and how containers communicate without hard-coding host assumptions.</p>
+</div>
+<div class="card-grid">
+<article class="card eli5">
+<div class="card-label">🧒 ELI5</div>
+<h3>Notebook vs locker</h3>
+<p>A student may carry a notebook all day, but if the backpack is lost, the notes go too. Important belongings belong in a locker, not only in the bag.</p><p>Container filesystems are like the backpack: temporary. Volumes are like the locker: created to survive container replacement.</p><p>Networking is similar: people in the same school can talk by room number instead of memorizing street addresses.</p>
+</article>
+<article class="card analogy">
+<div class="card-label">🔗 ANALOGY</div>
+<h3>Apartment building utilities</h3>
+<p>Every apartment is separate, but they share plumbing and a building intercom. Residents talk through stable apartment numbers, not by guessing where someone parked today.</p><p>In Docker, service discovery through network aliases is much safer than hard-coding container IPs.</p>
+</article>
+<article class="card technical">
+<div class="card-label">Technical</div>
+<div class="two-col">
+<div>
+<h3>What it means in real code</h3>
+<p><strong>Definition:</strong> Volumes provide persistent storage outside the container writable layer, and Docker networks provide name-based communication between containers.</p>
+<p class="deep-note">A named volume is managed by Docker and mounted into the container filesystem. User-defined bridge networks create DNS entries so one container can reach another by service name, which is how Compose stacks resolve api -&gt; db reliably.</p>
+<p class="deep-note">This matters in production-like local development because databases must keep data across container recreation and services must connect without relying on unstable IP addresses. If you persist data in the container layer or hard-code addresses, your environment becomes fragile.</p>
+<div class="mini-grid">
+<div class="mini-panel">
+<h4>Why it matters</h4>
+<ul><li>Keeps database data across restarts</li><li>Lets services discover each other by name</li><li>Makes local stacks closer to real deployments</li></ul>
+</div>
+<div class="mini-panel">
+<h4>Common pitfall</h4>
+<ul><li>Storing Postgres data in the container filesystem</li><li>Using localhost incorrectly between containers</li><li>Hard-coding container IP addresses</li></ul>
+</div>
+</div>
+<div class="badge-row"><span class="pill good">Named volume</span><span class="pill info">Bridge network DNS</span><span class="pill caution">Port publishing</span><span class="pill bad">Hard-coded IP</span></div>
+<div class="flow"><span class="flow-step">Create network</span><span class="flow-arrow">→</span><span class="flow-step">Start containers</span><span class="flow-arrow">→</span><span class="flow-step">Resolve service names</span><span class="flow-arrow">→</span><span class="flow-step">Persist data in volume</span></div>
+</div>
+<div>
+<h3>Interview-ready view</h3>
+<div class="mini-panel" style="background:rgba(124,58,237,0.12); border-color:rgba(124,58,237,0.26);">
+<h4>💬 Model Interview Answer</h4>
+<p>Volumes solve persistence and networks solve service-to-service connectivity. I normally explain that a container should be replaceable, so durable data belongs in a volume or external database. The gotcha is that localhost inside one container points to itself, not to a sibling container.</p>
+</div>
+<table><thead><tr><th>Need</th><th>Correct tool</th></tr></thead><tbody><tr><td>Keep database files</td><td>Named volume</td></tr><tr><td>Connect api to db</td><td>User-defined network + service name</td></tr><tr><td>Expose service to host</td><td>Published port</td></tr></tbody></table>
+</div>
+</div>
+<div class="code-blocks"><div><div class="code-title">❌ Wrong: ephemeral data and wrong hostname</div><pre>docker run --name db postgres:16
+docker run --name api -e DB_HOST=localhost myorg/api:1.0</pre></div><div><div class="code-title">✅ Right: persistent volume and network alias</div><pre>docker network create app-net
+docker volume create pg-data
 
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways"><li>Order steps for cache.</li><li>Use slim base images.</li><li>Add .dockerignore.</li></ul>
-            </article>
+docker run -d --name db --network app-net               -v pg-data:/var/lib/postgresql/data postgres:16
 
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>Why copy dependency files first?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. To break caching</button><button class="quiz-option">B. To improve caching</button><button class="quiz-option">C. To skip builds</button><button class="quiz-option">D. To remove layers</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>It allows dependency install layers to be cached.</span>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section class="section" data-section="2">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 3 of 4 · ~7 mins</div>
-            <h2>Volumes and Networking</h2>
-            <p>Volumes persist data; networks connect containers securely.</p>
-          </div>
-
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Toy box storage</h3>
-              <p>You keep toys in a box so they’re still there tomorrow.</p>
-            </article>
-
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Apartment plumbing</h3>
-              <p>Pipes connect apartments; storage keeps water available.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Volumes mount persistent storage; networks create isolated communication channels.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul><li>Data persistence</li><li>Service isolation</li><li>Secure connectivity</li></ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common pitfall</h4>
-                      <ul><li>Storing data in container FS</li><li>Using host network</li><li>Unsecured ports</li></ul>
-                    </div>
-                  </div>
-                  <div class="badge-row"><span class="pill good">Volumes</span><span class="pill info">Bridge network</span><span class="pill caution">Isolation</span></div>
-                  <div class="flow"><span class="flow-step">Create volume</span><span class="flow-arrow">→</span><span class="flow-step">Mount volume</span><span class="flow-arrow">→</span><span class="flow-step">Attach network</span><span class="flow-arrow">→</span><span class="flow-step">Communicate</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“I use volumes for data and user-defined networks for clean service discovery.”</p>
-                  <table><thead><tr><th>Feature</th><th>Use</th></tr></thead><tbody><tr><td>Volume</td><td><span class="pill good">Persistent data</span></td></tr><tr><td>Network</td><td><span class="pill info">Service discovery</span></td></tr></tbody></table>
-                </div>
-              </div>
-              <div class="code-blocks">
-    <div>
-      <div class="code-title">Volume mount</div>
-      <pre>docker run -v data:/var/lib/postgresql/data postgres:16</pre>
-    </div>
-    </div>
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Data loss without volumes</h3>
-              <p>Container files are deleted when the container is removed.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways"><li>Persist data with volumes.</li><li>Use custom networks.</li><li>Avoid host networking.</li></ul>
-            </article>
-
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>Why use volumes?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. Faster builds</button><button class="quiz-option">B. Persistent data</button><button class="quiz-option">C. Smaller images</button><button class="quiz-option">D. More CPU</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>Volumes persist data beyond container lifetime.</span>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section class="section" data-section="3">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 4 of 4 · ~7 mins</div>
-            <h2>Docker Best Practices</h2>
-            <p>Security and reliability depend on good defaults and minimal images.</p>
-          </div>
-
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Wear a helmet</h3>
-              <p>Safety rules keep you protected.</p>
-            </article>
-
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Seat belts</h3>
-              <p>Small habits prevent big problems.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Use non-root users, health checks, and minimal images to improve security.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul><li>Lower attack surface</li><li>Safer deployments</li><li>Better observability</li></ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common pitfall</h4>
-                      <ul><li>Running as root</li><li>No health checks</li><li>Secret in image</li></ul>
-                    </div>
-                  </div>
-                  <div class="badge-row"><span class="pill good">Non-root</span><span class="pill info">Healthcheck</span><span class="pill caution">Secrets</span></div>
-                  <div class="flow"><span class="flow-step">Create user</span><span class="flow-arrow">→</span><span class="flow-step">Add health check</span><span class="flow-arrow">→</span><span class="flow-step">Scan image</span><span class="flow-arrow">→</span><span class="flow-step">Deploy</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“I run containers as non-root and add health checks for orchestration.”</p>
-                  <table><thead><tr><th>Practice</th><th>Benefit</th></tr></thead><tbody><tr><td>Non-root</td><td><span class="pill good">Security</span></td></tr><tr><td>Healthcheck</td><td><span class="pill info">Reliability</span></td></tr></tbody></table>
-                </div>
-              </div>
-              <div class="code-blocks">
-    <div>
-      <div class="code-title">Healthcheck</div>
-      <pre>HEALTHCHECK --interval=30s --timeout=3s   CMD curl -f http://localhost:8080/actuator/health || exit 1</pre>
-    </div>
-    </div>
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Do not bake secrets into images</h3>
-              <p>Use env vars or secret managers.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways"><li>Run as non-root.</li><li>Add health checks.</li><li>Keep images small.</li></ul>
-            </article>
-
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>Why avoid running as root?</h3>
-              <div class="quiz-options" data-answer="2">
-                <button class="quiz-option">A. Slower builds</button><button class="quiz-option">B. Larger images</button><button class="quiz-option">C. Security risk</button><button class="quiz-option">D. Breaks networking</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: C</strong>
-                <span>Root privileges increase attack surface.</span>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-      
-      <section class="section" data-section="4">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Completion screen · Review mode</div>
-            <h2>🎉 Docker Fundamentals Cheat Sheet</h2>
-            <p>Docker essentials: images, containers, and practical workflows.</p>
-          </div>
-
-          <div class="completion-grid">
-            <div class="card technical">
-              <div class="card-label">Cheat sheet</div>
-              <div class="celebrate">🚀</div>
-              <h3>1-line interview answers</h3>
-              <div class="cheat-list">
-    <div class="cheat-item">
-      <h4>Image</h4>
-      <p>Immutable template for containers.</p>
-    </div>
-    <div class="cheat-item">
-      <h4>Container</h4>
-      <p>Running instance of an image.</p>
-    </div>
-    <div class="cheat-item">
-      <h4>Layer</h4>
-      <p>Cached build step.</p>
-    </div>
-    <div class="cheat-item">
-      <h4>Volume</h4>
-      <p>Persistent data storage.</p>
-    </div>
-              </div>
-            </div>
-
-            <div class="card analogy">
-              <div class="card-label">What to remember</div>
-              <h3>Fast mental model</h3>
-              <ul class="takeaways"><li><strong>Images</strong>: built from Dockerfile layers.</li><li><strong>Containers</strong>: isolated runtime.</li><li><strong>Volumes</strong>: persist data.</li><li><strong>Networks</strong>: connect services.</li></ul>
-              <h3 style="margin-top:22px;">Common traps</h3>
-              <div class="badge-row">
-                <span class="pill bad">Huge images</span><span class="pill bad">Running as root</span><span class="pill bad">No health checks</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    </main>
-
-    <footer class="footer-nav">
-      <div class="footer-nav-inner">
-        <button class="btn" id="prevBtn">← Back</button>
-        <button class="btn primary" id="nextBtn">Next →</button>
-      </div>
-    </footer>
-  </div>
-
-  <script>
+docker run -d --name api --network app-net               -e DB_HOST=db -p 8080:8080 myorg/api:1.0</pre></div></div>
+<p>The API now reaches the database by container name on the shared network, and the database data survives recreation.</p>
+</article>
+<article class="card warning">
+<div class="card-label">⚠️ Warning</div>
+<h3>Localhost confusion breaks many Docker setups</h3>
+<p>The most common networking mistake is using localhost from one container to reach another container. localhost always means “this container.” Put both containers on the same user-defined network and use the target service name, and use volumes for state you cannot lose.</p>
+</article>
+<article class="card technical">
+<div class="card-label">Mini takeaway</div>
+<ul class="takeaways"><li>Use volumes for durable state</li><li>Use service names on shared networks</li><li>localhost is container-local</li><li>Publish ports only when host access is needed</li></ul>
+</article>
+<article class="card quiz-card">
+<div class="card-label">Quiz</div>
+<h3>Your API container cannot reach Postgres running in another container. Which fix is most correct?</h3>
+<div class="quiz-options" data-answer="0">
+<button class="quiz-option">Use the database container name on a shared Docker network.</button><button class="quiz-option">Use localhost from the API container.</button><button class="quiz-option">Copy the database files into the API image.</button><button class="quiz-option">Restart the API container until it gets the right IP.</button>
+</div>
+<div class="quiz-result">
+<strong>Correct answer: A</strong><span>A is correct because user-defined networks give containers DNS-based discovery by name. B is wrong because localhost points back to the API container itself. C confuses runtime connectivity with image packaging. D is unreliable because container IPs are not a safe discovery mechanism.</span>
+</div>
+</article>
+</div>
+</div>
+</section>
+<section class="section" data-section="3">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Section 4 of 4 · ~6 mins</div>
+<h2>Docker Best Practices</h2>
+<p>This section turns the basics into operational habits: security, observability, startup behavior, and image hygiene.</p>
+</div>
+<div class="card-grid">
+<article class="card eli5">
+<div class="card-label">🧒 ELI5</div>
+<h3>Camping with a checklist</h3>
+<p>When you go camping, you pack only what you need, label everything clearly, and check that the flashlight works before leaving. That discipline prevents surprises in the dark.</p><p>Containers work the same way. Small images, health checks, and non-root execution reduce the number of bad surprises after deployment.</p><p>Best practices are boring when they work, and very expensive when they are skipped.</p>
+</article>
+<article class="card analogy">
+<div class="card-label">🔗 ANALOGY</div>
+<h3>Opening a restaurant safely</h3>
+<p>A restaurant opens only after the kitchen is ready, the food is stored correctly, and staff know who can access what. Skipping those basics creates health and safety issues immediately.</p><p>In Docker, health checks, least privilege, and explicit configuration are the equivalent safety rules.</p>
+</article>
+<article class="card technical">
+<div class="card-label">Technical</div>
+<div class="two-col">
+<div>
+<h3>What it means in real code</h3>
+<p><strong>Definition:</strong> Docker best practices are the set of image, runtime, and security habits that keep containers predictable, lightweight, and safe to operate.</p>
+<p class="deep-note">A good container image uses a minimal base, runs as a non-root user, has a clear ENTRYPOINT, externalizes configuration, and optionally exposes a health signal so orchestrators know when to restart or stop routing traffic.</p>
+<p class="deep-note">In production, the biggest gains come from reducing attack surface and reducing mystery. Small images pull faster, health checks improve recovery, and non-root containers reduce the blast radius of compromise.</p>
+<div class="mini-grid">
+<div class="mini-panel">
+<h4>Why it matters</h4>
+<ul><li>Improves security posture</li><li>Makes failures easier to detect and replace</li><li>Reduces build and deploy time</li></ul>
+</div>
+<div class="mini-panel">
+<h4>Common pitfall</h4>
+<ul><li>Running as root by default</li><li>Stuffing secrets into the image</li><li>No health checks or readiness strategy</li></ul>
+</div>
+</div>
+<div class="badge-row"><span class="pill good">Non-root user</span><span class="pill info">Health check</span><span class="pill caution">Config via env</span><span class="pill bad">Secrets baked in</span></div>
+<div class="flow"><span class="flow-step">Pick minimal base image</span><span class="flow-arrow">→</span><span class="flow-step">Create non-root user</span><span class="flow-arrow">→</span><span class="flow-step">Expose config via env</span><span class="flow-arrow">→</span><span class="flow-step">Add health signal</span></div>
+</div>
+<div>
+<h3>Interview-ready view</h3>
+<div class="mini-panel" style="background:rgba(124,58,237,0.12); border-color:rgba(124,58,237,0.26);">
+<h4>💬 Model Interview Answer</h4>
+<p>The best Docker habits are small images, non-root execution, explicit config, and replaceability. I also mention health checks because orchestration systems need a signal before sending traffic or deciding a container is unhealthy. A classic gotcha is baking secrets into images, which turns every registry pull into a secret-distribution event.</p>
+</div>
+<table><thead><tr><th>Practice</th><th>Reason</th></tr></thead><tbody><tr><td>Run as non-root</td><td>Reduces privilege if the process is compromised</td></tr><tr><td>Externalize config</td><td>Promotes one image across environments</td></tr><tr><td>Health checks</td><td>Improves restart and routing decisions</td></tr></tbody></table>
+</div>
+</div>
+<div class="code-blocks"><div><div class="code-title">❌ Wrong: oversized and over-privileged image</div><pre>FROM ubuntu:latest
+WORKDIR /app
+COPY . .
+ENV DB_PASSWORD=supersecret
+CMD ["bash","start.sh"]</pre></div><div><div class="code-title">✅ Right: safer runtime image</div><pre>FROM eclipse-temurin:21-jre
+WORKDIR /app
+RUN useradd -r -u 1001 appuser
+COPY app.jar app.jar
+USER 1001
+ENV JAVA_OPTS=""
+ENTRYPOINT ["sh","-c","java $JAVA_OPTS -jar /app/app.jar"]</pre></div></div>
+<p>The second version avoids root, avoids secrets in the image, and keeps the runtime surface narrower.</p>
+</article>
+<article class="card warning">
+<div class="card-label">⚠️ Warning</div>
+<h3>Baking secrets into images creates a quiet security disaster</h3>
+<p>People often focus on image size and forget secret handling. If credentials are in ENV lines, shell history, or copied config files, anyone with image access may have them forever. Inject secrets at runtime through a secret manager or orchestrator integration, and run the process as a non-root user.</p>
+</article>
+<article class="card technical">
+<div class="card-label">Mini takeaway</div>
+<ul class="takeaways"><li>Prefer minimal runtime images</li><li>Run as non-root</li><li>Do not bake secrets into images</li><li>Expose health and config explicitly</li></ul>
+</article>
+<article class="card quiz-card">
+<div class="card-label">Quiz</div>
+<h3>Which practice most directly reduces blast radius if the application process is compromised?</h3>
+<div class="quiz-options" data-answer="1">
+<button class="quiz-option">Using the latest tag for easier upgrades</button><button class="quiz-option">Running the container as a non-root user</button><button class="quiz-option">Publishing more ports so debugging is simpler</button><button class="quiz-option">Copying secrets into the image during build</button>
+</div>
+<div class="quiz-result">
+<strong>Correct answer: B</strong><span>B is correct because dropping root privileges limits what the process can do if exploited. A is about versioning convenience, not privilege boundaries. C increases exposure instead of reducing it. D is a security anti-pattern because it spreads secrets with the artifact.</span>
+</div>
+</article>
+</div>
+</div>
+</section>
+<section class="section" data-section="4">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Completion screen · Review mode</div>
+<h2>🎉 Docker Fundamentals Cheat Sheet</h2>
+<p>Docker basics for interviews: immutability, layering, networking, and container hygiene.</p>
+</div>
+<div class="completion-grid">
+<div class="card technical">
+<div class="card-label">Cheat sheet</div>
+<div class="celebrate">🚀</div>
+<h3>1-line interview answers</h3>
+<div class="cheat-list"><div class="cheat-item"><h4>Image</h4><p>Immutable, versioned artifact built from ordered layers.</p></div><div class="cheat-item"><h4>Container</h4><p>Disposable runtime instance with a temporary writable layer.</p></div><div class="cheat-item"><h4>Cache rule</h4><p>When one layer changes, later layers rebuild too.</p></div><div class="cheat-item"><h4>Volume</h4><p>Persistent state belongs here, not in the container layer.</p></div><div class="cheat-item"><h4>Network</h4><p>Use service names on a shared network instead of hard-coded IPs.</p></div></div>
+</div>
+<div class="card analogy">
+<div class="card-label">What to remember</div>
+<h3>Fast mental model</h3>
+<ul class="takeaways"><li><strong>Build</strong>: Create an immutable image once</li><li><strong>Run</strong>: Start disposable containers from that image</li><li><strong>Persist</strong>: Store durable data in volumes or external systems</li><li><strong>Secure</strong>: Use minimal images, non-root users, and runtime config</li></ul>
+<h3 style="margin-top:22px;">Common traps</h3>
+<div class="badge-row"><span class="pill bad">Patching live containers</span><span class="pill bad">Baking secrets into images</span><span class="pill bad">Using localhost between containers</span></div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<footer class="footer-nav">
+<div class="footer-nav-inner">
+<button class="btn" id="prevBtn">← Back</button>
+<button class="btn primary" id="nextBtn">Next →</button>
+</div>
+</footer>
+</div>
+<script>
 const sections = Array.from(document.querySelectorAll('.section'));
     const dots = Array.from(document.querySelectorAll('.nav-dot'));
     const prevBtn = document.getElementById('prevBtn');

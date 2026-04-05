@@ -1,13 +1,14 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AWS Lambda & Serverless Learning Module</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AWS Lambda &amp; Serverless Learning Module</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&amp;family=Syne:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<style>
 :root {
       --bg: #0a0e1a;
       --surface-1: #111827;
@@ -711,502 +712,493 @@
   </style>
 </head>
 <body>
-  <div class="app">
-    <header class="topbar">
-      <div class="topbar-inner">
-        <div class="topbar-row">
-          <div class="brand">
-            <h1>AWS Lambda & Serverless</h1>
-            <small>Interactive 35-minute learning module</small>
-          </div>
-                <div class="topbar-row">
-          <div class="breadcrumb">
-            <a href="../index.html">Home</a>
-            <span>›</span>
-            <a href="index.html">Cloud</a>
-            <span>›</span>
-            <span>AWS Lambda & Serverless</span>
-          </div>
-        </div>
-          <div class="timer-wrap" aria-live="polite">
-            <span class="timer-label">Time Left</span>
-            <span class="timer" id="timer">35:00</span>
-          </div>
-        </div>
-        <div class="topbar-row">
-                    <nav class="nav-dots" aria-label="Section navigation"><button class="nav-dot active" data-index="0" aria-label="Go to section 1">1</button><button class="nav-dot" data-index="1" aria-label="Go to section 2">2</button><button class="nav-dot" data-index="2" aria-label="Go to section 3">3</button><button class="nav-dot" data-index="3" aria-label="Go to section 4">4</button><button class="nav-dot" data-index="4" aria-label="Go to section 5">5</button><button class="nav-dot" data-index="5" aria-label="Go to completion screen">6</button></nav>
-        </div>
-        <div class="progress-shell" aria-hidden="true">
-          <div class="progress-bar" id="progressBar"></div>
-        </div>
-      </div>
-    </header>
+<div class="app">
+<header class="topbar">
+<div class="topbar-inner">
+<div class="topbar-row">
+<div class="brand">
+<h1>AWS Lambda &amp; Serverless</h1>
+<small>Interactive 35-minute learning module</small>
+</div>
+<div class="topbar-row">
+<div class="breadcrumb">
+<a href="../index.html">Home</a>
+<span>›</span>
+<a href="index.html">Cloud</a>
+<span>›</span>
+<span>AWS Lambda &amp; Serverless</span>
+</div>
+</div>
+<div aria-live="polite" class="timer-wrap">
+<span class="timer-label">Time Left</span>
+<span class="timer" id="timer">35:00</span>
+</div>
+</div>
+<div class="topbar-row">
+<nav aria-label="Section navigation" class="nav-dots"><button aria-label="Go to section 1" class="nav-dot active" data-index="0">1</button><button aria-label="Go to section 2" class="nav-dot" data-index="1">2</button><button aria-label="Go to section 3" class="nav-dot" data-index="2">3</button><button aria-label="Go to section 4" class="nav-dot" data-index="3">4</button><button aria-label="Go to section 5" class="nav-dot" data-index="4">5</button><button aria-label="Go to completion screen" class="nav-dot" data-index="5">6</button></nav>
+</div>
+<div aria-hidden="true" class="progress-shell">
+<div class="progress-bar" id="progressBar"></div>
+</div>
+</div>
+</header>
+<main>
+<section class="section active" data-section="0">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Section 1 of 5 · ~6 mins</div>
+<h2>Function Model &amp; Runtime</h2>
+<p>Lambda is event-driven compute, but the key interview insight is understanding the execution environment and when the model fits.</p>
+</div>
+<div class="card-grid">
+<article class="card eli5">
+<div class="card-label">🧒 ELI5</div>
+<h3>On-call helper who appears for one task</h3>
+<p>Imagine a helper who shows up only when the doorbell rings, does exactly one task, and then leaves. You do not pay them to sit in the room all day doing nothing.</p><p>That is the appeal of Lambda: code runs only when an event arrives.</p><p>But because the helper appears for short bursts, you should not design the job like a long, stateful shift that lasts all day.</p>
+</article>
+<article class="card analogy">
+<div class="card-label">🔗 ANALOGY</div>
+<h3>Taxi instead of owning a bus</h3>
+<p>A taxi is perfect for occasional trips because you pay when you ride. It is a bad choice if you need a vehicle running continuously with custom equipment inside it.</p><p>Lambda follows that same trade-off: excellent for bursty event-driven work, weaker for long-running or heavily customized workloads.</p>
+</article>
+<article class="card technical">
+<div class="card-label">Technical</div>
+<div class="two-col">
+<div>
+<h3>What it means in real code</h3>
+<p><strong>Definition:</strong> Lambda runs a handler inside an AWS-managed execution environment that is created and reused as needed in response to events.</p>
+<p class="deep-note">AWS provisions an execution environment, loads your runtime and code package, then invokes the handler with the event payload. That environment may be reused for later invocations, which means memory outside the handler can be cached between warm calls, but it must never be treated as durable state.</p>
+<p class="deep-note">In production, this matters because the Lambda programming model rewards small, stateless, event-focused functions. If you design a Lambda like a long-lived server process, you fight the platform instead of using its strengths.</p>
+<div class="mini-grid">
+<div class="mini-panel">
+<h4>Why it matters</h4>
+<ul><li>Good for event-driven and bursty workloads</li><li>No server patching or capacity planning for baseline traffic</li><li>Scales automatically by adding concurrent execution environments</li></ul>
+</div>
+<div class="mini-panel">
+<h4>Common pitfall</h4>
+<ul><li>Keeping important state only in process memory</li><li>Using Lambda for multi-hour jobs</li><li>Ignoring timeout and memory settings</li></ul>
+</div>
+</div>
+<div class="badge-row"><span class="pill good">Stateless handler</span><span class="pill info">Managed runtime</span><span class="pill caution">Timeout limit</span><span class="pill bad">Long-running workflow</span></div>
+<div class="flow"><span class="flow-step">Event arrives</span><span class="flow-arrow">→</span><span class="flow-step">Environment prepared</span><span class="flow-arrow">→</span><span class="flow-step">Handler runs</span><span class="flow-arrow">→</span><span class="flow-step">Result or side effect produced</span></div>
+</div>
+<div>
+<h3>Interview-ready view</h3>
+<div class="mini-panel" style="background:rgba(124,58,237,0.12); border-color:rgba(124,58,237,0.26);">
+<h4>💬 Model Interview Answer</h4>
+<p>Lambda is managed event-driven compute: AWS handles the servers and I provide a handler that reacts to events. I usually mention that execution environments can be reused, so caching clients is fine, but relying on in-memory state is not. The trade-off is that Lambda is great for bursty or asynchronous work, while very long-running or heavily stateful workloads fit better on containers or VMs.</p>
+</div>
+<table><thead><tr><th>Setting</th><th>Why it matters</th></tr></thead><tbody><tr><td>Memory</td><td>Affects both RAM and CPU allocation</td></tr><tr><td>Timeout</td><td>Maximum allowed runtime per invocation</td></tr><tr><td>Concurrency</td><td>How many requests can run in parallel</td></tr></tbody></table>
+</div>
+</div>
+<div class="code-blocks"><div><div class="code-title">❌ Wrong: treating Lambda like a long-lived server</div><pre>let globalOrders = [];
 
-    <main>
+exports.handler = async (event) =&gt; {
+  globalOrders.push(event.orderId); // Assumes this is durable state
+  await sleep(30 * 60 * 1000);      // Very long-running task
+  return { statusCode: 200 };
+};</pre></div><div><div class="code-title">✅ Right: stateless event handler</div><pre>const { S3Client } = require("@aws-sdk/client-s3");
+const s3 = new S3Client({});
 
-      <section class="section active" data-section="0">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 1 of 5 · ~6 mins</div>
-            <h2>Function Model & Runtime</h2>
-            <p>Lambda runs your handler in a managed runtime with configurable memory and timeout.</p>
-          </div>
+exports.handler = async (event) =&gt; {
+  // Read input from the event, write durable output externally
+  // Reusing the client across warm invocations is fine
+  return { statusCode: 202, body: JSON.stringify({ accepted: true }) };
+};</pre></div></div>
+<p>The right pattern keeps only reusable clients in memory and puts durable state in external systems such as S3, DynamoDB, or queues.</p>
+</article>
+<article class="card warning">
+<div class="card-label">⚠️ Warning</div>
+<h3>Warm reuse is not the same thing as durable state</h3>
+<p>A subtle but dangerous mistake is seeing a warm execution environment once and assuming memory will always be there. Sometimes it will, sometimes AWS will create a new environment. Cache connection objects or SDK clients for efficiency, but keep critical state in durable storage.</p>
+</article>
+<article class="card technical">
+<div class="card-label">Mini takeaway</div>
+<ul class="takeaways"><li>Keep handlers stateless</li><li>Use external storage for durable state</li><li>Tune timeout and memory intentionally</li><li>Choose Lambda only when the workload fits</li></ul>
+</article>
+<article class="card quiz-card">
+<div class="card-label">Quiz</div>
+<h3>Which statement about Lambda execution environments is the safest production assumption?</h3>
+<div class="quiz-options" data-answer="1">
+<button class="quiz-option">They are guaranteed to keep in-memory state forever.</button><button class="quiz-option">They may be reused, so reuse clients for efficiency, but do not rely on memory for durable state.</button><button class="quiz-option">There is always exactly one environment per function.</button><button class="quiz-option">A Lambda invocation can run for as long as an EC2 instance.</button>
+</div>
+<div class="quiz-result">
+<strong>Correct answer: B</strong><span>B is correct because execution environments are often reused, but that reuse is an optimization, not a durability guarantee. A is unsafe because environments can be recycled. C is false because concurrency creates multiple environments. D is false because Lambda has strict runtime limits.</span>
+</div>
+</article>
+</div>
+</div>
+</section>
+<section class="section" data-section="1">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Section 2 of 5 · ~6 mins</div>
+<h2>Event Sources &amp; Triggers</h2>
+<p>Lambda becomes powerful when you understand how different event sources change invocation patterns, scaling, and failure handling.</p>
+</div>
+<div class="card-grid">
+<article class="card eli5">
+<div class="card-label">🧒 ELI5</div>
+<h3>Doorbells from different doors</h3>
+<p>A helper may get called by the front door, the back gate, or the garage alarm. Each call reaches the same person, but the meaning and urgency of the call are different.</p><p>Lambda works the same way. HTTP, S3 uploads, queue messages, and scheduled events are all valid triggers, but each one changes how the function should behave.</p><p>Good serverless design starts by understanding the shape and reliability expectations of the event source.</p>
+</article>
+<article class="card analogy">
+<div class="card-label">🔗 ANALOGY</div>
+<h3>Mailroom, phone line, and calendar reminder</h3>
+<p>A package drop-off, a phone call, and a scheduled reminder all start work in different ways. You would not process them with the exact same habits.</p><p>That is why Lambda integrations have different retry behavior, batching options, and scaling models depending on the trigger.</p>
+</article>
+<article class="card technical">
+<div class="card-label">Technical</div>
+<div class="two-col">
+<div>
+<h3>What it means in real code</h3>
+<p><strong>Definition:</strong> A Lambda trigger is an AWS service or external integration that invokes the function with a specific event contract and delivery model.</p>
+<p class="deep-note">API Gateway tends to invoke one request at a time per HTTP call, S3 sends object events, EventBridge emits scheduled or rule-based events, and queue or stream integrations such as SQS and Kinesis can batch records and retry differently. The event source mapping controls how messages are polled and delivered.</p>
+<p class="deep-note">In production, the trigger choice shapes everything from concurrency to idempotency. Queue-based triggers need safe retries and duplicate handling, while synchronous HTTP triggers need tight latency and timeout control.</p>
+<div class="mini-grid">
+<div class="mini-panel">
+<h4>Why it matters</h4>
+<ul><li>Lets one compute model react to many AWS services</li><li>Supports async decoupling through queues and events</li><li>Makes it easy to build event-driven pipelines</li></ul>
+</div>
+<div class="mini-panel">
+<h4>Common pitfall</h4>
+<ul><li>Using the same timeout/retry assumptions for every trigger</li><li>Ignoring duplicate delivery in queue or stream flows</li><li>Designing HTTP handlers like asynchronous background consumers</li></ul>
+</div>
+</div>
+<div class="badge-row"><span class="pill good">SQS / EventBridge</span><span class="pill info">API Gateway</span><span class="pill caution">Batch size</span><span class="pill bad">Non-idempotent consumer</span></div>
+<div class="flow"><span class="flow-step">Event emitted</span><span class="flow-arrow">→</span><span class="flow-step">Trigger delivers payload</span><span class="flow-arrow">→</span><span class="flow-step">Lambda handler runs</span><span class="flow-arrow">→</span><span class="flow-step">Success or retry path follows</span></div>
+</div>
+<div>
+<h3>Interview-ready view</h3>
+<div class="mini-panel" style="background:rgba(124,58,237,0.12); border-color:rgba(124,58,237,0.26);">
+<h4>💬 Model Interview Answer</h4>
+<p>I answer this by saying Lambda is less about “functions” and more about event contracts. API Gateway, S3, EventBridge, and SQS all invoke Lambda differently, so I tailor timeout, retry, and idempotency to the source. The common gotcha is assuming at-most-once delivery when many async integrations are explicitly at-least-once.</p>
+</div>
+<table><thead><tr><th>Trigger type</th><th>Typical concern</th></tr></thead><tbody><tr><td>API Gateway</td><td>Latency and synchronous errors</td></tr><tr><td>SQS</td><td>Duplicate handling and visibility timeout</td></tr><tr><td>S3/EventBridge</td><td>Event-driven fan-out and eventual delivery</td></tr></tbody></table>
+</div>
+</div>
+<div class="code-blocks"><div><div class="code-title">❌ Wrong: non-idempotent queue consumer</div><pre>exports.handler = async (event) =&gt; {
+  for (const record of event.Records) {
+    await chargeCustomer(record.body); // No idempotency key
+  }
+};</pre></div><div><div class="code-title">✅ Right: idempotent event handling</div><pre>exports.handler = async (event) =&gt; {
+  for (const record of event.Records) {
+    const message = JSON.parse(record.body);
+    // Check or store idempotency key before processing
+    await processSafely(message.idempotencyKey, message);
+  }
+};</pre></div></div>
+<p>The improved version assumes retries can happen and protects the side effect accordingly.</p>
+</article>
+<article class="card warning">
+<div class="card-label">⚠️ Warning</div>
+<h3>At-least-once delivery surprises many teams</h3>
+<p>The trap is forgetting that queue and event-driven systems may retry after partial failures. If your function sends emails, charges cards, or updates inventory without idempotency, retries can create duplicate side effects. Design for duplicates whenever the source is asynchronous or batched.</p>
+</article>
+<article class="card technical">
+<div class="card-label">Mini takeaway</div>
+<ul class="takeaways"><li>Know the delivery model of the trigger</li><li>Use idempotency for async consumers</li><li>Tune batch size and timeout by source</li><li>Treat event shape as part of the contract</li></ul>
+</article>
+<article class="card quiz-card">
+<div class="card-label">Quiz</div>
+<h3>Why do SQS-triggered Lambdas usually need idempotent processing?</h3>
+<div class="quiz-options" data-answer="1">
+<button class="quiz-option">Because SQS guarantees each message is delivered exactly once.</button><button class="quiz-option">Because queue-based processing may retry and deliver a message again after failures.</button><button class="quiz-option">Because Lambda cannot parse JSON events from SQS.</button><button class="quiz-option">Because API Gateway forwards all HTTP requests through SQS first.</button>
+</div>
+<div class="quiz-result">
+<strong>Correct answer: B</strong><span>B is correct because SQS-to-Lambda flows are typically at-least-once, so duplicates are possible. A is the opposite of the usual design assumption. C is irrelevant. D is false because API Gateway and SQS are separate trigger patterns.</span>
+</div>
+</article>
+</div>
+</div>
+</section>
+<section class="section" data-section="2">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Section 3 of 5 · ~6 mins</div>
+<h2>Cold Starts &amp; Performance</h2>
+<p>Performance conversations around Lambda usually center on cold starts, package size, runtime choice, and concurrency behavior.</p>
+</div>
+<div class="card-grid">
+<article class="card eli5">
+<div class="card-label">🧒 ELI5</div>
+<h3>Opening a shop for the first customer</h3>
+<p>The first customer of the day waits a little longer because the lights turn on, the register wakes up, and the staff get into position. After that, repeat customers move faster because the shop is already running.</p><p>A cold start is that first-customer delay in serverless.</p><p>It does not happen on every call, but when it does, it becomes part of your latency budget.</p>
+</article>
+<article class="card analogy">
+<div class="card-label">🔗 ANALOGY</div>
+<h3>Warming up an oven</h3>
+<p>An oven that is already hot can bake immediately. A cold oven needs prep time before useful work begins.</p><p>Lambda cold starts are the runtime and initialization overhead before your handler logic really starts.</p>
+</article>
+<article class="card technical">
+<div class="card-label">Technical</div>
+<div class="two-col">
+<div>
+<h3>What it means in real code</h3>
+<p><strong>Definition:</strong> A cold start is the extra latency incurred when AWS must create a new execution environment and run your function initialization before invoking the handler.</p>
+<p class="deep-note">Cold start cost is influenced by runtime, package size, initialization code, VPC networking setup in older models, and concurrency bursts that require new environments. Warm environments skip most of that initialization, which is why moving expensive client setup outside the handler can help overall latency.</p>
+<p class="deep-note">In production, you manage cold starts by keeping packages lean, reducing initialization work, choosing the right runtime, and using features like provisioned concurrency only when the latency requirement justifies the cost.</p>
+<div class="mini-grid">
+<div class="mini-panel">
+<h4>Why it matters</h4>
+<ul><li>Important for synchronous user-facing APIs</li><li>Guides code placement and dependency choices</li><li>Helps decide when provisioned concurrency is worth paying for</li></ul>
+</div>
+<div class="mini-panel">
+<h4>Common pitfall</h4>
+<ul><li>Loading huge frameworks or files at startup</li><li>Putting expensive initialization inside the handler body repeatedly</li><li>Assuming provisioned concurrency is free</li></ul>
+</div>
+</div>
+<div class="badge-row"><span class="pill good">Lean init</span><span class="pill info">Provisioned concurrency</span><span class="pill caution">Package size</span><span class="pill bad">Heavy cold path</span></div>
+<div class="flow"><span class="flow-step">New environment needed</span><span class="flow-arrow">→</span><span class="flow-step">Runtime initialized</span><span class="flow-arrow">→</span><span class="flow-step">Init code executes</span><span class="flow-arrow">→</span><span class="flow-step">Handler begins</span></div>
+</div>
+<div>
+<h3>Interview-ready view</h3>
+<div class="mini-panel" style="background:rgba(124,58,237,0.12); border-color:rgba(124,58,237,0.26);">
+<h4>💬 Model Interview Answer</h4>
+<p>A cold start is the one-time environment setup cost before handler execution in a new Lambda environment. I normally say it matters most for latency-sensitive synchronous paths and less for asynchronous background work. The key trade-off is that provisioned concurrency reduces latency variance but increases steady cost, so you only use it where the SLA really needs it.</p>
+</div>
+<table><thead><tr><th>Technique</th><th>Impact</th></tr></thead><tbody><tr><td>Move SDK clients outside handler</td><td>Reduces repeated setup on warm invocations</td></tr><tr><td>Reduce package size</td><td>Helps cold start time</td></tr><tr><td>Provisioned concurrency</td><td>Improves latency predictability at extra cost</td></tr></tbody></table>
+</div>
+</div>
+<div class="code-blocks"><div><div class="code-title">❌ Wrong: heavy initialization everywhere</div><pre>exports.handler = async () =&gt; {
+  const hugeConfig = JSON.parse(fs.readFileSync("/var/task/big.json", "utf8"));
+  const client = createExpensiveClient(hugeConfig);
+  return client.run();
+};</pre></div><div><div class="code-title">✅ Right: keep init lean and reusable</div><pre>const client = createClientFromEnv(); // created once per environment when possible
 
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Instant helper</h3>
-              <p>A helper appears to do one task, then leaves.</p>
-            </article>
-
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Food truck</h3>
-              <p>The kitchen opens when customers arrive, then closes.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Lambda executes code in a short-lived environment, scaling by creating more instances.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul><li>No server management</li><li>Pay per use</li><li>Automatic scaling</li></ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common pitfall</h4>
-                      <ul><li>Long-running tasks</li><li>Stateful logic</li><li>Ignoring timeouts</li></ul>
-                    </div>
-                  </div>
-                  <div class="badge-row"><span class="pill good">handler</span><span class="pill info">timeout</span><span class="pill caution">memory</span></div>
-                  <div class="flow"><span class="flow-step">Event arrives</span><span class="flow-arrow">→</span><span class="flow-step">Runtime loads</span><span class="flow-arrow">→</span><span class="flow-step">Handler executes</span><span class="flow-arrow">→</span><span class="flow-step">Returns response</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“Lambda runs a handler per event in an ephemeral container with memory/timeout limits.”</p>
-                  <table><thead><tr><th>Setting</th><th>Impact</th></tr></thead><tbody><tr><td>Memory</td><td><span class="pill good">CPU allocation</span></td></tr><tr><td>Timeout</td><td><span class="pill bad">Max runtime</span></td></tr></tbody></table>
-                </div>
-              </div>
-              <div class="code-blocks">
-    <div>
-      <div class="code-title">Node.js handler</div>
-      <pre>exports.handler = async (event) =&gt; {
-  return { statusCode: 200, body: "ok" };
-};</pre>
-    </div>
-    </div>
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Not for long jobs</h3>
-              <p>If you need hours-long processing, use ECS or Batch.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways"><li>Keep functions small.</li><li>Tune memory/timeouts.</li><li>Use stateless design.</li></ul>
-            </article>
-
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>Lambda pricing is primarily based on?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. Instance size only</button><button class="quiz-option">B. Requests + duration</button><button class="quiz-option">C. Storage</button><button class="quiz-option">D. Reserved instances</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>Pricing is based on request count and execution duration.</span>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section class="section" data-section="1">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 2 of 5 · ~6 mins</div>
-            <h2>Event Sources & Triggers</h2>
-            <p>Lambda can be triggered by HTTP, S3 events, queues, streams, and cron schedules.</p>
-          </div>
-
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Doorbell events</h3>
-              <p>The bell rings when someone arrives.</p>
-            </article>
-
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Factory conveyor</h3>
-              <p>Items arriving start the machine.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Event sources invoke Lambda synchronously or asynchronously depending on service.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul><li>Event-driven architectures</li><li>Loose coupling</li><li>Automatic scaling</li></ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common pitfall</h4>
-                      <ul><li>No idempotency</li><li>Ignoring retry behavior</li><li>Sync when async is enough</li></ul>
-                    </div>
-                  </div>
-                  <div class="badge-row"><span class="pill good">S3</span><span class="pill info">SQS</span><span class="pill caution">API GW</span></div>
-                  <div class="flow"><span class="flow-step">Event emitted</span><span class="flow-arrow">→</span><span class="flow-step">Lambda invoked</span><span class="flow-arrow">→</span><span class="flow-step">Process payload</span><span class="flow-arrow">→</span><span class="flow-step">Return/ack</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“Lambda supports synchronous (API Gateway) and async (S3/SQS) triggers with retries.”</p>
-                  <table><thead><tr><th>Source</th><th>Invocation</th></tr></thead><tbody><tr><td>API Gateway</td><td><span class="pill info">Sync</span></td></tr><tr><td>SQS</td><td><span class="pill good">Async</span></td></tr></tbody></table>
-                </div>
-              </div>
-              <div class="code-blocks">
-    <div>
-      <div class="code-title">S3 trigger example</div>
-      <pre>Events:
-  s3:ObjectCreated:*
-Bucket:
-  my-bucket</pre>
-    </div>
-    </div>
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Retries can duplicate work</h3>
-              <p>Always make handlers idempotent for async triggers.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways"><li>Know invocation type.</li><li>Design idempotent handlers.</li><li>Handle retries.</li></ul>
-            </article>
-
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>Which trigger is typically synchronous?</h3>
-              <div class="quiz-options" data-answer="2">
-                <button class="quiz-option">A. S3</button><button class="quiz-option">B. SQS</button><button class="quiz-option">C. API Gateway</button><button class="quiz-option">D. CloudWatch Events</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: C</strong>
-                <span>API Gateway invokes Lambda synchronously.</span>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section class="section" data-section="2">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 3 of 5 · ~6 mins</div>
-            <h2>Cold Starts & Performance</h2>
-            <p>Cold starts add latency when a new environment is initialized.</p>
-          </div>
-
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Warming up the oven</h3>
-              <p>The first cookie takes longer because the oven is cold.</p>
-            </article>
-
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Starting a car</h3>
-              <p>The first start takes longer on a cold morning.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Cold starts happen when AWS provisions a new execution environment; warm starts reuse it.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul><li>Affects latency</li><li>Impacts user experience</li><li>Tunable via memory and provisioned concurrency</li></ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common pitfall</h4>
-                      <ul><li>Large dependencies</li><li>VPC cold start penalty</li><li>No performance testing</li></ul>
-                    </div>
-                  </div>
-                  <div class="badge-row"><span class="pill caution">cold start</span><span class="pill good">provisioned</span><span class="pill info">memory</span></div>
-                  <div class="flow"><span class="flow-step">Provision env</span><span class="flow-arrow">→</span><span class="flow-step">Init runtime</span><span class="flow-arrow">→</span><span class="flow-step">Load code</span><span class="flow-arrow">→</span><span class="flow-step">Handle event</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“Cold starts add latency; reduce by trimming dependencies or using provisioned concurrency.”</p>
-                  <table><thead><tr><th>Tactic</th><th>Effect</th></tr></thead><tbody><tr><td>Provisioned concurrency</td><td><span class="pill good">Warm containers</span></td></tr><tr><td>Smaller package</td><td><span class="pill info">Faster init</span></td></tr></tbody></table>
-                </div>
-              </div>
-              <div class="code-blocks">
-    <div>
-      <div class="code-title">Provisioned concurrency (CLI)</div>
-      <pre>aws lambda put-provisioned-concurrency-config   --function-name apiHandler   --qualifier live   --provisioned-concurrent-executions 5</pre>
-    </div>
-    </div>
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Costs for provisioned concurrency</h3>
-              <p>Provisioned concurrency has a cost even when idle.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways"><li>Measure cold start latency.</li><li>Reduce package size.</li><li>Use provisioned concurrency if needed.</li></ul>
-            </article>
-
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>What primarily causes a cold start?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. A function timeout</button><button class="quiz-option">B. New execution environment</button><button class="quiz-option">C. API throttling</button><button class="quiz-option">D. Missing IAM policy</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>Cold starts occur when AWS initializes a new execution environment.</span>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section class="section" data-section="3">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 4 of 5 · ~6 mins</div>
-            <h2>Security & IAM Roles</h2>
-            <p>Lambda executes with an IAM role; permissions should be minimal and scoped.</p>
-          </div>
-
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Limited toolbox</h3>
-              <p>Give the helper only the tools needed for the job.</p>
-            </article>
-
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Temporary badge</h3>
-              <p>A contractor gets a badge that only opens a few doors.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Execution role defines what AWS resources Lambda can access; environment variables store config.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul><li>Least privilege</li><li>Auditability</li><li>Reduced blast radius</li></ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common pitfall</h4>
-                      <ul><li>* permissions</li><li>Hardcoded credentials</li><li>No secrets manager</li></ul>
-                    </div>
-                  </div>
-                  <div class="badge-row"><span class="pill good">IAM role</span><span class="pill info">Secrets</span><span class="pill caution">Least privilege</span></div>
-                  <div class="flow"><span class="flow-step">Assign role</span><span class="flow-arrow">→</span><span class="flow-step">Evaluate policies</span><span class="flow-arrow">→</span><span class="flow-step">Allow/deny request</span><span class="flow-arrow">→</span><span class="flow-step">Log to CloudTrail</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“Lambda uses an execution role; keep policies narrow and store secrets securely.”</p>
-                  <table><thead><tr><th>Approach</th><th>Best</th></tr></thead><tbody><tr><td>Secrets Manager</td><td><span class="pill good">Managed secrets</span></td></tr><tr><td>Env vars</td><td><span class="pill info">Non-sensitive config</span></td></tr></tbody></table>
-                </div>
-              </div>
-              <div class="code-blocks">
-    <div>
-      <div class="code-title">Policy for S3 read</div>
-      <pre>{
-  "Effect": "Allow",
-  "Action": ["s3:GetObject"],
-  "Resource": "arn:aws:s3:::my-bucket/*"
-}</pre>
-    </div>
-    </div>
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Overly broad roles</h3>
-              <p>Avoid granting full access to S3 or DynamoDB.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways"><li>Use least privilege.</li><li>Rotate secrets.</li><li>Audit with CloudTrail.</li></ul>
-            </article>
-
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>What should hold database passwords?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. Hardcoded in code</button><button class="quiz-option">B. Secrets Manager</button><button class="quiz-option">C. Public S3 bucket</button><button class="quiz-option">D. README file</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>Secrets Manager provides secure storage for credentials.</span>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section class="section" data-section="4">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 5 of 5 · ~6 mins</div>
-            <h2>Versioning, Aliases & Layers</h2>
-            <p>Versions make deployments safe; aliases route traffic; layers share dependencies.</p>
-          </div>
-
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Save game slots</h3>
-              <p>You can go back to a previous save if needed.</p>
-            </article>
-
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Traffic switchboard</h3>
-              <p>You route calls to the right line.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Lambda versions are immutable snapshots; aliases are pointers; layers package shared code.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul><li>Safe deploys</li><li>Blue/green releases</li><li>Reusable dependencies</li></ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common pitfall</h4>
-                      <ul><li>No versioning</li><li>Large layers</li><li>Aliases not updated</li></ul>
-                    </div>
-                  </div>
-                  <div class="badge-row"><span class="pill good">versions</span><span class="pill info">aliases</span><span class="pill caution">layers</span></div>
-                  <div class="flow"><span class="flow-step">Publish version</span><span class="flow-arrow">→</span><span class="flow-step">Update alias</span><span class="flow-arrow">→</span><span class="flow-step">Shift traffic</span><span class="flow-arrow">→</span><span class="flow-step">Roll back if needed</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“Use versions for immutable releases, aliases for routing, and layers for shared libraries.”</p>
-                  <table><thead><tr><th>Item</th><th>Role</th></tr></thead><tbody><tr><td>Alias</td><td><span class="pill good">Traffic pointer</span></td></tr><tr><td>Layer</td><td><span class="pill info">Shared deps</span></td></tr></tbody></table>
-                </div>
-              </div>
-              <div class="code-blocks">
-    <div>
-      <div class="code-title">Alias update (CLI)</div>
-      <pre>aws lambda update-alias   --function-name apiHandler   --name live   --function-version 12</pre>
-    </div>
-    </div>
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>No version pinning</h3>
-              <p>If you use $LATEST everywhere, rollbacks are risky.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways"><li>Publish versions.</li><li>Use aliases for routing.</li><li>Keep layers small.</li></ul>
-            </article>
-
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>What is the purpose of a Lambda alias?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. Store logs</button><button class="quiz-option">B. Point to a version</button><button class="quiz-option">C. Encrypt data</button><button class="quiz-option">D. Allocate memory</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>Aliases point to a specific version and can shift traffic.</span>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section class="section" data-section="5">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Completion screen · Review mode</div>
-            <h2>🎉 AWS Lambda & Serverless Cheat Sheet</h2>
-            <p>Lambda fundamentals: triggers, execution model, performance, and secure permissions.</p>
-          </div>
-
-          <div class="completion-grid">
-            <div class="card technical">
-              <div class="card-label">Cheat sheet</div>
-              <div class="celebrate">🚀</div>
-              <h3>1-line interview answers</h3>
-              <div class="cheat-list">
-    <div class="cheat-item">
-      <h4>Handler</h4>
-      <p>Entry point for event processing.</p>
-    </div>
-    <div class="cheat-item">
-      <h4>Cold start</h4>
-      <p>Initial latency when container spins up.</p>
-    </div>
-    <div class="cheat-item">
-      <h4>Event source</h4>
-      <p>Service that triggers the function.</p>
-    </div>
-    <div class="cheat-item">
-      <h4>IAM role</h4>
-      <p>Execution identity with permissions.</p>
-    </div>
-              </div>
-            </div>
-
-            <div class="card analogy">
-              <div class="card-label">What to remember</div>
-              <h3>Fast mental model</h3>
-              <ul class="takeaways"><li><strong>Events</strong>: triggers from API, S3, SQS, etc.</li><li><strong>Execution</strong>: ephemeral container with limits.</li><li><strong>Perf</strong>: cold starts + memory tuning.</li><li><strong>Security</strong>: least-privilege roles.</li></ul>
-              <h3 style="margin-top:22px;">Common traps</h3>
-              <div class="badge-row"><span class="pill bad">Too much logic in one function</span><span class="pill bad">No retries/idempotency</span><span class="pill bad">Long cold starts</span></div>
-            </div>
-          </div>
-        </div>
-      </section>
-    </main>
-
-    <footer class="footer-nav">
-      <div class="footer-nav-inner">
-        <button class="btn" id="prevBtn">← Back</button>
-        <button class="btn primary" id="nextBtn">Next →</button>
-      </div>
-    </footer>
-  </div>
-
-  <script>
+exports.handler = async () =&gt; {
+  return client.run();
+};</pre></div></div>
+<p>The improved version minimizes repeated initialization and leaves the cold path smaller.</p>
+</article>
+<article class="card warning">
+<div class="card-label">⚠️ Warning</div>
+<h3>Provisioned concurrency solves latency but can quietly raise baseline spend</h3>
+<p>Teams sometimes hear “cold start” and immediately enable provisioned concurrency everywhere. That fixes a symptom by paying for warm capacity all the time. First reduce package and init cost, then use provisioned concurrency selectively for truly latency-sensitive paths.</p>
+</article>
+<article class="card technical">
+<div class="card-label">Mini takeaway</div>
+<ul class="takeaways"><li>Measure before optimizing</li><li>Keep init work and package size small</li><li>Cache reusable clients outside the handler</li><li>Pay for provisioned concurrency only where latency warrants it</li></ul>
+</article>
+<article class="card quiz-card">
+<div class="card-label">Quiz</div>
+<h3>When is provisioned concurrency most justified for Lambda?</h3>
+<div class="quiz-options" data-answer="1">
+<button class="quiz-option">For every background job, because cold starts are always unacceptable.</button><button class="quiz-option">For latency-sensitive synchronous paths where startup variance would hurt the user experience.</button><button class="quiz-option">Only when the function has no dependencies at all.</button><button class="quiz-option">Whenever you want to avoid writing tests.</button>
+</div>
+<div class="quiz-result">
+<strong>Correct answer: B</strong><span>B is correct because provisioned concurrency is a cost trade-off used to reduce startup latency variance on important synchronous paths. A is too broad and wasteful. C has no relationship to the feature. D is nonsense.</span>
+</div>
+</article>
+</div>
+</div>
+</section>
+<section class="section" data-section="3">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Section 4 of 5 · ~6 mins</div>
+<h2>Security &amp; IAM Roles</h2>
+<p>Serverless security is still mostly identity and data-boundary design, even though you do not manage the servers directly.</p>
+</div>
+<div class="card-grid">
+<article class="card eli5">
+<div class="card-label">🧒 ELI5</div>
+<h3>Borrowed keys for one task</h3>
+<p>If a cleaner needs to enter one room for one hour, you give a temporary key to that room only. You do not hand over the building master key forever.</p><p>Lambda roles follow that same principle. The function should get only the permissions it needs for its job.</p><p>Because Lambdas are easy to create, over-broad permissions can spread quickly if you are not disciplined.</p>
+</article>
+<article class="card analogy">
+<div class="card-label">🔗 ANALOGY</div>
+<h3>Courier badge with route limit</h3>
+<p>A courier badge might allow access only to loading docks and delivery rooms, not the CEO office or payroll desk.</p><p>Least privilege matters just as much in serverless as it does on VMs.</p>
+</article>
+<article class="card technical">
+<div class="card-label">Technical</div>
+<div class="two-col">
+<div>
+<h3>What it means in real code</h3>
+<p><strong>Definition:</strong> A Lambda execution role is the IAM role assumed by the function so it can call other AWS services during invocation.</p>
+<p class="deep-note">When Lambda runs, AWS obtains temporary credentials for the function execution role and uses them for SDK/API calls made by the handler. Permissions to write logs, read S3, publish to SNS, or read secrets are all governed by that role and any resource policies on the destination service.</p>
+<p class="deep-note">In production, the serverless trap is assuming “managed service” means “managed security.” It does not. Least privilege, secret handling, event source permissions, and network/data boundaries are still design decisions you own.</p>
+<div class="mini-grid">
+<div class="mini-panel">
+<h4>Why it matters</h4>
+<ul><li>Keeps compromised functions from roaming widely</li><li>Makes access reviews and audits easier</li><li>Separates infrastructure concerns from application code</li></ul>
+</div>
+<div class="mini-panel">
+<h4>Common pitfall</h4>
+<ul><li>Granting administrator access to all functions</li><li>Storing plaintext secrets in environment variables without a plan</li><li>Forgetting that event sources and destinations can need resource policies too</li></ul>
+</div>
+</div>
+<div class="badge-row"><span class="pill good">Least-privilege role</span><span class="pill info">Temporary credentials</span><span class="pill caution">Secrets manager</span><span class="pill bad">AdminAccess everywhere</span></div>
+<div class="flow"><span class="flow-step">Function invoked</span><span class="flow-arrow">→</span><span class="flow-step">Role assumed</span><span class="flow-arrow">→</span><span class="flow-step">AWS API call made</span><span class="flow-arrow">→</span><span class="flow-step">Policy evaluated</span></div>
+</div>
+<div>
+<h3>Interview-ready view</h3>
+<div class="mini-panel" style="background:rgba(124,58,237,0.12); border-color:rgba(124,58,237,0.26);">
+<h4>💬 Model Interview Answer</h4>
+<p>I usually say Lambda security starts with the execution role. The function should get only the actions and resources it genuinely needs, and secrets should come from a managed store rather than being copied carelessly into code. The common gotcha is giving many functions the same broad role for convenience, which turns one compromise into a much larger blast radius.</p>
+</div>
+<table><thead><tr><th>Control</th><th>Why it matters</th></tr></thead><tbody><tr><td>Execution role</td><td>Defines what the function can call</td></tr><tr><td>Secrets manager / parameter store</td><td>Centralizes secret retrieval and rotation</td></tr><tr><td>Resource policies</td><td>Control who can invoke or access target services</td></tr></tbody></table>
+</div>
+</div>
+<div class="code-blocks"><div><div class="code-title">❌ Wrong: broad execution role</div><pre>{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "*",
+      "Resource": "*"
+    }
+  ]
+}</pre></div><div><div class="code-title">✅ Right: scoped role</div><pre>{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": ["s3:GetObject"],
+      "Resource": "arn:aws:s3:::incoming-files/*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": ["logs:CreateLogStream", "logs:PutLogEvents"],
+      "Resource": "*"
+    }
+  ]
+}</pre></div></div>
+<p>The second policy grants the minimal capabilities the function needs instead of global power.</p>
+</article>
+<article class="card warning">
+<div class="card-label">⚠️ Warning</div>
+<h3>Broad execution roles are the easiest Lambda security debt to accumulate</h3>
+<p>Because Lambda creation is fast, teams often copy-paste the same oversized role to get moving. That speeds up day one and hurts every day after. Give each function or function family a clear permission boundary and review secrets and invocation permissions alongside the role.</p>
+</article>
+<article class="card technical">
+<div class="card-label">Mini takeaway</div>
+<ul class="takeaways"><li>Scope the execution role narrowly</li><li>Use managed secret retrieval</li><li>Review invoke and destination permissions too</li><li>Do not confuse serverless with automatic least privilege</li></ul>
+</article>
+<article class="card quiz-card">
+<div class="card-label">Quiz</div>
+<h3>What is the safest default for a Lambda execution role?</h3>
+<div class="quiz-options" data-answer="1">
+<button class="quiz-option">Grant full administrator access so future features keep working.</button><button class="quiz-option">Start narrow with only the exact AWS actions and resources the function needs.</button><button class="quiz-option">Share one broad role across every function in the account.</button><button class="quiz-option">Avoid IAM roles and put credentials directly in code.</button>
+</div>
+<div class="quiz-result">
+<strong>Correct answer: B</strong><span>B is correct because least privilege is the safest default for any workload, including Lambda. A and C increase blast radius significantly. D recreates static secret management problems that IAM roles are designed to avoid.</span>
+</div>
+</article>
+</div>
+</div>
+</section>
+<section class="section" data-section="4">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Section 5 of 5 · ~6 mins</div>
+<h2>Versioning, Aliases &amp; Layers</h2>
+<p>Releasing Lambdas safely means separating immutable code versions from traffic routing and shared dependencies.</p>
+</div>
+<div class="card-grid">
+<article class="card eli5">
+<div class="card-label">🧒 ELI5</div>
+<h3>Book editions and shelf labels</h3>
+<p>A library can keep multiple editions of the same book, and the shelf label tells readers which one they should pick up today. If a new edition is bad, the librarian can move the label back.</p><p>Lambda versions and aliases work the same way: versions are immutable code snapshots, and aliases are movable pointers.</p><p>That separation makes rollouts and rollbacks much safer than editing a live function in place.</p>
+</article>
+<article class="card analogy">
+<div class="card-label">🔗 ANALOGY</div>
+<h3>Train platform sign</h3>
+<p>The train itself is one thing, and the platform sign that directs passengers is another. You can change where passengers go without rebuilding the train.</p><p>Aliases let you shift traffic between versions without changing client integrations everywhere.</p>
+</article>
+<article class="card technical">
+<div class="card-label">Technical</div>
+<div class="two-col">
+<div>
+<h3>What it means in real code</h3>
+<p><strong>Definition:</strong> Lambda versions are immutable snapshots of function code and configuration, aliases are stable pointers that can route traffic to specific versions, and layers are shareable packages mounted into functions at runtime.</p>
+<p class="deep-note">Publishing a version freezes the deployed artifact. An alias such as prod can point to version 12 today and version 13 tomorrow, and weighted routing can shift only part of traffic during a canary rollout. Layers let multiple functions share libraries, but they also add dependency management and cold-start considerations if overused.</p>
+<p class="deep-note">In production, versioning and aliases matter because they turn releases into traffic-routing decisions rather than in-place edits. Layers matter because they centralize shared dependencies, but the trade-off is coupling: a bad shared layer can affect many functions at once.</p>
+<div class="mini-grid">
+<div class="mini-panel">
+<h4>Why it matters</h4>
+<ul><li>Supports clean rollouts and rollbacks</li><li>Decouples clients from raw version numbers</li><li>Avoids copy-pasting shared code into every function package</li></ul>
+</div>
+<div class="mini-panel">
+<h4>Common pitfall</h4>
+<ul><li>Updating $LATEST directly and calling it production</li><li>Using layers so broadly that dependency coupling explodes</li><li>No alias strategy for rollback</li></ul>
+</div>
+</div>
+<div class="badge-row"><span class="pill good">Published version</span><span class="pill info">Alias routing</span><span class="pill caution">Shared layer</span><span class="pill bad">$LATEST in prod</span></div>
+<div class="flow"><span class="flow-step">Publish version</span><span class="flow-arrow">→</span><span class="flow-step">Point alias to version</span><span class="flow-arrow">→</span><span class="flow-step">Shift traffic if desired</span><span class="flow-arrow">→</span><span class="flow-step">Rollback by moving alias</span></div>
+</div>
+<div>
+<h3>Interview-ready view</h3>
+<div class="mini-panel" style="background:rgba(124,58,237,0.12); border-color:rgba(124,58,237,0.26);">
+<h4>💬 Model Interview Answer</h4>
+<p>My concise answer is that versions are immutable and aliases are the stable traffic entry point. That gives you safe deployment patterns like canary releases and quick rollback. The gotcha is relying on $LATEST in production, which removes the clean separation between a tested artifact and live traffic routing.</p>
+</div>
+<table><thead><tr><th>Artifact</th><th>Role</th></tr></thead><tbody><tr><td>Version</td><td>Immutable snapshot of function code/config</td></tr><tr><td>Alias</td><td>Stable pointer and traffic router</td></tr><tr><td>Layer</td><td>Shared dependency package across functions</td></tr></tbody></table>
+</div>
+</div>
+<div class="code-blocks"><div><div class="code-title">❌ Wrong: production on $LATEST</div><pre># Team updates function code in place and production callers
+# always invoke the unpinned $LATEST version.</pre></div><div><div class="code-title">✅ Right: versioned release with alias</div><pre># 1. Publish version 42
+# 2. Point alias "prod" to version 42
+# 3. Optionally shift 10% traffic to version 43 during canary
+# 4. Move alias back instantly if metrics worsen</pre></div></div>
+<p>This pattern makes rollback a routing change instead of a rebuild-under-pressure exercise.</p>
+</article>
+<article class="card warning">
+<div class="card-label">⚠️ Warning</div>
+<h3>Shared layers can become hidden coupling</h3>
+<p>Layers are convenient, but if too many functions depend on the same shared layer, one bad update can ripple broadly. Version layers carefully, understand who consumes them, and avoid using layers as an excuse to avoid normal dependency hygiene.</p>
+</article>
+<article class="card technical">
+<div class="card-label">Mini takeaway</div>
+<ul class="takeaways"><li>Publish immutable versions</li><li>Send clients through aliases</li><li>Use weighted aliases for safer rollout</li><li>Version layers carefully to control blast radius</li></ul>
+</article>
+<article class="card quiz-card">
+<div class="card-label">Quiz</div>
+<h3>Why are Lambda aliases valuable in production releases?</h3>
+<div class="quiz-options" data-answer="1">
+<button class="quiz-option">They make the function code smaller.</button><button class="quiz-option">They provide a stable routing name so traffic can move between immutable versions safely.</button><button class="quiz-option">They replace IAM roles for the function.</button><button class="quiz-option">They eliminate all cold starts automatically.</button>
+</div>
+<div class="quiz-result">
+<strong>Correct answer: B</strong><span>B is correct because aliases decouple callers from raw version numbers and support canary or rollback routing. A, C, and D describe unrelated concerns and are not what aliases solve.</span>
+</div>
+</article>
+</div>
+</div>
+</section>
+<section class="section" data-section="5">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Completion screen · Review mode</div>
+<h2>🎉 AWS Lambda &amp; Serverless Cheat Sheet</h2>
+<p>Interview review of the Lambda execution model, event triggers, performance, security, and release patterns.</p>
+</div>
+<div class="completion-grid">
+<div class="card technical">
+<div class="card-label">Cheat sheet</div>
+<div class="celebrate">🚀</div>
+<h3>1-line interview answers</h3>
+<div class="cheat-list"><div class="cheat-item"><h4>Execution model</h4><p>Event arrives, runtime loads, handler runs, output is returned or side effects happen.</p></div><div class="cheat-item"><h4>Trigger design</h4><p>Different event sources imply different retry, batching, and latency expectations.</p></div><div class="cheat-item"><h4>Cold starts</h4><p>Mostly a latency concern for user-facing paths; optimize init before paying for provisioned concurrency.</p></div><div class="cheat-item"><h4>Security</h4><p>Use a narrow execution role and managed secret retrieval.</p></div><div class="cheat-item"><h4>Release model</h4><p>Versions are immutable; aliases control traffic safely.</p></div></div>
+</div>
+<div class="card analogy">
+<div class="card-label">What to remember</div>
+<h3>Fast mental model</h3>
+<ul class="takeaways"><li><strong>Stateless</strong>: Cache clients, not durable business state</li><li><strong>Event-driven</strong>: Design around the trigger contract and delivery model</li><li><strong>Performance</strong>: Keep init lean and pay for warm capacity only where justified</li><li><strong>Release</strong>: Publish versions and route through aliases</li></ul>
+<h3 style="margin-top:22px;">Common traps</h3>
+<div class="badge-row"><span class="pill bad">state in memory</span><span class="pill bad">non-idempotent async consumers</span><span class="pill bad">using $LATEST as production</span></div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<footer class="footer-nav">
+<div class="footer-nav-inner">
+<button class="btn" id="prevBtn">← Back</button>
+<button class="btn primary" id="nextBtn">Next →</button>
+</div>
+</footer>
+</div>
+<script>
 const sections = Array.from(document.querySelectorAll('.section'));
     const dots = Array.from(document.querySelectorAll('.nav-dot'));
     const prevBtn = document.getElementById('prevBtn');

@@ -1,13 +1,14 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Kubernetes Fundamentals Learning Module</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Kubernetes Fundamentals Learning Module</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&amp;family=Syne:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<style>
 :root {
       --bg: #0a0e1a;
       --surface-1: #111827;
@@ -722,259 +723,259 @@
   </style>
 </head>
 <body>
-  <div class="app">
-    <header class="topbar">
-      <div class="topbar-inner">
-        <div class="topbar-row">
-          <div class="brand">
-            <h1>Kubernetes Fundamentals</h1>
-            <small>Interactive 28-minute learning module</small>
-          </div>
-                <div class="topbar-row">
-          <div class="breadcrumb">
-            <a href="../index.html">Home</a>
-            <span>›</span>
-            <a href="index.html">Cloud</a>
-            <span>›</span>
-            <span>Kubernetes Fundamentals</span>
-          </div>
-        </div>
-          <div class="timer-wrap" aria-live="polite">
-            <span class="timer-label">Time Left</span>
-            <span class="timer" id="timer">28:00</span>
-          </div>
-        </div>
-        <div class="topbar-row">
-                    <nav class="nav-dots" aria-label="Section navigation"><button class="nav-dot active" data-index="0" aria-label="Go to section 1">1</button><button class="nav-dot" data-index="1" aria-label="Go to section 2">2</button><button class="nav-dot" data-index="2" aria-label="Go to section 3">3</button><button class="nav-dot" data-index="3" aria-label="Go to section 4">4</button><button class="nav-dot" data-index="4" aria-label="Go to completion screen">5</button></nav>
-        </div>
-        <div class="progress-shell" aria-hidden="true">
-          <div class="progress-bar" id="progressBar"></div>
-        </div>
-      </div>
-    </header>
-
-    <main>
-      
-      <section class="section active" data-section="0">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 1 of 4 · ~7 mins</div>
-            <h2>Cluster and Nodes</h2>
-            <p>Kubernetes clusters coordinate nodes and schedules workloads.</p>
-          </div>
-
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Team manager</h3>
-              <p>A manager assigns tasks to team members.</p>
-            </article>
-
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Air traffic control</h3>
-              <p>Workloads are routed to the best runway.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> The control plane schedules pods on worker nodes and manages desired state.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul><li>Automated scheduling</li><li>Self-healing</li><li>Scaling</li></ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common pitfall</h4>
-                      <ul><li>Manual restarts</li><li>Single-node failures</li><li>No autoscaling</li></ul>
-                    </div>
-                  </div>
-                  <div class="badge-row"><span class="pill good">Control plane</span><span class="pill info">Nodes</span><span class="pill caution">Scheduler</span></div>
-                  <div class="flow"><span class="flow-step">Define desired state</span><span class="flow-arrow">→</span><span class="flow-step">Scheduler assigns node</span><span class="flow-arrow">→</span><span class="flow-step">Kubelet runs pod</span><span class="flow-arrow">→</span><span class="flow-step">Controller reconciles</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“K8s control plane enforces desired state by scheduling pods on nodes.”</p>
-                  <table><thead><tr><th>Component</th><th>Role</th></tr></thead><tbody><tr><td>API Server</td><td><span class="pill info">Control plane entry</span></td></tr><tr><td>Scheduler</td><td><span class="pill good">Assign pods</span></td></tr></tbody></table>
-                </div>
-              </div>
-              <div class="code-blocks">
-    <div>
-      <div class="code-title">Check nodes</div>
-      <pre>kubectl get nodes</pre>
-    </div>
-    </div>
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>No limits = noisy neighbors</h3>
-              <p>Pods without limits can starve others.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways"><li>Control plane manages state.</li><li>Scheduler places pods.</li><li>Always set limits.</li></ul>
-            </article>
-
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>What schedules pods to nodes?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. kube-proxy</button><button class="quiz-option">B. Scheduler</button><button class="quiz-option">C. kubelet</button><button class="quiz-option">D. etcd</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>The scheduler assigns pods to nodes.</span>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section class="section" data-section="1">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 2 of 4 · ~7 mins</div>
-            <h2>Pods and Deployments</h2>
-            <p>Pods run containers; Deployments manage replica sets and updates.</p>
-          </div>
-
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Basket of eggs</h3>
-              <p>A pod holds a few eggs together.</p>
-            </article>
-
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Orchestra section</h3>
-              <p>Deployments keep a fixed number of players.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Deployments manage ReplicaSets to keep pods running and updated.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul><li>Self-healing</li><li>Rolling updates</li><li>Scaling</li></ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common pitfall</h4>
-                      <ul><li>Manually created pods</li><li>No readiness probes</li><li>Single replica</li></ul>
-                    </div>
-                  </div>
-                  <div class="badge-row"><span class="pill good">Pod</span><span class="pill info">Deployment</span><span class="pill caution">ReplicaSet</span></div>
-                  <div class="flow"><span class="flow-step">Define deployment</span><span class="flow-arrow">→</span><span class="flow-step">Create replica set</span><span class="flow-arrow">→</span><span class="flow-step">Schedule pods</span><span class="flow-arrow">→</span><span class="flow-step">Roll updates</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“Deployments manage replicas and rolling updates via ReplicaSets.”</p>
-                  <table><thead><tr><th>Object</th><th>Use</th></tr></thead><tbody><tr><td>Pod</td><td><span class="pill info">Run containers</span></td></tr><tr><td>Deployment</td><td><span class="pill good">Manage replicas</span></td></tr></tbody></table>
-                </div>
-              </div>
-              <div class="code-blocks">
-    <div>
-      <div class="code-title">Deployment snippet</div>
-      <pre>apiVersion: apps/v1
+<div class="app">
+<header class="topbar">
+<div class="topbar-inner">
+<div class="topbar-row">
+<div class="brand">
+<h1>Kubernetes Fundamentals</h1>
+<small>Interactive 28-minute learning module</small>
+</div>
+<div class="topbar-row">
+<div class="breadcrumb">
+<a href="../index.html">Home</a>
+<span>›</span>
+<a href="index.html">Cloud</a>
+<span>›</span>
+<span>Kubernetes Fundamentals</span>
+</div>
+</div>
+<div aria-live="polite" class="timer-wrap">
+<span class="timer-label">Time Left</span>
+<span class="timer" id="timer">28:00</span>
+</div>
+</div>
+<div class="topbar-row">
+<nav aria-label="Section navigation" class="nav-dots"><button aria-label="Go to section 1" class="nav-dot active" data-index="0">1</button><button aria-label="Go to section 2" class="nav-dot" data-index="1">2</button><button aria-label="Go to section 3" class="nav-dot" data-index="2">3</button><button aria-label="Go to section 4" class="nav-dot" data-index="3">4</button><button aria-label="Go to completion screen" class="nav-dot" data-index="4">5</button></nav>
+</div>
+<div aria-hidden="true" class="progress-shell">
+<div class="progress-bar" id="progressBar"></div>
+</div>
+</div>
+</header>
+<main>
+<section class="section active" data-section="0">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Section 1 of 4 · ~6 mins</div>
+<h2>Cluster and Nodes</h2>
+<p>This section gives the base mental model: Kubernetes is a control plane that continuously reconciles desired state onto worker nodes.</p>
+</div>
+<div class="card-grid">
+<article class="card eli5">
+<div class="card-label">🧒 ELI5</div>
+<h3>Restaurant manager and kitchen staff</h3>
+<p>A restaurant manager does not cook every dish personally. Instead, the manager decides how many cooks are needed, watches for problems, and reassigns work when someone is absent.</p><p>Kubernetes works the same way: you declare what you want running, and the control plane keeps trying to make reality match that request.</p><p>That is why it feels different from manually SSH-ing into servers and starting processes yourself.</p>
+</article>
+<article class="card analogy">
+<div class="card-label">🔗 ANALOGY</div>
+<h3>Air traffic control and runways</h3>
+<p>Planes do not pick random runways on their own. Air traffic control directs them to safe, available runways and responds when one becomes unavailable.</p><p>In Kubernetes, the scheduler and controllers play that orchestration role across nodes.</p>
+</article>
+<article class="card technical">
+<div class="card-label">Technical</div>
+<div class="two-col">
+<div>
+<h3>What it means in real code</h3>
+<p><strong>Definition:</strong> A Kubernetes cluster is a group of machines where the control plane stores desired state and controllers schedule and reconcile workloads onto worker nodes.</p>
+<p class="deep-note">The API server accepts declarations, etcd stores cluster state, the scheduler chooses a node for a Pod, and the kubelet on each worker makes sure the Pod actually runs there. Controllers continuously compare actual state to desired state and act when they differ.</p>
+<p class="deep-note">In production this matters because Kubernetes is a reconciliation system, not a “run this command once” system. When you understand that loop, pods restarting or being rescheduled stop feeling mysterious.</p>
+<div class="mini-grid">
+<div class="mini-panel">
+<h4>Why it matters</h4>
+<ul><li>Automates placement and recovery</li><li>Separates desired state from imperative server management</li><li>Provides a foundation for self-healing and scaling</li></ul>
+</div>
+<div class="mini-panel">
+<h4>Common pitfall</h4>
+<ul><li>Thinking the node choice is hard-coded forever</li><li>Treating Kubernetes like a remote shell runner</li><li>Ignoring that the control plane continuously reconciles state</li></ul>
+</div>
+</div>
+<div class="badge-row"><span class="pill good">Desired state</span><span class="pill info">Scheduler</span><span class="pill caution">Kubelet</span><span class="pill bad">Manual pet server mindset</span></div>
+<div class="flow"><span class="flow-step">Submit resource spec</span><span class="flow-arrow">→</span><span class="flow-step">Scheduler selects node</span><span class="flow-arrow">→</span><span class="flow-step">Kubelet starts pod</span><span class="flow-arrow">→</span><span class="flow-step">Controllers reconcile drift</span></div>
+</div>
+<div>
+<h3>Interview-ready view</h3>
+<div class="mini-panel" style="background:rgba(124,58,237,0.12); border-color:rgba(124,58,237,0.26);">
+<h4>💬 Model Interview Answer</h4>
+<p>My short explanation is that Kubernetes is a control system for running containers across a cluster. You declare the target state, and the control plane plus node agents keep moving reality back toward that state. The gotcha is that you should not rely on any single node as special, because workloads can be rescheduled elsewhere.</p>
+</div>
+<table><thead><tr><th>Component</th><th>Responsibility</th></tr></thead><tbody><tr><td>API server</td><td>Accepts and exposes cluster state</td></tr><tr><td>Scheduler</td><td>Chooses nodes for pending pods</td></tr><tr><td>Kubelet</td><td>Runs pods on a node and reports status</td></tr></tbody></table>
+</div>
+</div>
+<div class="code-blocks"><div><div class="code-title">❌ Wrong: node-centric assumption</div><pre># "This pod must always stay on node-3 because that is where we tested it."
+# No scheduling policy or abstraction, just operator expectation.</pre></div><div><div class="code-title">✅ Right: cluster mental model</div><pre># Define desired state in manifests.
+# Let the scheduler place pods on suitable nodes.
+# Use labels, selectors, taints, or affinity only when placement really matters.</pre></div></div>
+<p>The better model trusts the cluster abstraction and adds explicit scheduling rules only when needed.</p>
+</article>
+<article class="card warning">
+<div class="card-label">⚠️ Warning</div>
+<h3>Fighting the scheduler usually means you are designing at the wrong level</h3>
+<p>A frequent misunderstanding is treating Kubernetes like a collection of named servers you personally manage. That breaks the abstraction and makes scaling or recovery harder. Think in policies, labels, and desired state rather than hand-picked machines.</p>
+</article>
+<article class="card technical">
+<div class="card-label">Mini takeaway</div>
+<ul class="takeaways"><li>Think cluster-first, not node-first</li><li>Controllers reconcile continuously</li><li>Nodes are replaceable capacity</li><li>Use scheduling constraints intentionally</li></ul>
+</article>
+<article class="card quiz-card">
+<div class="card-label">Quiz</div>
+<h3>What is the scheduler’s main job in Kubernetes?</h3>
+<div class="quiz-options" data-answer="1">
+<button class="quiz-option">Store cluster configuration permanently.</button><button class="quiz-option">Choose a suitable node for a pending Pod based on constraints and resource availability.</button><button class="quiz-option">Expose a public IP to the internet.</button><button class="quiz-option">Build container images from Dockerfiles.</button>
+</div>
+<div class="quiz-result">
+<strong>Correct answer: B</strong><span>B is correct because the scheduler decides where pending Pods should run. A is closer to etcd and the API server. C is a networking concern handled by other resources and cloud integrations. D is outside the scheduler’s responsibility.</span>
+</div>
+</article>
+</div>
+</div>
+</section>
+<section class="section" data-section="1">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Section 2 of 4 · ~6 mins</div>
+<h2>Pods and Deployments</h2>
+<p>Pods are the basic runtime unit, and Deployments are the controller most teams use to manage stateless replica sets safely.</p>
+</div>
+<div class="card-grid">
+<article class="card eli5">
+<div class="card-label">🧒 ELI5</div>
+<h3>Lunch box and catering plan</h3>
+<p>A lunch box is one prepared meal, while a catering plan says how many lunches should exist and keeps replacing them if some are dropped.</p><p>A Pod is like one lunch box: the smallest running unit. A Deployment is like the catering plan that keeps the requested number available.</p><p>Understanding that difference explains why you rarely create naked Pods directly for applications.</p>
+</article>
+<article class="card analogy">
+<div class="card-label">🔗 ANALOGY</div>
+<h3>Casting actors vs managing the full show</h3>
+<p>One actor matters, but the director cares about the full cast and whether the performance can continue if someone gets sick.</p><p>Pods are individual actors; Deployments manage the healthy group over time.</p>
+</article>
+<article class="card technical">
+<div class="card-label">Technical</div>
+<div class="two-col">
+<div>
+<h3>What it means in real code</h3>
+<p><strong>Definition:</strong> A Pod is the smallest deployable unit in Kubernetes, and a Deployment manages a replica set of pods and their rolling updates.</p>
+<p class="deep-note">Pods share a network namespace and storage context for their containers, which is why sidecars can live alongside main application containers. Deployments sit above ReplicaSets and ensure the requested number of Pods with a given template stay available while enabling declarative updates.</p>
+<p class="deep-note">In production, this matters because Pods are ephemeral and Deployments are the stable management surface. If you patch Pods directly, the controller will eventually replace them anyway.</p>
+<div class="mini-grid">
+<div class="mini-panel">
+<h4>Why it matters</h4>
+<ul><li>Deployments provide self-healing and rollout control</li><li>Pods group tightly coupled containers</li><li>Replica management belongs to controllers, not operators</li></ul>
+</div>
+<div class="mini-panel">
+<h4>Common pitfall</h4>
+<ul><li>Creating single Pods by hand for long-lived apps</li><li>Debugging by editing live Pod state</li><li>Ignoring label selectors and controller ownership</li></ul>
+</div>
+</div>
+<div class="badge-row"><span class="pill good">Deployment</span><span class="pill info">Pod template</span><span class="pill caution">ReplicaSet</span><span class="pill bad">Naked Pod</span></div>
+<div class="flow"><span class="flow-step">Apply Deployment</span><span class="flow-arrow">→</span><span class="flow-step">ReplicaSet created</span><span class="flow-arrow">→</span><span class="flow-step">Pods start</span><span class="flow-arrow">→</span><span class="flow-step">Controller maintains replica count</span></div>
+</div>
+<div>
+<h3>Interview-ready view</h3>
+<div class="mini-panel" style="background:rgba(124,58,237,0.12); border-color:rgba(124,58,237,0.26);">
+<h4>💬 Model Interview Answer</h4>
+<p>I say Pods are the runtime unit and Deployments are the management unit for stateless apps. Pods are ephemeral, so you usually interact with the Deployment manifest rather than the Pod itself. The gotcha is editing a live Pod and expecting the change to survive, because the controller may replace that Pod at any time.</p>
+</div>
+<table><thead><tr><th>Resource</th><th>Use</th></tr></thead><tbody><tr><td>Pod</td><td>One running instance of a workload template</td></tr><tr><td>Deployment</td><td>Manages desired replica count and rolling updates</td></tr><tr><td>ReplicaSet</td><td>Maintains a specific pod template replica set</td></tr></tbody></table>
+</div>
+</div>
+<div class="code-blocks"><div><div class="code-title">❌ Wrong: app as a naked Pod</div><pre>apiVersion: v1
+kind: Pod
+metadata:
+  name: api
+spec:
+  containers:
+    - name: api
+      image: myorg/api:1.0</pre></div><div><div class="code-title">✅ Right: app managed by Deployment</div><pre>apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: api
 spec:
   replicas: 3
+  selector:
+    matchLabels:
+      app: api
   template:
+    metadata:
+      labels:
+        app: api
     spec:
       containers:
-      - name: api
-        image: api:1.0</pre>
-    </div>
-    </div>
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>No readiness = bad rollouts</h3>
-              <p>Without probes, traffic may hit broken pods.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways"><li>Use deployments for updates.</li><li>Configure probes.</li><li>Scale replicas.</li></ul>
-            </article>
-
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>What object manages rolling updates?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. Pod</button><button class="quiz-option">B. Deployment</button><button class="quiz-option">C. Service</button><button class="quiz-option">D. ConfigMap</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>Deployments manage rolling updates.</span>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section class="section" data-section="2">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 3 of 4 · ~7 mins</div>
-            <h2>Services and Ingress</h2>
-            <p>Services provide stable endpoints; Ingress routes external traffic.</p>
-          </div>
-
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Front desk</h3>
-              <p>You call the front desk instead of each room.</p>
-            </article>
-
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Restaurant host</h3>
-              <p>The host routes guests to tables.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> Services provide stable DNS/IP; Ingress routes HTTP traffic from outside.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul><li>Stable networking</li><li>Load balancing</li><li>External access</li></ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common pitfall</h4>
-                      <ul><li>Direct pod IPs</li><li>Missing selectors</li><li>Ingress without TLS</li></ul>
-                    </div>
-                  </div>
-                  <div class="badge-row"><span class="pill good">Service</span><span class="pill info">Ingress</span><span class="pill caution">TLS</span></div>
-                  <div class="flow"><span class="flow-step">Create service</span><span class="flow-arrow">→</span><span class="flow-step">Select pods</span><span class="flow-arrow">→</span><span class="flow-step">Expose ingress</span><span class="flow-arrow">→</span><span class="flow-step">Route traffic</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“Services give stable endpoints; Ingress handles external routing.”</p>
-                  <table><thead><tr><th>Type</th><th>Use</th></tr></thead><tbody><tr><td>ClusterIP</td><td><span class="pill info">Internal</span></td></tr><tr><td>LoadBalancer</td><td><span class="pill good">External</span></td></tr></tbody></table>
-                </div>
-              </div>
-              <div class="code-blocks">
-    <div>
-      <div class="code-title">Service snippet</div>
-      <pre>apiVersion: v1
+        - name: api
+          image: myorg/api:1.0</pre></div></div>
+<p>The Deployment adds replica management, rollout behavior, and reconciliation that a bare Pod does not provide.</p>
+</article>
+<article class="card warning">
+<div class="card-label">⚠️ Warning</div>
+<h3>Pods are intentionally disposable</h3>
+<p>The dangerous misunderstanding is thinking a Pod is a little VM you should nurse carefully. It is not. Pods should be easy to recreate, which is why changes belong in manifests and images, not in manual live edits.</p>
+</article>
+<article class="card technical">
+<div class="card-label">Mini takeaway</div>
+<ul class="takeaways"><li>Use Deployments for stateless apps</li><li>Treat Pods as replaceable</li><li>Change manifests, not live pods</li><li>Understand label selectors</li></ul>
+</article>
+<article class="card quiz-card">
+<div class="card-label">Quiz</div>
+<h3>Why is a Deployment usually healthier than a bare Pod for an application service?</h3>
+<div class="quiz-options" data-answer="1">
+<button class="quiz-option">Because Pods cannot run containers.</button><button class="quiz-option">Because a Deployment maintains replicas and manages updates, while a bare Pod has no controller keeping it alive.</button><button class="quiz-option">Because Deployments automatically create databases.</button><button class="quiz-option">Because Pods are only for system components.</button>
+</div>
+<div class="quiz-result">
+<strong>Correct answer: B</strong><span>B is correct because Deployments add controller-driven lifecycle management. A and D are false. C invents behavior Deployments do not provide.</span>
+</div>
+</article>
+</div>
+</div>
+</section>
+<section class="section" data-section="2">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Section 3 of 4 · ~6 mins</div>
+<h2>Services and Ingress</h2>
+<p>Pods are ephemeral, so Kubernetes needs stable networking abstractions to expose them internally and externally.</p>
+</div>
+<div class="card-grid">
+<article class="card eli5">
+<div class="card-label">🧒 ELI5</div>
+<h3>Reception desk and building sign</h3>
+<p>If employees keep changing desks every day, visitors need a stable reception desk to reach the right team. A sign outside the building then tells the public where to enter.</p><p>Services are the stable reception desk for Pods, and Ingress is the controlled public entry layer for HTTP(S).</p><p>Without those abstractions, every pod restart would break connectivity.</p>
+</article>
+<article class="card analogy">
+<div class="card-label">🔗 ANALOGY</div>
+<h3>Call center number and front door</h3>
+<p>A company may route many agents behind one phone number and many rooms behind one front entrance. Callers do not need to know which exact desk is answering today.</p><p>That is the reason Services and Ingress exist.</p>
+</article>
+<article class="card technical">
+<div class="card-label">Technical</div>
+<div class="two-col">
+<div>
+<h3>What it means in real code</h3>
+<p><strong>Definition:</strong> A Service provides a stable virtual IP and DNS name for a group of pods selected by labels, while Ingress manages HTTP(S) routing into one or more Services.</p>
+<p class="deep-note">Services use kube-proxy or equivalent data-plane behavior to route traffic to matching pod endpoints. Ingress resources describe host/path rules that an ingress controller turns into actual load-balancer or reverse-proxy behavior.</p>
+<p class="deep-note">In production, this matters because pod IPs change constantly, but application clients need stable names. It also separates internal service discovery from external web routing, which are related but not identical concerns.</p>
+<div class="mini-grid">
+<div class="mini-panel">
+<h4>Why it matters</h4>
+<ul><li>Stabilizes service-to-service communication</li><li>Supports load balancing across pod replicas</li><li>Centralizes HTTP entry routing and TLS policies</li></ul>
+</div>
+<div class="mini-panel">
+<h4>Common pitfall</h4>
+<ul><li>Using Pod IPs directly from clients</li><li>Thinking Ingress replaces Services entirely</li><li>Forgetting that an Ingress resource needs a controller to do anything</li></ul>
+</div>
+</div>
+<div class="badge-row"><span class="pill good">Service DNS</span><span class="pill info">ClusterIP</span><span class="pill caution">Ingress controller</span><span class="pill bad">Pod IP coupling</span></div>
+<div class="flow"><span class="flow-step">Pods selected by labels</span><span class="flow-arrow">→</span><span class="flow-step">Service creates stable endpoint</span><span class="flow-arrow">→</span><span class="flow-step">Ingress routes external HTTP to service</span></div>
+</div>
+<div>
+<h3>Interview-ready view</h3>
+<div class="mini-panel" style="background:rgba(124,58,237,0.12); border-color:rgba(124,58,237,0.26);">
+<h4>💬 Model Interview Answer</h4>
+<p>My short answer is that Services solve stable discovery inside the cluster and Ingress solves HTTP entry from outside. I usually mention that Pods are ephemeral, so clients should target Services, not Pod IPs. The gotcha is writing an Ingress resource without actually having an ingress controller, which creates YAML but no real traffic path.</p>
+</div>
+<table><thead><tr><th>Resource</th><th>Main purpose</th></tr></thead><tbody><tr><td>Service</td><td>Stable name and load balancing to pods</td></tr><tr><td>Ingress</td><td>HTTP routing and external entry policies</td></tr><tr><td>Selector</td><td>Binds service endpoints to matching pods</td></tr></tbody></table>
+</div>
+</div>
+<div class="code-blocks"><div><div class="code-title">❌ Wrong: direct pod targeting</div><pre># App config points at pod IP 10.42.3.17:8080
+# That IP disappears when the pod is replaced.</pre></div><div><div class="code-title">✅ Right: stable service abstraction</div><pre>apiVersion: v1
 kind: Service
 metadata:
   name: api
@@ -982,172 +983,143 @@ spec:
   selector:
     app: api
   ports:
-  - port: 80
-    targetPort: 8080</pre>
-    </div>
-    </div>
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Ingress without TLS is risky</h3>
-              <p>Always secure external traffic.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways"><li>Use services for stable endpoints.</li><li>Ingress routes external traffic.</li><li>Enable TLS.</li></ul>
-            </article>
-
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>What gives a stable DNS name in K8s?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. Pod</button><button class="quiz-option">B. Service</button><button class="quiz-option">C. Deployment</button><button class="quiz-option">D. ConfigMap</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>Services provide stable networking.</span>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section class="section" data-section="3">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Section 4 of 4 · ~7 mins</div>
-            <h2>ConfigMaps and Secrets</h2>
-            <p>ConfigMaps and Secrets externalize configuration.</p>
-          </div>
-
-          <div class="card-grid">
-            <article class="card eli5">
-              <div class="card-label">🧒 ELI5</div>
-              <h3>Recipe notes</h3>
-              <p>You keep notes outside the recipe book.</p>
-            </article>
-
-            <article class="card analogy">
-              <div class="card-label">🔗 ANALOGY</div>
-              <h3>Locked drawer</h3>
-              <p>Secrets go in a locked drawer.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Technical</div>
-              <div class="two-col">
-                <div>
-                  <h3>What it means in real code</h3>
-                  <p><strong>Definition:</strong> ConfigMaps store non-sensitive config; Secrets store sensitive data.</p>
-                  <div class="mini-grid">
-                    <div class="mini-panel">
-                      <h4>Why it matters</h4>
-                      <ul><li>Decouple config</li><li>Secure secrets</li><li>Simpler updates</li></ul>
-                    </div>
-                    <div class="mini-panel">
-                      <h4>Common pitfall</h4>
-                      <ul><li>Secrets in YAML</li><li>Hard-coded config</li><li>No rotation</li></ul>
-                    </div>
-                  </div>
-                  <div class="badge-row"><span class="pill good">ConfigMap</span><span class="pill info">Secret</span><span class="pill caution">Rotation</span></div>
-                  <div class="flow"><span class="flow-step">Create config</span><span class="flow-arrow">→</span><span class="flow-step">Mount into pod</span><span class="flow-arrow">→</span><span class="flow-step">Reload app</span><span class="flow-arrow">→</span><span class="flow-step">Rotate secrets</span></div>
-                </div>
-                <div>
-                  <h3>Interview answer</h3>
-                  <p>“I use ConfigMaps for config and Secrets for sensitive values.”</p>
-                  <table><thead><tr><th>Resource</th><th>Use</th></tr></thead><tbody><tr><td>ConfigMap</td><td><span class="pill info">Non-sensitive</span></td></tr><tr><td>Secret</td><td><span class="pill good">Sensitive</span></td></tr></tbody></table>
-                </div>
-              </div>
-              <div class="code-blocks">
-    <div>
-      <div class="code-title">ConfigMap example</div>
-      <pre>kubectl create configmap app-config --from-literal=MODE=prod</pre>
-    </div>
-    </div>
-            </article>
-
-            <article class="card warning">
-              <div class="card-label">Warning</div>
-              <h3>Secrets are base64, not encrypted</h3>
-              <p>Use KMS or sealed secrets for stronger security.</p>
-            </article>
-
-            <article class="card technical">
-              <div class="card-label">Mini takeaway</div>
-              <ul class="takeaways"><li>Externalize config.</li><li>Keep secrets safe.</li><li>Plan rotation.</li></ul>
-            </article>
-
-            <article class="card quiz-card">
-              <div class="card-label">Quiz</div>
-              <h3>What stores sensitive data in K8s?</h3>
-              <div class="quiz-options" data-answer="1">
-                <button class="quiz-option">A. ConfigMap</button><button class="quiz-option">B. Secret</button><button class="quiz-option">C. Deployment</button><button class="quiz-option">D. Service</button>
-              </div>
-              <div class="quiz-result">
-                <strong>Correct answer: B</strong>
-                <span>Secrets store sensitive configuration.</span>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-      
-      <section class="section" data-section="4">
-        <div class="section-inner">
-          <div class="hero">
-            <div class="section-label">Completion screen · Review mode</div>
-            <h2>🎉 Kubernetes Fundamentals Cheat Sheet</h2>
-            <p>Core Kubernetes objects and architecture.</p>
-          </div>
-
-          <div class="completion-grid">
-            <div class="card technical">
-              <div class="card-label">Cheat sheet</div>
-              <div class="celebrate">🚀</div>
-              <h3>1-line interview answers</h3>
-              <div class="cheat-list">
-    <div class="cheat-item">
-      <h4>Pod</h4>
-      <p>Smallest deployable unit.</p>
-    </div>
-    <div class="cheat-item">
-      <h4>Deployment</h4>
-      <p>Manages replicas.</p>
-    </div>
-    <div class="cheat-item">
-      <h4>Service</h4>
-      <p>Stable networking.</p>
-    </div>
-    <div class="cheat-item">
-      <h4>Ingress</h4>
-      <p>External routing.</p>
-    </div>
-              </div>
-            </div>
-
-            <div class="card analogy">
-              <div class="card-label">What to remember</div>
-              <h3>Fast mental model</h3>
-              <ul class="takeaways"><li><strong>Pods</strong>: run containers.</li><li><strong>Deployments</strong>: manage replicas.</li><li><strong>Services</strong>: stable networking.</li><li><strong>Ingress</strong>: external routing.</li></ul>
-              <h3 style="margin-top:22px;">Common traps</h3>
-              <div class="badge-row"><span class="pill bad">No resource limits</span><span class="pill bad">Missing probes</span><span class="pill bad">Service without selectors</span></div>
-            </div>
-          </div>
-        </div>
-      </section>
-    </main>
-
-    <footer class="footer-nav">
-      <div class="footer-nav-inner">
-        <button class="btn" id="prevBtn">← Back</button>
-        <button class="btn primary" id="nextBtn">Next →</button>
-      </div>
-    </footer>
-  </div>
-
-  <script>
+    - port: 80
+      targetPort: 8080</pre></div></div>
+<p>The Service name remains stable even as backing pods are recreated or scaled.</p>
+</article>
+<article class="card warning">
+<div class="card-label">⚠️ Warning</div>
+<h3>Pod IPs are implementation detail, not contract</h3>
+<p>A very common mistake is letting consumers depend on pod addresses because it works in a quick demo. The minute a rollout or crash happens, those addresses change. Put stable routing behind a Service, and use Ingress only for external HTTP entry where it actually belongs.</p>
+</article>
+<article class="card technical">
+<div class="card-label">Mini takeaway</div>
+<ul class="takeaways"><li>Target Services, not Pods</li><li>Ingress needs a controller</li><li>Use labels/selectors carefully</li><li>Separate internal discovery from external routing</li></ul>
+</article>
+<article class="card quiz-card">
+<div class="card-label">Quiz</div>
+<h3>Which statement is most accurate?</h3>
+<div class="quiz-options" data-answer="1">
+<button class="quiz-option">Ingress directly replaces every Service in Kubernetes.</button><button class="quiz-option">A Service provides stable internal connectivity to pods, and Ingress typically routes HTTP traffic to Services.</button><button class="quiz-option">Pod IPs are the recommended long-term endpoint for consumers.</button><button class="quiz-option">An Ingress resource alone is enough even if no ingress controller exists.</button>
+</div>
+<div class="quiz-result">
+<strong>Correct answer: B</strong><span>B is correct because Services and Ingress solve different layers of networking. A overstates Ingress. C is fragile because Pod IPs are ephemeral. D is false because an Ingress resource requires a controller implementation to become real traffic handling.</span>
+</div>
+</article>
+</div>
+</div>
+</section>
+<section class="section" data-section="3">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Section 4 of 4 · ~6 mins</div>
+<h2>ConfigMaps and Secrets</h2>
+<p>Kubernetes separates container images from runtime configuration so the same image can run in multiple environments cleanly.</p>
+</div>
+<div class="card-grid">
+<article class="card eli5">
+<div class="card-label">🧒 ELI5</div>
+<h3>Printed menu vs daily specials note</h3>
+<p>A restaurant keeps the core menu printed, but the daily specials can change on a small note without reprinting every page. Sensitive information like the safe code is stored even more carefully.</p><p>Container images are the printed menu. ConfigMaps are the daily specials note. Secrets are the sensitive values that need tighter handling.</p><p>That separation is what makes one application image reusable across environments.</p>
+</article>
+<article class="card analogy">
+<div class="card-label">🔗 ANALOGY</div>
+<h3>Backpack contents by category</h3>
+<p>You do not mix lunch, textbooks, and passport copies loose in one pocket if you can organize them safely. Different items deserve different storage rules.</p><p>Kubernetes configuration objects follow the same idea.</p>
+</article>
+<article class="card technical">
+<div class="card-label">Technical</div>
+<div class="two-col">
+<div>
+<h3>What it means in real code</h3>
+<p><strong>Definition:</strong> ConfigMaps hold non-sensitive configuration data, while Secrets hold sensitive values that are mounted or injected separately from the container image.</p>
+<p class="deep-note">Both can be exposed to containers as environment variables or mounted files, but Secrets are intended for confidential data and should be handled with stricter access controls and operational hygiene. The application image stays unchanged while environment-specific values are supplied at deployment time.</p>
+<p class="deep-note">In production, this matters because rebuilding images for every config change is slow and error-prone, while baking secrets into images or Git history is a serious security mistake.</p>
+<div class="mini-grid">
+<div class="mini-panel">
+<h4>Why it matters</h4>
+<ul><li>Promotes one image across environments</li><li>Separates config from application binary</li><li>Reduces secret leakage through source and image artifacts</li></ul>
+</div>
+<div class="mini-panel">
+<h4>Common pitfall</h4>
+<ul><li>Checking secrets into Git</li><li>Putting environment-specific config directly into the image</li><li>Assuming Kubernetes Secrets are magically safe without RBAC or encryption strategy</li></ul>
+</div>
+</div>
+<div class="badge-row"><span class="pill good">Externalized config</span><span class="pill info">ConfigMap</span><span class="pill caution">Secret handling</span><span class="pill bad">Baked-in credentials</span></div>
+<div class="flow"><span class="flow-step">Build one image</span><span class="flow-arrow">→</span><span class="flow-step">Create ConfigMap/Secret</span><span class="flow-arrow">→</span><span class="flow-step">Mount or inject values</span><span class="flow-arrow">→</span><span class="flow-step">Deploy same image everywhere</span></div>
+</div>
+<div>
+<h3>Interview-ready view</h3>
+<div class="mini-panel" style="background:rgba(124,58,237,0.12); border-color:rgba(124,58,237,0.26);">
+<h4>💬 Model Interview Answer</h4>
+<p>I explain ConfigMaps and Secrets as runtime configuration layers for the same container image. ConfigMaps are for non-sensitive settings and Secrets are for confidential values, though I still protect access carefully because they are not a magic substitute for security design. The gotcha is teams assuming Secret means “safe by default forever” even when RBAC, encryption, or audit controls are weak.</p>
+</div>
+<table><thead><tr><th>Object</th><th>Use</th></tr></thead><tbody><tr><td>ConfigMap</td><td>Non-sensitive runtime configuration</td></tr><tr><td>Secret</td><td>Sensitive values such as credentials or tokens</td></tr><tr><td>Image</td><td>Immutable application artifact reused across environments</td></tr></tbody></table>
+</div>
+</div>
+<div class="code-blocks"><div><div class="code-title">❌ Wrong: credential in image or manifest</div><pre>ENV DB_PASSWORD=hardcoded-password</pre></div><div><div class="code-title">✅ Right: runtime secret reference</div><pre>env:
+  - name: DB_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: db-secret
+        key: password</pre></div></div>
+<p>The image stays environment-agnostic while the sensitive value is injected at runtime.</p>
+</article>
+<article class="card warning">
+<div class="card-label">⚠️ Warning</div>
+<h3>“Secret” does not mean “ignore access control”</h3>
+<p>A Kubernetes Secret is a better packaging mechanism than a plain string in Git, but it still needs RBAC, encryption-at-rest decisions, and careful handling in logs and shells. Treat it as one layer in a broader secret-management story, not the whole story.</p>
+</article>
+<article class="card technical">
+<div class="card-label">Mini takeaway</div>
+<ul class="takeaways"><li>Externalize config from images</li><li>Keep sensitive and non-sensitive data separate</li><li>Reference secrets at runtime</li><li>Apply RBAC and handling discipline around secrets</li></ul>
+</article>
+<article class="card quiz-card">
+<div class="card-label">Quiz</div>
+<h3>Why are ConfigMaps and Secrets valuable even when the same application code runs everywhere?</h3>
+<div class="quiz-options" data-answer="0">
+<button class="quiz-option">Because they let you change runtime configuration without rebuilding the image for each environment.</button><button class="quiz-option">Because they remove the need for RBAC.</button><button class="quiz-option">Because Secrets automatically encrypt all application traffic.</button><button class="quiz-option">Because Pods cannot read environment variables from any other source.</button>
+</div>
+<div class="quiz-result">
+<strong>Correct answer: A</strong><span>A is correct because externalized configuration supports one reusable image with environment-specific runtime values. B and C describe capabilities they do not provide. D is false because containers can receive configuration in multiple ways.</span>
+</div>
+</article>
+</div>
+</div>
+</section>
+<section class="section" data-section="4">
+<div class="section-inner">
+<div class="hero">
+<div class="section-label">Completion screen · Review mode</div>
+<h2>🎉 Kubernetes Fundamentals Cheat Sheet</h2>
+<p>Core interview review of cluster control, pods, services, and configuration objects.</p>
+</div>
+<div class="completion-grid">
+<div class="card technical">
+<div class="card-label">Cheat sheet</div>
+<div class="celebrate">🚀</div>
+<h3>1-line interview answers</h3>
+<div class="cheat-list"><div class="cheat-item"><h4>Cluster model</h4><p>Desired state is stored centrally and reconciled continuously onto nodes.</p></div><div class="cheat-item"><h4>Pod vs Deployment</h4><p>Pods run workloads; Deployments manage replicas and updates.</p></div><div class="cheat-item"><h4>Service</h4><p>Stable endpoint for ephemeral pods selected by labels.</p></div><div class="cheat-item"><h4>Ingress</h4><p>HTTP entry layer that routes to Services through a controller.</p></div><div class="cheat-item"><h4>Config and secrets</h4><p>Keep runtime values outside the image and handle sensitive data carefully.</p></div></div>
+</div>
+<div class="card analogy">
+<div class="card-label">What to remember</div>
+<h3>Fast mental model</h3>
+<ul class="takeaways"><li><strong>Reconciliation</strong>: Kubernetes constantly drives actual state toward desired state</li><li><strong>Ephemeral runtime</strong>: Pods are replaceable, controllers are stable</li><li><strong>Stable networking</strong>: Use Services for discovery and Ingress for HTTP entry</li><li><strong>Externalized config</strong>: One image, many environments</li></ul>
+<h3 style="margin-top:22px;">Common traps</h3>
+<div class="badge-row"><span class="pill bad">thinking in pet servers</span><span class="pill bad">direct Pod IP dependencies</span><span class="pill bad">baking secrets into images</span></div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<footer class="footer-nav">
+<div class="footer-nav-inner">
+<button class="btn" id="prevBtn">← Back</button>
+<button class="btn primary" id="nextBtn">Next →</button>
+</div>
+</footer>
+</div>
+<script>
 const sections = Array.from(document.querySelectorAll('.section'));
     const dots = Array.from(document.querySelectorAll('.nav-dot'));
     const prevBtn = document.getElementById('prevBtn');
