@@ -1,13 +1,14 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Spring Boot Interview Reference Sheet</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Spring Boot Interview Reference Sheet</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&amp;family=Syne:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<style>
     :root {
       --bg: #0a0e1a;
       --surface: #111827;
@@ -548,706 +549,1063 @@
   </style>
 </head>
 <body data-mode="scan">
-  <div class="app">
-    <header class="topbar">
-      <div class="topbar-inner">
-        <div class="title-wrap">
-          <div class="eyebrow">30-minute interview prep</div>
-          <h1>Spring Boot Interview Reference Sheet</h1>
-        </div>
-        <div class="top-actions">
-          <div class="timer" id="timer" aria-live="polite">
-            <span>TIME</span>
-            <span id="timerText">30:00</span>
-          </div>
-          <button class="mode-toggle" id="modeToggle" type="button" aria-pressed="false">
-            <span>Mode</span>
-            <span class="mode-pill" id="modePill">SCAN</span>
-          </button>
-        </div>
-      </div>
-      <div class="progress-shell">
-        <div class="progress-track" aria-hidden="true">
-          <div class="progress-bar" id="progressBar"></div>
-        </div>
-      </div>
-    </header>
-
-    <main class="layout">
-      <aside class="sidebar">
-        <div class="sidebar-head">
-          <h3>Topics</h3>
-          <small>Jump</small>
-        </div>
-        <nav class="nav-list"><a href="#spring-boot-fundamentals" class="nav-link"><span>Spring Boot Fundamentals</span><span class="nav-count">8</span></a><a href="#core-container-beans" class="nav-link"><span>Spring Core, IoC, and Beans</span><span class="nav-count">6</span></a><a href="#transactions-persistence" class="nav-link"><span>Transactions, Persistence, and Database Changes</span><span class="nav-count">5</span></a><a href="#security-auth" class="nav-link"><span>Security, Authentication, and Authorization</span><span class="nav-count">4</span></a><a href="#async-caching" class="nav-link"><span>Async Processing, Caching, and Concurrency</span><span class="nav-count">3</span></a><a href="#testing" class="nav-link"><span>Testing and Runtime Verification</span><span class="nav-count">1</span></a></nav>
-      </aside>
-
-      <section class="content">
-        <div class="hero-card">
-          <div class="hero-grid">
-            <div>
-              <div class="eyebrow">Built from this chat’s Spring Boot Q&A</div>
-              <h1 style="font-size: clamp(1.3rem, 1.05rem + 0.9vw, 1.9rem); margin: 0;">Fast scan. Zero filler. Interview-ready phrasing.</h1>
-              <p>Use Scan Mode to read straight through. Switch to Recall Mode to hide every answer, then click any question to reveal it. The timer and progress bar are tuned for a focused 30-minute pre-interview pass.</p>
-            </div>
-            <div class="meta-boxes">
-              <div class="meta-box">
-                <span class="meta-label">Topics</span>
-                <span class="meta-value">6</span>
-              </div>
-              <div class="meta-box">
-                <span class="meta-label">Questions</span>
-                <span class="meta-value">27</span>
-              </div>
-              <div class="meta-box">
-                <span class="meta-label">Default</span>
-                <span class="meta-value">Scan Mode</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        
-    <section class="topic-section" id="spring-boot-fundamentals">
-      <div class="section-head">
-        <h2>Spring Boot Fundamentals</h2>
-        <span class="badge">8 questions</span>
-      </div>
-      <div class="qa-list">
-        
-        <article class="qa-item" data-index="1">
-          <button class="qa-question" type="button" aria-expanded="true">
-            <span class="question-index">01</span>
-            <span class="question-text">What is Actuator in Spring?</span>
-            <span class="chevron" aria-hidden="true">▾</span>
-          </button>
-          <div class="qa-answer open">
-            <div class="answer-inner">
-              <p>Spring Boot Actuator exposes production-ready endpoints for monitoring and operations, such as health, metrics, env, loggers, thread dumps, and info. It is mainly used for observability, readiness/liveness probes, and faster production debugging.</p>
-              
-    <div class="code-wrap">
-      <div class="code-label">yaml</div>
-      <pre><code><span class="tok-prop">management:<span class="tok-val"></span></span>
+<div class="app">
+<header class="topbar">
+<div class="topbar-inner">
+<div class="title-wrap">
+<div class="eyebrow">30-minute interview prep</div>
+<h1>Spring Boot Interview Reference Sheet</h1>
+</div>
+<div class="top-actions">
+<div aria-live="polite" class="timer" id="timer">
+<span>TIME</span>
+<span id="timerText">30:00</span>
+</div>
+<button aria-pressed="false" class="mode-toggle" id="modeToggle" type="button">
+<span>Mode</span>
+<span class="mode-pill" id="modePill">SCAN</span>
+</button>
+</div>
+</div>
+<div class="progress-shell">
+<div aria-hidden="true" class="progress-track">
+<div class="progress-bar" id="progressBar"></div>
+</div>
+</div>
+</header>
+<main class="layout">
+<aside class="sidebar">
+<div class="sidebar-head">
+<h3>Topics</h3>
+<small>Jump</small>
+</div>
+<nav class="nav-list"><a class="nav-link" href="#spring-boot-fundamentals"><span>Spring Boot Fundamentals</span><span class="nav-count">13</span></a><a class="nav-link" href="#spring-mvc-rest-apis"><span>Spring MVC and REST APIs</span><span class="nav-count">4</span></a><a class="nav-link" href="#core-container-beans"><span>Spring Core, IoC, and Beans</span><span class="nav-count">11</span></a><a class="nav-link" href="#transactions-persistence"><span>Transactions, Persistence, and Database Changes</span><span class="nav-count">14</span></a><a class="nav-link" href="#security-auth"><span>Security, Authentication, and Authorization</span><span class="nav-count">8</span></a><a class="nav-link" href="#async-caching"><span>Async Processing, Caching, and Concurrency</span><span class="nav-count">3</span></a><a class="nav-link" href="#testing"><span>Testing and Runtime Verification</span><span class="nav-count">3</span></a></nav>
+</aside>
+<section class="content">
+<div class="hero-card">
+<div class="hero-grid">
+<div>
+<div class="eyebrow">Built from this chat’s Spring Boot Q&amp;A</div>
+<h1 style="font-size: clamp(1.3rem, 1.05rem + 0.9vw, 1.9rem); margin: 0;">Fast scan. Zero filler. Interview-ready phrasing.</h1>
+<p>Use Scan Mode to read straight through. Switch to Recall Mode to hide every answer, then click any question to reveal it. The timer and progress bar are tuned for a focused 30-minute pre-interview pass.</p>
+</div>
+<div class="meta-boxes">
+<div class="meta-box">
+<span class="meta-label">Topics</span>
+<span class="meta-value">7</span>
+</div>
+<div class="meta-box">
+<span class="meta-label">Questions</span>
+<span class="meta-value">56</span>
+</div>
+<div class="meta-box">
+<span class="meta-label">Default</span>
+<span class="meta-value">Scan Mode</span>
+</div>
+</div>
+</div>
+</div>
+<section class="topic-section" id="spring-boot-fundamentals">
+<div class="section-head">
+<h2>Spring Boot Fundamentals</h2>
+<span class="badge">13 questions</span>
+</div>
+<div class="qa-list">
+<article class="qa-item" data-index="1">
+<button aria-expanded="true" class="qa-question" type="button">
+<span class="question-index">01</span>
+<span class="question-text">What is Actuator in Spring?</span>
+<span aria-hidden="true" class="chevron">▾</span>
+</button>
+<div class="qa-answer open">
+<div class="answer-inner">
+<p>Spring Boot Actuator exposes production-ready endpoints for monitoring and operations, such as health, metrics, env, loggers, thread dumps, and info. It is mainly used for observability, readiness/liveness probes, and faster production debugging.</p>
+<div class="code-wrap">
+<div class="code-label">yaml</div>
+<pre><code><span class="tok-prop">management:<span class="tok-val"></span></span>
 <span class="tok-prop">  endpoints:<span class="tok-val"></span></span>
 <span class="tok-prop">    web:<span class="tok-val"></span></span>
 <span class="tok-prop">      exposure:<span class="tok-val"></span></span>
 <span class="tok-prop">        include:<span class="tok-val"></span> health,info,metrics,prometheus</span>
 </code></pre>
-    </div>
-    
-            </div>
-          </div>
-        </article>
-        
-        <article class="qa-item" data-index="2">
-          <button class="qa-question" type="button" aria-expanded="true">
-            <span class="question-index">02</span>
-            <span class="question-text">How do you enable Actuator in a Spring Boot application?</span>
-            <span class="chevron" aria-hidden="true">▾</span>
-          </button>
-          <div class="qa-answer open">
-            <div class="answer-inner">
-              <p>Add the Actuator starter, then explicitly expose only the endpoints you need. In production, keep sensitive endpoints restricted behind security or internal network controls.</p>
-              
-    <div class="code-wrap">
-      <div class="code-label">xml</div>
-      <pre><code>&lt;<span class="tok-type">dependency</span>&gt;
+</div>
+</div>
+</div>
+</article>
+<article class="qa-item" data-index="2">
+<button aria-expanded="true" class="qa-question" type="button">
+<span class="question-index">02</span>
+<span class="question-text">How do you enable Actuator in a Spring Boot application?</span>
+<span aria-hidden="true" class="chevron">▾</span>
+</button>
+<div class="qa-answer open">
+<div class="answer-inner">
+<p>Add the Actuator starter, then explicitly expose only the endpoints you need. In production, keep sensitive endpoints restricted behind security or internal network controls.</p>
+<div class="code-wrap">
+<div class="code-label">xml</div>
+<pre><code>&lt;<span class="tok-type">dependency</span>&gt;
   &lt;<span class="tok-type">groupId</span>&gt;org.springframework.boot&lt;/<span class="tok-type">groupId</span>&gt;
   &lt;<span class="tok-type">artifactId</span>&gt;spring-boot-starter-actuator&lt;/<span class="tok-type">artifactId</span>&gt;
 &lt;/<span class="tok-type">dependency</span>&gt;
 </code></pre>
-    </div>
-    
-            </div>
-          </div>
-        </article>
-        
-        <article class="qa-item" data-index="3">
-          <button class="qa-question" type="button" aria-expanded="true">
-            <span class="question-index">03</span>
-            <span class="question-text">How does Spring Boot simplify the configuration of Spring applications?</span>
-            <span class="chevron" aria-hidden="true">▾</span>
-          </button>
-          <div class="qa-answer open">
-            <div class="answer-inner">
-              <p>It reduces boilerplate through starter dependencies, opinionated defaults, embedded servers, auto-configuration, and centralized externalized configuration. You spend less time wiring infrastructure and more time on business logic.</p>
-              
-            </div>
-          </div>
-        </article>
-        
-        <article class="qa-item" data-index="4">
-          <button class="qa-question" type="button" aria-expanded="true">
-            <span class="question-index">04</span>
-            <span class="question-text">Describe Spring Boot auto-configuration. How does it work?</span>
-            <span class="chevron" aria-hidden="true">▾</span>
-          </button>
-          <div class="qa-answer open">
-            <div class="answer-inner">
-              <p>Auto-configuration creates beans based on what is on the classpath, what properties are defined, and whether the application already provides a custom bean. It relies on conditional annotations such as @ConditionalOnClass, @ConditionalOnMissingBean, and @ConditionalOnProperty.</p>
-              
-    <div class="code-wrap">
-      <div class="code-label">java</div>
-      <pre><code><span <span class="tok-kw">class</span>="tok-ann">@<span class="tok-type">SpringBootApplication</span></span>
-<span <span class="tok-kw">class</span>="tok-kw">public</span> <span class="tok-kw">class</span> App {
-  <span <span class="tok-kw">class</span>="tok-kw">public</span> <span <span class="tok-kw">class</span>="tok-kw">static</span> <span class="tok-kw">void</span> <span <span class="tok-kw">class</span>="tok-fn">main</span>(<span class="tok-type">String</span>[] args) {
-    SpringApplication.<span <span class="tok-kw">class</span>="tok-fn">run</span>(App.<span class="tok-kw">class</span>, args);
+</div>
+</div>
+</div>
+</article>
+<article class="qa-item" data-index="3">
+<button aria-expanded="true" class="qa-question" type="button">
+<span class="question-index">03</span>
+<span class="question-text">How does Spring Boot simplify the configuration of Spring applications?</span>
+<span aria-hidden="true" class="chevron">▾</span>
+</button>
+<div class="qa-answer open">
+<div class="answer-inner">
+<p>It reduces boilerplate through starter dependencies, opinionated defaults, embedded servers, auto-configuration, and centralized externalized configuration. You spend less time wiring infrastructure and more time on business logic.</p>
+</div>
+</div>
+</article>
+<article class="qa-item" data-index="4">
+<button aria-expanded="true" class="qa-question" type="button">
+<span class="question-index">04</span>
+<span class="question-text">Describe Spring Boot auto-configuration. How does it work?</span>
+<span aria-hidden="true" class="chevron">▾</span>
+</button>
+<div class="qa-answer open">
+<div class="answer-inner">
+<p>Auto-configuration creates beans based on what is on the classpath, what properties are defined, and whether the application already provides a custom bean. It relies on conditional annotations such as @ConditionalOnClass, @ConditionalOnMissingBean, and @ConditionalOnProperty.</p>
+<div class="code-wrap">
+<div class="code-label">java</div>
+<pre><code><span <span="" class="tok-kw">class</span>="tok-ann"&gt;@<span class="tok-type">SpringBootApplication</span>
+<span <span="" class="tok-kw">class</span>="tok-kw"&gt;public <span class="tok-kw">class</span> App {
+  <span <span="" class="tok-kw">class</span>="tok-kw"&gt;public <span <span="" class="tok-kw">class</span>="tok-kw"&gt;static <span class="tok-kw">void</span> <span <span="" class="tok-kw">class</span>="tok-fn"&gt;main(<span class="tok-type">String</span>[] args) {
+    SpringApplication.<span <span="" class="tok-kw">class</span>="tok-fn"&gt;run(App.<span class="tok-kw">class</span>, args);
   }
 }
 </code></pre>
-    </div>
-    
-            </div>
-          </div>
-        </article>
-        
-        <article class="qa-item" data-index="5">
-          <button class="qa-question" type="button" aria-expanded="true">
-            <span class="question-index">05</span>
-            <span class="question-text">How does Spring Boot handle externalized configuration, and what are common sources of configuration properties?</span>
-            <span class="chevron" aria-hidden="true">▾</span>
-          </button>
-          <div class="qa-answer open">
-            <div class="answer-inner">
-              <p>Spring Boot can read configuration from application.properties or application.yml, profile-specific files, environment variables, JVM system properties, command-line arguments, and config servers. This lets you keep the same codebase and change behavior per environment.</p>
-              
-    <div class="code-wrap">
-      <div class="code-label">yaml</div>
-      <pre><code><span class="tok-prop">app:<span class="tok-val"></span></span>
+</div>
+</div>
+</div>
+</article>
+<article class="qa-item" data-index="5">
+<button aria-expanded="true" class="qa-question" type="button">
+<span class="question-index">05</span>
+<span class="question-text">How does Spring Boot handle externalized configuration, and what are common sources of configuration properties?</span>
+<span aria-hidden="true" class="chevron">▾</span>
+</button>
+<div class="qa-answer open">
+<div class="answer-inner">
+<p>Spring Boot can read configuration from application.properties or application.yml, profile-specific files, environment variables, JVM system properties, command-line arguments, and config servers. This lets you keep the same codebase and change behavior per environment.</p>
+<div class="code-wrap">
+<div class="code-label">yaml</div>
+<pre><code><span class="tok-prop">app:<span class="tok-val"></span></span>
 <span class="tok-prop">  timeout-ms:<span class="tok-val"></span> 2000</span>
 <span class="tok-prop">  feature-x-enabled:<span class="tok-val"></span> true</span>
 </code></pre>
-    </div>
-    
-            </div>
-          </div>
-        </article>
-        
-        <article class="qa-item" data-index="6">
-          <button class="qa-question" type="button" aria-expanded="true">
-            <span class="question-index">06</span>
-            <span class="question-text">Explain the concept of Spring Boot profiles and their practical uses.</span>
-            <span class="chevron" aria-hidden="true">▾</span>
-          </button>
-          <div class="qa-answer open">
-            <div class="answer-inner">
-              <p>Profiles let you activate environment-specific configuration such as dev, test, and prod. They are commonly used for different database connections, logging levels, mock integrations, or feature behavior per environment.</p>
-              
-    <div class="code-wrap">
-      <div class="code-label">yaml</div>
-      <pre><code><span class="tok-prop">spring:<span class="tok-val"></span></span>
+</div>
+</div>
+</div>
+</article>
+<article class="qa-item" data-index="6">
+<button aria-expanded="true" class="qa-question" type="button">
+<span class="question-index">06</span>
+<span class="question-text">Explain the concept of Spring Boot profiles and their practical uses.</span>
+<span aria-hidden="true" class="chevron">▾</span>
+</button>
+<div class="qa-answer open">
+<div class="answer-inner">
+<p>Profiles let you activate environment-specific configuration such as dev, test, and prod. They are commonly used for different database connections, logging levels, mock integrations, or feature behavior per environment.</p>
+<div class="code-wrap">
+<div class="code-label">yaml</div>
+<pre><code><span class="tok-prop">spring:<span class="tok-val"></span></span>
 <span class="tok-prop">  profiles:<span class="tok-val"></span></span>
 <span class="tok-prop">    active:<span class="tok-val"></span> dev</span>
 </code></pre>
-    </div>
-    
-            </div>
-          </div>
-        </article>
-        
-        <article class="qa-item" data-index="7">
-          <button class="qa-question" type="button" aria-expanded="true">
-            <span class="question-index">07</span>
-            <span class="question-text">Can we disable the default web server in a Spring application?</span>
-            <span class="chevron" aria-hidden="true">▾</span>
-          </button>
-          <div class="qa-answer open">
-            <div class="answer-inner">
-              <p>Yes. For non-web workloads such as batch jobs or workers, you can run the app without the embedded web server by setting the web application type to none or by excluding the web starter.</p>
-              
-    <div class="code-wrap">
-      <div class="code-label">properties</div>
-      <pre><code><span class="tok-prop">spring.main.web-application-type</span>=<span class="tok-val">none</span>
+</div>
+</div>
+</div>
+</article>
+<article class="qa-item" data-index="7">
+<button aria-expanded="true" class="qa-question" type="button">
+<span class="question-index">07</span>
+<span class="question-text">Can we disable the default web server in a Spring application?</span>
+<span aria-hidden="true" class="chevron">▾</span>
+</button>
+<div class="qa-answer open">
+<div class="answer-inner">
+<p>Yes. For non-web workloads such as batch jobs or workers, you can run the app without the embedded web server by setting the web application type to none or by excluding the web starter.</p>
+<div class="code-wrap">
+<div class="code-label">properties</div>
+<pre><code><span class="tok-prop">spring.main.web-application-type</span>=<span class="tok-val">none</span>
 </code></pre>
-    </div>
-    
-            </div>
-          </div>
-        </article>
-        
-        <article class="qa-item" data-index="8">
-          <button class="qa-question" type="button" aria-expanded="true">
-            <span class="question-index">08</span>
-            <span class="question-text">Describe the flow of an HTTP request through a Spring Boot application.</span>
-            <span class="chevron" aria-hidden="true">▾</span>
-          </button>
-          <div class="qa-answer open">
-            <div class="answer-inner">
-              <p>The request first reaches the embedded server such as Tomcat. It then passes through the filter chain, including Spring Security filters, into DispatcherServlet. DispatcherServlet resolves the handler, invokes the controller through HandlerAdapter, applies argument resolution and validation, and finally uses HttpMessageConverters to serialize the response back to the client.</p>
-              
-            </div>
-          </div>
-        </article>
-        
-      </div>
-    </section>
-    
-    <section class="topic-section" id="core-container-beans">
-      <div class="section-head">
-        <h2>Spring Core, IoC, and Beans</h2>
-        <span class="badge">6 questions</span>
-      </div>
-      <div class="qa-list">
-        
-        <article class="qa-item" data-index="1">
-          <button class="qa-question" type="button" aria-expanded="true">
-            <span class="question-index">01</span>
-            <span class="question-text">What are the different types of inversion of control in Spring?</span>
-            <span class="chevron" aria-hidden="true">▾</span>
-          </button>
-          <div class="qa-answer open">
-            <div class="answer-inner">
-              <p>In practice, Spring applies IoC through dependency injection. The main injection styles are constructor injection, setter injection, and field injection. Constructor injection is preferred because it makes dependencies explicit, supports immutability, and is easier to test.</p>
-              
-    <div class="code-wrap">
-      <div class="code-label">java</div>
-      <pre><code><span <span class="tok-kw">class</span>="tok-ann">@<span class="tok-type">Service</span></span>
-<span class="tok-kw">class</span> BillingService {
-  <span <span class="tok-kw">class</span>="tok-kw">private</span> final PaymentClient paymentClient;
+</div>
+</div>
+</div>
+</article>
+<article class="qa-item" data-index="8">
+<button aria-expanded="true" class="qa-question" type="button">
+<span class="question-index">08</span>
+<span class="question-text">Describe the flow of an HTTP request through a Spring Boot application.</span>
+<span aria-hidden="true" class="chevron">▾</span>
+</button>
+<div class="qa-answer open">
+<div class="answer-inner">
+<p>The request first reaches the embedded server such as Tomcat. It then passes through the filter chain, including Spring Security filters, into DispatcherServlet. DispatcherServlet resolves the handler, invokes the controller through HandlerAdapter, applies argument resolution and validation, and finally uses HttpMessageConverters to serialize the response back to the client.</p>
+</div>
+</div>
+</article>
+<article class="qa-item" data-index="9">
+<button aria-expanded="true" class="qa-question" type="button">
+<span class="question-index">09</span>
+<span class="question-text">What is Spring Boot, and how is it different from the Spring Framework?</span>
+<span aria-hidden="true" class="chevron">▾</span>
+</button>
+<div class="qa-answer open">
+<div class="answer-inner">
+<p>Spring Framework is the core ecosystem for dependency injection, web, data access, AOP, and security. Spring Boot sits on top of it and makes it faster to build stand-alone apps through starters, auto-configuration, embedded servers, and externalized config.</p>
+</div>
+</div>
+</article><article class="qa-item" data-index="10">
+<button aria-expanded="true" class="qa-question" type="button">
+<span class="question-index">10</span>
+<span class="question-text">What does @SpringBootApplication do?</span>
+<span aria-hidden="true" class="chevron">▾</span>
+</button>
+<div class="qa-answer open">
+<div class="answer-inner">
+<p>It is a convenience annotation that combines configuration, auto-configuration, and component scanning on the main application class.</p>
+<div class="code-wrap">
+<div class="code-label">java</div>
+<pre><code>@SpringBootApplication
+public class App {
+  public static void main(String[] args) {
+    SpringApplication.run(App.class, args);
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</article><article class="qa-item" data-index="11">
+<button aria-expanded="true" class="qa-question" type="button">
+<span class="question-index">11</span>
+<span class="question-text">What is @ComponentScan, and why does package placement matter?</span>
+<span aria-hidden="true" class="chevron">▾</span>
+</button>
+<div class="qa-answer open">
+<div class="answer-inner">
+<p>@ComponentScan tells Spring where to discover annotated beans. In Spring Boot, the main application class is usually placed in a root package so subpackages are scanned automatically; otherwise beans may be missed or scanning can become broader than intended.</p>
+<div class="code-wrap">
+<div class="code-label">java</div>
+<pre><code>@SpringBootApplication
+@ComponentScan(basePackages = "com.example.app")
+public class App { }</code></pre>
+</div>
+</div>
+</div>
+</article><article class="qa-item" data-index="12">
+<button aria-expanded="true" class="qa-question" type="button">
+<span class="question-index">12</span>
+<span class="question-text">What are Spring Boot starter dependencies?</span>
+<span aria-hidden="true" class="chevron">▾</span>
+</button>
+<div class="qa-answer open">
+<div class="answer-inner">
+<p>Starters are curated dependency bundles such as spring-boot-starter-web or spring-boot-starter-data-jpa. They pull in the common libraries needed for a capability and work well with Boot’s auto-configuration.</p>
+</div>
+</div>
+</article><article class="qa-item" data-index="13">
+<button aria-expanded="true" class="qa-question" type="button">
+<span class="question-index">13</span>
+<span class="question-text">What is the difference between @ConfigurationProperties and @Value?</span>
+<span aria-hidden="true" class="chevron">▾</span>
+</button>
+<div class="qa-answer open">
+<div class="answer-inner">
+<p>@Value is fine for a small number of properties, but @ConfigurationProperties is better for grouped, type-safe configuration with validation and cleaner maintenance as the config grows.</p>
+<div class="code-wrap">
+<div class="code-label">java</div>
+<pre><code>@ConfigurationProperties(prefix = "app.client")
+public record ClientProperties(String baseUrl, Duration timeout) { }</code></pre>
+</div>
+</div>
+</div>
+</article></div>
+</section><section class="topic-section" id="spring-mvc-rest-apis">
+<div class="section-head">
+<h2>Spring MVC and REST APIs</h2>
+<span class="badge">4 questions</span>
+</div>
+<div class="qa-list"><article class="qa-item" data-index="1">
+<button aria-expanded="true" class="qa-question" type="button">
+<span class="question-index">01</span>
+<span class="question-text">What is DispatcherServlet?</span>
+<span aria-hidden="true" class="chevron">▾</span>
+</button>
+<div class="qa-answer open">
+<div class="answer-inner">
+<p>DispatcherServlet is Spring MVC’s front controller. It receives incoming HTTP requests, delegates to handler mappings and adapters, invokes controllers, and coordinates the response rendering or JSON serialization.</p>
+</div>
+</div>
+</article><article class="qa-item" data-index="2">
+<button aria-expanded="true" class="qa-question" type="button">
+<span class="question-index">02</span>
+<span class="question-text">What is the difference between @Controller and @RestController?</span>
+<span aria-hidden="true" class="chevron">▾</span>
+</button>
+<div class="qa-answer open">
+<div class="answer-inner">
+<p>@Controller is used for MVC controllers that often return view names. @RestController is effectively @Controller plus @ResponseBody, so return values are written directly to the HTTP response body, typically as JSON.</p>
+<div class="code-wrap">
+<div class="code-label">java</div>
+<pre><code>@RestController
+@RequestMapping("/users")
+class UserController {
+  @GetMapping("/{id}")
+  User getUser(@PathVariable String id) {
+    return service.getUser(id);
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</article><article class="qa-item" data-index="3">
+<button aria-expanded="true" class="qa-question" type="button">
+<span class="question-index">03</span>
+<span class="question-text">How do you validate request payloads in Spring Boot?</span>
+<span aria-hidden="true" class="chevron">▾</span>
+</button>
+<div class="qa-answer open">
+<div class="answer-inner">
+<p>Use Bean Validation annotations on request DTOs and annotate the controller parameter with @Valid. Invalid payloads raise binding or validation exceptions, which are usually handled globally with @RestControllerAdvice.</p>
+<div class="code-wrap">
+<div class="code-label">java</div>
+<pre><code>public record CreateUserRequest(
+    @NotBlank String name,
+    @Email String email
+) { }
 
-  <span <span class="tok-kw">class</span>="tok-fn">BillingService</span>(PaymentClient paymentClient) {
+@PostMapping
+public ResponseEntity&lt;Void&gt; create(@Valid @RequestBody CreateUserRequest request) {
+  service.create(request);
+  return ResponseEntity.ok().build();
+}</code></pre>
+</div>
+</div>
+</div>
+</article><article class="qa-item" data-index="4">
+<button aria-expanded="true" class="qa-question" type="button">
+<span class="question-index">04</span>
+<span class="question-text">RestTemplate vs WebClient</span>
+<span aria-hidden="true" class="chevron">▾</span>
+</button>
+<div class="qa-answer open">
+<div class="answer-inner">
+<p>RestTemplate is the traditional synchronous HTTP client. WebClient supports reactive, asynchronous, and streaming use cases and is the better fit when you need high concurrency or non-blocking I/O; for many existing synchronous codebases, RestTemplate is still common.</p>
+</div>
+</div>
+</article></div>
+</section>
+<section class="topic-section" id="core-container-beans">
+<div class="section-head">
+<h2>Spring Core, IoC, and Beans</h2>
+<span class="badge">11 questions</span>
+</div>
+<div class="qa-list">
+<article class="qa-item" data-index="1">
+<button aria-expanded="true" class="qa-question" type="button">
+<span class="question-index">01</span>
+<span class="question-text">What are the different types of inversion of control in Spring?</span>
+<span aria-hidden="true" class="chevron">▾</span>
+</button>
+<div class="qa-answer open">
+<div class="answer-inner">
+<p>In practice, Spring applies IoC through dependency injection. The main injection styles are constructor injection, setter injection, and field injection. Constructor injection is preferred because it makes dependencies explicit, supports immutability, and is easier to test.</p>
+<div class="code-wrap">
+<div class="code-label">java</div>
+<pre><code><span <span="" class="tok-kw">class</span>="tok-ann"&gt;@<span class="tok-type">Service</span>
+<span class="tok-kw">class</span> BillingService {
+  <span <span="" class="tok-kw">class</span>="tok-kw"&gt;private final PaymentClient paymentClient;
+
+  <span <span="" class="tok-kw">class</span>="tok-fn"&gt;BillingService(PaymentClient paymentClient) {
     this.paymentClient = paymentClient;
   }
 }
 </code></pre>
-    </div>
-    
-            </div>
-          </div>
-        </article>
-        
-        <article class="qa-item" data-index="2">
-          <button class="qa-question" type="button" aria-expanded="true">
-            <span class="question-index">02</span>
-            <span class="question-text">BeanFactory vs ApplicationContext</span>
-            <span class="chevron" aria-hidden="true">▾</span>
-          </button>
-          <div class="qa-answer open">
-            <div class="answer-inner">
-              <p>BeanFactory is the minimal IoC container focused on bean creation and lookup. ApplicationContext builds on it and adds enterprise features such as event publishing, AOP integration, message resolution, and resource loading. In Spring Boot applications, ApplicationContext is what you typically use.</p>
-              
-            </div>
-          </div>
-        </article>
-        
-        <article class="qa-item" data-index="3">
-          <button class="qa-question" type="button" aria-expanded="true">
-            <span class="question-index">03</span>
-            <span class="question-text">Explain the bean lifecycle in Spring.</span>
-            <span class="chevron" aria-hidden="true">▾</span>
-          </button>
-          <div class="qa-answer open">
-            <div class="answer-inner">
-              <p>Spring instantiates the bean, injects dependencies, runs aware callbacks, applies BeanPostProcessors, calls init methods such as @PostConstruct, then the bean is ready for use. During shutdown, destroy callbacks such as @PreDestroy are invoked.</p>
-              
-    <div class="code-wrap">
-      <div class="code-label">java</div>
-      <pre><code><span <span class="tok-kw">class</span>="tok-ann">@<span class="tok-type">Component</span></span>
+</div>
+</div>
+</div>
+</article>
+<article class="qa-item" data-index="2">
+<button aria-expanded="true" class="qa-question" type="button">
+<span class="question-index">02</span>
+<span class="question-text">BeanFactory vs ApplicationContext</span>
+<span aria-hidden="true" class="chevron">▾</span>
+</button>
+<div class="qa-answer open">
+<div class="answer-inner">
+<p>BeanFactory is the minimal IoC container focused on bean creation and lookup. ApplicationContext builds on it and adds enterprise features such as event publishing, AOP integration, message resolution, and resource loading. In Spring Boot applications, ApplicationContext is what you typically use.</p>
+</div>
+</div>
+</article>
+<article class="qa-item" data-index="3">
+<button aria-expanded="true" class="qa-question" type="button">
+<span class="question-index">03</span>
+<span class="question-text">Explain the bean lifecycle in Spring.</span>
+<span aria-hidden="true" class="chevron">▾</span>
+</button>
+<div class="qa-answer open">
+<div class="answer-inner">
+<p>Spring instantiates the bean, injects dependencies, runs aware callbacks, applies BeanPostProcessors, calls init methods such as @PostConstruct, then the bean is ready for use. During shutdown, destroy callbacks such as @PreDestroy are invoked.</p>
+<div class="code-wrap">
+<div class="code-label">java</div>
+<pre><code><span <span="" class="tok-kw">class</span>="tok-ann"&gt;@<span class="tok-type">Component</span>
 <span class="tok-kw">class</span> CacheWarmupService {
-  <span <span class="tok-kw">class</span>="tok-ann">@<span class="tok-type">PostConstruct</span></span>
-  <span class="tok-kw">void</span> <span <span class="tok-kw">class</span>="tok-fn">init</span>() { }
+  <span <span="" class="tok-kw">class</span>="tok-ann"&gt;@<span class="tok-type">PostConstruct</span>
+  <span class="tok-kw">void</span> <span <span="" class="tok-kw">class</span>="tok-fn"&gt;init() { }
 
-  <span <span class="tok-kw">class</span>="tok-ann">@<span class="tok-type">PreDestroy</span></span>
-  <span class="tok-kw">void</span> <span <span class="tok-kw">class</span>="tok-fn">cleanup</span>() { }
+  <span <span="" class="tok-kw">class</span>="tok-ann"&gt;@<span class="tok-type">PreDestroy</span>
+  <span class="tok-kw">void</span> <span <span="" class="tok-kw">class</span>="tok-fn"&gt;cleanup() { }
 }
 </code></pre>
-    </div>
-    
-            </div>
-          </div>
-        </article>
-        
-        <article class="qa-item" data-index="4">
-          <button class="qa-question" type="button" aria-expanded="true">
-            <span class="question-index">04</span>
-            <span class="question-text">What are Java bean scopes in Spring?</span>
-            <span class="chevron" aria-hidden="true">▾</span>
-          </button>
-          <div class="qa-answer open">
-            <div class="answer-inner">
-              <p>The most common scope is singleton, which gives one bean instance per container. Prototype creates a new bean on each lookup. In web apps, request, session, and application scopes are also available when you need lifecycle tied to the HTTP context.</p>
-              
-    <div class="code-wrap">
-      <div class="code-label">java</div>
-      <pre><code><span <span class="tok-kw">class</span>="tok-ann">@<span class="tok-type">Scope</span></span>(&quot;prototype&quot;)
-<span <span class="tok-kw">class</span>="tok-ann">@<span class="tok-type">Component</span></span>
+</div>
+</div>
+</div>
+</article>
+<article class="qa-item" data-index="4">
+<button aria-expanded="true" class="qa-question" type="button">
+<span class="question-index">04</span>
+<span class="question-text">What are Java bean scopes in Spring?</span>
+<span aria-hidden="true" class="chevron">▾</span>
+</button>
+<div class="qa-answer open">
+<div class="answer-inner">
+<p>The most common scope is singleton, which gives one bean instance per container. Prototype creates a new bean on each lookup. In web apps, request, session, and application scopes are also available when you need lifecycle tied to the HTTP context.</p>
+<div class="code-wrap">
+<div class="code-label">java</div>
+<pre><code><span <span="" class="tok-kw">class</span>="tok-ann"&gt;@<span class="tok-type">Scope</span>("prototype")
+<span <span="" class="tok-kw">class</span>="tok-ann"&gt;@<span class="tok-type">Component</span>
 <span class="tok-kw">class</span> PrototypeBean { }
 </code></pre>
-    </div>
-    
-            </div>
-          </div>
-        </article>
-        
-        <article class="qa-item" data-index="5">
-          <button class="qa-question" type="button" aria-expanded="true">
-            <span class="question-index">05</span>
-            <span class="question-text">What are the different types of auto-proxying in Spring?</span>
-            <span class="chevron" aria-hidden="true">▾</span>
-          </button>
-          <div class="qa-answer open">
-            <div class="answer-inner">
-              <p>Spring commonly creates proxies for cross-cutting concerns such as transactions, security, caching, and async execution. Under the hood, it uses JDK dynamic proxies when an interface is available and CGLIB proxies when class-based proxying is needed. A common trap is self-invocation, where calling a proxied method from the same class bypasses proxy advice.</p>
-              
-            </div>
-          </div>
-        </article>
-        
-        <article class="qa-item" data-index="6">
-          <button class="qa-question" type="button" aria-expanded="true">
-            <span class="question-index">06</span>
-            <span class="question-text">How does exception handling work in Spring?</span>
-            <span class="chevron" aria-hidden="true">▾</span>
-          </button>
-          <div class="qa-answer open">
-            <div class="answer-inner">
-              <p>You can handle exceptions locally with @ExceptionHandler inside a controller or centrally with @ControllerAdvice or @RestControllerAdvice. Global handling is preferred for consistent error payloads, logging, and cleaner controller code.</p>
-              
-    <div class="code-wrap">
-      <div class="code-label">java</div>
-      <pre><code><span <span class="tok-kw">class</span>="tok-ann">@<span class="tok-type">RestControllerAdvice</span></span>
+</div>
+</div>
+</div>
+</article>
+<article class="qa-item" data-index="5">
+<button aria-expanded="true" class="qa-question" type="button">
+<span class="question-index">05</span>
+<span class="question-text">What are the different types of auto-proxying in Spring?</span>
+<span aria-hidden="true" class="chevron">▾</span>
+</button>
+<div class="qa-answer open">
+<div class="answer-inner">
+<p>Spring commonly creates proxies for cross-cutting concerns such as transactions, security, caching, and async execution. Under the hood, it uses JDK dynamic proxies when an interface is available and CGLIB proxies when class-based proxying is needed. A common trap is self-invocation, where calling a proxied method from the same class bypasses proxy advice.</p>
+</div>
+</div>
+</article>
+<article class="qa-item" data-index="6">
+<button aria-expanded="true" class="qa-question" type="button">
+<span class="question-index">06</span>
+<span class="question-text">How does exception handling work in Spring?</span>
+<span aria-hidden="true" class="chevron">▾</span>
+</button>
+<div class="qa-answer open">
+<div class="answer-inner">
+<p>You can handle exceptions locally with @ExceptionHandler inside a controller or centrally with @ControllerAdvice or @RestControllerAdvice. Global handling is preferred for consistent error payloads, logging, and cleaner controller code.</p>
+<div class="code-wrap">
+<div class="code-label">java</div>
+<pre><code><span <span="" class="tok-kw">class</span>="tok-ann"&gt;@<span class="tok-type">RestControllerAdvice</span>
 <span class="tok-kw">class</span> GlobalExceptionHandler {
-  <span <span class="tok-kw">class</span>="tok-ann">@<span class="tok-type">ExceptionHandler</span></span>(NotFoundException.<span class="tok-kw">class</span>)
-  <span class="tok-type">ResponseEntity</span>&lt;<span class="tok-type">Map</span>&lt;<span class="tok-type">String</span>, <span class="tok-type">String</span>&gt;&gt; <span <span class="tok-kw">class</span>="tok-fn">handle</span>(NotFoundException ex) {
-    <span <span class="tok-kw">class</span>="tok-kw">return</span> <span class="tok-type">ResponseEntity</span>.<span <span class="tok-kw">class</span>="tok-fn">status</span>(404)
-        .<span <span class="tok-kw">class</span>="tok-fn">body</span>(<span class="tok-type">Map</span>.<span <span class="tok-kw">class</span>="tok-fn">of</span>(&quot;error&quot;, ex.<span <span class="tok-kw">class</span>="tok-fn">getMessage</span>()));
+  <span <span="" class="tok-kw">class</span>="tok-ann"&gt;@<span class="tok-type">ExceptionHandler</span>(NotFoundException.<span class="tok-kw">class</span>)
+  <span class="tok-type">ResponseEntity</span>&lt;<span class="tok-type">Map</span>&lt;<span class="tok-type">String</span>, <span class="tok-type">String</span>&gt;&gt; <span <span="" class="tok-kw">class</span>="tok-fn"&gt;handle(NotFoundException ex) {
+    <span <span="" class="tok-kw">class</span>="tok-kw"&gt;return <span class="tok-type">ResponseEntity</span>.<span <span="" class="tok-kw">class</span>="tok-fn"&gt;status(404)
+        .<span <span="" class="tok-kw">class</span>="tok-fn"&gt;body(<span class="tok-type">Map</span>.<span <span="" class="tok-kw">class</span>="tok-fn"&gt;of("error", ex.<span <span="" class="tok-kw">class</span>="tok-fn"&gt;getMessage()));
   }
 }
 </code></pre>
-    </div>
-    
-            </div>
-          </div>
-        </article>
-        
-      </div>
-    </section>
-    
-    <section class="topic-section" id="transactions-persistence">
-      <div class="section-head">
-        <h2>Transactions, Persistence, and Database Changes</h2>
-        <span class="badge">5 questions</span>
-      </div>
-      <div class="qa-list">
-        
-        <article class="qa-item" data-index="1">
-          <button class="qa-question" type="button" aria-expanded="true">
-            <span class="question-index">01</span>
-            <span class="question-text">How do you add new columns in Spring and Hibernate safely?</span>
-            <span class="chevron" aria-hidden="true">▾</span>
-          </button>
-          <div class="qa-answer open">
-            <div class="answer-inner">
-              <p>In production, use schema migration tools such as Flyway or Liquibase instead of relying on hibernate.ddl-auto. Add the migration script first, then update the entity mapping, and backfill data separately if the new column must be populated.</p>
-              
-    <div class="code-wrap">
-      <div class="code-label">java</div>
-      <pre><code><span <span class="tok-kw">class</span>="tok-ann">@<span class="tok-type">Entity</span></span>
-<span class="tok-kw">class</span> UserProfile {
-  <span <span class="tok-kw">class</span>="tok-ann">@Column</span>(name = &quot;middle_name&quot;)
-  <span <span class="tok-kw">class</span>="tok-kw">private</span> <span class="tok-type">String</span> middleName;
-}
-</code></pre>
-    </div>
-    
-            </div>
-          </div>
-        </article>
-        
-        <article class="qa-item" data-index="2">
-          <button class="qa-question" type="button" aria-expanded="true">
-            <span class="question-index">02</span>
-            <span class="question-text">How do you update multiple records or services in one transaction?</span>
-            <span class="chevron" aria-hidden="true">▾</span>
-          </button>
-          <div class="qa-answer open">
-            <div class="answer-inner">
-              <p>Place the orchestration in a service-layer method annotated with @Transactional so all related repository operations commit or roll back together. Keep the transaction focused on database work and as short as possible.</p>
-              
-    <div class="code-wrap">
-      <div class="code-label">java</div>
-      <pre><code><span <span class="tok-kw">class</span>="tok-ann">@<span class="tok-type">Service</span></span>
-<span class="tok-kw">class</span> OrderService {
-  <span <span class="tok-kw">class</span>="tok-ann">@<span class="tok-type">Transactional</span></span>
-  <span <span class="tok-kw">class</span>="tok-kw">public</span> <span class="tok-kw">void</span> <span <span class="tok-kw">class</span>="tok-fn">placeOrder</span>(<span class="tok-type">Order</span> order) {
-    orderRepository.<span <span class="tok-kw">class</span>="tok-fn">save</span>(order);
-    inventoryRepository.<span <span class="tok-kw">class</span>="tok-fn">decrement</span>(order.<span <span class="tok-kw">class</span>="tok-fn">getSku</span>(), order.<span <span class="tok-kw">class</span>="tok-fn">getQty</span>());
-    paymentRepository.<span <span class="tok-kw">class</span>="tok-fn">createPayment</span>(order.<span <span class="tok-kw">class</span>="tok-fn">getId</span>());
-  }
-}
-</code></pre>
-    </div>
-    
-            </div>
-          </div>
-        </article>
-        
-        <article class="qa-item" data-index="3">
-          <button class="qa-question" type="button" aria-expanded="true">
-            <span class="question-index">03</span>
-            <span class="question-text">How do you handle transaction failure?</span>
-            <span class="chevron" aria-hidden="true">▾</span>
-          </button>
-          <div class="qa-answer open">
-            <div class="answer-inner">
-              <p>By default, Spring rolls back the transaction on unchecked exceptions. For checked exceptions, configure rollback rules explicitly if needed. For transient failures such as deadlocks or timeouts, add retries. Avoid long transactions and avoid calling external systems while holding database locks.</p>
-              
-            </div>
-          </div>
-        </article>
-        
-        <article class="qa-item" data-index="4">
-          <button class="qa-question" type="button" aria-expanded="true">
-            <span class="question-index">04</span>
-            <span class="question-text">What is Hibernate optimistic locking?</span>
-            <span class="chevron" aria-hidden="true">▾</span>
-          </button>
-          <div class="qa-answer open">
-            <div class="answer-inner">
-              <p>Optimistic locking prevents lost updates by using a version column. When two transactions update the same row, Hibernate checks the version during update and fails one of them instead of silently overwriting data. It works well when conflicts are rare and you prefer retries over database locks.</p>
-              
-    <div class="code-wrap">
-      <div class="code-label">java</div>
-      <pre><code><span <span class="tok-kw">class</span>="tok-ann">@<span class="tok-type">Entity</span></span>
-<span class="tok-kw">class</span> Account {
-  <span <span class="tok-kw">class</span>="tok-ann">@<span class="tok-type">Id</span></span>
-  <span <span class="tok-kw">class</span>="tok-kw">private</span> <span class="tok-type">Long</span> id;
+</div>
+</div>
+</div>
+</article>
+<article class="qa-item" data-index="7">
+<button aria-expanded="true" class="qa-question" type="button">
+<span class="question-index">07</span>
+<span class="question-text">What is dependency injection, and how is it related to IoC?</span>
+<span aria-hidden="true" class="chevron">▾</span>
+</button>
+<div class="qa-answer open">
+<div class="answer-inner">
+<p>IoC is the broader principle where the container controls object creation and wiring. Dependency injection is the common Spring mechanism for implementing IoC by providing collaborators through constructors, setters, or fields.</p>
+</div>
+</div>
+</article><article class="qa-item" data-index="8">
+<button aria-expanded="true" class="qa-question" type="button">
+<span class="question-index">08</span>
+<span class="question-text">What is @Autowired, and which injection style do you prefer?</span>
+<span aria-hidden="true" class="chevron">▾</span>
+</button>
+<div class="qa-answer open">
+<div class="answer-inner">
+<p>@Autowired asks Spring to resolve a dependency from the container. In interviews and real code, constructor injection is preferred because dependencies are explicit, mandatory collaborators are enforced, and the class is easier to test.</p>
+<div class="code-wrap">
+<div class="code-label">java</div>
+<pre><code>@Service
+class BillingService {
+  private final PaymentClient paymentClient;
 
-  <span <span class="tok-kw">class</span>="tok-ann">@<span class="tok-type">Version</span></span>
-  <span <span class="tok-kw">class</span>="tok-kw">private</span> <span class="tok-type">Long</span> version;
+  BillingService(PaymentClient paymentClient) {
+    this.paymentClient = paymentClient;
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</article><article class="qa-item" data-index="9">
+<button aria-expanded="true" class="qa-question" type="button">
+<span class="question-index">09</span>
+<span class="question-text">What is the difference between @Component, @Service, and @Repository?</span>
+<span aria-hidden="true" class="chevron">▾</span>
+</button>
+<div class="qa-answer open">
+<div class="answer-inner">
+<p>All three register beans with the container, but they communicate intent. @Component is generic, @Service marks business-layer logic, and @Repository marks persistence code and also enables exception translation for data-access exceptions.</p>
+</div>
+</div>
+</article><article class="qa-item" data-index="10">
+<button aria-expanded="true" class="qa-question" type="button">
+<span class="question-index">10</span>
+<span class="question-text">What is the difference between @Bean and @Component?</span>
+<span aria-hidden="true" class="chevron">▾</span>
+</button>
+<div class="qa-answer open">
+<div class="answer-inner">
+<p>@Component is used on classes discovered by component scanning. @Bean is used on a method inside a configuration class when you want to create a bean explicitly, especially for third-party classes you cannot annotate.</p>
+<div class="code-wrap">
+<div class="code-label">java</div>
+<pre><code>@Configuration
+class AppConfig {
+  @Bean
+  ObjectMapper objectMapper() {
+    return new ObjectMapper();
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</article><article class="qa-item" data-index="11">
+<button aria-expanded="true" class="qa-question" type="button">
+<span class="question-index">11</span>
+<span class="question-text">What is Spring AOP, and where is it commonly used?</span>
+<span aria-hidden="true" class="chevron">▾</span>
+</button>
+<div class="qa-answer open">
+<div class="answer-inner">
+<p>Spring AOP applies cross-cutting behavior around method execution using proxies. It is commonly used for transactions, method security, caching, logging, metrics, and retry behavior.</p>
+</div>
+</div>
+</article></div>
+</section>
+<section class="topic-section" id="transactions-persistence">
+<div class="section-head">
+<h2>Transactions, Persistence, and Database Changes</h2>
+<span class="badge">14 questions</span>
+</div>
+<div class="qa-list">
+<article class="qa-item" data-index="1">
+<button aria-expanded="true" class="qa-question" type="button">
+<span class="question-index">01</span>
+<span class="question-text">How do you add new columns in Spring and Hibernate safely?</span>
+<span aria-hidden="true" class="chevron">▾</span>
+</button>
+<div class="qa-answer open">
+<div class="answer-inner">
+<p>In production, use schema migration tools such as Flyway or Liquibase instead of relying on hibernate.ddl-auto. Add the migration script first, then update the entity mapping, and backfill data separately if the new column must be populated.</p>
+<div class="code-wrap">
+<div class="code-label">java</div>
+<pre><code><span <span="" class="tok-kw">class</span>="tok-ann"&gt;@<span class="tok-type">Entity</span>
+<span class="tok-kw">class</span> UserProfile {
+  <span <span="" class="tok-kw">class</span>="tok-ann"&gt;@Column(name = "middle_name")
+  <span <span="" class="tok-kw">class</span>="tok-kw"&gt;private <span class="tok-type">String</span> middleName;
 }
 </code></pre>
-    </div>
-    
-            </div>
-          </div>
-        </article>
-        
-        <article class="qa-item" data-index="5">
-          <button class="qa-question" type="button" aria-expanded="true">
-            <span class="question-index">05</span>
-            <span class="question-text">How would you handle database migrations in a Spring Boot application?</span>
-            <span class="chevron" aria-hidden="true">▾</span>
-          </button>
-          <div class="qa-answer open">
-            <div class="answer-inner">
-              <p>Use Flyway or Liquibase with versioned migration scripts stored in source control. Migrations should run consistently across environments and be designed for safe deployment, especially when dealing with large tables, backfills, or zero-downtime release steps.</p>
-              
-            </div>
-          </div>
-        </article>
-        
-      </div>
-    </section>
-    
-    <section class="topic-section" id="security-auth">
-      <div class="section-head">
-        <h2>Security, Authentication, and Authorization</h2>
-        <span class="badge">4 questions</span>
-      </div>
-      <div class="qa-list">
-        
-        <article class="qa-item" data-index="1">
-          <button class="qa-question" type="button" aria-expanded="true">
-            <span class="question-index">01</span>
-            <span class="question-text">How does Spring Security handle user authentication?</span>
-            <span class="chevron" aria-hidden="true">▾</span>
-          </button>
-          <div class="qa-answer open">
-            <div class="answer-inner">
-              <p>Spring Security authenticates requests through its filter chain. Depending on the setup, it can validate username/password credentials, sessions, OAuth2 logins, or bearer tokens such as JWTs. Once authenticated, it stores the principal and authorities in the security context for downstream authorization checks.</p>
-              
-            </div>
-          </div>
-        </article>
-        
-        <article class="qa-item" data-index="2">
-          <button class="qa-question" type="button" aria-expanded="true">
-            <span class="question-index">02</span>
-            <span class="question-text">How do you authenticate and authorize APIs?</span>
-            <span class="chevron" aria-hidden="true">▾</span>
-          </button>
-          <div class="qa-answer open">
-            <div class="answer-inner">
-              <p>Authentication verifies identity using mechanisms such as JWTs, sessions, OAuth2, or API keys. Authorization determines what the caller is allowed to do using roles, scopes, or permissions. In Spring, endpoint rules are typically defined in SecurityFilterChain and method rules with annotations such as @PreAuthorize.</p>
-              
-    <div class="code-wrap">
-      <div class="code-label">java</div>
-      <pre><code><span <span class="tok-kw">class</span>="tok-ann">@<span class="tok-type">Bean</span></span>
-SecurityFilterChain <span <span class="tok-kw">class</span>="tok-fn">security</span>(<span class="tok-type">HttpSecurity</span> http) <span <span class="tok-kw">class</span>="tok-kw">throws</span> Exception {
-  <span <span class="tok-kw">class</span>="tok-kw">return</span> http
-      .<span <span class="tok-kw">class</span>="tok-fn">authorizeHttpRequests</span>(auth -&gt; auth
-          .<span <span class="tok-kw">class</span>="tok-fn">requestMatchers</span>(&quot;/<span <span class="tok-kw">class</span>="tok-kw">public</span>/**&quot;).<span <span class="tok-kw">class</span>="tok-fn">permitAll</span>()
-          .<span <span class="tok-kw">class</span>="tok-fn">anyRequest</span>().<span <span class="tok-kw">class</span>="tok-fn">authenticated</span>()
+</div>
+</div>
+</div>
+</article>
+<article class="qa-item" data-index="2">
+<button aria-expanded="true" class="qa-question" type="button">
+<span class="question-index">02</span>
+<span class="question-text">How do you update multiple records or services in one transaction?</span>
+<span aria-hidden="true" class="chevron">▾</span>
+</button>
+<div class="qa-answer open">
+<div class="answer-inner">
+<p>Place the orchestration in a service-layer method annotated with @Transactional so all related repository operations commit or roll back together. Keep the transaction focused on database work and as short as possible.</p>
+<div class="code-wrap">
+<div class="code-label">java</div>
+<pre><code><span <span="" class="tok-kw">class</span>="tok-ann"&gt;@<span class="tok-type">Service</span>
+<span class="tok-kw">class</span> OrderService {
+  <span <span="" class="tok-kw">class</span>="tok-ann"&gt;@<span class="tok-type">Transactional</span>
+  <span <span="" class="tok-kw">class</span>="tok-kw"&gt;public <span class="tok-kw">void</span> <span <span="" class="tok-kw">class</span>="tok-fn"&gt;placeOrder(<span class="tok-type">Order</span> order) {
+    orderRepository.<span <span="" class="tok-kw">class</span>="tok-fn"&gt;save(order);
+    inventoryRepository.<span <span="" class="tok-kw">class</span>="tok-fn"&gt;decrement(order.<span <span="" class="tok-kw">class</span>="tok-fn"&gt;getSku(), order.<span <span="" class="tok-kw">class</span>="tok-fn"&gt;getQty());
+    paymentRepository.<span <span="" class="tok-kw">class</span>="tok-fn"&gt;createPayment(order.<span <span="" class="tok-kw">class</span>="tok-fn"&gt;getId());
+  }
+}
+</code></pre>
+</div>
+</div>
+</div>
+</article>
+<article class="qa-item" data-index="3">
+<button aria-expanded="true" class="qa-question" type="button">
+<span class="question-index">03</span>
+<span class="question-text">How do you handle transaction failure?</span>
+<span aria-hidden="true" class="chevron">▾</span>
+</button>
+<div class="qa-answer open">
+<div class="answer-inner">
+<p>By default, Spring rolls back the transaction on unchecked exceptions. For checked exceptions, configure rollback rules explicitly if needed. For transient failures such as deadlocks or timeouts, add retries. Avoid long transactions and avoid calling external systems while holding database locks.</p>
+</div>
+</div>
+</article>
+<article class="qa-item" data-index="4">
+<button aria-expanded="true" class="qa-question" type="button">
+<span class="question-index">04</span>
+<span class="question-text">What is Hibernate optimistic locking?</span>
+<span aria-hidden="true" class="chevron">▾</span>
+</button>
+<div class="qa-answer open">
+<div class="answer-inner">
+<p>Optimistic locking prevents lost updates by using a version column. When two transactions update the same row, Hibernate checks the version during update and fails one of them instead of silently overwriting data. It works well when conflicts are rare and you prefer retries over database locks.</p>
+<div class="code-wrap">
+<div class="code-label">java</div>
+<pre><code><span <span="" class="tok-kw">class</span>="tok-ann"&gt;@<span class="tok-type">Entity</span>
+<span class="tok-kw">class</span> Account {
+  <span <span="" class="tok-kw">class</span>="tok-ann"&gt;@<span class="tok-type">Id</span>
+  <span <span="" class="tok-kw">class</span>="tok-kw"&gt;private <span class="tok-type">Long</span> id;
+
+  <span <span="" class="tok-kw">class</span>="tok-ann"&gt;@<span class="tok-type">Version</span>
+  <span <span="" class="tok-kw">class</span>="tok-kw"&gt;private <span class="tok-type">Long</span> version;
+}
+</code></pre>
+</div>
+</div>
+</div>
+</article>
+<article class="qa-item" data-index="5">
+<button aria-expanded="true" class="qa-question" type="button">
+<span class="question-index">05</span>
+<span class="question-text">How would you handle database migrations in a Spring Boot application?</span>
+<span aria-hidden="true" class="chevron">▾</span>
+</button>
+<div class="qa-answer open">
+<div class="answer-inner">
+<p>Use Flyway or Liquibase with versioned migration scripts stored in source control. Migrations should run consistently across environments and be designed for safe deployment, especially when dealing with large tables, backfills, or zero-downtime release steps.</p>
+</div>
+</div>
+</article>
+<article class="qa-item" data-index="6">
+<button aria-expanded="true" class="qa-question" type="button">
+<span class="question-index">06</span>
+<span class="question-text">What is Spring Data JPA, and how is it different from Hibernate?</span>
+<span aria-hidden="true" class="chevron">▾</span>
+</button>
+<div class="qa-answer open">
+<div class="answer-inner">
+<p>Spring Data JPA is a repository abstraction built on top of JPA that reduces boilerplate for common persistence operations. Hibernate is an ORM implementation and JPA provider. In many Spring apps, Spring Data JPA gives the repository layer and Hibernate does the actual ORM work underneath.</p>
+</div>
+</div>
+</article><article class="qa-item" data-index="7">
+<button aria-expanded="true" class="qa-question" type="button">
+<span class="question-index">07</span>
+<span class="question-text">JpaRepository vs CrudRepository</span>
+<span aria-hidden="true" class="chevron">▾</span>
+</button>
+<div class="qa-answer open">
+<div class="answer-inner">
+<p>CrudRepository gives basic CRUD methods. JpaRepository extends it with JPA-oriented capabilities such as paging, sorting, flush operations, and additional convenience methods, so it is the more common choice in Spring Data JPA applications.</p>
+</div>
+</div>
+</article><article class="qa-item" data-index="8">
+<button aria-expanded="true" class="qa-question" type="button">
+<span class="question-index">08</span>
+<span class="question-text">LAZY vs EAGER loading in JPA</span>
+<span aria-hidden="true" class="chevron">▾</span>
+</button>
+<div class="qa-answer open">
+<div class="answer-inner">
+<p>LAZY loads an association only when it is accessed, while EAGER loads it immediately with the entity. A common rule of thumb is to be intentional and prefer explicit fetching in queries; in JPA, to-many associations default to LAZY, while many-to-one and one-to-one are EAGER by default.</p>
+<div class="code-wrap">
+<div class="code-label">java</div>
+<pre><code>@Entity
+class Order {
+  @OneToMany(mappedBy = "order", fetch = FetchType.LAZY)
+  private List&lt;OrderItem&gt; items;
+}</code></pre>
+</div>
+</div>
+</div>
+</article><article class="qa-item" data-index="9">
+<button aria-expanded="true" class="qa-question" type="button">
+<span class="question-index">09</span>
+<span class="question-text">What is LazyInitializationException, and how do you avoid it?</span>
+<span aria-hidden="true" class="chevron">▾</span>
+</button>
+<div class="qa-answer open">
+<div class="answer-inner">
+<p>It happens when lazy-loaded data is accessed after the persistence context is closed. The usual fixes are to fetch what you need inside the service transaction, use join fetch or entity graphs, or map to DTOs before leaving the transactional boundary.</p>
+</div>
+</div>
+</article><article class="qa-item" data-index="10">
+<button aria-expanded="true" class="qa-question" type="button">
+<span class="question-index">10</span>
+<span class="question-text">What are JPA cascade types and orphanRemoval?</span>
+<span aria-hidden="true" class="chevron">▾</span>
+</button>
+<div class="qa-answer open">
+<div class="answer-inner">
+<p>Cascade settings propagate operations such as persist, merge, remove, refresh, or detach from a parent to its children. orphanRemoval is different: it deletes a child entity when it is removed from the parent’s relationship, which is useful for true parent-owned child collections.</p>
+<div class="code-wrap">
+<div class="code-label">java</div>
+<pre><code>@OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+private List&lt;OrderItem&gt; items = new ArrayList&lt;&gt;();</code></pre>
+</div>
+</div>
+</div>
+</article><article class="qa-item" data-index="11">
+<button aria-expanded="true" class="qa-question" type="button">
+<span class="question-index">11</span>
+<span class="question-text">What is transaction propagation in Spring?</span>
+<span aria-hidden="true" class="chevron">▾</span>
+</button>
+<div class="qa-answer open">
+<div class="answer-inner">
+<p>Propagation controls how a transactional method behaves when it is called inside another transaction. REQUIRED joins the current transaction or creates one if none exists, and it is the default. REQUIRES_NEW always starts a new transaction and suspends the outer one.</p>
+<div class="code-wrap">
+<div class="code-label">java</div>
+<pre><code>@Transactional(propagation = Propagation.REQUIRES_NEW)
+public void audit(AuditEvent event) {
+  auditRepository.save(event);
+}</code></pre>
+</div>
+</div>
+</div>
+</article><article class="qa-item" data-index="12">
+<button aria-expanded="true" class="qa-question" type="button">
+<span class="question-index">12</span>
+<span class="question-text">What is transaction isolation in Spring?</span>
+<span aria-hidden="true" class="chevron">▾</span>
+</button>
+<div class="qa-answer open">
+<div class="answer-inner">
+<p>Isolation controls what one transaction can see from concurrent transactions, such as dirty reads or non-repeatable reads. Typical levels are READ_UNCOMMITTED, READ_COMMITTED, REPEATABLE_READ, and SERIALIZABLE; higher isolation improves consistency but can reduce concurrency.</p>
+<div class="code-wrap">
+<div class="code-label">java</div>
+<pre><code>@Transactional(isolation = Isolation.READ_COMMITTED)
+public void transferMoney(...) {
+  // business logic
+}</code></pre>
+</div>
+</div>
+</div>
+</article><article class="qa-item" data-index="13">
+<button aria-expanded="true" class="qa-question" type="button">
+<span class="question-index">13</span>
+<span class="question-text">What are JPA entity lifecycle states?</span>
+<span aria-hidden="true" class="chevron">▾</span>
+</button>
+<div class="qa-answer open">
+<div class="answer-inner">
+<p>The main states are transient, managed or persistent, detached, and removed. Knowing these states helps explain behaviors like dirty checking, merge, and why updates may or may not be written automatically.</p>
+</div>
+</div>
+</article><article class="qa-item" data-index="14">
+<button aria-expanded="true" class="qa-question" type="button">
+<span class="question-index">14</span>
+<span class="question-text">What is the N+1 query problem, and how do you prevent it?</span>
+<span aria-hidden="true" class="chevron">▾</span>
+</button>
+<div class="qa-answer open">
+<div class="answer-inner">
+<p>The N+1 problem happens when one query loads parent rows and then additional queries are fired for each child association. Typical fixes are join fetch, entity graphs, batch fetching, DTO projections, and designing queries around the data actually needed by the API.</p>
+</div>
+</div>
+</article></div>
+</section>
+<section class="topic-section" id="security-auth">
+<div class="section-head">
+<h2>Security, Authentication, and Authorization</h2>
+<span class="badge">8 questions</span>
+</div>
+<div class="qa-list">
+<article class="qa-item" data-index="1">
+<button aria-expanded="true" class="qa-question" type="button">
+<span class="question-index">01</span>
+<span class="question-text">How does Spring Security handle user authentication?</span>
+<span aria-hidden="true" class="chevron">▾</span>
+</button>
+<div class="qa-answer open">
+<div class="answer-inner">
+<p>Spring Security authenticates requests through its filter chain. Depending on the setup, it can validate username/password credentials, sessions, OAuth2 logins, or bearer tokens such as JWTs. Once authenticated, it stores the principal and authorities in the security context for downstream authorization checks.</p>
+</div>
+</div>
+</article>
+<article class="qa-item" data-index="2">
+<button aria-expanded="true" class="qa-question" type="button">
+<span class="question-index">02</span>
+<span class="question-text">How do you authenticate and authorize APIs?</span>
+<span aria-hidden="true" class="chevron">▾</span>
+</button>
+<div class="qa-answer open">
+<div class="answer-inner">
+<p>Authentication verifies identity using mechanisms such as JWTs, sessions, OAuth2, or API keys. Authorization determines what the caller is allowed to do using roles, scopes, or permissions. In Spring, endpoint rules are typically defined in SecurityFilterChain and method rules with annotations such as @PreAuthorize.</p>
+<div class="code-wrap">
+<div class="code-label">java</div>
+<pre><code><span <span="" class="tok-kw">class</span>="tok-ann"&gt;@<span class="tok-type">Bean</span>
+SecurityFilterChain <span <span="" class="tok-kw">class</span>="tok-fn"&gt;security(<span class="tok-type">HttpSecurity</span> http) <span <span="" class="tok-kw">class</span>="tok-kw"&gt;throws Exception {
+  <span <span="" class="tok-kw">class</span>="tok-kw"&gt;return http
+      .<span <span="" class="tok-kw">class</span>="tok-fn"&gt;authorizeHttpRequests(auth -&gt; auth
+          .<span <span="" class="tok-kw">class</span>="tok-fn"&gt;requestMatchers("/<span <span="" class="tok-kw">class</span>="tok-kw"&gt;public/**").<span <span="" class="tok-kw">class</span>="tok-fn"&gt;permitAll()
+          .<span <span="" class="tok-kw">class</span>="tok-fn"&gt;anyRequest().<span <span="" class="tok-kw">class</span>="tok-fn"&gt;authenticated()
       )
-      .<span <span class="tok-kw">class</span>="tok-fn">httpBasic</span>(<span class="tok-type">Customizer</span>.<span <span class="tok-kw">class</span>="tok-fn">withDefaults</span>())
-      .<span <span class="tok-kw">class</span>="tok-fn">build</span>();
+      .<span <span="" class="tok-kw">class</span>="tok-fn"&gt;httpBasic(<span class="tok-type">Customizer</span>.<span <span="" class="tok-kw">class</span>="tok-fn"&gt;withDefaults())
+      .<span <span="" class="tok-kw">class</span>="tok-fn"&gt;build();
 }
 </code></pre>
-    </div>
-    
-            </div>
-          </div>
-        </article>
-        
-        <article class="qa-item" data-index="3">
-          <button class="qa-question" type="button" aria-expanded="true">
-            <span class="question-index">03</span>
-            <span class="question-text">What is CSRF?</span>
-            <span class="chevron" aria-hidden="true">▾</span>
-          </button>
-          <div class="qa-answer open">
-            <div class="answer-inner">
-              <p>CSRF is an attack where a browser is tricked into sending an unwanted authenticated request. It mainly matters for cookie-based session authentication in browser apps. For stateless REST APIs that use bearer tokens in headers, CSRF protection is often disabled because the browser is not automatically attaching those tokens the same way it does cookies.</p>
-              
-            </div>
-          </div>
-        </article>
-        
-        <article class="qa-item" data-index="4">
-          <button class="qa-question" type="button" aria-expanded="true">
-            <span class="question-index">04</span>
-            <span class="question-text">What is Spring Security, and how can you integrate it into a Spring Boot application for authentication and authorization?</span>
-            <span class="chevron" aria-hidden="true">▾</span>
-          </button>
-          <div class="qa-answer open">
-            <div class="answer-inner">
-              <p>Spring Security is the framework Spring uses for authentication, authorization, session management, CSRF protection, and request filtering. Integration usually means adding the security starter, configuring SecurityFilterChain, selecting an auth strategy such as form login or JWT, and restricting endpoints by role or scope.</p>
-              
-            </div>
-          </div>
-        </article>
-        
-      </div>
-    </section>
-    
-    <section class="topic-section" id="async-caching">
-      <div class="section-head">
-        <h2>Async Processing, Caching, and Concurrency</h2>
-        <span class="badge">3 questions</span>
-      </div>
-      <div class="qa-list">
-        
-        <article class="qa-item" data-index="1">
-          <button class="qa-question" type="button" aria-expanded="true">
-            <span class="question-index">01</span>
-            <span class="question-text">What is CompletableFuture, and when would you use it?</span>
-            <span class="chevron" aria-hidden="true">▾</span>
-          </button>
-          <div class="qa-answer open">
-            <div class="answer-inner">
-              <p>CompletableFuture is a Java concurrency API for running work asynchronously, composing stages, combining results, and handling failures. It is useful when multiple downstream calls are independent and can run in parallel to reduce total latency.</p>
-              
-    <div class="code-wrap">
-      <div class="code-label">java</div>
-      <pre><code><span class="tok-type">CompletableFuture</span>&lt;<span class="tok-type">User</span>&gt; userFuture =
-    <span class="tok-type">CompletableFuture</span>.<span <span class="tok-kw">class</span>="tok-fn">supplyAsync</span>(() -&gt; userClient.<span <span class="tok-kw">class</span>="tok-fn">get</span>(userId));
+</div>
+</div>
+</div>
+</article>
+<article class="qa-item" data-index="3">
+<button aria-expanded="true" class="qa-question" type="button">
+<span class="question-index">03</span>
+<span class="question-text">What is CSRF?</span>
+<span aria-hidden="true" class="chevron">▾</span>
+</button>
+<div class="qa-answer open">
+<div class="answer-inner">
+<p>CSRF is an attack where a browser is tricked into sending an unwanted authenticated request. It mainly matters for cookie-based session authentication in browser apps. For stateless REST APIs that use bearer tokens in headers, CSRF protection is often disabled because the browser is not automatically attaching those tokens the same way it does cookies.</p>
+</div>
+</div>
+</article>
+<article class="qa-item" data-index="4">
+<button aria-expanded="true" class="qa-question" type="button">
+<span class="question-index">04</span>
+<span class="question-text">What is Spring Security, and how can you integrate it into a Spring Boot application for authentication and authorization?</span>
+<span aria-hidden="true" class="chevron">▾</span>
+</button>
+<div class="qa-answer open">
+<div class="answer-inner">
+<p>Spring Security is the framework Spring uses for authentication, authorization, session management, CSRF protection, and request filtering. Integration usually means adding the security starter, configuring SecurityFilterChain, selecting an auth strategy such as form login or JWT, and restricting endpoints by role or scope.</p>
+</div>
+</div>
+</article>
+<article class="qa-item" data-index="5">
+<button aria-expanded="true" class="qa-question" type="button">
+<span class="question-index">05</span>
+<span class="question-text">What is SecurityFilterChain, and where does it run?</span>
+<span aria-hidden="true" class="chevron">▾</span>
+</button>
+<div class="qa-answer open">
+<div class="answer-inner">
+<p>SecurityFilterChain defines how Spring Security processes incoming requests before they reach controllers. It runs in the servlet filter layer and handles concerns such as authentication, authorization, CSRF, CORS integration, and exception translation.</p>
+<div class="code-wrap">
+<div class="code-label">java</div>
+<pre><code>@Bean
+SecurityFilterChain security(HttpSecurity http) throws Exception {
+  return http
+      .authorizeHttpRequests(auth -&gt; auth.anyRequest().authenticated())
+      .build();
+}</code></pre>
+</div>
+</div>
+</div>
+</article><article class="qa-item" data-index="6">
+<button aria-expanded="true" class="qa-question" type="button">
+<span class="question-index">06</span>
+<span class="question-text">Session-based authentication vs JWT-based authentication</span>
+<span aria-hidden="true" class="chevron">▾</span>
+</button>
+<div class="qa-answer open">
+<div class="answer-inner">
+<p>Session-based auth stores user session state on the server and usually sends a session cookie to the browser. JWT-based auth is commonly used for stateless APIs, where the client sends a signed token on each request and the server validates it without looking up session state.</p>
+</div>
+</div>
+</article><article class="qa-item" data-index="7">
+<button aria-expanded="true" class="qa-question" type="button">
+<span class="question-index">07</span>
+<span class="question-text">Why do you use PasswordEncoder or BCryptPasswordEncoder?</span>
+<span aria-hidden="true" class="chevron">▾</span>
+</button>
+<div class="qa-answer open">
+<div class="answer-inner">
+<p>Passwords should never be stored in plain text. Spring Security’s PasswordEncoder hashes passwords using a one-way adaptive algorithm such as bcrypt so verification is possible, but the original password is not recoverable and brute-force attacks become more expensive.</p>
+<div class="code-wrap">
+<div class="code-label">java</div>
+<pre><code>@Bean
+PasswordEncoder passwordEncoder() {
+  return new BCryptPasswordEncoder();
+}</code></pre>
+</div>
+</div>
+</div>
+</article><article class="qa-item" data-index="8">
+<button aria-expanded="true" class="qa-question" type="button">
+<span class="question-index">08</span>
+<span class="question-text">What is CORS, and how do you configure it in Spring?</span>
+<span aria-hidden="true" class="chevron">▾</span>
+</button>
+<div class="qa-answer open">
+<div class="answer-inner">
+<p>CORS controls which browser-based cross-origin requests are allowed to access your backend. In Spring, you can configure it globally, per controller, or through Spring Security; preflight requests must be handled correctly before security rules block them.</p>
+<div class="code-wrap">
+<div class="code-label">java</div>
+<pre><code>@Bean
+CorsConfigurationSource corsConfigurationSource() {
+  CorsConfiguration config = new CorsConfiguration();
+  config.setAllowedOrigins(List.of("https://app.example.com"));
+  config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
+
+  UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+  source.registerCorsConfiguration("/**", config);
+  return source;
+}</code></pre>
+</div>
+</div>
+</div>
+</article></div>
+</section>
+<section class="topic-section" id="async-caching">
+<div class="section-head">
+<h2>Async Processing, Caching, and Concurrency</h2>
+<span class="badge">3 questions</span>
+</div>
+<div class="qa-list">
+<article class="qa-item" data-index="1">
+<button aria-expanded="true" class="qa-question" type="button">
+<span class="question-index">01</span>
+<span class="question-text">What is CompletableFuture, and when would you use it?</span>
+<span aria-hidden="true" class="chevron">▾</span>
+</button>
+<div class="qa-answer open">
+<div class="answer-inner">
+<p>CompletableFuture is a Java concurrency API for running work asynchronously, composing stages, combining results, and handling failures. It is useful when multiple downstream calls are independent and can run in parallel to reduce total latency.</p>
+<div class="code-wrap">
+<div class="code-label">java</div>
+<pre><code><span class="tok-type">CompletableFuture</span>&lt;<span class="tok-type">User</span>&gt; userFuture =
+    <span class="tok-type">CompletableFuture</span>.<span <span="" class="tok-kw">class</span>="tok-fn"&gt;supplyAsync(() -&gt; userClient.<span <span="" class="tok-kw">class</span>="tok-fn"&gt;get(userId));
 
 <span class="tok-type">CompletableFuture</span>&lt;<span class="tok-type">List</span>&lt;<span class="tok-type">Order</span>&gt;&gt; ordersFuture =
-    <span class="tok-type">CompletableFuture</span>.<span <span class="tok-kw">class</span>="tok-fn">supplyAsync</span>(() -&gt; orderClient.<span <span class="tok-kw">class</span>="tok-fn">getByUser</span>(userId));
+    <span class="tok-type">CompletableFuture</span>.<span <span="" class="tok-kw">class</span>="tok-fn"&gt;supplyAsync(() -&gt; orderClient.<span <span="" class="tok-kw">class</span>="tok-fn"&gt;getByUser(userId));
 
 <span class="tok-type">CompletableFuture</span>&lt;<span class="tok-type">ProfileView</span>&gt; result =
-    userFuture.<span <span class="tok-kw">class</span>="tok-fn">thenCombine</span>(ordersFuture, <span class="tok-type">ProfileView</span>::<span class="tok-kw">new</span>);
+    userFuture.<span <span="" class="tok-kw">class</span>="tok-fn"&gt;thenCombine(ordersFuture, <span class="tok-type">ProfileView</span>::<span class="tok-kw">new</span>);
 </code></pre>
-    </div>
-    
-            </div>
-          </div>
-        </article>
-        
-        <article class="qa-item" data-index="2">
-          <button class="qa-question" type="button" aria-expanded="true">
-            <span class="question-index">02</span>
-            <span class="question-text">What is Spring Boot&#x27;s support for asynchronous processing, and how can you implement it?</span>
-            <span class="chevron" aria-hidden="true">▾</span>
-          </button>
-          <div class="qa-answer open">
-            <div class="answer-inner">
-              <p>Spring supports asynchronous method execution with @Async and a task executor. It is useful for background work or parallelizing independent tasks, but it should be applied carefully because async boundaries affect error handling, tracing, and transaction context.</p>
-              
-    <div class="code-wrap">
-      <div class="code-label">java</div>
-      <pre><code><span <span class="tok-kw">class</span>="tok-ann">@<span class="tok-type">EnableAsync</span></span>
-<span <span class="tok-kw">class</span>="tok-ann">@<span class="tok-type">Service</span></span>
+</div>
+</div>
+</div>
+</article>
+<article class="qa-item" data-index="2">
+<button aria-expanded="true" class="qa-question" type="button">
+<span class="question-index">02</span>
+<span class="question-text">What is Spring Boot's support for asynchronous processing, and how can you implement it?</span>
+<span aria-hidden="true" class="chevron">▾</span>
+</button>
+<div class="qa-answer open">
+<div class="answer-inner">
+<p>Spring supports asynchronous method execution with @Async and a task executor. It is useful for background work or parallelizing independent tasks, but it should be applied carefully because async boundaries affect error handling, tracing, and transaction context.</p>
+<div class="code-wrap">
+<div class="code-label">java</div>
+<pre><code><span <span="" class="tok-kw">class</span>="tok-ann"&gt;@<span class="tok-type">EnableAsync</span>
+<span <span="" class="tok-kw">class</span>="tok-ann"&gt;@<span class="tok-type">Service</span>
 <span class="tok-kw">class</span> EmailService {
-  <span <span class="tok-kw">class</span>="tok-ann">@<span class="tok-type">Async</span></span>
-  <span <span class="tok-kw">class</span>="tok-kw">public</span> <span class="tok-kw">void</span> <span <span class="tok-kw">class</span>="tok-fn">sendWelcomeEmail</span>(<span class="tok-type">String</span> email) {
-    <span <span class="tok-kw">class</span>=<span <span class="tok-kw">class</span>="tok-str">"tok-com"</span>>// async work</span>
+  <span <span="" class="tok-kw">class</span>="tok-ann"&gt;@<span class="tok-type">Async</span>
+  <span <span="" class="tok-kw">class</span>="tok-kw"&gt;public <span class="tok-kw">void</span> <span <span="" class="tok-kw">class</span>="tok-fn"&gt;sendWelcomeEmail(<span class="tok-type">String</span> email) {
+    <span <span="" class="tok-kw">class</span>=<span <span="" class="tok-kw">class</span>="tok-str"&gt;"tok-com"&gt;// async work
   }
 }
 </code></pre>
-    </div>
-    
-            </div>
-          </div>
-        </article>
-        
-        <article class="qa-item" data-index="3">
-          <button class="qa-question" type="button" aria-expanded="true">
-            <span class="question-index">03</span>
-            <span class="question-text">Describe Spring Boot&#x27;s support for caching. What caching providers can you use?</span>
-            <span class="chevron" aria-hidden="true">▾</span>
-          </button>
-          <div class="qa-answer open">
-            <div class="answer-inner">
-              <p>Spring provides annotation-based caching with @Cacheable, @CachePut, and @CacheEvict. Common providers include the simple in-memory cache, Caffeine for local in-process caching, and Redis for distributed caching across multiple application instances.</p>
-              
-    <div class="code-wrap">
-      <div class="code-label">java</div>
-      <pre><code><span <span class="tok-kw">class</span>="tok-ann">@<span class="tok-type">Cacheable</span></span>(cacheNames = &quot;users&quot;, key = &quot;#id&quot;)
-<span <span class="tok-kw">class</span>="tok-kw">public</span> <span class="tok-type">User</span> <span <span class="tok-kw">class</span>="tok-fn">getUser</span>(<span class="tok-type">String</span> id) {
-  <span <span class="tok-kw">class</span>="tok-kw">return</span> userRepository.<span <span class="tok-kw">class</span>="tok-fn">findById</span>(id).<span <span class="tok-kw">class</span>="tok-fn">orElseThrow</span>();
+</div>
+</div>
+</div>
+</article>
+<article class="qa-item" data-index="3">
+<button aria-expanded="true" class="qa-question" type="button">
+<span class="question-index">03</span>
+<span class="question-text">Describe Spring Boot's support for caching. What caching providers can you use?</span>
+<span aria-hidden="true" class="chevron">▾</span>
+</button>
+<div class="qa-answer open">
+<div class="answer-inner">
+<p>Spring provides annotation-based caching with @Cacheable, @CachePut, and @CacheEvict. Common providers include the simple in-memory cache, Caffeine for local in-process caching, and Redis for distributed caching across multiple application instances.</p>
+<div class="code-wrap">
+<div class="code-label">java</div>
+<pre><code><span <span="" class="tok-kw">class</span>="tok-ann"&gt;@<span class="tok-type">Cacheable</span>(cacheNames = "users", key = "#id")
+<span <span="" class="tok-kw">class</span>="tok-kw"&gt;public <span class="tok-type">User</span> <span <span="" class="tok-kw">class</span>="tok-fn"&gt;getUser(<span class="tok-type">String</span> id) {
+  <span <span="" class="tok-kw">class</span>="tok-kw"&gt;return userRepository.<span <span="" class="tok-kw">class</span>="tok-fn"&gt;findById(id).<span <span="" class="tok-kw">class</span>="tok-fn"&gt;orElseThrow();
 }
 </code></pre>
-    </div>
-    
-            </div>
-          </div>
-        </article>
-        
-      </div>
-    </section>
-    
-    <section class="topic-section" id="testing">
-      <div class="section-head">
-        <h2>Testing and Runtime Verification</h2>
-        <span class="badge">1 questions</span>
-      </div>
-      <div class="qa-list">
-        
-        <article class="qa-item" data-index="1">
-          <button class="qa-question" type="button" aria-expanded="true">
-            <span class="question-index">01</span>
-            <span class="question-text">How do you test a Spring Boot application without deploying it?</span>
-            <span class="chevron" aria-hidden="true">▾</span>
-          </button>
-          <div class="qa-answer open">
-            <div class="answer-inner">
-              <p>Use a layered strategy. Unit tests cover business logic with JUnit and mocks. Slice tests such as @WebMvcTest validate controller behavior. @DataJpaTest covers repository behavior. Full integration tests use @SpringBootTest, and Testcontainers is a strong choice when you want realistic databases or infrastructure dependencies.</p>
-              
-    <div class="code-wrap">
-      <div class="code-label">java</div>
-      <pre><code><span <span class="tok-kw">class</span>="tok-ann">@<span class="tok-type">WebMvcTest</span></span>(UserController.<span class="tok-kw">class</span>)
+</div>
+</div>
+</div>
+</article>
+</div>
+</section>
+<section class="topic-section" id="testing">
+<div class="section-head">
+<h2>Testing and Runtime Verification</h2>
+<span class="badge">3 questions</span>
+</div>
+<div class="qa-list">
+<article class="qa-item" data-index="1">
+<button aria-expanded="true" class="qa-question" type="button">
+<span class="question-index">01</span>
+<span class="question-text">How do you test a Spring Boot application without deploying it?</span>
+<span aria-hidden="true" class="chevron">▾</span>
+</button>
+<div class="qa-answer open">
+<div class="answer-inner">
+<p>Use a layered strategy. Unit tests cover business logic with JUnit and mocks. Slice tests such as @WebMvcTest validate controller behavior. @DataJpaTest covers repository behavior. Full integration tests use @SpringBootTest, and Testcontainers is a strong choice when you want realistic databases or infrastructure dependencies.</p>
+<div class="code-wrap">
+<div class="code-label">java</div>
+<pre><code><span <span="" class="tok-kw">class</span>="tok-ann"&gt;@<span class="tok-type">WebMvcTest</span>(UserController.<span class="tok-kw">class</span>)
 <span class="tok-kw">class</span> UserControllerTest {
-  <span <span class="tok-kw">class</span>="tok-ann">@<span class="tok-type">Autowired</span></span>
-  <span <span class="tok-kw">class</span>="tok-kw">private</span> MockMvc mockMvc;
+  <span <span="" class="tok-kw">class</span>="tok-ann"&gt;@<span class="tok-type">Autowired</span>
+  <span <span="" class="tok-kw">class</span>="tok-kw"&gt;private MockMvc mockMvc;
 }
 </code></pre>
-    </div>
-    
-            </div>
-          </div>
-        </article>
-        
-      </div>
-    </section>
-    
-        <div class="footer-space"></div>
-      </section>
-    </main>
-  </div>
-
-  <script>
+</div>
+</div>
+</div>
+</article>
+<article class="qa-item" data-index="2">
+<button aria-expanded="true" class="qa-question" type="button">
+<span class="question-index">02</span>
+<span class="question-text">@SpringBootTest vs @WebMvcTest</span>
+<span aria-hidden="true" class="chevron">▾</span>
+</button>
+<div class="qa-answer open">
+<div class="answer-inner">
+<p>@SpringBootTest loads the full application context and is used for broader integration testing. @WebMvcTest loads only the MVC slice, so it is faster and focused on controller behavior, request mapping, validation, and serialization.</p>
+</div>
+</div>
+</article><article class="qa-item" data-index="3">
+<button aria-expanded="true" class="qa-question" type="button">
+<span class="question-index">03</span>
+<span class="question-text">MockMvc vs TestRestTemplate or WebTestClient</span>
+<span aria-hidden="true" class="chevron">▾</span>
+</button>
+<div class="qa-answer open">
+<div class="answer-inner">
+<p>MockMvc tests the MVC layer without starting a real server, which makes it fast and good for controller testing. TestRestTemplate or WebTestClient are closer to real HTTP integration testing and are better when you want to exercise the application through actual HTTP calls.</p>
+</div>
+</div>
+</article></div>
+</section>
+<div class="footer-space"></div>
+</section>
+</main>
+</div>
+<script>
     const body = document.body;
     const modeToggle = document.getElementById('modeToggle');
     const modePill = document.getElementById('modePill');

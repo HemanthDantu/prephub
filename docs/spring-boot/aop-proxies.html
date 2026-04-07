@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
@@ -7,1219 +6,1314 @@
 <title>AOP &amp; Proxies Learning Module</title>
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&amp;family=Syne:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
 <style>
 :root {
-      --bg: #0a0e1a;
-      --surface-1: #111827;
-      --surface-2: #1a2235;
-      --surface-3: #0f1726;
-      --border: rgba(255,255,255,0.08);
-      --text: #e5eefc;
-      --muted: #98a6c3;
-      --muted-2: #6f7b93;
-      --cyan: #00d4ff;
-      --purple: #7c3aed;
-      --green: #10b981;
-      --amber: #f59e0b;
-      --red: #ef4444;
-      --shadow: 0 20px 60px rgba(0,0,0,0.35);
-      --radius-xl: 22px;
-      --radius-lg: 16px;
-      --radius-md: 12px;
-      --max: 1180px;
-    }
-
-    * { box-sizing: border-box; }
-    html, body { margin: 0; padding: 0; background: radial-gradient(circle at top, #101834 0%, var(--bg) 45%, #070b14 100%); color: var(--text); font-family: 'Syne', system-ui, sans-serif; }
-    body { min-height: 100vh; }
-
-    a { color: inherit; }
-
-    .deep-note {
-      color: var(--muted);
-      line-height: 1.6;
-      margin-top: 10px;
-    }
-
-    .breadcrumb {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.78rem;
-      color: var(--muted);
-    }
-
-    .breadcrumb a {
-      color: var(--muted);
-      text-decoration: none;
-    }
-
-    .breadcrumb a:hover { color: var(--cyan); }
-
-    .breadcrumb span { color: var(--text); font-weight: 600; }
-
-    .back-link {
-      display: inline-flex;
-      margin-top: 12px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.78rem;
-      color: var(--muted);
-      text-decoration: none;
-    }
-
-    .back-link:hover { color: var(--cyan); }
-
-    .app {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .topbar {
-      position: sticky;
-      top: 0;
-      z-index: 30;
-      backdrop-filter: blur(14px);
-      background: rgba(10, 14, 26, 0.86);
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-    }
-
-    .topbar-inner {
-      max-width: var(--max);
-      margin: 0 auto;
-      padding: 16px 20px 14px;
-      display: grid;
-      gap: 12px;
-    }
-
-    .topbar-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 18px;
-      flex-wrap: wrap;
-    }
-
-    .brand {
-      display: flex;
-      align-items: baseline;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .brand h1 {
-      margin: 0;
-      font-size: clamp(1.05rem, 1rem + 1vw, 1.7rem);
-      letter-spacing: 0.02em;
-      font-weight: 800;
-    }
-
-    .brand small {
-      font-family: 'JetBrains Mono', monospace;
-      color: var(--muted);
-      font-size: 0.78rem;
-    }
-
-    .timer-wrap {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 10px 14px;
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
-      box-shadow: var(--shadow);
-    }
-
-    .timer-label {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.72rem;
-      color: var(--muted);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-
-    .timer {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 1rem;
-      font-weight: 700;
-      color: var(--cyan);
-      letter-spacing: 0.08em;
-    }
-
-    .timer.warning { color: var(--amber); }
-    .timer.critical {
-      color: var(--red);
-      animation: pulse 1s infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); text-shadow: 0 0 0 rgba(239,68,68,0.1); }
-      50% { transform: scale(1.06); text-shadow: 0 0 18px rgba(239,68,68,0.35); }
-    }
-
-    .nav-dots {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .nav-dot {
-      width: 38px;
-      height: 38px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,0.16);
-      background: rgba(255,255,255,0.03);
-      color: var(--muted);
-      font-family: 'JetBrains Mono', monospace;
-      font-weight: 700;
-      cursor: pointer;
-      transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
-    }
-
-    .nav-dot:hover,
-    .nav-dot:focus-visible {
-      transform: translateY(-1px);
-      border-color: rgba(0, 212, 255, 0.65);
-      outline: none;
-    }
-
-    .nav-dot.active {
-      background: rgba(0, 212, 255, 0.14);
-      border-color: rgba(0, 212, 255, 0.9);
-      color: var(--cyan);
-      box-shadow: 0 0 0 4px rgba(0, 212, 255, 0.08);
-    }
-
-    .nav-dot.done {
-      border-color: rgba(16, 185, 129, 0.8);
-      color: var(--green);
-      background: rgba(16, 185, 129, 0.06);
-    }
-
-    .progress-shell {
-      height: 10px;
-      border-radius: 999px;
-      overflow: hidden;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.05);
-    }
-
-    .progress-bar {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, var(--cyan), var(--purple));
-      transition: width 1s linear;
-    }
-
-    main {
-      flex: 1;
-      width: 100%;
-    }
-
-    .section {
-      display: none;
-      padding: 34px 20px 130px;
-      animation: fade 0.35s ease;
-    }
-
-    .section.active { display: block; }
-
-    @keyframes fade {
-      from { opacity: 0; transform: translateY(8px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .section-inner {
-      max-width: var(--max);
-      margin: 0 auto;
-    }
-
-    .hero {
-      padding: 26px 28px;
-      border-radius: var(--radius-xl);
-      background: linear-gradient(135deg, rgba(17,24,39,0.96), rgba(26,34,53,0.96));
-      border: 1px solid rgba(255,255,255,0.07);
-      box-shadow: var(--shadow);
-      margin-bottom: 24px;
-    }
-
-    .section-label {
-      font-family: 'JetBrains Mono', monospace;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--muted);
-      font-size: 0.76rem;
-      margin-bottom: 12px;
-    }
-
-    .hero h2 {
-      margin: 0 0 12px;
-      font-size: clamp(1.8rem, 1.2rem + 2vw, 3rem);
-      line-height: 1.05;
-    }
-
-    .hero p {
-      margin: 0;
-      max-width: 880px;
-      color: var(--muted);
-      font-size: 1rem;
-      line-height: 1.7;
-    }
-
-    .card-grid {
-      display: grid;
-      gap: 18px;
-    }
-
-    .card {
-      background: linear-gradient(180deg, rgba(17,24,39,0.98), rgba(17,24,39,0.88));
-      border: 1px solid var(--border);
-      border-left-width: 5px;
-      border-radius: var(--radius-lg);
-      padding: 20px 22px;
-      box-shadow: var(--shadow);
-    }
-
-    .card.eli5 { border-left-color: var(--amber); }
-    .card.analogy { border-left-color: var(--green); }
-    .card.technical { border-left-color: var(--cyan); }
-    .card.warning { border-left-color: var(--red); }
-    .card.quiz-card { border-left-color: var(--purple); }
-
-    .card-label {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.78rem;
-      letter-spacing: 0.08em;
-      color: var(--muted);
-      text-transform: uppercase;
-      margin-bottom: 14px;
-    }
-
-    .card h3 {
-      margin: 0 0 10px;
-      font-size: clamp(1.1rem, 1rem + 0.8vw, 1.45rem);
-    }
-
-    .card p,
-    .card li {
-      color: #d3def4;
-      line-height: 1.75;
-      font-size: 0.98rem;
-    }
-
-    .card p:last-child { margin-bottom: 0; }
-    .card ul { margin: 8px 0 0 20px; padding: 0; }
-
-    .two-col {
-      display: grid;
-      grid-template-columns: 1.2fr 0.95fr;
-      gap: 18px;
-    }
-
-    .mini-grid {
-      display: grid;
-      gap: 14px;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      margin-top: 16px;
-    }
-
-    .mini-panel {
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.06);
-      border-radius: 14px;
-      padding: 14px;
-    }
-
-    .mini-panel h4 {
-      margin: 0 0 8px;
-      font-size: 0.95rem;
-      color: var(--text);
-    }
-
-    .mini-panel p,
-    .mini-panel li { font-size: 0.92rem; color: var(--muted); }
-
-    .badge-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 16px;
-    }
-
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      border-radius: 999px;
-      padding: 8px 12px;
-      font-size: 0.8rem;
-      font-family: 'JetBrains Mono', monospace;
-      border: 1px solid transparent;
-    }
-
-    .pill.good { color: var(--green); border-color: rgba(16,185,129,0.25); background: rgba(16,185,129,0.08); }
-    .pill.caution { color: var(--amber); border-color: rgba(245,158,11,0.25); background: rgba(245,158,11,0.08); }
-    .pill.bad { color: var(--red); border-color: rgba(239,68,68,0.25); background: rgba(239,68,68,0.08); }
-    .pill.info { color: var(--cyan); border-color: rgba(0,212,255,0.25); background: rgba(0,212,255,0.08); }
-
-    .flow {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      flex-wrap: wrap;
-      margin-top: 14px;
-    }
-
-    .flow-step {
-      padding: 10px 14px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.08);
-      color: var(--text);
-      font-size: 0.88rem;
-    }
-
-    .flow-arrow {
-      color: var(--muted-2);
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 1.05rem;
-    }
-
-    .diagram {
-      margin-top: 16px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.015));
-      border: 1px solid rgba(255,255,255,0.06);
-      border-radius: 18px;
-      padding: 18px;
-      overflow: hidden;
-    }
-
-    .diagram-title {
-      font-family: 'JetBrains Mono', monospace;
-      color: var(--muted);
-      font-size: 0.76rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      margin-bottom: 14px;
-    }
-
-    .responsibility-split {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 14px;
-    }
-
-    .box {
-      background: var(--surface-2);
-      border: 1px solid rgba(255,255,255,0.07);
-      border-radius: 16px;
-      padding: 16px;
-      min-height: 100px;
-      position: relative;
-    }
-
-    .box h4 {
-      margin: 0 0 8px;
-      font-size: 1rem;
-    }
-
-    .box p,
-    .box li { margin: 0; color: var(--muted); font-size: 0.9rem; line-height: 1.6; }
-    .box ul { margin: 0; padding-left: 18px; }
-
-    .box.center-highlight {
-      box-shadow: inset 0 0 0 1px rgba(0,212,255,0.18), 0 10px 30px rgba(0, 212, 255, 0.08);
-    }
-
-    .extensibility-rail,
-    .substitution-rail,
-    .dependency-stack,
-    .interface-split {
-      display: grid;
-      gap: 14px;
-    }
-
-    .rail-row,
-    .split-row,
-    .stack-row {
-      display: flex;
-      gap: 12px;
-      align-items: stretch;
-      flex-wrap: wrap;
-    }
-
-    .rail-box,
-    .stack-box,
-    .split-box {
-      flex: 1 1 180px;
-      padding: 14px;
-      border-radius: 16px;
-      border: 1px solid rgba(255,255,255,0.07);
-      background: rgba(255,255,255,0.03);
-    }
-
-    .rail-box h4,
-    .stack-box h4,
-    .split-box h4 { margin: 0 0 8px; font-size: 0.96rem; }
-    .rail-box p,
-    .stack-box p,
-    .split-box p { margin: 0; color: var(--muted); font-size: 0.88rem; line-height: 1.6; }
-
-    .arrow-down,
-    .arrow-right {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--muted-2);
-      font-family: 'JetBrains Mono', monospace;
-      font-weight: 700;
-      min-width: 24px;
-    }
-
-    pre {
-      margin: 0;
-      background: #050810;
-      border: 1px solid rgba(255,255,255,0.07);
-      border-radius: 16px;
-      padding: 18px;
-      overflow: auto;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.86rem;
-      line-height: 1.7;
-      color: #dbeafe;
-    }
-
-    .code-blocks {
-      display: grid;
-      gap: 14px;
-      margin-top: 14px;
-    }
-
-    .code-title {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.76rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin: 0 0 8px;
-    }
-
-    .token-key { color: #7dd3fc; }
-    .token-type { color: #c4b5fd; }
-    .token-method { color: #34d399; }
-    .token-string { color: #fbbf24; }
-    .token-comment { color: #6b7280; }
-    .token-annotation { color: #f472b6; }
-    .token-number { color: #f472b6; }
-    .token-bad { color: #f87171; }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 14px;
-      overflow: hidden;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,0.07);
-    }
-
-    th, td {
-      text-align: left;
-      padding: 12px 14px;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-      vertical-align: top;
-    }
-
-    th {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.76rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--muted);
-      background: rgba(255,255,255,0.03);
-    }
-
-    td { color: #d6e1f7; font-size: 0.94rem; }
-    tr:last-child td { border-bottom: none; }
-
-    .quiz-options {
-      display: grid;
-      gap: 12px;
-      margin-top: 16px;
-    }
-
-    .quiz-option {
-      width: 100%;
-      text-align: left;
-      padding: 14px 16px;
-      border-radius: 14px;
-      background: rgba(255,255,255,0.03);
-      color: var(--text);
-      border: 1px solid rgba(255,255,255,0.09);
-      cursor: pointer;
-      transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
-      font: inherit;
-    }
-
-    .quiz-option:hover,
-    .quiz-option:focus-visible {
-      transform: translateY(-1px);
-      border-color: rgba(124, 58, 237, 0.85);
-      outline: none;
-    }
-
-    .quiz-option[disabled] {
-      cursor: default;
-      opacity: 0.96;
-    }
-
-    .quiz-option.correct {
-      border-color: rgba(16,185,129,0.85);
-      background: rgba(16,185,129,0.12);
-      color: #eafff7;
-    }
-
-    .quiz-option.wrong {
-      border-color: rgba(239,68,68,0.85);
-      background: rgba(239,68,68,0.12);
-      color: #fff5f5;
-    }
-
-    .quiz-result {
-      margin-top: 14px;
-      padding: 14px 16px;
-      border-radius: 14px;
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.06);
-      display: none;
-    }
-
-    .quiz-result.show { display: block; }
-    .quiz-result strong { display: block; margin-bottom: 6px; }
-
-    .takeaways {
-      margin: 0;
-      padding-left: 20px;
-    }
-
-    .footer-nav {
-      position: fixed;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      z-index: 25;
-      background: rgba(10,14,26,0.9);
-      backdrop-filter: blur(12px);
-      border-top: 1px solid rgba(255,255,255,0.06);
-    }
-
-    .footer-nav-inner {
-      max-width: var(--max);
-      margin: 0 auto;
-      padding: 16px 20px;
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-    }
-
-    .btn {
-      padding: 13px 18px;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,0.1);
-      background: rgba(255,255,255,0.04);
-      color: var(--text);
-      font: inherit;
-      cursor: pointer;
-      transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
-      min-width: 140px;
-    }
-
-    .btn:hover,
-    .btn:focus-visible {
-      transform: translateY(-1px);
-      outline: none;
-      border-color: rgba(0,212,255,0.55);
-      background: rgba(255,255,255,0.07);
-    }
-
-    .btn.primary {
-      background: linear-gradient(90deg, rgba(0,212,255,0.14), rgba(124,58,237,0.18));
-      border-color: rgba(0,212,255,0.35);
-    }
-
-    .btn:disabled {
-      opacity: 0.45;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    .completion-grid {
-      display: grid;
-      gap: 18px;
-      grid-template-columns: 1.1fr 0.95fr;
-    }
-
-    .celebrate {
-      font-size: 2.6rem;
-      margin-bottom: 12px;
-    }
-
-    .cheat-list {
-      display: grid;
-      gap: 12px;
-      margin-top: 18px;
-    }
-
-    .cheat-item {
-      padding: 14px;
-      border-radius: 14px;
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.07);
-    }
-
-    .cheat-item h4 {
-      margin: 0 0 6px;
-      font-size: 0.98rem;
-    }
-
-    .cheat-item p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 0.93rem;
-      line-height: 1.6;
-    }
-
-    .confusion-list {
-      display: grid;
-      gap: 12px;
-      margin-top: 16px;
-    }
-
-    .confusion-item {
-      padding: 14px;
-      border-radius: 14px;
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.06);
-    }
-
-    .confusion-item strong { color: var(--text); }
-    .confusion-item p { margin: 8px 0 0; color: var(--muted); }
-
-    @media (max-width: 960px) {
-      .two-col,
-      .completion-grid { grid-template-columns: 1fr; }
-      .responsibility-split { grid-template-columns: 1fr; }
-    }
-
-    @media (max-width: 680px) {
-      .section { padding-top: 24px; }
-      .hero { padding: 22px 18px; }
-      .card { padding: 18px 16px; }
-      .topbar-inner, .footer-nav-inner { padding-left: 14px; padding-right: 14px; }
-      .nav-dot { width: 34px; height: 34px; font-size: 0.85rem; }
-      .btn { min-width: 0; flex: 1; }
-      .mini-grid { grid-template-columns: 1fr; }
-    }
-  </style>
+  --bg:#0a0e1a;--surface-1:#111827;--surface-2:#1a2235;--surface-3:#0f1726;
+  --border:rgba(255,255,255,0.08);--text:#e5eefc;--muted:#98a6c3;--muted-2:#6f7b93;
+  --cyan:#00d4ff;--purple:#7c3aed;--green:#10b981;--amber:#f59e0b;--red:#ef4444;
+  --shadow:0 20px 60px rgba(0,0,0,0.35);--radius-xl:22px;--radius-lg:16px;--radius-md:12px;--max:1180px;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;background:radial-gradient(circle at top,#101834 0%,var(--bg) 45%,#070b14 100%);color:var(--text);font-family:'Syne',system-ui,sans-serif;}
+body{min-height:100vh;}
+a{color:inherit;}
+.deep-note{color:var(--muted);line-height:1.6;margin-top:10px;}
+.app{min-height:100vh;display:flex;flex-direction:column;}
+.topbar{position:sticky;top:0;z-index:30;backdrop-filter:blur(14px);background:rgba(10,14,26,0.86);border-bottom:1px solid rgba(255,255,255,0.06);}
+.topbar-inner{max-width:var(--max);margin:0 auto;padding:16px 20px 14px;display:grid;gap:12px;}
+.topbar-row{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;}
+.brand{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;}
+.brand h1{margin:0;font-size:clamp(1.05rem,1rem + 1vw,1.7rem);letter-spacing:0.02em;font-weight:800;}
+.brand small{font-family:'JetBrains Mono',monospace;color:var(--muted);font-size:0.78rem;}
+.timer-wrap{display:flex;align-items:center;gap:12px;padding:10px 14px;border:1px solid var(--border);border-radius:999px;background:linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02));box-shadow:var(--shadow);}
+.timer-label{font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;}
+.timer{font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:700;color:var(--cyan);letter-spacing:0.08em;}
+.timer.warning{color:var(--amber);}
+.timer.critical{color:var(--red);animation:pulse 1s infinite;}
+@keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.06);text-shadow:0 0 18px rgba(239,68,68,0.35);}}
+.nav-dots{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.nav-dot{width:38px;height:38px;border-radius:999px;border:1px solid rgba(255,255,255,0.16);background:rgba(255,255,255,0.03);color:var(--muted);font-family:'JetBrains Mono',monospace;font-weight:700;cursor:pointer;transition:transform 0.2s ease,border-color 0.2s ease,background 0.2s ease,color 0.2s ease;}
+.nav-dot:hover,.nav-dot:focus-visible{transform:translateY(-1px);border-color:rgba(0,212,255,0.65);outline:none;}
+.nav-dot.active{background:rgba(0,212,255,0.14);border-color:rgba(0,212,255,0.9);color:var(--cyan);box-shadow:0 0 0 4px rgba(0,212,255,0.08);}
+.nav-dot.done{border-color:rgba(16,185,129,0.8);color:var(--green);background:rgba(16,185,129,0.06);}
+.progress-shell{height:10px;border-radius:999px;overflow:hidden;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.05);}
+.progress-bar{height:100%;width:0%;background:linear-gradient(90deg,var(--cyan),var(--purple));transition:width 1s linear;}
+main{flex:1;width:100%;}
+.section{display:none;padding:34px 20px 130px;animation:fade 0.35s ease;}
+.section.active{display:block;}
+@keyframes fade{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.section-inner{max-width:var(--max);margin:0 auto;}
+.hero{padding:26px 28px;border-radius:var(--radius-xl);background:linear-gradient(135deg,rgba(17,24,39,0.96),rgba(26,34,53,0.96));border:1px solid rgba(255,255,255,0.07);box-shadow:var(--shadow);margin-bottom:24px;}
+.section-label{font-family:'JetBrains Mono',monospace;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);font-size:0.76rem;margin-bottom:12px;}
+.hero h2{margin:0 0 12px;font-size:clamp(1.8rem,1.2rem + 2vw,3rem);line-height:1.05;}
+.hero p{margin:0;max-width:880px;color:var(--muted);font-size:1rem;line-height:1.7;}
+.card-grid{display:grid;gap:18px;}
+.card{background:linear-gradient(180deg,rgba(17,24,39,0.98),rgba(17,24,39,0.88));border:1px solid var(--border);border-left-width:5px;border-radius:var(--radius-lg);padding:20px 22px;box-shadow:var(--shadow);}
+.card.eli5{border-left-color:var(--amber);}.card.analogy{border-left-color:var(--green);}.card.technical{border-left-color:var(--cyan);}.card.warning{border-left-color:var(--red);}.card.quiz-card{border-left-color:var(--purple);}
+.card-label{display:inline-flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:0.78rem;letter-spacing:0.08em;color:var(--muted);text-transform:uppercase;margin-bottom:14px;}
+.card h3{margin:0 0 10px;font-size:clamp(1.1rem,1rem + 0.8vw,1.45rem);}
+.card p,.card li{color:#d3def4;line-height:1.75;font-size:0.98rem;}
+.card p:last-child{margin-bottom:0;}.card ul{margin:8px 0 0 20px;padding:0;}
+.two-col{display:grid;grid-template-columns:1.2fr 0.95fr;gap:18px;}
+.mini-grid{display:grid;gap:14px;grid-template-columns:repeat(2,minmax(0,1fr));margin-top:16px;}
+.mini-panel{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:14px;}
+.mini-panel h4{margin:0 0 8px;font-size:0.95rem;color:var(--text);}
+.mini-panel p,.mini-panel li{font-size:0.92rem;color:var(--muted);}
+.badge-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;}
+.pill{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:8px 12px;font-size:0.8rem;font-family:'JetBrains Mono',monospace;border:1px solid transparent;}
+.pill.good{color:var(--green);border-color:rgba(16,185,129,0.25);background:rgba(16,185,129,0.08);}
+.pill.caution{color:var(--amber);border-color:rgba(245,158,11,0.25);background:rgba(245,158,11,0.08);}
+.pill.bad{color:var(--red);border-color:rgba(239,68,68,0.25);background:rgba(239,68,68,0.08);}
+.pill.info{color:var(--cyan);border-color:rgba(0,212,255,0.25);background:rgba(0,212,255,0.08);}
+.flow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:14px;}
+.flow-step{padding:10px 14px;border-radius:999px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:var(--text);font-size:0.88rem;}
+.flow-arrow{color:var(--muted-2);font-family:'JetBrains Mono',monospace;font-size:1.05rem;}
+pre{margin:0;background:#050810;border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:18px;overflow:auto;font-family:'JetBrains Mono',monospace;font-size:0.86rem;line-height:1.7;color:#dbeafe;}
+.code-blocks{display:grid;gap:14px;margin-top:14px;}
+.code-title{font-family:'JetBrains Mono',monospace;font-size:0.76rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin:0 0 8px;}
+.token-key{color:#7dd3fc;}.token-type{color:#c4b5fd;}.token-string{color:#fbbf24;}.token-comment{color:#6b7280;}.token-annotation{color:#f472b6;}.token-number{color:#f472b6;}
+table{width:100%;border-collapse:collapse;margin-top:14px;overflow:hidden;border-radius:14px;border:1px solid rgba(255,255,255,0.07);}
+th,td{text-align:left;padding:12px 14px;border-bottom:1px solid rgba(255,255,255,0.06);vertical-align:top;}
+th{font-family:'JetBrains Mono',monospace;font-size:0.76rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);background:rgba(255,255,255,0.03);}
+td{color:#d6e1f7;font-size:0.94rem;}tr:last-child td{border-bottom:none;}
+.quiz-options{display:grid;gap:12px;margin-top:16px;}
+.quiz-option{width:100%;text-align:left;padding:14px 16px;border-radius:14px;background:rgba(255,255,255,0.03);color:var(--text);border:1px solid rgba(255,255,255,0.09);cursor:pointer;transition:transform 0.15s ease,border-color 0.15s ease,background 0.15s ease;font:inherit;}
+.quiz-option:hover,.quiz-option:focus-visible{transform:translateY(-1px);border-color:rgba(124,58,237,0.85);outline:none;}
+.quiz-option[disabled]{cursor:default;opacity:0.96;}
+.quiz-option.correct{border-color:rgba(16,185,129,0.85);background:rgba(16,185,129,0.12);color:#eafff7;}
+.quiz-option.wrong{border-color:rgba(239,68,68,0.85);background:rgba(239,68,68,0.12);color:#fff5f5;}
+.quiz-result{margin-top:14px;padding:14px 16px;border-radius:14px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);display:none;}
+.quiz-result.show{display:block;}
+.quiz-result strong{display:block;margin-bottom:6px;color:var(--green);}
+.quiz-result span{color:var(--muted);font-size:0.95rem;line-height:1.7;}
+.takeaways{margin:0;padding-left:20px;}
+.footer-nav{position:fixed;left:0;right:0;bottom:0;z-index:25;background:rgba(10,14,26,0.9);backdrop-filter:blur(12px);border-top:1px solid rgba(255,255,255,0.06);}
+.footer-nav-inner{max-width:var(--max);margin:0 auto;padding:16px 20px;display:flex;justify-content:space-between;gap:12px;}
+.btn{padding:13px 18px;border-radius:14px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:var(--text);font:inherit;cursor:pointer;transition:transform 0.15s ease,background 0.15s ease,border-color 0.15s ease;min-width:140px;}
+.btn:hover,.btn:focus-visible{transform:translateY(-1px);outline:none;border-color:rgba(0,212,255,0.55);background:rgba(255,255,255,0.07);}
+.btn.primary{background:linear-gradient(90deg,rgba(0,212,255,0.14),rgba(124,58,237,0.18));border-color:rgba(0,212,255,0.35);}
+.btn:disabled{opacity:0.45;cursor:not-allowed;transform:none;}
+.completion-grid{display:grid;gap:18px;grid-template-columns:1.1fr 0.95fr;}
+.celebrate{font-size:2.6rem;margin-bottom:12px;}
+.cheat-list{display:grid;gap:12px;margin-top:18px;}
+.cheat-item{padding:14px;border-radius:14px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);}
+.cheat-item h4{margin:0 0 6px;font-size:0.98rem;}
+.cheat-item p{margin:0;color:var(--muted);font-size:0.93rem;line-height:1.6;}
+.confusion-list{display:grid;gap:12px;margin-top:16px;}
+.confusion-item{padding:14px;border-radius:14px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);}
+.confusion-item strong{color:var(--text);}
+.confusion-item p{margin:8px 0 0;color:var(--muted);}
+.interview-box{background:rgba(124,58,237,0.08);border:1px solid rgba(124,58,237,0.3);border-radius:12px;padding:14px 18px;margin-top:14px;}
+.interview-box .lbl{font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--purple);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;}
+.interview-box p{margin:0;color:#d6e1f7;line-height:1.7;}
+@media(max-width:960px){.two-col,.completion-grid{grid-template-columns:1fr;}}
+@media(max-width:680px){.section{padding-top:24px;}.hero{padding:22px 18px;}.card{padding:18px 16px;}.topbar-inner,.footer-nav-inner{padding-left:14px;padding-right:14px;}.nav-dot{width:34px;height:34px;font-size:0.85rem;}.btn{min-width:0;flex:1;}.mini-grid{grid-template-columns:1fr;}}
+</style>
 </head>
 <body>
 <div class="app">
 <header class="topbar">
-<div class="topbar-inner">
-<div class="topbar-row">
-<div class="brand">
-<h1>AOP &amp; Proxies</h1>
-<small>Interactive 35-minute learning module</small>
-</div>
-<div class="topbar-row">
-<div class="breadcrumb">
-<a href="../index.html">Home</a>
-<span>›</span>
-<a href="index.html">Spring Boot</a>
-<span>›</span>
-<span>AOP &amp; Proxies</span>
-</div>
-</div>
-<div aria-live="polite" class="timer-wrap">
-<span class="timer-label">Time Left</span>
-<span class="timer" id="timer">35:00</span>
-</div>
-</div>
-<div class="topbar-row">
-<nav aria-label="Section navigation" class="nav-dots"><button aria-label="Go to section 1" class="nav-dot active" data-index="0">1</button><button aria-label="Go to section 2" class="nav-dot" data-index="1">2</button><button aria-label="Go to section 3" class="nav-dot" data-index="2">3</button><button aria-label="Go to section 4" class="nav-dot" data-index="3">4</button><button aria-label="Go to section 5" class="nav-dot" data-index="4">5</button><button aria-label="Go to completion screen" class="nav-dot" data-index="5">6</button></nav>
-</div>
-<div aria-hidden="true" class="progress-shell">
-<div class="progress-bar" id="progressBar"></div>
-</div>
-</div>
+  <div class="topbar-inner">
+    <div class="topbar-row">
+      <div class="brand">
+        <h1>AOP &amp; Proxies</h1>
+        <small>Interactive 35-minute learning module</small>
+      </div>
+      <div aria-live="polite" class="timer-wrap">
+        <span class="timer-label">Time Left</span>
+        <span class="timer" id="timer">35:00</span>
+      </div>
+    </div>
+    <div class="topbar-row">
+      <nav aria-label="Section navigation" class="nav-dots">
+        <button aria-label="Go to section 1" class="nav-dot active" data-index="0">1</button>
+        <button aria-label="Go to section 2" class="nav-dot" data-index="1">2</button>
+        <button aria-label="Go to section 3" class="nav-dot" data-index="2">3</button>
+        <button aria-label="Go to section 4" class="nav-dot" data-index="3">4</button>
+        <button aria-label="Go to section 5" class="nav-dot" data-index="4">5</button>
+        <button aria-label="Go to completion screen" class="nav-dot" data-index="5">6</button>
+      </nav>
+    </div>
+    <div aria-hidden="true" class="progress-shell">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+  </div>
 </header>
+
 <main>
 
+<!-- ═══════════════════════════════════════════════
+     SECTION 1 — Why AOP Exists
+════════════════════════════════════════════════ -->
+<section class="section active" data-section="0">
+<div class="section-inner">
+  <div class="hero">
+    <div class="section-label">Section 1 of 5 · ~7 mins</div>
+    <h2>Why AOP Exists</h2>
+    <p>AOP solves one problem: applying the same behavior across many methods without copy-pasting it into each one. Understanding why it exists is what lets you explain @Transactional, @Cacheable, and @Async confidently in interviews.</p>
+  </div>
+  <div class="card-grid">
 
+    <article class="card eli5">
+      <div class="card-label">🧒 ELI5</div>
+      <h3>The automatic security checkpoint</h3>
+      <p>Imagine a large office building. You need security checks at every door — log who entered, verify their badge, record the time. One approach: hire a guard to stand at every single door. Another: build a single central checkpoint that every visitor must pass through, and put your security logic there once.</p>
+      <p>Without AOP, your code is the first approach: you write <code>log.info("entering method")</code>, start a timer, check authentication, and open a transaction in <em>every single service method</em>. The method body that actually does the business work drowns in infrastructure noise. With AOP, you define the checkpoint once — an <strong>Aspect</strong> — and it intercepts all the relevant method calls automatically. Your business methods stay clean; the cross-cutting concern lives in exactly one place.</p>
+      <p>This also means when you need to change the logging format, you change it in <em>one file</em>, not 80.</p>
+    </article>
 
+    <article class="card analogy">
+      <div class="card-label">🔗 ANALOGY</div>
+      <h3>Highway toll booths vs. tax stickers on every car window</h3>
+      <p>One approach to collecting highway tolls: give every car manufacturer a sticker to put on each new car. When the car passes a road, it somehow pays. Absurd — the manufacturer has nothing to do with tolling.</p>
+      <p>The real approach: toll booths at specific points that every car passes through. The car doesn't know the booth exists. The booth applies the toll logic consistently. AOP is the toll booth. Your service methods are the cars. The aspect intercepts them at a well-defined point and applies cross-cutting logic (timing, logging, transactions, auth) without the method knowing it's being intercepted.</p>
+      <p>The cost of <em>not</em> using AOP for cross-cutting concerns: when the security policy changes, you update 80 methods. When you miss one, that's a production security hole.</p>
+    </article>
 
+    <article class="card technical">
+      <div class="card-label">Technical</div>
+      <div class="two-col">
+        <div>
+          <h3>AOP Terminology — the four concepts</h3>
+          <p><strong>Aspect</strong> — the class containing the cross-cutting logic (e.g., <code>TimingAspect</code>, <code>AuditAspect</code>).</p>
+          <p><strong>Advice</strong> — the action to perform: <code>@Before</code>, <code>@AfterReturning</code>, <code>@AfterThrowing</code>, <code>@After</code>, or <code>@Around</code> (most powerful — wraps the entire call).</p>
+          <p><strong>Pointcut</strong> — the expression that defines <em>which</em> methods to intercept. Can target packages, annotations, or method signatures.</p>
+          <p><strong>Join Point</strong> — the specific method execution being intercepted. In Spring AOP, every join point is a method call.</p>
+          <div class="flow">
+            <span class="flow-step">Caller invokes method</span>
+            <span class="flow-arrow">→</span>
+            <span class="flow-step">Spring Proxy intercepts</span>
+            <span class="flow-arrow">→</span>
+            <span class="flow-step">Advice runs (@Before)</span>
+            <span class="flow-arrow">→</span>
+            <span class="flow-step">Real method executes</span>
+            <span class="flow-arrow">→</span>
+            <span class="flow-step">Advice runs (@After)</span>
+          </div>
+          <div class="mini-grid">
+            <div class="mini-panel">
+              <h4>Built-in Spring AOP uses</h4>
+              <ul>
+                <li>@Transactional → TransactionInterceptor</li>
+                <li>@Cacheable → CacheInterceptor</li>
+                <li>@Async → AsyncExecutionInterceptor</li>
+                <li>@PreAuthorize → MethodSecurityInterceptor</li>
+                <li>@Retryable → RetryOperationsInterceptor</li>
+              </ul>
+            </div>
+            <div class="mini-panel">
+              <h4>Custom AOP use cases</h4>
+              <ul>
+                <li>Method execution timing / metrics</li>
+                <li>Audit logging (who called what, when)</li>
+                <li>Rate limiting at method level</li>
+                <li>Distributed tracing (MDC correlation IDs)</li>
+                <li>Feature flag enforcement</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="interview-box">
+            <div class="lbl">💬 Model Interview Answer</div>
+            <p>"AOP lets me apply cross-cutting concerns — logging, transactions, security, timing — once in a central Aspect rather than repeating them in every method. Spring implements it through proxies: when you annotate a bean method with @Transactional or @Cacheable, Spring wraps the bean in a proxy that intercepts calls and applies the advice. The key limitation is that it only works on calls that enter through the proxy — internal this.method() calls bypass the proxy entirely, which is why @Transactional on a private or internally-called method silently does nothing."</p>
+          </div>
+          <table>
+            <thead><tr><th>Advice type</th><th>When it runs</th><th>Can suppress/replace return?</th></tr></thead>
+            <tbody>
+              <tr><td>@Before</td><td>Before method executes</td><td>No (can throw to abort)</td></tr>
+              <tr><td>@AfterReturning</td><td>On successful return</td><td>No</td></tr>
+              <tr><td>@AfterThrowing</td><td>When exception escapes</td><td>No (can re-throw different ex)</td></tr>
+              <tr><td>@After</td><td>Always — finally equivalent</td><td>No</td></tr>
+              <tr><td>@Around</td><td>Full control — wraps call</td><td>Yes — full control</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="code-blocks">
+        <div>
+          <div class="code-title">❌ Wrong — cross-cutting code duplicated in every service method</div>
+          <pre>@Service
+public class OrderService {
 
+    public Order findById(Long id) {
+        // Every method has this boilerplate — 80 methods × same 5 lines = 400 lines of noise
+        String user = SecurityContextHolder.getContext().getAuthentication().getName();
+        log.info("AUDIT user={} method=findById args={}", user, id);
+        long start = System.currentTimeMillis();
+        try {
+            return repository.findById(id).orElseThrow();
+        } finally {
+            metrics.record("OrderService.findById", System.currentTimeMillis() - start);
+        }
+    }
+
+    public Order save(Order order) {
+        // Exact same boilerplate copy-pasted here too
+        String user = SecurityContextHolder.getContext().getAuthentication().getName();
+        log.info("AUDIT user={} method=save args={}", user, order.getId());
+        long start = System.currentTimeMillis();
+        // ... and again in every other method
+    }
+}</pre>
+        </div>
+        <div>
+          <div class="code-title">✅ Right — AOP centralizes the concern in one place</div>
+          <pre>// One Aspect replaces all that boilerplate in all 80 methods
+@Aspect
+@Component
+@RequiredArgsConstructor
+public class AuditTimingAspect {
+
+    private final MeterRegistry meterRegistry;
+
+    // Pointcut: any method in any class under the service package
+    @Pointcut("execution(* com.example.service..*(..))")
+    public void serviceLayer() {}
+
+    @Around("serviceLayer()")
+    public Object auditAndTime(ProceedingJoinPoint pjp) throws Throwable {
+        String methodName = pjp.getSignature().toShortString();
+        String user = SecurityContextHolder.getContext().getAuthentication().getName();
+        long start = System.currentTimeMillis();
+
+        log.info("AUDIT user={} method={} args={}", user, methodName, pjp.getArgs());
+        try {
+            Object result = pjp.proceed();  // call the real method
+            log.info("AUDIT method={} status=OK duration={}ms", methodName,
+                     System.currentTimeMillis() - start);
+            return result;
+        } catch (Throwable ex) {
+            log.error("AUDIT method={} status=ERROR duration={}ms error={}", methodName,
+                      System.currentTimeMillis() - start, ex.getMessage());
+            throw ex;  // always re-throw — don't swallow exceptions in aspects!
+        } finally {
+            meterRegistry.timer("service.method.duration", "method", methodName)
+                         .record(System.currentTimeMillis() - start, TimeUnit.MILLISECONDS);
+        }
+    }
+}
+
+// OrderService is now clean — zero infrastructure noise
+@Service
+public class OrderService {
+    public Order findById(Long id) { return repository.findById(id).orElseThrow(); }
+    public Order save(Order order)  { return repository.save(order); }
+}</pre>
+        </div>
+      </div>
+    </article>
+
+    <article class="card warning">
+      <div class="card-label">Warning</div>
+      <h3>Overly broad pointcuts advise Spring internals — and break everything</h3>
+      <p>Writing <code>execution(* *.*(..))</code> applies your aspect to <em>every method call in the JVM</em>, including Spring's own infrastructure beans. This causes infinite recursion, massively slow startup, or subtle breakage of Spring's transaction and security machinery.</p>
+      <p class="deep-note">Always scope pointcuts to your own packages: <code>execution(* com.yourcompany..*(..))</code>. Even better, use annotation-based pointcuts: <code>@annotation(com.yourcompany.annotation.Audited)</code> — which only fires for methods you explicitly opt into, giving you precise control with zero risk of advising Spring internals.</p>
+    </article>
+
+    <article class="card quiz-card">
+      <div class="card-label">Quiz</div>
+      <h3>Which advice type gives you the most control — the ability to modify the return value, suppress exceptions, or even skip calling the target method?</h3>
+      <div class="quiz-options" data-answer="2">
+        <button class="quiz-option">A. @Before — runs before the method, can abort by throwing</button>
+        <button class="quiz-option">B. @AfterReturning — runs after a successful return, has access to the return value</button>
+        <button class="quiz-option">C. @Around — wraps the entire call via ProceedingJoinPoint, with full control over execution, return value, and exceptions</button>
+        <button class="quiz-option">D. @After — the "finally" equivalent, always runs regardless of outcome</button>
+      </div>
+      <div class="quiz-result">
+        <strong>✅ Correct: C — @Around</strong>
+        <span>@Around is the most powerful advice type. It receives a ProceedingJoinPoint — you decide whether to call pjp.proceed() (invoke the real method), return a cached value instead, modify the arguments before passing them, change the return value, or swallow/translate exceptions. @Before can abort by throwing but cannot modify return values. @AfterReturning can see the return value but cannot replace it. @After runs like finally — no control over the outcome. All other advice types (@Transactional, @Cacheable, @Async) are implemented internally using @Around.</span>
+      </div>
+    </article>
+
+  </div>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SECTION 2 — Proxy Types: JDK vs CGLIB
+════════════════════════════════════════════════ -->
+<section class="section" data-section="1">
+<div class="section-inner">
+  <div class="hero">
+    <div class="section-label">Section 2 of 5 · ~7 mins</div>
+    <h2>Proxy Types: JDK Dynamic vs CGLIB</h2>
+    <p>Spring creates a proxy — a wrapper object — around your bean to intercept method calls. The proxy type determines what Spring can and cannot intercept, and knowing this explains many mysterious "why didn't @Transactional work?" bugs.</p>
+  </div>
+  <div class="card-grid">
+
+    <article class="card eli5">
+      <div class="card-label">🧒 ELI5</div>
+      <h3>Stand-in actor vs. a clone of the original actor</h3>
+      <p>Imagine your actor (your bean) has a contract. <strong>JDK Dynamic Proxy</strong> is hiring a different actor who reads the same script (implements the same interface). They can play the same role — they're a valid substitute — but they're fundamentally a different person. The director (Spring) directs everything through the understudy.</p>
+      <p><strong>CGLIB</strong> is like creating an exact genetic clone of your actor and teaching the clone some extra behaviours. The clone <em>is</em> your actor — same DNA, same mannerisms, just with additional capabilities layered on top. This is subclassing at runtime: CGLIB generates a subclass of your concrete class and overrides methods to inject advice.</p>
+      <p>The practical implication: if your actor has <code>final</code> methods, the clone <em>inherits</em> them but cannot override them — the extra behaviours cannot be injected into those methods. That's why <code>@Transactional</code> on a <code>final</code> method silently does nothing.</p>
+    </article>
+
+    <article class="card analogy">
+      <div class="card-label">🔗 ANALOGY</div>
+      <h3>Outlet adapter vs. extension cable with surge protection</h3>
+      <p><strong>JDK Proxy</strong> = a plug adapter. It works because both the original and the adapter implement the same standard (the interface). Plug the adapter in anywhere the original would fit. But you cannot use an adapter if there is no standard plug shape (no interface).</p>
+      <p><strong>CGLIB</strong> = a surge-protected extension cable wired directly into the wall. It carries all the same electricity (behaviour) from the original outlet (class), adds protection (advice), and works even if there's no standard adapter shape (no interface). But it still can't modify a circuit that was sealed at the factory — a <code>final</code> method or <code>final</code> class.</p>
+    </article>
+
+    <article class="card technical">
+      <div class="card-label">Technical</div>
+      <div class="two-col">
+        <div>
+          <h3>How each proxy works under the hood</h3>
+          <p><strong>JDK Dynamic Proxy:</strong> Generated at runtime using <code>java.lang.reflect.Proxy</code>. Implements the same interfaces as the target bean. All interface method calls are intercepted; any non-interface methods are invisible to the proxy. Spring was the default before Boot 2.x.</p>
+          <p><strong>CGLIB Proxy:</strong> Generates a subclass of the target class at runtime (using the CGLIB bytecode library, now bundled in Spring Core). Overrides all non-final, non-private methods to inject advice. Spring Boot 2.x made this the default — even when an interface exists.</p>
+          <div class="mini-grid">
+            <div class="mini-panel">
+              <h4>JDK Proxy constraints</h4>
+              <ul>
+                <li>Target MUST implement at least one interface</li>
+                <li>Only interface methods are intercepted</li>
+                <li>Slightly faster to create</li>
+                <li>Enable: <code>spring.aop.proxy-target-class=false</code></li>
+              </ul>
+            </div>
+            <div class="mini-panel">
+              <h4>CGLIB constraints</h4>
+              <ul>
+                <li>Target class must NOT be final</li>
+                <li>Intercepted methods must NOT be final</li>
+                <li>Requires a no-arg constructor (or Objenesis)</li>
+                <li>Default in Spring Boot 2.x+</li>
+              </ul>
+            </div>
+          </div>
+          <div class="badge-row">
+            <span class="pill good">CGLIB: default in Spring Boot</span>
+            <span class="pill info">JDK: set proxy-target-class=false</span>
+            <span class="pill bad">final method: advice silently skipped</span>
+            <span class="pill bad">final class: cannot proxy at all</span>
+          </div>
+        </div>
+        <div>
+          <div class="interview-box">
+            <div class="lbl">💬 Model Interview Answer</div>
+            <p>"Spring Boot defaults to CGLIB proxies — it subclasses the concrete class at runtime and overrides methods to inject advice. JDK dynamic proxies work by implementing the target's interface and are used when you set proxy-target-class=false. The critical limitation with CGLIB: it cannot override final methods, so @Transactional on a final method is silently ignored — no transaction is started, no error is thrown. @Configuration classes always use CGLIB regardless of this setting, because Spring intercepts @Bean method calls to enforce singleton semantics."</p>
+          </div>
+          <table>
+            <thead><tr><th>Proxy type</th><th>Mechanism</th><th>Requires</th><th>Default since</th></tr></thead>
+            <tbody>
+              <tr><td>JDK Dynamic</td><td>Implements interface</td><td>Target has interface</td><td>Pre-Boot 2.x</td></tr>
+              <tr><td>CGLIB</td><td>Subclasses target class</td><td>Non-final class + methods</td><td>Spring Boot 2.x+</td></tr>
+              <tr><td>CGLIB (@Config)</td><td>Intercepts @Bean calls</td><td>Non-final config class</td><td>Always</td></tr>
+            </tbody>
+          </table>
+          <div class="code-blocks">
+            <div>
+              <div class="code-title">What Spring actually creates at runtime</div>
+              <pre>// Your bean:
+@Service
+public class AccountService {
+    @Transactional
+    public void transfer(Long from, Long to) { ... }
+}
+
+// What Spring registers in the ApplicationContext (CGLIB):
+// class AccountService$$SpringCGLIB$$0 extends AccountService {
+//     @Override
+//     public void transfer(Long from, Long to) {
+//         // TransactionInterceptor.invoke() — opens tx
+//         super.transfer(from, to);            // your code
+//         // TransactionInterceptor.invoke() — commits/rolls back
+//     }
+// }
+
+// The bean name "accountService" maps to the PROXY, not your class.
+// Calling proxy.transfer() → advice runs.
+// Calling this.transfer() internally → bypasses proxy → NO advice.</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="card warning">
+      <div class="card-label">Warning</div>
+      <h3>final method + @Transactional = silent failure, no error thrown</h3>
+      <p>This is one of the hardest production bugs to diagnose because there is absolutely no error. Spring silently skips proxying the final method. Your code runs — but without a transaction. If the method throws midway, nothing rolls back. The data is left in a partially-written state.</p>
+      <div class="code-blocks">
+        <div>
+          <div class="code-title">❌ Silent failure — @Transactional on final method</div>
+          <pre>@Service
+public class PaymentService {
+
+    @Transactional  // ← completely ignored by CGLIB — no warning, no error
+    public final void processPayment(Payment payment) {
+        accountRepo.debit(payment.getFrom(), payment.getAmount());
+        // If this throws, debit() is NOT rolled back — the method is final,
+        // CGLIB couldn't override it, so the proxy never wraps this call.
+        ledgerRepo.record(payment);
+    }
+}
+
+// Also broken: final class — entire class cannot be proxied
+@Service
+public final class InvoiceService {  // ← CGLIB cannot subclass this
+    @Transactional                   // ← silently ignored for ALL methods
+    public void generate() { ... }
+}</pre>
+        </div>
+        <div>
+          <div class="code-title">✅ Remove final — allow CGLIB to override</div>
+          <pre>@Service
+public class PaymentService {        // non-final class ✓
+
+    @Transactional                   // CGLIB overrides this — transaction works ✓
+    public void processPayment(Payment payment) {
+        accountRepo.debit(payment.getFrom(), payment.getAmount());
+        ledgerRepo.record(payment);  // exception here → debit() rolled back ✓
+    }
+}</pre>
+        </div>
+      </div>
+    </article>
+
+    <article class="card quiz-card">
+      <div class="card-label">Quiz</div>
+      <h3>You annotate a method with @Transactional and make the class final for "security reasons." In a Spring Boot application, what actually happens at runtime?</h3>
+      <div class="quiz-options" data-answer="1">
+        <button class="quiz-option">A. Spring throws BeanCreationException at startup — final classes cannot be registered as beans</button>
+        <button class="quiz-option">B. Spring registers the bean but CGLIB cannot subclass a final class — @Transactional is silently ignored, no transaction is created</button>
+        <button class="quiz-option">C. Spring automatically switches to a JDK dynamic proxy which handles the transaction correctly</button>
+        <button class="quiz-option">D. The @Transactional annotation is respected because Spring uses AspectJ by default, which handles final classes</button>
+      </div>
+      <div class="quiz-result">
+        <strong>✅ Correct: B — @Transactional is silently ignored</strong>
+        <span>CGLIB works by generating a subclass. Java's final keyword prevents subclassing — CGLIB cannot create the proxy. Spring Boot does not throw an error; it falls back to using the original, unproxied bean. @Transactional on its methods is therefore completely inert. Option A is wrong — Spring registers the bean fine, it just can't proxy it. Option C is wrong — switching to JDK dynamic proxy requires an interface AND proxy-target-class=false; Spring doesn't switch automatically. Option D is wrong — Spring uses runtime proxy-based AOP (not AspectJ compile-time weaving) by default, which has no solution for final classes.</span>
+      </div>
+    </article>
+
+  </div>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SECTION 3 — Self-invocation & AOP Limitations
+════════════════════════════════════════════════ -->
+<section class="section" data-section="2">
+<div class="section-inner">
+  <div class="hero">
+    <div class="section-label">Section 3 of 5 · ~7 mins</div>
+    <h2>Self-invocation &amp; AOP Limitations</h2>
+    <p>The single most common AOP bug in production codebases. When a method calls another method <em>on the same object</em>, the proxy is bypassed — @Transactional, @Cacheable, @Async, @Retryable all silently do nothing.</p>
+  </div>
+  <div class="card-grid">
+
+    <article class="card eli5">
+      <div class="card-label">🧒 ELI5</div>
+      <h3>The security guard who only checks people coming through the front door</h3>
+      <p>Your office building has a security guard at the front entrance. The guard checks every visitor's badge before letting them in. But there's a side corridor inside the building — once you're already inside, you can walk freely from room to room without ever passing through the guard again.</p>
+      <p>Spring's proxy is that guard. It intercepts calls coming from <em>outside your class</em> — other beans calling your method. But if you're already inside your class and call <code>this.method()</code>, you're using the side corridor. The guard (proxy) is never triggered. @Transactional on that method? Never activated. @Cacheable? Never checked. This is not a bug — it's exactly how proxy-based AOP works by design.</p>
+    </article>
+
+    <article class="card analogy">
+      <div class="card-label">🔗 ANALOGY</div>
+      <h3>Speed camera on the motorway — only works at the entry ramp</h3>
+      <p>A speed camera measures cars entering the motorway at a specific ramp. Cars already on the motorway switching lanes internally are invisible to it. The camera is the proxy — it only sees traffic that enters through the monitored ramp (external method calls crossing a proxy boundary).</p>
+      <p>A self-invocation call is a car that's already on the motorway moving between lanes — the speed camera (proxy) at the ramp never sees it. You cannot fix this by adding more cameras on the ramp — you need a camera further along the motorway (a separate Spring bean with its own proxy), so traffic that goes through that bean's entry point gets measured.</p>
+    </article>
+
+    <article class="card technical">
+      <div class="card-label">Technical</div>
+      <div class="two-col">
+        <div>
+          <h3>Why it happens — the call path</h3>
+          <p>When an external bean calls your service, the call hits the <strong>proxy object</strong> first. The proxy applies the advice (opens a transaction, checks cache, etc.) and then delegates to the real target object.</p>
+          <p>When your service calls <code>this.anotherMethod()</code>, it calls directly on the <strong>target object</strong> — bypassing the proxy entirely. The reference <code>this</code> inside your class is always the real object, never the proxy.</p>
+          <div class="flow">
+            <span class="flow-step">External call → Proxy</span>
+            <span class="flow-arrow">→</span>
+            <span class="flow-step">Advice applied ✓</span>
+            <span class="flow-arrow">→</span>
+            <span class="flow-step">Target.method()</span>
+          </div>
+          <div class="flow">
+            <span class="flow-step">this.method() (internal)</span>
+            <span class="flow-arrow">→</span>
+            <span class="flow-step">Target directly ✗</span>
+            <span class="flow-arrow">→</span>
+            <span class="flow-step">No advice!</span>
+          </div>
+          <div class="mini-grid">
+            <div class="mini-panel">
+              <h4>Annotations affected</h4>
+              <ul>
+                <li>@Transactional — no transaction started</li>
+                <li>@Cacheable — cache never checked</li>
+                <li>@Async — runs synchronously in same thread</li>
+                <li>@Retryable — no retry on exception</li>
+                <li>@PreAuthorize — security check skipped</li>
+              </ul>
+            </div>
+            <div class="mini-panel">
+              <h4>Fix options (ranked)</h4>
+              <ul>
+                <li>1. Extract method to a separate @Service bean</li>
+                <li>2. Inject self via @Autowired @Lazy</li>
+                <li>3. Use ApplicationContext.getBean()</li>
+                <li>4. Refactor to avoid the self-call entirely</li>
+                <li>5. AspectJ compile-time weaving (complex)</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="interview-box">
+            <div class="lbl">💬 Model Interview Answer</div>
+            <p>"Self-invocation bypasses Spring's AOP proxy because the proxy only intercepts calls that arrive from external beans. When you call this.method() inside the same class, you're calling on the real object — the proxy is never in the call path. The cleanest fix is extracting the annotated method to a separate Spring-managed bean, so the call crosses a proxy boundary. In a pinch, injecting the bean into itself via @Autowired @Lazy works, but it's a code smell that usually signals the class is doing too much."</p>
+          </div>
+          <table>
+            <thead><tr><th>Call type</th><th>Goes through proxy?</th><th>Advice applied?</th></tr></thead>
+            <tbody>
+              <tr><td>External bean → your method</td><td>✅ Yes</td><td>✅ Yes</td></tr>
+              <tr><td>this.method() internally</td><td>❌ No</td><td>❌ No</td></tr>
+              <tr><td>self-injected proxy.method()</td><td>✅ Yes</td><td>✅ Yes</td></tr>
+              <tr><td>Separate bean.method()</td><td>✅ Yes</td><td>✅ Yes</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="code-blocks">
+        <div>
+          <div class="code-title">❌ Wrong — self-invocation bypasses @Transactional</div>
+          <pre>@Service
+public class OrderService {
+
+    // Public entry point — proxy DOES intercept this
+    @Transactional
+    public void placeOrder(OrderRequest request) {
+        validateOrder(request);
+        saveOrderItems(request); // ← this.saveOrderItems() — bypasses proxy!
+    }
+
+    // @Transactional here is USELESS — called via this.saveOrderItems()
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void saveOrderItems(OrderRequest request) {
+        // You expect REQUIRES_NEW to open a separate transaction.
+        // It doesn't. This runs inside placeOrder's transaction (or no transaction
+        // if placeOrder itself has issues). The annotation is completely ignored.
+        request.getItems().forEach(item -> itemRepo.save(new OrderItem(item)));
+    }
+}</pre>
+        </div>
+        <div>
+          <div class="code-title">✅ Fix 1 — extract to a separate bean (cleanest)</div>
+          <pre>@Service
+@RequiredArgsConstructor
+public class OrderService {
+
+    private final OrderItemService orderItemService; // separate bean — has its own proxy
+
+    @Transactional
+    public void placeOrder(OrderRequest request) {
+        validateOrder(request);
+        orderItemService.saveItems(request); // ← crosses proxy boundary ✓
+        // saveItems() runs in REQUIRES_NEW transaction as intended
+    }
+}
+
+@Service
+public class OrderItemService {
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW) // ← now actually works ✓
+    public void saveItems(OrderRequest request) {
+        request.getItems().forEach(item -> itemRepo.save(new OrderItem(item)));
+    }
+}
+
+// ✅ Fix 2 — self-inject via @Lazy (acceptable, signals class is too large)
+@Service
+public class OrderService {
+
+    @Autowired @Lazy  // inject the PROXY of this class, not 'this'
+    private OrderService self;
+
+    public void placeOrder(OrderRequest request) {
+        self.saveOrderItems(request); // calls through the proxy ✓
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void saveOrderItems(OrderRequest request) { ... } // now intercept ✓
+}</pre>
+        </div>
+        <div>
+          <div class="code-title">⚠️ @Async self-invocation — runs synchronously, no thread switch</div>
+          <pre>@Service
+public class ReportService {
+
+    public void generateAll() {
+        // WRONG: this.generateReport() bypasses proxy — runs synchronously!
+        // The calling thread blocks. No async behaviour.
+        generateReport("Q1");
+        generateReport("Q2");
+    }
+
+    @Async  // Ignored — never goes through the AsyncExecutionInterceptor proxy
+    public void generateReport(String quarter) {
+        // Expected: runs in thread pool. Actual: runs in caller's thread.
+        heavyReportGeneration(quarter);
+    }
+
+    // ✅ Fix: inject the async operations via a separate @Service bean
+    // Then call injectedBean.generateReport("Q1") — crosses proxy → truly async
+}</pre>
+        </div>
+      </div>
+    </article>
+
+    <article class="card warning">
+      <div class="card-label">Warning</div>
+      <h3>The @Transactional self-call is the #1 undetected production data integrity bug</h3>
+      <p>Unit tests usually mock the repository layer, so they pass regardless of whether the transaction actually started. Integration tests rarely verify transaction propagation specifically. This means the bug ships to production, where two concurrent requests corrupt the same data because one of them wasn't actually running in an isolated transaction. The failure appears as a random data inconsistency weeks after deployment, with no obvious cause.</p>
+      <p class="deep-note">Always review code for the pattern: a public @Transactional method calling another method on <code>this</code> that also has @Transactional. That inner annotation is dead code. Add a code review checklist item for this pattern — it pays for itself quickly.</p>
+    </article>
+
+    <article class="card quiz-card">
+      <div class="card-label">Quiz</div>
+      <h3>A service method annotated with @Async calls this.sendNotification() internally. sendNotification() is also in the same class. What happens when the outer method is invoked?</h3>
+      <div class="quiz-options" data-answer="3">
+        <button class="quiz-option">A. sendNotification() runs in the @Async thread pool as intended</button>
+        <button class="quiz-option">B. Spring throws an exception — @Async cannot be used with self-invocation</button>
+        <button class="quiz-option">C. Spring creates a new thread but waits for it synchronously</button>
+        <button class="quiz-option">D. sendNotification() runs synchronously in the calling thread — the @Async annotation is bypassed because this.sendNotification() skips the proxy</button>
+      </div>
+      <div class="quiz-result">
+        <strong>✅ Correct: D — runs synchronously, @Async is bypassed</strong>
+        <span>@Async works via a Spring AOP proxy that intercepts the method call and submits it to a TaskExecutor thread pool instead of running it in the caller's thread. When you call this.sendNotification(), you invoke it directly on the real object, bypassing the AsyncExecutionInterceptor proxy entirely. The method runs synchronously in the calling thread — the caller blocks. No new thread is created. No exception is thrown. This is particularly nasty because it's invisible: the feature "works" (the notification is sent) but loses the non-blocking property entirely, causing unexpected latency in the calling request. Fix: move sendNotification() to a separate @Service bean.</span>
+      </div>
+    </article>
+
+  </div>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SECTION 4 — Common Spring AOP Use Cases
+════════════════════════════════════════════════ -->
+<section class="section" data-section="3">
+<div class="section-inner">
+  <div class="hero">
+    <div class="section-label">Section 4 of 5 · ~7 mins</div>
+    <h2>Common Spring AOP Use Cases</h2>
+    <p>AOP powers most of Spring's declarative programming model. Understanding which annotations use proxies lets you debug them correctly and build your own aspects with confidence.</p>
+  </div>
+  <div class="card-grid">
+
+    <article class="card eli5">
+      <div class="card-label">🧒 ELI5</div>
+      <h3>Invisible assistants — Spring annotations are just named proxies</h3>
+      <p>Every time you write @Transactional, @Cacheable, or @Async, you're not using magic — you're asking Spring to assign an invisible assistant to that method. When the method is called, the assistant runs first (opens a transaction, checks the cache), lets your method do its work, then cleans up (commits, stores in cache).</p>
+      <p>Understanding that these are all just proxy-based aspects demystifies them completely. You can reason about their limitations (self-invocation, final methods), predict their ordering (which assistant goes first when multiple annotations apply?), and build your own assistants using the same mechanism.</p>
+    </article>
+
+    <article class="card technical">
+      <div class="card-label">Technical — Custom Annotation + Aspect Pattern</div>
+      <div class="two-col">
+        <div>
+          <h3>Building your own AOP annotation</h3>
+          <p>The same mechanism Spring uses for @Transactional is available to you. Define a custom annotation, write an @Aspect that targets it, and any method annotated with your annotation automatically gets the cross-cutting behaviour.</p>
+          <div class="mini-grid">
+            <div class="mini-panel">
+              <h4>@Around — most common</h4>
+              <ul>
+                <li>Full control: proceed or not</li>
+                <li>Modify args before calling target</li>
+                <li>Modify/replace return value</li>
+                <li>Catch and translate exceptions</li>
+              </ul>
+            </div>
+            <div class="mini-panel">
+              <h4>Aspect ordering (@Order)</h4>
+              <ul>
+                <li>Lower number = outer wrapper</li>
+                <li>Security: @Order(0) — outermost</li>
+                <li>Transactions: @Order(1)</li>
+                <li>Your custom: @Order(2)</li>
+                <li>No @Order = undefined order</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="interview-box">
+            <div class="lbl">💬 Model Interview Answer</div>
+            <p>"I've used custom AOP aspects for audit logging — a @AuditLog annotation on service methods that captures the caller's identity, method name, arguments, and outcome in a single centralised aspect. The key design decisions: use @annotation() pointcut so only explicitly opted-in methods are advised, always re-throw exceptions from @Around advice, and set @Order explicitly so the audit aspect runs after security (you want the authenticated user available in the audit record)."</p>
+          </div>
+        </div>
+      </div>
+      <div class="code-blocks">
+        <div>
+          <div class="code-title">Custom @AuditLog annotation + aspect — production pattern</div>
+          <pre>// Step 1: Define the annotation
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)  // must be RUNTIME — not CLASS or SOURCE
+public @interface AuditLog {
+    String action();                 // e.g., "TRANSFER_FUNDS", "DELETE_ACCOUNT"
+    boolean logArgs = true;          // opt out for sensitive data like passwords
+}
+
+// Step 2: Write the aspect
+@Aspect
+@Component
+@Order(2)  // runs inside security (@Order(0)) and transaction (@Order(1)) aspects
+@RequiredArgsConstructor
+public class AuditLogAspect {
+
+    private final AuditRepository auditRepo;
+
+    // @annotation() pointcut — only fires for explicitly annotated methods
+    @Around("@annotation(auditLog)")
+    public Object audit(ProceedingJoinPoint pjp, AuditLog auditLog) throws Throwable {
+        String principal = SecurityContextHolder.getContext()
+                                               .getAuthentication().getName();
+        String method = pjp.getSignature().toShortString();
+        Object[] args = auditLog.logArgs() ? pjp.getArgs() : new Object[]{"[redacted]"};
+
+        try {
+            Object result = pjp.proceed();  // call the real method
+            // Success: save the audit record (in a REQUIRES_NEW tx — must persist
+            // even if the outer transaction rolls back)
+            auditRepo.save(AuditEntry.success(principal, auditLog.action(), method, args));
+            return result;
+        } catch (Throwable ex) {
+            auditRepo.save(AuditEntry.failure(principal, auditLog.action(), method,
+                                              args, ex.getMessage()));
+            throw ex;  // ALWAYS re-throw — aspects must not silently swallow exceptions
+        }
+    }
+}
+
+// Step 3: Use it — clean business method, audit handled automatically
+@Service
+public class AccountService {
+
+    @AuditLog(action = "TRANSFER_FUNDS")
+    @Transactional
+    public TransferResult transfer(Long from, Long to, BigDecimal amount) {
+        // No audit boilerplate here — the aspect handles it
+        accountRepo.debit(from, amount);
+        accountRepo.credit(to, amount);
+        return new TransferResult(from, to, amount);
+    }
+
+    @AuditLog(action = "CHANGE_PASSWORD", logArgs = false)  // don't log the password
+    public void changePassword(Long userId, String newPassword) {
+        userRepo.updatePassword(userId, passwordEncoder.encode(newPassword));
+    }
+}</pre>
+        </div>
+        <div>
+          <div class="code-title">Aspect ordering — security wraps everything else</div>
+          <pre>// Conceptual nesting when all three apply to the same method:
+// @Order(0): SecurityAspect.before()  — check if user has permission FIRST
+//   @Order(1): TransactionAspect.begin() — open DB tx
+//     @Order(2): AuditLogAspect.before() — record audit with authenticated user ✓
+//       Target method executes
+//     @Order(2): AuditLogAspect.after() — record outcome
+//   @Order(1): TransactionAspect.commit() / rollback()
+// @Order(0): SecurityAspect.after()
+
+// If security ran INSIDE transaction (@Order(1) &lt; @Order(0)):
+// Transaction opens → Security check → may rollback tx — inefficient
+// Correct ordering: Security outermost → fail fast before DB resources allocated
+
+// Named pointcut composition for reuse:
+@Aspect
+@Component
+public class ServiceAspects {
+
+    @Pointcut("execution(* com.example.service..*(..))")
+    public void inServiceLayer() {}
+
+    @Pointcut("@annotation(org.springframework.transaction.annotation.Transactional)")
+    public void isTransactional() {}
+
+    @Pointcut("inServiceLayer() &amp;&amp; isTransactional()")
+    public void transactionalServiceMethod() {}
+
+    // Use composed pointcut
+    @Before("transactionalServiceMethod()")
+    public void logTransactionalServiceEntry(JoinPoint jp) {
+        log.debug("Entering transactional service method: {}", jp.getSignature());
+    }
+}</pre>
+        </div>
+      </div>
+    </article>
+
+    <article class="card warning">
+      <div class="card-label">Warning</div>
+      <h3>Never silently swallow exceptions inside @Around advice</h3>
+      <p>The most dangerous @Around mistake: catching an exception and returning null or a default value instead of re-throwing. The caller has no idea the method failed. Transactions don't roll back (RuntimeException is what triggers rollback). Callers receive corrupt or empty data and proceed as if everything worked.</p>
+      <div class="code-blocks">
+        <div>
+          <div class="code-title">❌ Never do this — silently swallowing exceptions</div>
+          <pre>@Around("execution(* com.example.service..*(..))")
+public Object dangerousAround(ProceedingJoinPoint pjp) {
+    try {
+        return pjp.proceed();
+    } catch (Throwable ex) {
+        log.error("Error in {}: {}", pjp.getSignature(), ex.getMessage());
+        return null;  // ← SILENT FAILURE: caller gets null, thinks it worked
+        // @Transactional never sees the exception — no rollback happens
+        // Database is left in a partially-written state
+    }
+}</pre>
+        </div>
+        <div>
+          <div class="code-title">✅ Always re-throw (or wrap in a more specific exception)</div>
+          <pre>@Around("execution(* com.example.service..*(..))")
+public Object safeAround(ProceedingJoinPoint pjp) throws Throwable {
+    try {
+        return pjp.proceed();
+    } catch (Throwable ex) {
+        log.error("Error in {}: {}", pjp.getSignature(), ex.getMessage());
+        // Option 1: re-throw as-is
+        throw ex;
+        // Option 2: wrap in domain exception (preserve stacktrace)
+        // throw new ServiceException("Failed in " + pjp.getSignature(), ex);
+    }
+}</pre>
+        </div>
+      </div>
+    </article>
+
+    <article class="card quiz-card">
+      <div class="card-label">Quiz</div>
+      <h3>You have two aspects on the same method: SecurityAspect (@Order(1)) and TransactionAspect (@Order(2)). In what order do they run?</h3>
+      <div class="quiz-options" data-answer="0">
+        <button class="quiz-option">A. SecurityAspect is the outer wrapper (runs first before, runs last after). TransactionAspect is inner. Lower @Order = more outer.</button>
+        <button class="quiz-option">B. TransactionAspect runs first because it has a higher @Order number — higher numbers take priority</button>
+        <button class="quiz-option">C. They run in the order they are defined in the class files — @Order has no effect for @Around advice</button>
+        <button class="quiz-option">D. The order is undefined without @EnableAspectJAutoProxy(order=true)</button>
+      </div>
+      <div class="quiz-result">
+        <strong>✅ Correct: A — lower @Order number = outer wrapper</strong>
+        <span>Spring AOP nesting follows the @Order convention: lower numbers run as the outer wrapper. @Order(1) SecurityAspect wraps @Order(2) TransactionAspect, which wraps the target method. For @Before advice this means SecurityAspect.before() runs first, then TransactionAspect.before(), then the method. For @After it's reversed: TransactionAspect.after(), then SecurityAspect.after(). This is intentional for security: you want security enforcement outermost so a rejected call fails fast without opening a database transaction. Option D is wrong — @EnableAspectJAutoProxy enables AOP support but the 'order=true' attribute doesn't exist; @Order on the Aspect class is what controls nesting.</span>
+      </div>
+    </article>
+
+  </div>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SECTION 5 — Deep Dive: Proxy Boundaries in Practice
+════════════════════════════════════════════════ -->
+<section class="section" data-section="4">
+<div class="section-inner">
+  <div class="hero">
+    <div class="section-label">Section 5 of 5 · ~7 mins</div>
+    <h2>Deep Dive: Proxy Boundaries in Practice</h2>
+    <p>The patterns senior engineers reach for when vanilla AOP hits its limits — pointcut composition, @Transactional + AOP interaction, and knowing when Spring AOP is not enough.</p>
+  </div>
+  <div class="card-grid">
+
+    <article class="card eli5">
+      <div class="card-label">🧒 ELI5</div>
+      <h3>Knowing where the walls of your room are</h3>
+      <p>Spring AOP is powerful but has clear walls: it only works across proxy boundaries, only on Spring-managed beans, and only on non-final, non-private methods. A senior engineer knows exactly where those walls are — not from memorising rules, but from understanding the proxy mechanism. When something's not working, they can immediately diagnose: "Is this a self-invocation? Is the class or method final? Is this bean even Spring-managed?"</p>
+      <p>This section is about building that diagnostic muscle and knowing what to reach for when you hit a wall.</p>
+    </article>
+
+    <article class="card technical">
+      <div class="card-label">Technical — AOP Limitations Diagnostic Checklist</div>
+      <div class="two-col">
+        <div>
+          <h3>When your aspect or annotation silently fails — run this checklist</h3>
+          <div class="mini-grid">
+            <div class="mini-panel">
+              <h4>Check 1: Proxy boundary</h4>
+              <ul>
+                <li>Is the calling code external to the bean?</li>
+                <li>Or is it this.method() (self-invocation)?</li>
+                <li>Fix: extract to separate @Service bean</li>
+              </ul>
+            </div>
+            <div class="mini-panel">
+              <h4>Check 2: final modifier</h4>
+              <ul>
+                <li>Is the class final?</li>
+                <li>Is the method final?</li>
+                <li>Fix: remove final</li>
+              </ul>
+            </div>
+            <div class="mini-panel">
+              <h4>Check 3: Bean registration</h4>
+              <ul>
+                <li>Is the class a Spring bean (@Service/@Component)?</li>
+                <li>Instantiated via new()? → not proxied</li>
+                <li>Fix: let Spring create it</li>
+              </ul>
+            </div>
+            <div class="mini-panel">
+              <h4>Check 4: Method visibility</h4>
+              <ul>
+                <li>Is the method private?</li>
+                <li>Spring AOP cannot intercept private methods</li>
+                <li>Fix: make public or protected</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="interview-box">
+            <div class="lbl">💬 Model Interview Answer</div>
+            <p>"When an AOP annotation silently fails, I run through four checks in order: self-invocation (this.method() bypasses the proxy), final class or method (CGLIB can't subclass or override), not a Spring bean (instantiated via new()), or a private method (invisible to proxies). For the rare case where I genuinely need to advise private methods or self-invocations — like advising domain objects not managed by Spring — I'd consider AspectJ compile-time or load-time weaving, but that's a significantly more complex setup I'd only add if the design truly requires it."</p>
+          </div>
+          <table>
+            <thead><tr><th>Limitation</th><th>Root cause</th><th>Fix</th></tr></thead>
+            <tbody>
+              <tr><td>Self-invocation ignored</td><td>Proxy not in call path</td><td>Separate bean</td></tr>
+              <tr><td>final method ignored</td><td>CGLIB can't override</td><td>Remove final</td></tr>
+              <tr><td>private method ignored</td><td>Proxy can't intercept</td><td>Make public/protected</td></tr>
+              <tr><td>new MyService() not proxied</td><td>Not in Spring context</td><td>Use @Autowired injection</td></tr>
+              <tr><td>Wrong advice order</td><td>Missing/wrong @Order</td><td>Add explicit @Order</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="code-blocks">
+        <div>
+          <div class="code-title">@Configuration CGLIB — why calling @Bean methods works correctly</div>
+          <pre>// @Configuration classes ALWAYS use CGLIB — this is why:
+@Configuration
+public class AppConfig {
+
+    @Bean
+    public DataSource dataSource() {
+        return new HikariDataSource(hikariConfig());
+    }
+
+    @Bean
+    public UserRepository userRepository() {
+        return new UserRepositoryImpl(dataSource()); // calls dataSource() directly!
+    }
+
+    @Bean
+    public OrderRepository orderRepository() {
+        return new OrderRepositoryImpl(dataSource()); // also calls dataSource()!
+    }
+}
+
+// Without CGLIB: dataSource() is called THREE TIMES → THREE HikariDataSource instances.
+// That's a connection pool catastrophe: 3 pools instead of 1.
+
+// With CGLIB (@Configuration's default): Spring subclasses AppConfig.
+// Every @Bean method call is intercepted. The CGLIB proxy checks: "Has dataSource()
+// already been created?" If yes, return the cached singleton from ApplicationContext.
+// If no, call the real method and cache the result.
+// Result: dataSource() method body runs once — one HikariDataSource — regardless
+// of how many times other @Bean methods call dataSource().
+
+// @Component + @Bean (Lite Mode) — NO CGLIB interception:
+@Component  // ← NOT @Configuration
+public class LiteConfig {
+
+    @Bean
+    public DataSource dataSource() { return new HikariDataSource(hikariConfig()); }
+
+    @Bean
+    public UserRepository userRepository() {
+        return new UserRepositoryImpl(dataSource()); // ← REAL Java call, no interception
+        // Creates a SECOND HikariDataSource! This is the lite-mode trap.
+    }
+}
+
+// Rule: if @Bean methods call each other, use @Configuration (never @Component).</pre>
+        </div>
+        <div>
+          <div class="code-title">Spring AOP vs AspectJ — when to consider the difference</div>
+          <pre>// Spring AOP: proxy-based, runtime, only Spring beans, only method calls
+// ✓ Zero configuration overhead
+// ✓ Works with 99% of production use cases
+// ✗ Self-invocation not advised
+// ✗ Private methods not advised
+// ✗ Non-Spring-managed objects not advised
+
+// AspectJ: bytecode weaving, compile-time or load-time
+// ✓ Advises ANY Java code, including private methods and self-calls
+// ✓ Works on objects not managed by Spring
+// ✗ Requires AspectJ compiler plugin (compile-time) or Java agent (load-time)
+// ✗ Significantly more complex setup and debugging
+
+// When would you choose AspectJ in Spring?
+// 1. You need to advise domain objects not in the Spring context
+// 2. You must intercept self-invocations and extracting to a separate bean
+//    would fundamentally break the design
+// 3. You need to advise constructors (Spring AOP cannot do this)
+
+// Enable load-time weaving in Spring:
+// @EnableLoadTimeWeaving // in a @Configuration class
+// + -javaagent:spring-instrument.jar JVM arg
+// + META-INF/aop.xml for AspectJ configuration</pre>
+        </div>
+      </div>
+    </article>
+
+    <article class="card warning">
+      <div class="card-label">Warning</div>
+      <h3>Objects created with new() are NEVER proxied — even if the class is @Service</h3>
+      <p>The <code>@Service</code>/<code>@Component</code> annotation on a class tells Spring to create and manage an instance of that class. It does not affect instances you create yourself with <code>new</code>. An object created via <code>new MyService()</code> is just a plain Java object — no proxy, no DI, no AOP, even if the class has @Transactional or @Cacheable annotations.</p>
+      <div class="code-blocks">
+        <div>
+          <div class="code-title">❌ new() bypasses Spring entirely</div>
+          <pre>@Service
+public class ReportController {
+
+    public void generateReport() {
+        // Creating via new() — this is NOT the Spring-managed bean!
+        // No proxy, no @Transactional, no @Cacheable, no DI injection.
+        ReportService svc = new ReportService();  // plain Java object
+        svc.generate();  // @Transactional on generate() does NOTHING here
+    }
+}
+
+// ✅ Always use DI — let Spring create and inject the proxied bean
+@Service
+@RequiredArgsConstructor
+public class ReportController {
+
+    private final ReportService reportService;  // Spring-injected, proxied ✓
+
+    public void generateReport() {
+        reportService.generate();  // goes through proxy → @Transactional works ✓
+    }
+}</pre>
+        </div>
+      </div>
+    </article>
+
+    <article class="card quiz-card">
+      <div class="card-label">Quiz</div>
+      <h3>In a @Configuration class, method A() is annotated @Bean and calls method B() which is also @Bean. How many instances of B's bean are created if A() and one other @Bean method both call B()?</h3>
+      <div class="quiz-options" data-answer="0">
+        <button class="quiz-option">A. One — @Configuration's CGLIB proxy intercepts all @Bean calls and returns the cached singleton from the ApplicationContext</button>
+        <button class="quiz-option">B. Two — each @Bean method call creates a new instance since that's what the method body says</button>
+        <button class="quiz-option">C. Zero — Spring prevents @Bean methods from calling other @Bean methods</button>
+        <button class="quiz-option">D. One per caller — @Bean methods use prototype scope by default when called directly</button>
+      </div>
+      <div class="quiz-result">
+        <strong>✅ Correct: A — one instance, thanks to CGLIB interception</strong>
+        <span>@Configuration classes are always CGLIB-proxied. Every @Bean method call on the config object is intercepted by the proxy. The proxy checks whether that bean already exists in the ApplicationContext. If yes — return the existing singleton. If no — call the real method body and register the result. This is why calling dataSource() three times in a @Configuration class creates exactly one DataSource. If you change @Configuration to @Component (Lite Mode), CGLIB is not used, each call to dataSource() executes the method body — creating three separate DataSource objects. This is a famous Spring interview trap.</span>
+      </div>
+    </article>
+
+  </div>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SECTION 6 — Completion / Cheat Sheet
+════════════════════════════════════════════════ -->
+<section class="section" data-section="5">
+<div class="section-inner">
+  <div class="hero">
+    <div class="section-label">Completion Screen · Review mode</div>
+    <h2>🎉 AOP &amp; Proxies Cheat Sheet</h2>
+    <p>Everything you need to recall in interviews and code reviews — the mechanisms, the traps, and the fixes.</p>
+  </div>
+  <div class="completion-grid">
+    <div class="card technical">
+      <div class="card-label">Cheat Sheet</div>
+      <div class="celebrate">⚙️</div>
+      <div class="cheat-list">
+        <div class="cheat-item">
+          <h4>Why AOP exists</h4>
+          <p>Apply cross-cutting concerns (transactions, logging, security, timing) to many methods without repeating the code in each one. One Aspect, zero duplication.</p>
+        </div>
+        <div class="cheat-item">
+          <h4>JDK vs CGLIB proxy</h4>
+          <p>CGLIB is the Spring Boot default — subclasses your class at runtime. JDK proxy implements your interface. Both fail silently on final methods. CGLIB requires non-final class + non-final methods.</p>
+        </div>
+        <div class="cheat-item">
+          <h4>Self-invocation trap</h4>
+          <p>this.method() bypasses the proxy. @Transactional, @Cacheable, @Async, @Retryable — all silently do nothing. Fix: extract the annotated method to a separate @Service bean.</p>
+        </div>
+        <div class="cheat-item">
+          <h4>Advice types</h4>
+          <p>@Around = full control (proceed or not, modify return). @Before = pre-execution. @AfterReturning = post-success. @AfterThrowing = on exception. @After = always (finally).</p>
+        </div>
+        <div class="cheat-item">
+          <h4>@Order = nesting depth</h4>
+          <p>Lower @Order number = outer wrapper. Security @Order(0) wraps Transactions @Order(1) wraps your custom aspect. Always set @Order explicitly on production aspects.</p>
+        </div>
+        <div class="cheat-item">
+          <h4>@Configuration vs @Component + @Bean</h4>
+          <p>@Configuration uses CGLIB — @Bean method calls return the ApplicationContext singleton. @Component (Lite Mode) has no CGLIB — each @Bean call creates a new instance. Never use @Component with cross-referencing @Bean methods.</p>
+        </div>
+      </div>
+    </div>
+    <div class="card analogy">
+      <div class="card-label">Common traps</div>
+      <h3>Mistakes that trip up senior engineers</h3>
+      <div class="confusion-list">
+        <div class="confusion-item">
+          <strong>@Transactional / @Async on final method</strong>
+          <p>CGLIB cannot override final methods — the annotation is silently ignored. No error, no warning. The feature simply doesn't work. Remove final.</p>
+        </div>
+        <div class="confusion-item">
+          <strong>Self-invocation (this.method())</strong>
+          <p>The proxy is bypassed. @Transactional on the called method does nothing. This is the #1 undetected transaction bug. Always call through a separate injected bean.</p>
+        </div>
+        <div class="confusion-item">
+          <strong>Swallowing exceptions in @Around advice</strong>
+          <p>Catching Throwable and returning null means callers get corrupt data, transactions don't rollback, and failures are invisible. Always re-throw from @Around advice.</p>
+        </div>
+        <div class="confusion-item">
+          <strong>Overly broad pointcut (execution(* *.*(..)))</strong>
+          <p>Advises Spring's own beans — causes infinite loops, slow startup, or subtle infrastructure breakage. Always scope to your own packages or use @annotation() pointcuts.</p>
+        </div>
+        <div class="confusion-item">
+          <strong>new MyService() vs @Autowired</strong>
+          <p>Objects created with new() are not Spring-managed — no proxy, no DI, no AOP. Always let Spring inject the proxied instance.</p>
+        </div>
+      </div>
+      <div class="badge-row">
+        <span class="pill good">Separate bean for self-calls</span>
+        <span class="pill good">@annotation() pointcut</span>
+        <span class="pill good">Always re-throw in @Around</span>
+        <span class="pill bad">final + @Transactional</span>
+        <span class="pill bad">this.method() with AOP</span>
+        <span class="pill caution">@Order explicitly on aspects</span>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
 
 </main>
-<section class="section" data-section="0">
-<div class="section-inner">
-<div class="hero">
-<div class="section-label">Section 1 · Core concept</div>
-<h2>Why AOP Exists</h2>
-<p>Why AOP Exists is a high-value senior interview topic because it reveals whether you understand the underlying mechanism, the default behavior, and the trade-offs in production.</p>
-</div>
-<div class="card-grid">
-<article class="card eli5"><div class="card-label">🧒 ELI5</div><h3>A simple mental picture</h3><p>Imagine a busy workplace where one small rule determines whether the whole team moves smoothly or keeps stepping on each other. Aspect-Oriented Programming lets you apply cross-cutting behavior such as transactions, logging, security, or timing around many methods without duplicating that logic in each method body. works like that kind of rule: it tells the system how to behave before small mistakes turn into bigger production problems.</p><p>It matters because it keeps repeated infrastructure concerns from drowning the business logic. Without that rule, engineers often discover the problem only after the app is under load, when the bug is expensive and confusing.</p><p>The useful mental shortcut is to ask: “What is the system trying to coordinate here, and what breaks when that coordination is missing?” That question usually reveals why this feature exists.</p></article><article class="card analogy"><div class="card-label">🔗 ANALOGY</div><h3>Why the rule exists</h3><p>Think of why aop exists as a piece of operating policy, not just a syntax feature. The policy exists to make decisions repeatable across the whole system instead of relying on every individual class to remember the rule.</p><p>If you ignore that policy, the most common smell is copy-pasted try/finally, timing, or auth checks inside every service method. In real applications, that smell usually shows up as flaky behavior, hidden coupling, or painful debugging.</p></article><article class="card technical"><div class="card-label">Technical</div><div class="two-col"><div><h3>How it works under the hood</h3><p><strong>Definition:</strong> Aspect-Oriented Programming lets you apply cross-cutting behavior such as transactions, logging, security, or timing around many methods without duplicating that logic in each method body.</p><p class="deep-note">Aspect-Oriented Programming lets you apply cross-cutting behavior such as transactions, logging, security, or timing around many methods without duplicating that logic in each method body. Under the hood, Spring or the underlying infrastructure usually applies the behavior around your code rather than by changing your business logic directly.</p><p class="deep-note">The production question is not “can I enable it?” but “where is the right boundary and what problem am I actually solving?”</p><p class="deep-note">Good engineering here comes from matching the mechanism to the use case, then watching the trade-off instead of blindly turning the feature on everywhere.</p><div class="mini-grid"><div class="mini-panel"><h4>Why it matters in production</h4><ul><li>it keeps repeated infrastructure concerns from drowning the business logic</li><li>Makes aop &amp; proxies behavior explicit</li><li>Gives you a clearer story in debugging and interviews</li></ul></div><div class="mini-panel"><h4>Common smell</h4><ul><li>copy-pasted try/finally, timing, or auth checks inside every service method</li><li>Using the mechanism as a band-aid for design issues</li><li>Forgetting what the default behavior actually is</li></ul></div></div><div class="badge-row"><span class="pill good">Explicit intent</span><span class="pill info">Know the default</span><span class="pill caution">Trade-offs matter</span></div><div class="flow"><span class="flow-step">Call enters boundary</span><span class="flow-arrow">→</span><span class="flow-step">Framework applies rule</span><span class="flow-arrow">→</span><span class="flow-step">Your code runs</span><span class="flow-arrow">→</span><span class="flow-step">Outcome follows configured behavior</span></div></div><div><h3>💬 Model Interview Answer</h3><p>“Why AOP Exists in AOP &amp; Proxies is really about aspect-oriented programming lets you apply cross-cutting behavior such as transactions, logging, security, or timing around many methods without duplicating that logic in each method body. I explain it as a mechanism that enforces a policy around my code so the application behaves consistently. The important trade-off is copy-pasted try/finally, timing, or auth checks inside every service method, so I use it deliberately and I make the boundary clear instead of relying on accidental defaults.”</p><table><thead><tr><th>Scenario</th><th>What to watch</th></tr></thead><tbody><tr><td>Business logic</td><td>What the method is trying to do</td></tr><tr><td>Cross-cutting concern</td><td>Behavior applied to many places</td></tr><tr><td>Aspect</td><td>Reusable wrapper for that concern</td></tr></tbody></table></div></div><div class="code-blocks"><div><div class="code-title">❌ Wrong</div><pre>@Service
-public class OrderService {
 
-    public Order findById(Long id) {
-        long start = System.currentTimeMillis();
-        try {
-            return repository.findById(id).orElseThrow();
-        } finally {
-            log.info("took={}ms", System.currentTimeMillis() - start);
-        }
-    }
-}</pre></div><div><div class="code-title">✅ Right</div><pre>@Aspect
-@Component
-public class TimingAspect {
-
-    @Around("execution(* com.example..service..*(..))")
-    public Object time(ProceedingJoinPoint pjp) throws Throwable {
-        long start = System.currentTimeMillis();
-        try {
-            return pjp.proceed();
-        } finally {
-            log.info("{} took={}ms", pjp.getSignature(), System.currentTimeMillis() - start);
-        }
-    }
-}</pre></div></div><p>Use why aop exists where the rule belongs in architecture, not just where it happens to fix one failing test or one bug report.</p><p class="deep-note">The safest mental model is that Spring gives you a framework feature only when your call crosses the Spring-managed boundary and the surrounding infrastructure can participate.</p></article><article class="card warning"><div class="card-label">Warning</div><h3>Common misunderstanding</h3><p>The dangerous misunderstanding is treating why aop exists like a magic switch instead of a mechanism with boundaries and defaults. That is how teams end up with copy-pasted try/finally, timing, or auth checks inside every service method.</p><p>A safer pattern is to make the intent explicit, keep the scope narrow, and choose the smallest mechanism that actually solves the problem.</p><div class="code-blocks"><div><div class="code-title">Broken pattern</div><pre>@Service
-public class OrderService {
-
-    public Order findById(Long id) {
-        long start = System.currentTimeMillis();
-        try {
-            return repository.findById(id).orElseThrow();
-        } finally {
-            log.info("took={}ms", System.currentTimeMillis() - start);
-        }
-    }
-}</pre></div><div><div class="code-title">Safer pattern</div><pre>@Aspect
-@Component
-public class TimingAspect {
-
-    @Around("execution(* com.example..service..*(..))")
-    public Object time(ProceedingJoinPoint pjp) throws Throwable {
-        long start = System.currentTimeMillis();
-        try {
-            return pjp.proceed();
-        } finally {
-            log.info("{} took={}ms", pjp.getSignature(), System.currentTimeMillis() - start);
-        }
-    }
-}</pre></div></div></article><article class="card technical"><div class="card-label">Mini takeaway</div><ul class="takeaways"><li>Why AOP Exists exists to make a policy explicit</li><li>Defaults are useful, but interviews reward knowing the boundary and trade-off</li><li>If you see copy-pasted try/finally, timing, or auth checks inside every service method, revisit the design before adding more framework annotations</li></ul></article><article class="card quiz-card"><div class="card-label">Quiz</div><h3>What problem is AOP mainly trying to solve?</h3><div class="quiz-options" data-answer="1"><button class="quiz-option">A. Faster SQL joins</button><button class="quiz-option">B. Reusing cross-cutting behavior without repeating it in every method</button><button class="quiz-option">C. Replacing all object-oriented design</button><button class="quiz-option">D. Disabling proxies</button></div><div class="quiz-result"><strong>Correct answer: B</strong><span>B is correct because it matches how why aop exists is intended to work in a production-grade Spring application. The wrong choices are plausible because they sound framework-ish, but they either ignore the real boundary, confuse this feature with another one, or assume a stronger guarantee than the mechanism actually provides. In an interview, tie your answer back to the concrete failure mode you are preventing.</span></div></article></div></div></section><section class="section" data-section="1">
-<div class="section-inner">
-<div class="hero">
-<div class="section-label">Section 2 · Proxy mechanics</div>
-<h2>Proxy Types: JDK vs CGLIB</h2>
-<p>Proxy Types: JDK vs CGLIB is a high-value senior interview topic because it reveals whether you understand the underlying mechanism, the default behavior, and the trade-offs in production.</p>
-</div>
-<div class="card-grid">
-<article class="card eli5"><div class="card-label">🧒 ELI5</div><h3>A simple mental picture</h3><p>Imagine a busy workplace where one small rule determines whether the whole team moves smoothly or keeps stepping on each other. Spring AOP usually works by wrapping your bean in a proxy, either a JDK dynamic proxy for interfaces or a CGLIB subclass proxy for classes. works like that kind of rule: it tells the system how to behave before small mistakes turn into bigger production problems.</p><p>It matters because it explains what methods can actually be intercepted and why some calls do not behave as expected. Without that rule, engineers often discover the problem only after the app is under load, when the bug is expensive and confusing.</p><p>The useful mental shortcut is to ask: “What is the system trying to coordinate here, and what breaks when that coordination is missing?” That question usually reveals why this feature exists.</p></article><article class="card analogy"><div class="card-label">🔗 ANALOGY</div><h3>Why the rule exists</h3><p>Think of proxy types: jdk vs cglib as a piece of operating policy, not just a syntax feature. The policy exists to make decisions repeatable across the whole system instead of relying on every individual class to remember the rule.</p><p>If you ignore that policy, the most common smell is forgetting that final methods or same-class calls may not be intercepted the way you assume. In real applications, that smell usually shows up as flaky behavior, hidden coupling, or painful debugging.</p></article><article class="card technical"><div class="card-label">Technical</div><div class="two-col"><div><h3>How it works under the hood</h3><p><strong>Definition:</strong> Spring AOP usually works by wrapping your bean in a proxy, either a JDK dynamic proxy for interfaces or a CGLIB subclass proxy for classes.</p><p class="deep-note">Spring AOP usually works by wrapping your bean in a proxy, either a JDK dynamic proxy for interfaces or a CGLIB subclass proxy for classes. Under the hood, Spring or the underlying infrastructure usually applies the behavior around your code rather than by changing your business logic directly.</p><p class="deep-note">The production question is not “can I enable it?” but “where is the right boundary and what problem am I actually solving?”</p><p class="deep-note">Good engineering here comes from matching the mechanism to the use case, then watching the trade-off instead of blindly turning the feature on everywhere.</p><div class="mini-grid"><div class="mini-panel"><h4>Why it matters in production</h4><ul><li>it explains what methods can actually be intercepted and why some calls do not behave as expected</li><li>Makes aop &amp; proxies behavior explicit</li><li>Gives you a clearer story in debugging and interviews</li></ul></div><div class="mini-panel"><h4>Common smell</h4><ul><li>forgetting that final methods or same-class calls may not be intercepted the way you assume</li><li>Using the mechanism as a band-aid for design issues</li><li>Forgetting what the default behavior actually is</li></ul></div></div><div class="badge-row"><span class="pill good">Explicit intent</span><span class="pill info">Know the default</span><span class="pill caution">Trade-offs matter</span></div><div class="flow"><span class="flow-step">Call enters boundary</span><span class="flow-arrow">→</span><span class="flow-step">Framework applies rule</span><span class="flow-arrow">→</span><span class="flow-step">Your code runs</span><span class="flow-arrow">→</span><span class="flow-step">Outcome follows configured behavior</span></div></div><div><h3>💬 Model Interview Answer</h3><p>“Proxy Types: JDK vs CGLIB in AOP &amp; Proxies is really about spring aop usually works by wrapping your bean in a proxy, either a jdk dynamic proxy for interfaces or a cglib subclass proxy for classes. I explain it as a mechanism that enforces a policy around my code so the application behaves consistently. The important trade-off is forgetting that final methods or same-class calls may not be intercepted the way you assume, so I use it deliberately and I make the boundary clear instead of relying on accidental defaults.”</p><table><thead><tr><th>Scenario</th><th>What to watch</th></tr></thead><tbody><tr><td>JDK proxy</td><td>Works through interfaces</td></tr><tr><td>CGLIB proxy</td><td>Subclass-based</td></tr><tr><td>Final method/class</td><td>Can limit interception</td></tr></tbody></table></div></div><div class="code-blocks"><div><div class="code-title">❌ Wrong</div><pre>@Service
-public final class BillingService {
-
-    @Transactional
-    public final void charge() {}
-}</pre></div><div><div class="code-title">✅ Right</div><pre>public interface BillingService {
-    void charge();
-}
-
-@Service
-public class DefaultBillingService implements BillingService {
-    @Transactional
-    public void charge() {}
-}</pre></div></div><p>Use proxy types: jdk vs cglib where the rule belongs in architecture, not just where it happens to fix one failing test or one bug report.</p><p class="deep-note">The safest mental model is that Spring gives you a framework feature only when your call crosses the Spring-managed boundary and the surrounding infrastructure can participate.</p></article><article class="card warning"><div class="card-label">Warning</div><h3>Common misunderstanding</h3><p>The dangerous misunderstanding is treating proxy types: jdk vs cglib like a magic switch instead of a mechanism with boundaries and defaults. That is how teams end up with forgetting that final methods or same-class calls may not be intercepted the way you assume.</p><p>A safer pattern is to make the intent explicit, keep the scope narrow, and choose the smallest mechanism that actually solves the problem.</p><div class="code-blocks"><div><div class="code-title">Broken pattern</div><pre>@Service
-public final class BillingService {
-
-    @Transactional
-    public final void charge() {}
-}</pre></div><div><div class="code-title">Safer pattern</div><pre>public interface BillingService {
-    void charge();
-}
-
-@Service
-public class DefaultBillingService implements BillingService {
-    @Transactional
-    public void charge() {}
-}</pre></div></div></article><article class="card technical"><div class="card-label">Mini takeaway</div><ul class="takeaways"><li>Proxy Types: JDK vs CGLIB exists to make a policy explicit</li><li>Defaults are useful, but interviews reward knowing the boundary and trade-off</li><li>If you see forgetting that final methods or same-class calls may not be intercepted the way you assume, revisit the design before adding more framework annotations</li></ul></article><article class="card quiz-card"><div class="card-label">Quiz</div><h3>Why do proxy types matter in Spring AOP?</h3><div class="quiz-options" data-answer="0"><button class="quiz-option">A. Because they determine what Spring can wrap and intercept</button><button class="quiz-option">B. Because they change your SQL dialect</button><button class="quiz-option">C. Because they disable bean scopes</button><button class="quiz-option">D. Because they replace dependency injection</button></div><div class="quiz-result"><strong>Correct answer: A</strong><span>A is correct because it matches how proxy types: jdk vs cglib is intended to work in a production-grade Spring application. The wrong choices are plausible because they sound framework-ish, but they either ignore the real boundary, confuse this feature with another one, or assume a stronger guarantee than the mechanism actually provides. In an interview, tie your answer back to the concrete failure mode you are preventing.</span></div></article></div></div></section><section class="section" data-section="2">
-<div class="section-inner">
-<div class="hero">
-<div class="section-label">Section 3 · Common trap</div>
-<h2>Self-invocation and AOP Limitations</h2>
-<p>Self-invocation and AOP Limitations is a high-value senior interview topic because it reveals whether you understand the underlying mechanism, the default behavior, and the trade-offs in production.</p>
-</div>
-<div class="card-grid">
-<article class="card eli5"><div class="card-label">🧒 ELI5</div><h3>A simple mental picture</h3><p>Imagine a busy workplace where one small rule determines whether the whole team moves smoothly or keeps stepping on each other. A same-class method call can bypass the proxy because the call never leaves the object, so the aspect does not get a chance to intercept it. works like that kind of rule: it tells the system how to behave before small mistakes turn into bigger production problems.</p><p>It matters because it explains many “why did my transaction/logging/retry annotation not run?” bugs. Without that rule, engineers often discover the problem only after the app is under load, when the bug is expensive and confusing.</p><p>The useful mental shortcut is to ask: “What is the system trying to coordinate here, and what breaks when that coordination is missing?” That question usually reveals why this feature exists.</p></article><article class="card analogy"><div class="card-label">🔗 ANALOGY</div><h3>Why the rule exists</h3><p>Think of self-invocation and aop limitations as a piece of operating policy, not just a syntax feature. The policy exists to make decisions repeatable across the whole system instead of relying on every individual class to remember the rule.</p><p>If you ignore that policy, the most common smell is annotated method works from another bean but not from a helper method in the same class. In real applications, that smell usually shows up as flaky behavior, hidden coupling, or painful debugging.</p></article><article class="card technical"><div class="card-label">Technical</div><div class="two-col"><div><h3>How it works under the hood</h3><p><strong>Definition:</strong> A same-class method call can bypass the proxy because the call never leaves the object, so the aspect does not get a chance to intercept it.</p><p class="deep-note">A same-class method call can bypass the proxy because the call never leaves the object, so the aspect does not get a chance to intercept it. Under the hood, Spring or the underlying infrastructure usually applies the behavior around your code rather than by changing your business logic directly.</p><p class="deep-note">The production question is not “can I enable it?” but “where is the right boundary and what problem am I actually solving?”</p><p class="deep-note">Good engineering here comes from matching the mechanism to the use case, then watching the trade-off instead of blindly turning the feature on everywhere.</p><div class="mini-grid"><div class="mini-panel"><h4>Why it matters in production</h4><ul><li>it explains many “why did my transaction/logging/retry annotation not run?” bugs</li><li>Makes aop &amp; proxies behavior explicit</li><li>Gives you a clearer story in debugging and interviews</li></ul></div><div class="mini-panel"><h4>Common smell</h4><ul><li>annotated method works from another bean but not from a helper method in the same class</li><li>Using the mechanism as a band-aid for design issues</li><li>Forgetting what the default behavior actually is</li></ul></div></div><div class="badge-row"><span class="pill good">Explicit intent</span><span class="pill info">Know the default</span><span class="pill caution">Trade-offs matter</span></div><div class="flow"><span class="flow-step">Call enters boundary</span><span class="flow-arrow">→</span><span class="flow-step">Framework applies rule</span><span class="flow-arrow">→</span><span class="flow-step">Your code runs</span><span class="flow-arrow">→</span><span class="flow-step">Outcome follows configured behavior</span></div></div><div><h3>💬 Model Interview Answer</h3><p>“Self-invocation and AOP Limitations in AOP &amp; Proxies is really about a same-class method call can bypass the proxy because the call never leaves the object, so the aspect does not get a chance to intercept it. I explain it as a mechanism that enforces a policy around my code so the application behaves consistently. The important trade-off is annotated method works from another bean but not from a helper method in the same class, so I use it deliberately and I make the boundary clear instead of relying on accidental defaults.”</p><table><thead><tr><th>Scenario</th><th>What to watch</th></tr></thead><tbody><tr><td>External bean call</td><td>Proxy can intercept</td></tr><tr><td>Same-class call</td><td>Proxy often bypassed</td></tr><tr><td>Result</td><td>Aspect may never run</td></tr></tbody></table></div></div><div class="code-blocks"><div><div class="code-title">❌ Wrong</div><pre>@Service
-public class SyncService {
-
-    public void syncAll() {
-        retryableStep(); // bypasses proxy
-    }
-
-    @Retryable
-    public void retryableStep() {}
-}</pre></div><div><div class="code-title">✅ Right</div><pre>@Service
-public class RetryableStepService {
-
-    @Retryable
-    public void retryableStep() {}
-}
-
-@Service
-public class SyncService {
-
-    private final RetryableStepService retryableStepService;
-
-    public SyncService(RetryableStepService retryableStepService) {
-        this.retryableStepService = retryableStepService;
-    }
-
-    public void syncAll() {
-        retryableStepService.retryableStep();
-    }
-}</pre></div></div><p>Use self-invocation and aop limitations where the rule belongs in architecture, not just where it happens to fix one failing test or one bug report.</p><p class="deep-note">The safest mental model is that Spring gives you a framework feature only when your call crosses the Spring-managed boundary and the surrounding infrastructure can participate.</p></article><article class="card warning"><div class="card-label">Warning</div><h3>Common misunderstanding</h3><p>The dangerous misunderstanding is treating self-invocation and aop limitations like a magic switch instead of a mechanism with boundaries and defaults. That is how teams end up with annotated method works from another bean but not from a helper method in the same class.</p><p>A safer pattern is to make the intent explicit, keep the scope narrow, and choose the smallest mechanism that actually solves the problem.</p><div class="code-blocks"><div><div class="code-title">Broken pattern</div><pre>@Service
-public class SyncService {
-
-    public void syncAll() {
-        retryableStep(); // bypasses proxy
-    }
-
-    @Retryable
-    public void retryableStep() {}
-}</pre></div><div><div class="code-title">Safer pattern</div><pre>@Service
-public class RetryableStepService {
-
-    @Retryable
-    public void retryableStep() {}
-}
-
-@Service
-public class SyncService {
-
-    private final RetryableStepService retryableStepService;
-
-    public SyncService(RetryableStepService retryableStepService) {
-        this.retryableStepService = retryableStepService;
-    }
-
-    public void syncAll() {
-        retryableStepService.retryableStep();
-    }
-}</pre></div></div></article><article class="card technical"><div class="card-label">Mini takeaway</div><ul class="takeaways"><li>Self-invocation and AOP Limitations exists to make a policy explicit</li><li>Defaults are useful, but interviews reward knowing the boundary and trade-off</li><li>If you see annotated method works from another bean but not from a helper method in the same class, revisit the design before adding more framework annotations</li></ul></article><article class="card quiz-card"><div class="card-label">Quiz</div><h3>Why does self-invocation often break annotation-based AOP behavior?</h3><div class="quiz-options" data-answer="1"><button class="quiz-option">A. Because Java forbids annotations on public methods</button><button class="quiz-option">B. Because the internal call skips the proxy boundary</button><button class="quiz-option">C. Because only controllers are proxied</button><button class="quiz-option">D. Because proxies work only in tests</button></div><div class="quiz-result"><strong>Correct answer: B</strong><span>B is correct because it matches how self-invocation and aop limitations is intended to work in a production-grade Spring application. The wrong choices are plausible because they sound framework-ish, but they either ignore the real boundary, confuse this feature with another one, or assume a stronger guarantee than the mechanism actually provides. In an interview, tie your answer back to the concrete failure mode you are preventing.</span></div></article></div></div></section><section class="section" data-section="3">
-<div class="section-inner">
-<div class="hero">
-<div class="section-label">Section 4 · Practical use</div>
-<h2>Common Spring AOP Use Cases</h2>
-<p>Common Spring AOP Use Cases is a high-value senior interview topic because it reveals whether you understand the underlying mechanism, the default behavior, and the trade-offs in production.</p>
-</div>
-<div class="card-grid">
-<article class="card eli5"><div class="card-label">🧒 ELI5</div><h3>A simple mental picture</h3><p>Imagine a busy workplace where one small rule determines whether the whole team moves smoothly or keeps stepping on each other. Spring commonly uses proxy-based AOP for transactions, method security, caching, retries, and custom logging or metrics. works like that kind of rule: it tells the system how to behave before small mistakes turn into bigger production problems.</p><p>It matters because it helps you recognize that many “spring features” are really the same proxy mechanism applied to different concerns. Without that rule, engineers often discover the problem only after the app is under load, when the bug is expensive and confusing.</p><p>The useful mental shortcut is to ask: “What is the system trying to coordinate here, and what breaks when that coordination is missing?” That question usually reveals why this feature exists.</p></article><article class="card analogy"><div class="card-label">🔗 ANALOGY</div><h3>Why the rule exists</h3><p>Think of common spring aop use cases as a piece of operating policy, not just a syntax feature. The policy exists to make decisions repeatable across the whole system instead of relying on every individual class to remember the rule.</p><p>If you ignore that policy, the most common smell is treating each annotation as unrelated magic. In real applications, that smell usually shows up as flaky behavior, hidden coupling, or painful debugging.</p></article><article class="card technical"><div class="card-label">Technical</div><div class="two-col"><div><h3>How it works under the hood</h3><p><strong>Definition:</strong> Spring commonly uses proxy-based AOP for transactions, method security, caching, retries, and custom logging or metrics.</p><p class="deep-note">Spring commonly uses proxy-based AOP for transactions, method security, caching, retries, and custom logging or metrics. Under the hood, Spring or the underlying infrastructure usually applies the behavior around your code rather than by changing your business logic directly.</p><p class="deep-note">The production question is not “can I enable it?” but “where is the right boundary and what problem am I actually solving?”</p><p class="deep-note">Good engineering here comes from matching the mechanism to the use case, then watching the trade-off instead of blindly turning the feature on everywhere.</p><div class="mini-grid"><div class="mini-panel"><h4>Why it matters in production</h4><ul><li>it helps you recognize that many “Spring features” are really the same proxy mechanism applied to different concerns</li><li>Makes aop &amp; proxies behavior explicit</li><li>Gives you a clearer story in debugging and interviews</li></ul></div><div class="mini-panel"><h4>Common smell</h4><ul><li>treating each annotation as unrelated magic</li><li>Using the mechanism as a band-aid for design issues</li><li>Forgetting what the default behavior actually is</li></ul></div></div><div class="badge-row"><span class="pill good">Explicit intent</span><span class="pill info">Know the default</span><span class="pill caution">Trade-offs matter</span></div><div class="flow"><span class="flow-step">Call enters boundary</span><span class="flow-arrow">→</span><span class="flow-step">Framework applies rule</span><span class="flow-arrow">→</span><span class="flow-step">Your code runs</span><span class="flow-arrow">→</span><span class="flow-step">Outcome follows configured behavior</span></div></div><div><h3>💬 Model Interview Answer</h3><p>“Common Spring AOP Use Cases in AOP &amp; Proxies is really about spring commonly uses proxy-based aop for transactions, method security, caching, retries, and custom logging or metrics. I explain it as a mechanism that enforces a policy around my code so the application behaves consistently. The important trade-off is treating each annotation as unrelated magic, so I use it deliberately and I make the boundary clear instead of relying on accidental defaults.”</p><table><thead><tr><th>Scenario</th><th>What to watch</th></tr></thead><tbody><tr><td>Transactions</td><td>Aspect-like boundary</td></tr><tr><td>Caching</td><td>Aspect-like boundary</td></tr><tr><td>Method security</td><td>Aspect-like boundary</td></tr></tbody></table></div></div><div class="code-blocks"><div><div class="code-title">❌ Wrong</div><pre>// Team memorizes @Transactional, @Cacheable, and @PreAuthorize separately
-// without realizing they all depend on boundaries and proxy behavior.</pre></div><div><div class="code-title">✅ Right</div><pre>@Service
-public class ProductService {
-
-    @Cacheable("products")
-    @PreAuthorize("hasRole('ADMIN')")
-    @Transactional(readOnly = true)
-    public Product getProduct(Long id) {
-        return repository.findById(id).orElseThrow();
-    }
-}</pre></div></div><p>Use common spring aop use cases where the rule belongs in architecture, not just where it happens to fix one failing test or one bug report.</p><p class="deep-note">The safest mental model is that Spring gives you a framework feature only when your call crosses the Spring-managed boundary and the surrounding infrastructure can participate.</p></article><article class="card warning"><div class="card-label">Warning</div><h3>Common misunderstanding</h3><p>The dangerous misunderstanding is treating common spring aop use cases like a magic switch instead of a mechanism with boundaries and defaults. That is how teams end up with treating each annotation as unrelated magic.</p><p>A safer pattern is to make the intent explicit, keep the scope narrow, and choose the smallest mechanism that actually solves the problem.</p><div class="code-blocks"><div><div class="code-title">Broken pattern</div><pre>// Team memorizes @Transactional, @Cacheable, and @PreAuthorize separately
-// without realizing they all depend on boundaries and proxy behavior.</pre></div><div><div class="code-title">Safer pattern</div><pre>@Service
-public class ProductService {
-
-    @Cacheable("products")
-    @PreAuthorize("hasRole('ADMIN')")
-    @Transactional(readOnly = true)
-    public Product getProduct(Long id) {
-        return repository.findById(id).orElseThrow();
-    }
-}</pre></div></div></article><article class="card technical"><div class="card-label">Mini takeaway</div><ul class="takeaways"><li>Common Spring AOP Use Cases exists to make a policy explicit</li><li>Defaults are useful, but interviews reward knowing the boundary and trade-off</li><li>If you see treating each annotation as unrelated magic, revisit the design before adding more framework annotations</li></ul></article><article class="card quiz-card"><div class="card-label">Quiz</div><h3>What is the most useful senior-level insight about many Spring annotations like @Transactional or @Cacheable?</h3><div class="quiz-options" data-answer="0"><button class="quiz-option">A. They often rely on the same proxy-based interception model</button><button class="quiz-option">B. They only work on REST controllers</button><button class="quiz-option">C. They compile to native SQL</button><button class="quiz-option">D. They remove the need for testing</button></div><div class="quiz-result"><strong>Correct answer: A</strong><span>A is correct because it matches how common spring aop use cases is intended to work in a production-grade Spring application. The wrong choices are plausible because they sound framework-ish, but they either ignore the real boundary, confuse this feature with another one, or assume a stronger guarantee than the mechanism actually provides. In an interview, tie your answer back to the concrete failure mode you are preventing.</span></div></article></div></div></section><section class="section" data-section="4">
-<div class="section-inner">
-<div class="hero">
-<div class="section-label">Section 5 · Interview deep dive</div>
-<h2>Deep Dive: Proxy Boundaries in Practice</h2>
-<p>This deep dive connects the mechanics of aop &amp; proxies with the production decisions senior engineers are expected to explain clearly.</p>
-</div>
-<div class="card-grid">
-<article class="card eli5"><div class="card-label">🧒 ELI5</div><h3>A bigger real-world picture</h3><p>In a larger system, the hard part is not knowing the vocabulary. The hard part is deciding which rule belongs where so the whole operation still makes sense when something unexpected happens.</p><p>That is why knowing when a framework feature depends on proxy interception and designing class boundaries so that interception actually happens. The mechanism has to support the story your system tells under stress, not just the happy path.</p><p>This is where interviewers are listening for judgment: not just what the feature does, but how you would keep the design honest when multiple moving parts are involved.</p></article><article class="card analogy"><div class="card-label">🔗 ANALOGY</div><h3>Why senior engineers care</h3><p>knowing when a framework feature depends on proxy interception and designing class boundaries so that interception actually happens usually sits at the intersection of framework behavior, business requirements, and operational trade-offs.</p><p>When teams get this wrong, the system may still compile and even pass local tests, but production behavior becomes surprising.</p></article><article class="card technical"><div class="card-label">Technical</div><div class="two-col"><div><h3>What to optimize for</h3><p><strong>Definition:</strong> knowing when a framework feature depends on proxy interception and designing class boundaries so that interception actually happens</p><p class="deep-note">Senior-level answers usually mention boundaries, defaults, observability, and trade-offs in the same breath.</p><p class="deep-note">The safest pattern is usually to keep the mechanism narrow, explicit, and easy to reason about.</p><p class="deep-note">If a framework feature starts compensating for unclear ownership, unclear state, or unclear flow, the real problem is probably design, not syntax.</p><div class="mini-grid"><div class="mini-panel"><h4>What senior engineers optimize for</h4><ul><li>Optimize for clarity of boundary</li><li>Prefer explicit over accidental behavior</li><li>Choose the smallest mechanism that solves the real problem</li></ul></div><div class="mini-panel"><h4>Trade-offs</h4><ul><li>Magic defaults can hide surprises</li><li>Cross-cutting features can mask weak design</li><li>More power usually means more room for misuse</li></ul></div></div><div class="badge-row"><span class="pill good">Clear boundary</span><span class="pill info">Explain the why</span><span class="pill bad">Framework cargo-culting</span></div><div class="flow"><span class="flow-step">Requirement appears</span><span class="flow-arrow">→</span><span class="flow-step">Choose boundary</span><span class="flow-arrow">→</span><span class="flow-step">Apply mechanism</span><span class="flow-arrow">→</span><span class="flow-step">Observe real outcome</span></div></div><div><h3>💬 Model Interview Answer</h3><p>“When I talk about aop &amp; proxies at a senior level, I focus on the boundary, the default behavior, and the production trade-off. I want the design to make the intent obvious even to the next engineer reading the code. The smell I watch for is using framework features to hide a design problem instead of clarifying one.”</p><table><thead><tr><th>Decision point</th><th>Senior answer</th></tr></thead><tbody><tr><td>Boundary</td><td>State it explicitly</td></tr><tr><td>Default behavior</td><td>Know it by memory</td></tr><tr><td>Trade-off</td><td>Say what you pay for the guarantee</td></tr></tbody></table></div></div><div class="code-blocks"><div><div class="code-title">❌ Wrong: implicit or leaky design</div><pre>@Service
-public class InvoiceService {
-
-    public void generate() {
-        saveAudit(); // @Transactional or @Retryable here may not apply
-    }
-
-    @Transactional
-    public void saveAudit() {}
-}</pre></div><div><div class="code-title">✅ Right: explicit design</div><pre>@Service
-public class AuditService {
-
-    @Transactional
-    public void saveAudit() {}
-}
-
-@Service
-public class InvoiceService {
-
-    private final AuditService auditService;
-
-    public InvoiceService(AuditService auditService) {
-        this.auditService = auditService;
-    }
-
-    public void generate() {
-        auditService.saveAudit();
-    }
-}</pre></div></div></article><article class="card warning"><div class="card-label">Warning</div><h3>The biggest trap</h3><p>The hardest bugs here come from systems that “mostly work” until traffic, retries, concurrency, or environment differences expose the hidden assumption.</p><p>A good fix usually makes the intent more explicit instead of adding one more annotation and hoping the framework figures it out.</p><div class="code-blocks"><div><div class="code-title">Broken pattern</div><pre>@Service
-public class InvoiceService {
-
-    public void generate() {
-        saveAudit(); // @Transactional or @Retryable here may not apply
-    }
-
-    @Transactional
-    public void saveAudit() {}
-}</pre></div><div><div class="code-title">Safer pattern</div><pre>@Service
-public class AuditService {
-
-    @Transactional
-    public void saveAudit() {}
-}
-
-@Service
-public class InvoiceService {
-
-    private final AuditService auditService;
-
-    public InvoiceService(AuditService auditService) {
-        this.auditService = auditService;
-    }
-
-    public void generate() {
-        auditService.saveAudit();
-    }
-}</pre></div></div></article><article class="card technical"><div class="card-label">Edge cases</div><h3>Edge Cases &amp; Tradeoffs</h3><ul class="takeaways"><li>Defaults can differ across libraries or underlying infrastructure.</li><li>A passing unit test does not prove the boundary is correct in production.</li><li>Observability is often what reveals misuse first.</li><li>Keep side effects and lifetime of state in view when designing the boundary.</li><li>Explain what would happen under failure, not just success.</li></ul></article><article class="card technical"><div class="card-label">Checklist</div><h3>Production Checklist</h3><ul class="takeaways"><li>Name the real invariant or guarantee you care about</li><li>Choose the narrowest boundary that enforces it</li><li>Know the default behavior and the override you would use</li><li>Keep the design easy to test and easy to observe</li><li>Call out one concrete gotcha in interviews</li></ul></article><article class="card technical"><div class="card-label">Interview</div><h3>Interview Hooks</h3><ul class="takeaways"><li>What is the default behavior?</li><li>What is the most common production mistake?</li><li>What trade-off are you accepting for the guarantee?</li></ul></article><article class="card technical"><div class="card-label">Advanced Example</div><h3>Advanced example</h3><div class="code-blocks"><div><div class="code-title">Advanced example</div><pre>@Aspect
-@Component
-public class CorrelationAspect {
-
-    @Around("@annotation(org.springframework.web.bind.annotation.GetMapping)")
-    public Object attachCorrelationId(ProceedingJoinPoint pjp) throws Throwable {
-        MDC.put("correlationId", UUID.randomUUID().toString());
-        try {
-            return pjp.proceed();
-        } finally {
-            MDC.clear();
-        }
-    }
-}</pre></div></div></article><article class="card quiz-card"><div class="card-label">Quiz</div><h3>When a Spring annotation relies on AOP, what design habit helps most?</h3><div class="quiz-options" data-answer="0"><button class="quiz-option">A. Keep the boundary on externally called methods in Spring-managed beans</button><button class="quiz-option">B. Put every helper method in the same class</button><button class="quiz-option">C. Prefer final classes everywhere</button><button class="quiz-option">D. Assume the framework will intercept any call path</button></div><div class="quiz-result"><strong>Correct answer: A</strong><span>A is correct because it reflects the mature design choice for this kind of boundary. The distractors all represent common mistakes: pushing responsibility to the wrong layer, assuming defaults are stronger than they are, or using a framework feature as a substitute for clear design. In an interview, explain not only which answer is right, but what failure mode the wrong answers would create.</span></div></article></div></div></section><section class="section" data-section="5">
-<div class="section-inner">
-<div class="hero">
-<div class="section-label">Completion screen · Review mode</div>
-<h2>🎉 AOP &amp; Proxies Cheat Sheet</h2>
-<p>Use this cheat sheet to recall the core mental model for aop &amp; proxies and the most common traps.</p>
-</div>
-<div class="completion-grid">
-<div class="card technical">
-<div class="card-label">Cheat sheet</div>
-<div class="celebrate">🚀</div>
-<h3>1-line interview answers</h3>
-<div class="cheat-list"><div class="cheat-item"><h4>AOP</h4><p>Centralize cross-cutting behavior instead of repeating it everywhere.</p></div><div class="cheat-item"><h4>Proxy</h4><p>Most Spring AOP features work by wrapping the bean.</p></div><div class="cheat-item"><h4>Self-invocation</h4><p>Internal same-class calls often skip interception.</p></div><div class="cheat-item"><h4>Interview hook</h4><p>Many Spring annotations are proxy-powered, not magical.</p></div></div>
-</div>
-<div class="card analogy">
-<div class="card-label">What to remember</div>
-<h3>Fast mental model</h3>
-<ul class="takeaways"><li><strong>AOP:</strong> Centralize cross-cutting behavior instead of repeating it everywhere.</li><li><strong>Proxy:</strong> Most Spring AOP features work by wrapping the bean.</li><li><strong>Self-invocation:</strong> Internal same-class calls often skip interception.</li><li><strong>Interview hook:</strong> Many Spring annotations are proxy-powered, not magical.</li></ul>
-<h3 style="margin-top:22px;">Common traps</h3>
-<div class="badge-row"><span class="pill bad">Copy-pasted cross-cutting code</span><span class="pill bad">Final methods everywhere</span><span class="pill bad">Self-invocation surprises</span></div>
-</div>
-</div>
-</div>
-</section><footer class="footer-nav">
-<div class="footer-nav-inner">
-<button class="btn" id="prevBtn">← Back</button>
-<button class="btn primary" id="nextBtn">Next →</button>
-</div>
+<footer class="footer-nav">
+  <div class="footer-nav-inner">
+    <button class="btn" id="prevBtn">← Back</button>
+    <button class="btn primary" id="nextBtn">Next →</button>
+  </div>
 </footer>
 </div>
+
 <script>
 const sections = Array.from(document.querySelectorAll('.section'));
-    const dots = Array.from(document.querySelectorAll('.nav-dot'));
-    const prevBtn = document.getElementById('prevBtn');
-    const nextBtn = document.getElementById('nextBtn');
-    const timerEl = document.getElementById('timer');
-    const progressBar = document.getElementById('progressBar');
+const dots     = Array.from(document.querySelectorAll('.nav-dot'));
+const prevBtn  = document.getElementById('prevBtn');
+const nextBtn  = document.getElementById('nextBtn');
+const timerEl  = document.getElementById('timer');
+const progressBar = document.getElementById('progressBar');
 
-function escapeHtml(str) {
-  return str
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
+let currentIndex = 0, visitedMax = 0;
+
+function showSection(index) {
+  currentIndex = Math.max(0, Math.min(index, sections.length - 1));
+  visitedMax   = Math.max(visitedMax, currentIndex);
+  sections.forEach((s, i) => s.classList.toggle('active', i === currentIndex));
+  dots.forEach((d, i) => {
+    d.classList.remove('active', 'done');
+    if (i === currentIndex) d.classList.add('active');
+    else if (i < visitedMax) d.classList.add('done');
+  });
+  prevBtn.disabled = currentIndex === 0;
+  const last = sections.length - 1;
+  nextBtn.textContent = currentIndex === last
+    ? 'Review Again ↺'
+    : currentIndex === last - 1
+      ? 'Finish / View Cheat Sheet →'
+      : 'Next →';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+prevBtn.addEventListener('click', () => showSection(currentIndex - 1));
+nextBtn.addEventListener('click', () => {
+  if (currentIndex === sections.length - 1) showSection(0);
+  else showSection(currentIndex + 1);
+});
+dots.forEach(d => d.addEventListener('click', () => showSection(Number(d.dataset.index))));
+
+const totalSeconds = 35 * 60;
+let remainingSeconds = totalSeconds;
+
+function formatTime(s) {
+  return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
+}
+function updateTimer() {
+  timerEl.textContent = formatTime(remainingSeconds);
+  timerEl.classList.remove('warning', 'critical');
+  if (remainingSeconds <= 60)       timerEl.classList.add('critical');
+  else if (remainingSeconds <= 300) timerEl.classList.add('warning');
+  progressBar.style.width = `${((totalSeconds - remainingSeconds) / totalSeconds) * 100}%`;
+  if (remainingSeconds > 0) remainingSeconds--;
+}
+updateTimer();
+setInterval(updateTimer, 1000);
+
+document.querySelectorAll('.quiz-options').forEach(group => {
+  const correctIndex = Number(group.dataset.answer);
+  const options = Array.from(group.querySelectorAll('.quiz-option'));
+  const result  = group.nextElementSibling;
+  options.forEach((btn, index) => {
+    btn.addEventListener('click', () => {
+      if (group.dataset.answered === 'true') return;
+      group.dataset.answered = 'true';
+      options.forEach((opt, i) => {
+        opt.disabled = true;
+        if (i === correctIndex) opt.classList.add('correct');
+      });
+      if (index !== correctIndex) btn.classList.add('wrong');
+      if (result) result.classList.add('show');
+    });
+  });
+});
+
+// Syntax highlighting
+function escapeHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
 function highlightJava(code) {
   const keywords = new Set([
-    'abstract','assert','boolean','break','byte','case','catch','char','class','const','continue','default',
-    'do','double','else','enum','extends','final','finally','float','for','goto','if','implements','import',
-    'instanceof','int','interface','long','native','new','package','private','protected','public','return','short',
-    'static','strictfp','super','switch','synchronized','this','throw','throws','transient','try','void','volatile',
-    'while','var','record','sealed','permits','non-sealed','yield'
+    'abstract','assert','boolean','break','byte','case','catch','char','class','const',
+    'continue','default','do','double','else','enum','extends','final','finally','float',
+    'for','goto','if','implements','import','instanceof','int','interface','long','native',
+    'new','package','private','protected','public','return','short','static','strictfp',
+    'super','switch','synchronized','this','throw','throws','transient','try','void',
+    'volatile','while','var','record','sealed','permits','yield','true','false','null'
   ]);
   const types = new Set([
-    'String','List','Map','Set','HashMap','ArrayList','LinkedList','Optional','Stream','CompletableFuture',
-    'ExecutorService','Runnable','Callable','Future','Thread','Duration','LocalDateTime','Object','Integer','Long',
-    'Boolean','Double','Float','UUID','Predicate','Function','Consumer','Supplier','Collectors','Path','ResponseEntity',
-    'HttpStatus','Authentication','SecurityFilterChain','EntityManager','Session','Pageable','JpaRepository','Optional',
-    'Component','Service','Repository','Controller','RestController','Autowired','Transactional','Bean','Configuration',
-    'BeanFactory','ApplicationContext','MockBean','SpringBootTest','WebMvcTest','MockMvc'
+    'String','List','Map','Set','Optional','Long','Integer','Boolean','Object','BigDecimal',
+    'UUID','Instant','LocalDateTime','ThreadLocalRandom','TimeUnit','ProceedingJoinPoint',
+    'JoinPoint','Aspect','Around','Before','AfterReturning','AfterThrowing','After','Pointcut',
+    'Component','Service','Repository','Configuration','Bean','Transactional','Order',
+    'Autowired','Lazy','Retryable','Async','Cacheable','PreAuthorize','AuditLog',
+    'DataSource','HikariDataSource','UserRepository','OrderRepository','AuditEntry',
+    'AuditRepository','MeterRegistry','SecurityContextHolder','MDC'
   ]);
-  const tokenRegex = /(\/\*[\s\S]*?\*\/|\/\/[^\n]*|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|@[A-Za-z_][\w.]*|\b\d+(?:_\d+)*(?:\.\d+)?\b|\b[A-Za-z_][\w]*\b)/g;
-  let result = '';
-  let lastIndex = 0;
-  for (const match of code.matchAll(tokenRegex)) {
-    const value = match[0];
-    const index = match.index;
+  const rx = /(\/\*[\s\S]*?\*\/|\/\/[^\n]*|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|@[A-Za-z_][\w.]*|\b\d+(?:_\d+)*(?:\.\d+)?\b|\b[A-Za-z_][\w]*\b)/g;
+  let result = '', lastIndex = 0;
+  for (const match of code.matchAll(rx)) {
+    const value = match[0], index = match.index;
     result += escapeHtml(code.slice(lastIndex, index));
     let cls = '';
-    if (value.startsWith('//') || value.startsWith('/*')) {
-      cls = 'token-comment';
-    } else if (value.startsWith("\"") || value.startsWith("'")) {
-      cls = 'token-string';
-    } else if (value.startsWith('@')) {
-      cls = 'token-annotation';
-    } else if (/^\d/.test(value)) {
-      cls = 'token-number';
-    } else if (keywords.has(value)) {
-      cls = 'token-key';
-    } else if (types.has(value)) {
-      cls = 'token-type';
-    }
-    if (cls) {
-      result += "<span class=\"" + cls + "\">" + escapeHtml(value) + "</span>";
-    } else {
-      result += escapeHtml(value);
-    }
+    if (value.startsWith('//') || value.startsWith('/*')) cls = 'token-comment';
+    else if (value.startsWith('"') || value.startsWith("'"))  cls = 'token-string';
+    else if (value.startsWith('@'))  cls = 'token-annotation';
+    else if (/^\d/.test(value))      cls = 'token-number';
+    else if (keywords.has(value))    cls = 'token-key';
+    else if (types.has(value))       cls = 'token-type';
+    result += cls ? `<span class="${cls}">${escapeHtml(value)}</span>` : escapeHtml(value);
     lastIndex = index + value.length;
   }
-  result += escapeHtml(code.slice(lastIndex));
-  return result;
+  return result + escapeHtml(code.slice(lastIndex));
 }
+document.querySelectorAll('pre').forEach(pre => {
+  pre.innerHTML = highlightJava(pre.textContent);
+});
 
-function applySyntaxHighlighting() {
-  document.querySelectorAll('pre').forEach(pre => {
-    const raw = pre.textContent;
-    pre.innerHTML = highlightJava(raw);
-  });
-}
-
-    let currentIndex = 0;
-    let visitedMax = 0;
-
-    function showSection(index) {
-      currentIndex = Math.max(0, Math.min(index, sections.length - 1));
-      visitedMax = Math.max(visitedMax, currentIndex);
-
-      sections.forEach((section, i) => {
-        section.classList.toggle('active', i === currentIndex);
-      });
-
-      dots.forEach((dot, i) => {
-        dot.classList.remove('active', 'done');
-        if (i === currentIndex) {
-          dot.classList.add('active');
-        } else if (i < visitedMax) {
-          dot.classList.add('done');
-        }
-      });
-
-      prevBtn.disabled = currentIndex === 0;
-      nextBtn.textContent = currentIndex === sections.length - 1 ? 'Review Again ↺' : (currentIndex === sections.length - 2 ? 'Finish / View Cheat Sheet →' : 'Next →');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    prevBtn.addEventListener('click', () => showSection(currentIndex - 1));
-    nextBtn.addEventListener('click', () => {
-      if (currentIndex === sections.length - 1) {
-        showSection(0);
-      } else {
-        showSection(currentIndex + 1);
-      }
-    });
-
-    dots.forEach(dot => {
-      dot.addEventListener('click', () => showSection(Number(dot.dataset.index)));
-    });
-
-    const totalSeconds = 35 * 60;
-    let remainingSeconds = totalSeconds;
-
-    function formatTime(seconds) {
-      const mins = String(Math.floor(seconds / 60)).padStart(2, '0');
-      const secs = String(seconds % 60).padStart(2, '0');
-      return `${mins}:${secs}`;
-    }
-
-    function updateTimer() {
-      timerEl.textContent = formatTime(remainingSeconds);
-      timerEl.classList.remove('warning', 'critical');
-
-      if (remainingSeconds <= 60) {
-        timerEl.classList.add('critical');
-      } else if (remainingSeconds <= 300) {
-        timerEl.classList.add('warning');
-      }
-
-      const elapsed = totalSeconds - remainingSeconds;
-      progressBar.style.width = `${(elapsed / totalSeconds) * 100}%`;
-
-      if (remainingSeconds > 0) {
-        remainingSeconds -= 1;
-      }
-    }
-
-    updateTimer();
-    setInterval(updateTimer, 1000);
-
-    document.querySelectorAll('.quiz-options').forEach(group => {
-      const correctIndex = Number(group.dataset.answer);
-      const options = Array.from(group.querySelectorAll('.quiz-option'));
-      const result = group.nextElementSibling;
-
-      options.forEach((btn, index) => {
-        btn.addEventListener('click', () => {
-          if (group.dataset.answered === 'true') return;
-          group.dataset.answered = 'true';
-
-          options.forEach((option, i) => {
-            option.disabled = true;
-            if (i === correctIndex) option.classList.add('correct');
-          });
-
-          if (index !== correctIndex) {
-            btn.classList.add('wrong');
-          }
-
-          result.classList.add('show');
-        });
-      });
-    });
-    applySyntaxHighlighting();
-
-    showSection(0);
-  </script>
+showSection(0);
+</script>
 </body>
 </html>
