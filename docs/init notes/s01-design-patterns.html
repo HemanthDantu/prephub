@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S01 — Microservice Design Patterns</title>
+<style>
+  :root {
+    --bg: #f8f9fa;
+    --surface: #ffffff;
+    --border: #e2e8f0;
+    --text-primary: #1a202c;
+    --text-secondary: #4a5568;
+    --text-muted: #718096;
+    --blue-light: #ebf8ff;
+    --blue-border: #bee3f8;
+    --blue-text: #2b6cb0;
+    --blue-dark: #1a365d;
+    --green-light: #f0fff4;
+    --green-border: #9ae6b4;
+    --green-text: #276749;
+    --red-light: #fff5f5;
+    --red-border: #feb2b2;
+    --red-text: #9b2335;
+    --orange-light: #fffaf0;
+    --orange-border: #fbd38d;
+    --orange-text: #7b341e;
+    --purple-light: #faf5ff;
+    --purple-border: #d6bcfa;
+    --purple-text: #553c9a;
+    --yellow-light: #fffff0;
+    --yellow-border: #f6e05e;
+    --yellow-text: #744210;
+    --tag-bg: #edf2f7;
+    --tag-text: #4a5568;
+    --code-bg: #1a202c;
+    --code-text: #e2e8f0;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  /* ── PAGE HEADER ── */
+  .page-header {
+    background: linear-gradient(135deg, #1a365d 0%, #2a4a8a 100%);
+    color: white;
+    padding: 40px 48px 36px;
+  }
+  .page-header .section-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    opacity: .7;
+    margin-bottom: 8px;
+  }
+  .page-header h1 { font-size: 28px; font-weight: 700; margin-bottom: 10px; }
+  .page-header .subtitle { font-size: 15px; opacity: .8; max-width: 680px; line-height: 1.6; }
+  .tags { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 18px; }
+  .tag {
+    background: rgba(255,255,255,.15);
+    border: 1px solid rgba(255,255,255,.25);
+    color: white;
+    font-size: 11.5px;
+    padding: 3px 10px;
+    border-radius: 20px;
+  }
+
+  /* ── LAYOUT ── */
+  .container { max-width: 900px; margin: 0 auto; padding: 40px 24px 80px; }
+
+  /* ── SECTION HEADING ── */
+  .section-heading {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 44px 0 6px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-heading .icon {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    background: #ebf8ff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px;
+    flex-shrink: 0;
+  }
+  .section-desc {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+    margin-top: 4px;
+  }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px 26px;
+    margin-bottom: 16px;
+  }
+  .card-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .card p { font-size: 14.5px; color: var(--text-secondary); line-height: 1.75; margin-bottom: 10px; }
+  .card p:last-child { margin-bottom: 0; }
+  .card b { color: var(--text-primary); font-weight: 600; }
+  .card code {
+    font-family: 'SF Mono', Consolas, monospace;
+    font-size: 12.5px;
+    background: #edf2f7;
+    padding: 1px 6px;
+    border-radius: 4px;
+    color: #c53030;
+  }
+  .card ul, .card ol { padding-left: 22px; margin: 8px 0; }
+  .card li { font-size: 14.5px; color: var(--text-secondary); line-height: 1.75; margin-bottom: 5px; }
+  .card li b { color: var(--text-primary); }
+
+  /* ── COLOUR VARIANTS ── */
+  .card.blue  { background: var(--blue-light);   border-color: var(--blue-border); }
+  .card.green { background: var(--green-light);  border-color: var(--green-border); }
+  .card.red   { background: var(--red-light);    border-color: var(--red-border); }
+  .card.orange{ background: var(--orange-light); border-color: var(--orange-border); }
+  .card.purple{ background: var(--purple-light); border-color: var(--purple-border); }
+  .card.yellow{ background: var(--yellow-light); border-color: var(--yellow-border); }
+
+  .card.blue   p, .card.blue   li { color: #2c5282; }
+  .card.blue   b { color: var(--blue-dark); }
+  .card.green  p, .card.green  li { color: #22543d; }
+  .card.green  b { color: #1c4532; }
+  .card.red    p, .card.red    li { color: #742a2a; }
+  .card.red    b { color: #63171b; }
+  .card.orange p, .card.orange li { color: #7b341e; }
+  .card.orange b { color: #652b19; }
+  .card.purple p, .card.purple li { color: #44337a; }
+  .card.purple b { color: #322659; }
+  .card.yellow p, .card.yellow li { color: #744210; }
+  .card.yellow b { color: #5f370e; }
+
+  .card-title.blue   { color: var(--blue-dark); }
+  .card-title.green  { color: #1c4532; }
+  .card-title.red    { color: #63171b; }
+  .card-title.orange { color: #652b19; }
+  .card-title.purple { color: #322659; }
+  .card-title.yellow { color: #5f370e; }
+
+  /* ── DEFINITION BOX ── */
+  .definition {
+    background: #1a365d;
+    color: white;
+    border-radius: 12px;
+    padding: 22px 26px;
+    margin-bottom: 16px;
+  }
+  .definition .def-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    opacity: .7;
+    margin-bottom: 6px;
+  }
+  .definition p { font-size: 15px; line-height: 1.75; opacity: .95; margin-bottom: 8px; }
+  .definition p:last-child { margin-bottom: 0; }
+  .definition b { opacity: 1; font-weight: 700; }
+
+  /* ── ANALOGY BOX ── */
+  .analogy {
+    border-left: 4px solid #d69e2e;
+    background: var(--yellow-light);
+    border-radius: 0 10px 10px 0;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+  }
+  .analogy .analogy-label {
+    font-size: 10px; font-weight: 700; letter-spacing: .1em;
+    text-transform: uppercase; color: #744210; margin-bottom: 5px;
+  }
+  .analogy p { font-size: 14px; color: #744210; line-height: 1.7; margin-bottom: 6px; }
+  .analogy p:last-child { margin-bottom: 0; }
+  .analogy b { color: #5f370e; }
+
+  /* ── SCENARIO BOX ── */
+  .scenario {
+    border-left: 4px solid #38a169;
+    background: var(--green-light);
+    border-radius: 0 10px 10px 0;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+  }
+  .scenario .scenario-label {
+    font-size: 10px; font-weight: 700; letter-spacing: .1em;
+    text-transform: uppercase; color: #276749; margin-bottom: 5px;
+  }
+  .scenario p { font-size: 14px; color: #22543d; line-height: 1.75; margin-bottom: 8px; }
+  .scenario p:last-child { margin-bottom: 0; }
+  .scenario b { color: #1c4532; font-weight: 600; }
+  .scenario ol, .scenario ul { padding-left: 20px; margin: 6px 0; }
+  .scenario li { font-size: 14px; color: #22543d; line-height: 1.75; margin-bottom: 4px; }
+
+  /* ── WARNING BOX ── */
+  .warning {
+    border-left: 4px solid #e53e3e;
+    background: var(--red-light);
+    border-radius: 0 10px 10px 0;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+  }
+  .warning .warning-label {
+    font-size: 10px; font-weight: 700; letter-spacing: .1em;
+    text-transform: uppercase; color: #9b2335; margin-bottom: 5px;
+  }
+  .warning p { font-size: 14px; color: #742a2a; line-height: 1.7; margin-bottom: 6px; }
+  .warning p:last-child { margin-bottom: 0; }
+  .warning b { color: #63171b; }
+
+  /* ── TIP BOX ── */
+  .tip {
+    border-left: 4px solid #3182ce;
+    background: var(--blue-light);
+    border-radius: 0 10px 10px 0;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+  }
+  .tip .tip-label {
+    font-size: 10px; font-weight: 700; letter-spacing: .1em;
+    text-transform: uppercase; color: #2b6cb0; margin-bottom: 5px;
+  }
+  .tip p { font-size: 14px; color: #2c5282; line-height: 1.7; margin-bottom: 6px; }
+  .tip p:last-child { margin-bottom: 0; }
+  .tip b { color: #1a365d; }
+
+  /* ── PRO CON ── */
+  .pro-con { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+  .pro { background: var(--green-light); border: 1px solid var(--green-border); border-radius: 10px; padding: 16px 18px; }
+  .con { background: var(--red-light);   border: 1px solid var(--red-border);   border-radius: 10px; padding: 16px 18px; }
+  .pro-title { font-size: 11px; font-weight: 700; color: #1c4532; text-transform: uppercase; letter-spacing: .07em; margin-bottom: 8px; }
+  .con-title { font-size: 11px; font-weight: 700; color: #63171b; text-transform: uppercase; letter-spacing: .07em; margin-bottom: 8px; }
+  .pro ul, .con ul { padding-left: 18px; }
+  .pro li { font-size: 13.5px; color: #22543d; line-height: 1.7; margin-bottom: 4px; }
+  .con li { font-size: 13.5px; color: #742a2a; line-height: 1.7; margin-bottom: 4px; }
+
+  /* ── TABLE ── */
+  .table-wrap { overflow-x: auto; margin-bottom: 16px; border-radius: 10px; border: 1px solid var(--border); }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  thead th {
+    background: #2d3748; color: white;
+    padding: 11px 14px; text-align: left;
+    font-weight: 600; font-size: 12.5px;
+  }
+  tbody tr:nth-child(even) { background: #f7fafc; }
+  tbody td { padding: 10px 14px; color: var(--text-secondary); border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.6; }
+  tbody tr:last-child td { border-bottom: none; }
+  td b { color: var(--text-primary); font-weight: 600; }
+
+  /* ── FLOW DIAGRAM ── */
+  .flow { display: flex; flex-direction: column; gap: 0; margin-bottom: 16px; }
+  .flow-step {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 18px;
+    position: relative;
+  }
+  .flow-step .step-num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 24px; height: 24px; border-radius: 50%;
+    background: #2b6cb0; color: white;
+    font-size: 12px; font-weight: 700;
+    margin-right: 10px; flex-shrink: 0; float: left; margin-top: 1px;
+  }
+  .flow-step .step-content { margin-left: 34px; }
+  .flow-step .step-title { font-size: 14px; font-weight: 600; color: var(--text-primary); margin-bottom: 3px; }
+  .flow-step .step-desc  { font-size: 13.5px; color: var(--text-secondary); line-height: 1.65; }
+  .flow-step .step-desc b { color: var(--text-primary); }
+  .flow-arrow { text-align: center; color: #a0aec0; font-size: 20px; line-height: 1; margin: 4px 0; }
+  .flow-step.success { border-color: var(--green-border); background: var(--green-light); }
+  .flow-step.fail    { border-color: var(--red-border);   background: var(--red-light);   }
+  .flow-step.success .step-title { color: #1c4532; }
+  .flow-step.fail    .step-title { color: #63171b; }
+
+  /* ── Q&A ── */
+  .qa-section { margin-bottom: 16px; }
+  .qa-item { margin-bottom: 12px; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  .qa-question {
+    background: #2d3748; color: white;
+    padding: 14px 18px;
+    font-size: 14px; font-weight: 600;
+    cursor: pointer;
+    display: flex; justify-content: space-between; align-items: center;
+    user-select: none;
+  }
+  .qa-question:hover { background: #1a202c; }
+  .qa-question .qa-icon { font-size: 18px; transition: transform .25s; flex-shrink: 0; margin-left: 12px; }
+  .qa-question.open .qa-icon { transform: rotate(45deg); }
+  .qa-answer {
+    padding: 0 18px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height .3s ease, padding .3s ease;
+    background: var(--surface);
+  }
+  .qa-answer.open { max-height: 1200px; padding: 16px 18px; }
+  .qa-answer p { font-size: 14px; color: var(--text-secondary); line-height: 1.75; margin-bottom: 10px; }
+  .qa-answer p:last-child { margin-bottom: 0; }
+  .qa-answer b { color: var(--text-primary); font-weight: 600; }
+  .qa-answer ul, .qa-answer ol { padding-left: 20px; margin: 6px 0 10px; }
+  .qa-answer li { font-size: 14px; color: var(--text-secondary); line-height: 1.75; margin-bottom: 4px; }
+
+  /* ── COMPARISON BADGE ── */
+  .vs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+  .vs-card { border-radius: 10px; padding: 18px 20px; border: 2px solid transparent; }
+  .vs-card.a { background: var(--blue-light); border-color: var(--blue-border); }
+  .vs-card.b { background: var(--purple-light); border-color: var(--purple-border); }
+  .vs-card-title { font-size: 14px; font-weight: 700; margin-bottom: 10px; }
+  .vs-card.a .vs-card-title { color: var(--blue-dark); }
+  .vs-card.b .vs-card-title { color: #322659; }
+  .vs-card ul { padding-left: 18px; }
+  .vs-card li { font-size: 13.5px; line-height: 1.7; margin-bottom: 4px; }
+  .vs-card.a li { color: #2c5282; }
+  .vs-card.b li { color: #44337a; }
+
+  /* ── PATTERN CARD ── */
+  .pattern-card {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 32px;
+  }
+  .pattern-header {
+    padding: 18px 24px;
+    display: flex; align-items: flex-start; gap: 14px;
+  }
+  .pattern-number {
+    width: 40px; height: 40px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; font-weight: 800; flex-shrink: 0;
+    color: white;
+  }
+  .pattern-header-text h2 { font-size: 19px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
+  .pattern-header-text p  { font-size: 13.5px; color: var(--text-muted); line-height: 1.5; }
+  .pattern-body { padding: 0 24px 24px; }
+
+  /* ── DIVIDER ── */
+  .divider { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
+
+  /* ── SUMMARY TABLE ── */
+  .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
+  .summary-item { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; }
+  .summary-item .s-title { font-size: 13px; font-weight: 700; color: var(--text-primary); margin-bottom: 5px; }
+  .summary-item .s-desc  { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+  .summary-item .s-badge {
+    display: inline-block; font-size: 10px; font-weight: 700;
+    padding: 2px 8px; border-radius: 20px; margin-bottom: 7px;
+    text-transform: uppercase; letter-spacing: .05em;
+  }
+
+  @media(max-width: 640px) {
+    .page-header { padding: 28px 20px; }
+    .container { padding: 24px 16px 60px; }
+    .pro-con, .vs-grid, .summary-grid { grid-template-columns: 1fr; }
+    table { font-size: 12.5px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════
+     PAGE HEADER
+══════════════════════════════════════════════ -->
+<div class="page-header">
+  <div class="section-label">Section 01 — Architecture</div>
+  <h1>Microservice Design Patterns</h1>
+  <div class="subtitle">What patterns exist, why they were invented, how they solve real problems, when to use each, and what the alternatives are. Explained from the very beginning.</div>
+  <div class="tags">
+    <span class="tag">Saga</span>
+    <span class="tag">CQRS</span>
+    <span class="tag">BFF</span>
+    <span class="tag">Sidecar</span>
+    <span class="tag">Strangler Fig</span>
+    <span class="tag">Event Sourcing</span>
+    <span class="tag">Orchestration</span>
+    <span class="tag">Choreography</span>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ══════════════════════════════════════════════
+     INTRODUCTION
+══════════════════════════════════════════════ -->
+<div class="section-heading"><div class="icon">💡</div>Start Here — What Is a Design Pattern?</div>
+<p class="section-desc">Before diving into specific patterns, understand what a pattern actually is and why they exist.</p>
+
+<div class="definition">
+  <div class="def-label">Formal Definition</div>
+  <p>A <b>design pattern</b> is a reusable, proven solution to a commonly occurring problem in software design. It is not code you copy and paste — it is a <b>blueprint</b>, a way of thinking and structuring your solution so that it works reliably at scale.</p>
+  <p>Patterns emerged because developers across companies kept facing the same problems, solving them differently each time, with inconsistent results. Patterns captured the best solutions so everyone could benefit.</p>
+</div>
+
+<div class="analogy">
+  <div class="analogy-label">Everyday Analogy</div>
+  <p>Think of architectural blueprints for houses. A "blueprint for a two-storey home with load-bearing walls" is not a specific house — it is a <b>proven pattern</b> that builders reuse. You adapt it to your land and requirements, but the core structural solution is trusted and tested.</p>
+  <p>Software design patterns are exactly this — trusted structural solutions you adapt to your specific system.</p>
+</div>
+
+<div class="card">
+  <div class="card-title">Why Do Microservices Specifically Need Patterns?</div>
+  <p>In a <b>monolith</b> (one big application), many problems solve themselves automatically:</p>
+  <ul>
+    <li>One database = one transaction = if anything fails, everything rolls back automatically</li>
+    <li>One codebase = you call any function directly, no network involved</li>
+    <li>One deployment = no version mismatches between parts of the system</li>
+  </ul>
+  <p>When you split into <b>microservices</b>, all of that disappears:</p>
+  <ul>
+    <li>Multiple databases = no single transaction spans all of them</li>
+    <li>Network calls between services = failures, timeouts, partial results</li>
+    <li>Independent deployments = your service might call a service running a different version</li>
+  </ul>
+  <p>Design patterns are the systematic answers to these new problems. Without them, every team invents their own inconsistent solutions — creating systems that are hard to understand, debug, and maintain.</p>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     OVERVIEW OF ALL PATTERNS
+══════════════════════════════════════════════ -->
+<div class="section-heading" style="margin-top:36px"><div class="icon">🗺️</div>Overview — All Patterns at a Glance</div>
+
+<div class="summary-grid">
+  <div class="summary-item">
+    <span class="s-badge" style="background:#ebf8ff;color:#2b6cb0;">Transaction</span>
+    <div class="s-title">Saga</div>
+    <div class="s-desc">Manages multi-service transactions without a shared database. Uses compensating transactions on failure.</div>
+  </div>
+  <div class="summary-item">
+    <span class="s-badge" style="background:#f0fff4;color:#276749;">Read/Write Split</span>
+    <div class="s-title">CQRS</div>
+    <div class="s-desc">Separates read model from write model so each can be independently optimised and scaled.</div>
+  </div>
+  <div class="summary-item">
+    <span class="s-badge" style="background:#faf5ff;color:#553c9a;">API Design</span>
+    <div class="s-title">BFF</div>
+    <div class="s-desc">A dedicated backend per client type (mobile, web). Each client gets exactly what it needs.</div>
+  </div>
+  <div class="summary-item">
+    <span class="s-badge" style="background:#fffaf0;color:#7b341e;">Infrastructure</span>
+    <div class="s-title">Sidecar</div>
+    <div class="s-desc">Attaches a helper container alongside your service to handle logging, security, and tracing without code changes.</div>
+  </div>
+  <div class="summary-item">
+    <span class="s-badge" style="background:#fff5f5;color:#9b2335;">Migration</span>
+    <div class="s-title">Strangler Fig</div>
+    <div class="s-desc">Gradually replaces a legacy monolith by routing features one at a time to new microservices.</div>
+  </div>
+  <div class="summary-item">
+    <span class="s-badge" style="background:#fffff0;color:#744210;">Data</span>
+    <div class="s-title">Event Sourcing</div>
+    <div class="s-desc">Stores every state change as an immutable event rather than the current state. Full history always available.</div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ══════════════════════════════════════════════
+     PATTERN 1: SAGA
+══════════════════════════════════════════════ -->
+<div class="section-heading"><div class="icon">🔄</div>Pattern 1 — Saga Pattern</div>
+<p class="section-desc">The most commonly asked pattern in senior interviews. Understand this one deeply.</p>
+
+<div class="definition">
+  <div class="def-label">Formal Definition</div>
+  <p>The <b>Saga pattern</b> is a design pattern for managing data consistency across multiple microservices in distributed transactions. A saga is a <b>sequence of local transactions</b>. Each local transaction updates one service's database and triggers the next step. If any step fails, the saga executes <b>compensating transactions</b> to undo the previous steps.</p>
+</div>
+
+<div class="card">
+  <div class="card-title">🤔 The Problem It Solves — Start Here</div>
+  <p>Imagine you are building an e-commerce order system. Placing one order involves 4 services:</p>
+  <ul>
+    <li><b>OrderService</b> — creates the order record</li>
+    <li><b>PaymentService</b> — charges the customer's card</li>
+    <li><b>InventoryService</b> — reserves the items</li>
+    <li><b>ShippingService</b> — schedules delivery</li>
+  </ul>
+  <p>In a monolith with one database, you wrap all 4 in one SQL transaction. If InventoryService step fails, the database rolls back the charge too — automatically. Perfect.</p>
+  <p>In microservices, <b>each service has its own database</b>. There is no shared transaction. If you charge the card in PaymentService (step 2) and then InventoryService fails (step 3) — you have charged the customer for an order that cannot be fulfilled. No automatic rollback. The customer has lost money.</p>
+  <p>This is the <b>distributed transaction problem</b>. The Saga pattern is the solution.</p>
+</div>
+
+<div class="analogy">
+  <div class="analogy-label">Real World Analogy</div>
+  <p>Think about booking a holiday package: flight + hotel + car rental. If all three succeed, great. But if the car rental is unavailable after you have already booked the flight and hotel, you need to <b>cancel the hotel</b> and <b>cancel the flight</b> — those cancellations are the compensating transactions. The travel agency (saga orchestrator) manages this for you.</p>
+</div>
+
+<div class="card">
+  <div class="card-title">📋 Happy Path vs Failure Path</div>
+  <p><b>Happy path — everything succeeds:</b></p>
+</div>
+
+<div class="flow">
+  <div class="flow-step success">
+    <span class="step-num">1</span>
+    <div class="step-content">
+      <div class="step-title">OrderService — Create Order</div>
+      <div class="step-desc">Saves order with status <b>PENDING</b> to its own database. Triggers next step.</div>
+    </div>
+  </div>
+  <div class="flow-arrow">↓</div>
+  <div class="flow-step success">
+    <span class="step-num">2</span>
+    <div class="step-content">
+      <div class="step-title">PaymentService — Charge Card</div>
+      <div class="step-desc">Charges the customer's card. Records payment. Triggers next step.</div>
+    </div>
+  </div>
+  <div class="flow-arrow">↓</div>
+  <div class="flow-step success">
+    <span class="step-num">3</span>
+    <div class="step-content">
+      <div class="step-title">InventoryService — Reserve Stock</div>
+      <div class="step-desc">Reduces stock count by the ordered quantity. Triggers next step.</div>
+    </div>
+  </div>
+  <div class="flow-arrow">↓</div>
+  <div class="flow-step success">
+    <span class="step-num">4</span>
+    <div class="step-content">
+      <div class="step-title">ShippingService — Schedule Delivery</div>
+      <div class="step-desc">Books a delivery slot. Triggers final step.</div>
+    </div>
+  </div>
+  <div class="flow-arrow">↓</div>
+  <div class="flow-step success">
+    <span class="step-num">5</span>
+    <div class="step-content">
+      <div class="step-title">OrderService — Mark CONFIRMED</div>
+      <div class="step-desc">Updates order status to CONFIRMED. Sends confirmation email.</div>
+    </div>
+  </div>
+</div>
+
+<div class="card" style="margin-bottom:8px">
+  <div class="card-title">❌ Failure Path — Step 3 Fails (Inventory Out of Stock)</div>
+  <p>Steps 1 and 2 already committed. Step 3 fails. We must undo steps 1 and 2 using <b>compensating transactions</b>:</p>
+</div>
+
+<div class="flow">
+  <div class="flow-step fail">
+    <span class="step-num" style="background:#e53e3e">3</span>
+    <div class="step-content">
+      <div class="step-title">InventoryService — FAILS (out of stock)</div>
+      <div class="step-desc">Cannot reserve stock. Triggers compensation chain in reverse order.</div>
+    </div>
+  </div>
+  <div class="flow-arrow">↓</div>
+  <div class="flow-step" style="border-color:#ed8936;background:#fffaf0;">
+    <span class="step-num" style="background:#dd6b20">C2</span>
+    <div class="step-content">
+      <div class="step-title">PaymentService — Compensate: Refund Card</div>
+      <div class="step-desc">Issues a refund for the charge made in step 2. This is the <b>compensating transaction</b> for step 2.</div>
+    </div>
+  </div>
+  <div class="flow-arrow">↓</div>
+  <div class="flow-step" style="border-color:#ed8936;background:#fffaf0;">
+    <span class="step-num" style="background:#dd6b20">C1</span>
+    <div class="step-content">
+      <div class="step-title">OrderService — Compensate: Mark FAILED</div>
+      <div class="step-desc">Updates order status to FAILED. Notifies the customer. This is the <b>compensating transaction</b> for step 1.</div>
+    </div>
+  </div>
+</div>
+
+<div class="warning">
+  <div class="warning-label">Critical Understanding — Compensating Transactions Are NOT Rollbacks</div>
+  <p><b>A database rollback</b> means the operation never happened from the database's perspective. No trace in the records.</p>
+  <p><b>A compensating transaction</b> is a brand new business operation that logically reverses a previous one. The original charge DID happen and IS recorded. The refund also happens and is recorded. Both appear in audit logs, transaction history, and customer receipts.</p>
+  <p>This means you must <b>design and implement compensating transactions deliberately</b> for every step of your saga. You cannot assume they will be automatic. Some operations cannot be compensated — a sent email cannot be unsent. For those, you design "countermeasures" (send a cancellation email instead).</p>
+</div>
+
+<!-- CHOREOGRAPHY vs ORCHESTRATION -->
+<div class="section-heading" style="margin-top:32px; font-size:17px; border-bottom-color:#e2e8f0"><div class="icon" style="background:#ebf8ff">🎭</div>Two Flavours of Saga</div>
+
+<div class="vs-grid">
+  <div class="vs-card a">
+    <div class="vs-card-title">🎵 Choreography-Based Saga</div>
+    <ul>
+      <li>No central coordinator</li>
+      <li>Each service reacts to events from the previous service</li>
+      <li>Services talk via a message broker (Kafka)</li>
+      <li>Simple to set up initially</li>
+      <li>Good for 2-3 steps</li>
+      <li>Hard to debug at scale</li>
+    </ul>
+  </div>
+  <div class="vs-card b">
+    <div class="vs-card-title">🎼 Orchestration-Based Saga</div>
+    <ul>
+      <li>Central Saga Orchestrator class</li>
+      <li>Orchestrator explicitly calls each service in order</li>
+      <li>One place to see the entire flow</li>
+      <li>More complex to set up</li>
+      <li>Best for 4+ steps or complex flows</li>
+      <li>Easy to debug — one log shows everything</li>
+    </ul>
+  </div>
+</div>
+
+<div class="card blue">
+  <div class="card-title blue">🎵 Choreography — How It Actually Works</div>
+  <p>Imagine a WhatsApp group where each team posts an update and the next team acts on it — with no project manager involved:</p>
+  <ul>
+    <li>OrderService saves order → publishes <b>ORDER_CREATED</b> event to Kafka</li>
+    <li>PaymentService listens for ORDER_CREATED → charges card → publishes <b>PAYMENT_COMPLETED</b></li>
+    <li>InventoryService listens for PAYMENT_COMPLETED → reserves stock → publishes <b>STOCK_RESERVED</b></li>
+    <li>ShippingService listens for STOCK_RESERVED → schedules delivery</li>
+  </ul>
+  <p>No single service knows about the full flow. Each only knows: "when I see THIS event, I do MY job and emit THAT event."</p>
+</div>
+
+<div class="analogy">
+  <div class="analogy-label">Choreography Analogy</div>
+  <p><b>A relay race.</b> Each runner knows exactly what to do when they receive the baton. There is no coach standing in the middle of the track directing every hand-off. The runners just react to receiving the baton and pass it on. If one runner drops it (failure), you need a protocol for who picks it up — this is the compensating transaction design challenge in choreography.</p>
+</div>
+
+<div class="card purple">
+  <div class="card-title purple">🎼 Orchestration — How It Actually Works</div>
+  <p>A single Saga Orchestrator class (a Spring <code>@Service</code>) explicitly calls each service and manages the flow:</p>
+  <ul>
+    <li>Orchestrator calls PaymentService.charge() → if fails: saga ends with FAILED</li>
+    <li>Orchestrator calls InventoryService.reserve() → if fails: calls PaymentService.refund(), saga FAILED</li>
+    <li>Orchestrator calls ShippingService.schedule() → if fails: calls InventoryService.release(), calls PaymentService.refund(), saga FAILED</li>
+    <li>All succeed → Orchestrator marks order CONFIRMED</li>
+  </ul>
+  <p>The orchestrator also <b>persists its state</b> (in a saga_state database table) after every step. If the application crashes, the next startup reads the table and knows exactly which step to resume from.</p>
+</div>
+
+<div class="analogy">
+  <div class="analogy-label">Orchestration Analogy</div>
+  <p><b>An air traffic controller.</b> Planes (services) do not talk to each other directly — they would crash into each other. The controller (orchestrator) tells each plane when to take off, where to fly, and when to land. If one plane has a problem, the controller manages the response — no other planes need to know about it.</p>
+</div>
+
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>Situation</th><th>Use Choreography</th><th>Use Orchestration</th></tr></thead>
+    <tbody>
+      <tr><td>Number of steps involved</td><td>2 to 3 steps</td><td>4 or more steps</td></tr>
+      <tr><td>Flow complexity</td><td>Simple linear flow</td><td>Conditional logic or branching</td></tr>
+      <tr><td>Team ownership</td><td>One team owns all services</td><td>Multiple teams own different services</td></tr>
+      <tr><td>Debugging requirements</td><td>Simple — few steps to trace</td><td>Need a clear audit trail of each step</td></tr>
+      <tr><td>Adding new participants</td><td>Easy — just subscribe to the event</td><td>Must update the orchestrator class</td></tr>
+      <tr><td>Risk profile</td><td>Low — no central point of failure</td><td>Orchestrator must be made resilient</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="pro-con">
+  <div class="pro">
+    <div class="pro-title">✅ Saga Pattern — Advantages</div>
+    <ul>
+      <li>No distributed lock needed — no performance bottleneck</li>
+      <li>Each service stays autonomous and independent</li>
+      <li>Works across completely different database technologies</li>
+      <li>Resilient — individual steps can retry independently</li>
+      <li>Scales horizontally without constraint</li>
+      <li>Full audit trail — every step is recorded</li>
+    </ul>
+  </div>
+  <div class="con">
+    <div class="con-title">❌ Saga Pattern — Disadvantages</div>
+    <ul>
+      <li>Eventual consistency — data temporarily inconsistent between steps</li>
+      <li>Compensating transactions are hard to design and test correctly</li>
+      <li>Compensation can also fail — needs its own retry logic</li>
+      <li>Choreography becomes "event spaghetti" with many services</li>
+      <li>Difficult to debug production failures mid-saga</li>
+      <li>Cannot compensate some operations (sent emails, printed documents)</li>
+    </ul>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-title">🔄 Saga vs Two-Phase Commit (2PC) — Why Saga Won</div>
+  <p>Two-Phase Commit (2PC) is the old approach to distributed transactions. A transaction coordinator asks all participants to "prepare" (phase 1), then commits them all (phase 2). It seems perfect — but:</p>
+  <ul>
+    <li><b>Performance killer:</b> All participants hold database locks during both phases. At scale with thousands of transactions per second, this creates massive lock contention.</li>
+    <li><b>Single point of failure:</b> If the coordinator crashes between phase 1 and phase 2, all participants are stuck holding locks forever, waiting for a coordinator that is never coming back.</li>
+    <li><b>Tight coupling:</b> All services must use the same transaction protocol. Incompatible with polyglot persistence (different DB types per service).</li>
+  </ul>
+  <p>Saga is preferred because it uses <b>local transactions only</b> — no locks held across services, no coordinator bottleneck, works with any database type.</p>
+</div>
+
+<hr class="divider">
+
+<!-- ══════════════════════════════════════════════
+     PATTERN 2: CQRS
+══════════════════════════════════════════════ -->
+<div class="section-heading"><div class="icon">⚡</div>Pattern 2 — CQRS</div>
+<p class="section-desc">Command Query Responsibility Segregation — separating reads from writes for performance and scalability.</p>
+
+<div class="definition">
+  <div class="def-label">Formal Definition</div>
+  <p><b>CQRS</b> (Command Query Responsibility Segregation) is an architectural pattern that separates the model used to <b>update information</b> (Command — writes) from the model used to <b>read information</b> (Query — reads). Instead of one unified data model for everything, you maintain two separate models, each optimised for its specific purpose.</p>
+</div>
+
+<div class="card">
+  <div class="card-title">🤔 The Problem It Solves</div>
+  <p>In most real systems, reading and writing data have <b>completely different characteristics</b>:</p>
+  <ul>
+    <li><b>Writes</b> are less frequent, need strict validation, follow business rules, require normalised data structure</li>
+    <li><b>Reads</b> are much more frequent, need to be fast, often join many tables, return data shaped exactly for the UI</li>
+  </ul>
+  <p>When you force one model to serve both, you get <b>compromises everywhere</b>. The normalised write model forces expensive JOIN operations on every read. Denormalising for reads makes writes complex and error-prone.</p>
+  <p>Real example: Your order placement is fast and simple — one INSERT to the orders table. But your admin dashboard needs to show orders with customer names, product details, payment status, and delivery tracking — that is 5 JOINs on a single query, taking 2 seconds on a large table.</p>
+</div>
+
+<div class="card blue">
+  <div class="card-title blue">⚙️ How CQRS Works — Step by Step</div>
+  <p><b>Command Side (Write Model):</b></p>
+  <ul>
+    <li>Handles all state changes: CreateOrder, UpdateStatus, CancelOrder</li>
+    <li>Uses a normalised relational model — strict integrity, foreign keys, validation</li>
+    <li>After a successful command, publishes a <b>domain event</b> to Kafka</li>
+    <li>Optimised for consistency and correctness, not for query speed</li>
+  </ul>
+  <p><b>Query Side (Read Model):</b></p>
+  <ul>
+    <li>A completely separate data store — can be same DB different table, or Redis, or Elasticsearch</li>
+    <li>Pre-joined, pre-aggregated, denormalised — shaped exactly like what the UI needs</li>
+    <li>Updated asynchronously by a consumer that listens to events from the command side</li>
+    <li>Multiple read models can exist for different consumers — mobile gets slim data, dashboard gets rich data</li>
+  </ul>
+  <p><b>The flow:</b> User places order → command side validates and saves normalised data → publishes ORDER_PLACED event → read model consumer updates the dashboard view table → dashboard query hits the pre-joined table and returns in 5ms instead of 2 seconds.</p>
+</div>
+
+<div class="scenario">
+  <div class="scenario-label">Real World Example — LinkedIn</div>
+  <p>When you post an update on LinkedIn, the write operation saves to a normalised write database. Your 500 followers seeing your post in their feed read from a completely separate <b>pre-computed feed model</b>.</p>
+  <p>Without CQRS, every feed page load would require: find all people this user follows, find their recent posts, rank by engagement, merge timelines, paginate. At LinkedIn scale (900 million users) — this is impossible to compute in real time for every page load.</p>
+  <p>With CQRS: the read model is pre-computed and updated as new posts arrive. Feed loads are near-instant because the data is already shaped exactly for the feed UI.</p>
+</div>
+
+<div class="card yellow">
+  <div class="card-title yellow">⚠️ Eventual Consistency — The Trade-Off You Must Accept</div>
+  <p>Because the read model is updated <b>asynchronously</b> after the write, there is a small window (milliseconds to a second) where the read model is behind the write model. A user who just placed an order might not immediately see it in their order list.</p>
+  <p><b>Solutions:</b></p>
+  <ul>
+    <li><b>Optimistic UI update:</b> Frontend adds the order to the list immediately without waiting for the server, then confirms when the event propagates. This is what most modern apps do — it feels instant.</li>
+    <li><b>Read your own writes:</b> After a command, route that specific user's immediate read to the write model (bypassing the eventual consistency window), then switch back to the read model after a few seconds.</li>
+    <li><b>Inform the user:</b> Show "Your order is being processed" for a moment. Most users do not notice a 500ms lag between submitting and seeing their data.</li>
+  </ul>
+</div>
+
+<div class="pro-con">
+  <div class="pro">
+    <div class="pro-title">✅ CQRS — Advantages</div>
+    <ul>
+      <li>Read and write sides scale independently</li>
+      <li>Read model is optimised purely for query performance</li>
+      <li>Multiple read models for different clients</li>
+      <li>Writes stay clean — no query optimisation concerns</li>
+      <li>Enables event sourcing naturally</li>
+      <li>Dashboard queries go from seconds to milliseconds</li>
+    </ul>
+  </div>
+  <div class="con">
+    <div class="con-title">❌ CQRS — Disadvantages</div>
+    <ul>
+      <li>Eventual consistency — read model slightly behind write</li>
+      <li>Significantly more complex than simple CRUD</li>
+      <li>Two models to maintain — bug fixes touch both sides</li>
+      <li>Event pipeline is a new failure point</li>
+      <li>Over-engineering for simple CRUD applications</li>
+      <li>Team must understand and accept eventual consistency</li>
+    </ul>
+  </div>
+</div>
+
+<div class="tip">
+  <div class="tip-label">When NOT to Use CQRS</div>
+  <p>CQRS is one of the most over-applied patterns. <b>Do not use it</b> when your read and write shapes are essentially the same, when your application is simple CRUD with low traffic, when your team is small and the complexity will slow you down, or when you genuinely need immediate consistency between reads and writes.</p>
+  <p>A good rule: if your queries are fast and not causing problems, CQRS is premature optimisation. Apply it when you have evidence of a read/write mismatch causing real problems.</p>
+</div>
+
+<hr class="divider">
+
+<!-- ══════════════════════════════════════════════
+     PATTERN 3: BFF
+══════════════════════════════════════════════ -->
+<div class="section-heading"><div class="icon">📱</div>Pattern 3 — BFF (Backend For Frontend)</div>
+<p class="section-desc">One API for all clients causes compromises everywhere. BFF gives each client its own tailored backend.</p>
+
+<div class="definition">
+  <div class="def-label">Formal Definition</div>
+  <p>The <b>Backend for Frontend (BFF) pattern</b> creates a dedicated backend service for each type of frontend application. Instead of one general-purpose API that tries to serve every client simultaneously, each client has its own tailored API layer that aggregates, filters, and shapes data specifically for that client's needs, network characteristics, and interaction model.</p>
+</div>
+
+<div class="card">
+  <div class="card-title">🤔 The Problem It Solves</div>
+  <p>Without BFF, a single general API must satisfy every client at once:</p>
+  <ul>
+    <li><b>Over-fetching:</b> Mobile app needs 5 fields to show a card. The API returns 40 fields. Mobile wastes bandwidth and battery downloading 35 fields it does not use.</li>
+    <li><b>Under-fetching (chatty client):</b> Mobile needs data from 3 services. It makes 3 sequential API calls. On a mobile network with 200ms latency each, that is 600ms of waiting before rendering anything.</li>
+    <li><b>Change paralysis:</b> Adding a mobile-specific feature means modifying the shared API — which risks breaking the web app and any third-party integrations.</li>
+    <li><b>One-size-fits-none:</b> The API ends up being too complex for mobile (too much data), too simple for the web dashboard (not enough data), and too coupled for third parties.</li>
+  </ul>
+</div>
+
+<div class="card blue">
+  <div class="card-title blue">⚙️ How BFF Works</div>
+  <p>Each client type gets its own BFF service. The BFF sits between the client and the downstream microservices:</p>
+  <ul>
+    <li><b>MobileBFF:</b> Calls UserService, OrderService, ProductService → aggregates → returns one slim, compressed response with only the fields the mobile app needs → one network call instead of three</li>
+    <li><b>WebBFF:</b> Calls the same services plus AnalyticsService → returns richer data with more fields → can include data the mobile app would never need</li>
+    <li><b>PublicAPI:</b> A rate-limited, versioned API for third-party developers → exposes only a safe subset of functionality</li>
+  </ul>
+  <p>Each BFF is owned by the team that owns the corresponding frontend. The mobile team controls their BFF — they can add a new field without asking the web team or the API team for permission.</p>
+</div>
+
+<div class="scenario">
+  <div class="scenario-label">Real World Example — Netflix</div>
+  <p>Netflix has separate backend services for mobile phones, tablets, smart TVs, game consoles, PlayStation, and web browsers. Each is optimised for that device's constraints:</p>
+  <ul>
+    <li><b>TV BFF:</b> Returns large, high-resolution images and pre-fetches more content because TV users browse longer and have fast internet connections</li>
+    <li><b>Mobile BFF:</b> Returns compressed images, fewer recommendations, and less metadata to save mobile data and battery</li>
+    <li><b>Smart TV BFF:</b> Returns simplified navigation-friendly data because smart TVs use remote controls, not mice</li>
+  </ul>
+  <p>Without BFF, one API would either waste TV bandwidth with compressed images, or drain mobile batteries with large images. BFF lets each client be served perfectly.</p>
+</div>
+
+<div class="pro-con">
+  <div class="pro">
+    <div class="pro-title">✅ BFF — Advantages</div>
+    <ul>
+      <li>Each client gets exactly the data it needs</li>
+      <li>Client teams work independently — no cross-team dependencies</li>
+      <li>Fewer network calls from client — BFF aggregates</li>
+      <li>Client-specific caching, auth, and rate limiting strategies</li>
+      <li>Easier to evolve — changes affect only one client</li>
+    </ul>
+  </div>
+  <div class="con">
+    <div class="con-title">❌ BFF — Disadvantages</div>
+    <ul>
+      <li>Code duplication — multiple BFFs may call the same services</li>
+      <li>More services to deploy, monitor, and maintain</li>
+      <li>Risk of business logic leaking into BFF — it should only aggregate</li>
+      <li>Requires discipline to keep BFFs thin over time</li>
+      <li>Overkill if you only have one type of client</li>
+    </ul>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-title">🔄 Alternative to BFF — GraphQL</div>
+  <p><b>GraphQL</b> is a popular alternative. Instead of multiple BFF services, you have one endpoint. The client specifies exactly which fields it needs in the query itself — no over-fetching, no under-fetching.</p>
+  <p><b>BFF is better when:</b> Clients have very different requirements and you want each team to have full ownership and autonomy over their API layer.</p>
+  <p><b>GraphQL is better when:</b> You want one flexible endpoint that multiple clients can query differently without maintaining separate services. This is what GitHub, Twitter, and Shopify use for their public APIs.</p>
+</div>
+
+<hr class="divider">
+
+<!-- ══════════════════════════════════════════════
+     PATTERN 4: SIDECAR
+══════════════════════════════════════════════ -->
+<div class="section-heading"><div class="icon">🔧</div>Pattern 4 — Sidecar Pattern</div>
+
+<div class="definition">
+  <div class="def-label">Formal Definition</div>
+  <p>The <b>Sidecar pattern</b> attaches a helper component — the "sidecar" — alongside a primary service component. The sidecar runs in the same execution context (same Kubernetes pod) as the main service. It provides supporting infrastructure features without the main service needing to implement them or even know about them.</p>
+</div>
+
+<div class="card">
+  <div class="card-title">🤔 The Problem It Solves</div>
+  <p>Every microservice needs: logging, distributed tracing, metrics collection, TLS encryption, service discovery, circuit breaking. If every service implements all of this:</p>
+  <ul>
+    <li>Every codebase has boilerplate infrastructure code that clutters business logic</li>
+    <li>Updating the logging library requires redeploying every single service</li>
+    <li>Different teams implement the same concerns differently — inconsistency</li>
+    <li>A bug in the shared infrastructure library affects every service simultaneously</li>
+  </ul>
+  <p>The Sidecar moves all infrastructure concerns OUT of the service code entirely, into a separate helper container.</p>
+</div>
+
+<div class="scenario">
+  <div class="scenario-label">Real World Example — Istio Service Mesh</div>
+  <p>Istio automatically injects an <b>Envoy proxy</b> container into every pod in your Kubernetes cluster. Your service code makes zero changes. The Envoy sidecar intercepts all inbound and outbound network traffic and transparently provides:</p>
+  <ul>
+    <li><b>Mutual TLS (mTLS):</b> Encrypts all service-to-service communication automatically — no SSL code in your service</li>
+    <li><b>Distributed tracing:</b> Propagates trace headers automatically — no OpenTelemetry setup in your code</li>
+    <li><b>Circuit breaking:</b> Configured via Kubernetes config files — no Resilience4j annotations needed</li>
+    <li><b>Retries and timeouts:</b> Configured externally — no retry logic in your service code</li>
+    <li><b>Canary deployments:</b> Route 5% of traffic to new version — zero application code changes</li>
+  </ul>
+  <p>Your service code becomes purely business logic. Infrastructure is the sidecar's job.</p>
+</div>
+
+<hr class="divider">
+
+<!-- ══════════════════════════════════════════════
+     PATTERN 5: STRANGLER FIG
+══════════════════════════════════════════════ -->
+<div class="section-heading"><div class="icon">🌱</div>Pattern 5 — Strangler Fig Pattern</div>
+
+<div class="definition">
+  <div class="def-label">Formal Definition</div>
+  <p>The <b>Strangler Fig pattern</b> is a migration strategy for incrementally replacing a legacy system by gradually routing individual features to new microservices one at a time, until the legacy system handles no traffic and can be safely decommissioned.</p>
+</div>
+
+<div class="card">
+  <div class="card-title">🤔 The Problem It Solves — Why Not Rewrite Everything?</div>
+  <p>The temptation when dealing with a large legacy monolith is to rewrite it from scratch. This is called a "big bang rewrite" and it almost always fails or significantly overruns:</p>
+  <ul>
+    <li>The new system takes months or years to build</li>
+    <li>The business keeps running on the old system the entire time</li>
+    <li>The new system must replicate ALL functionality before it can go live</li>
+    <li>One deployment switches everything — if anything is wrong, everything breaks</li>
+    <li>The new team rarely understands all the edge cases encoded in the old system</li>
+  </ul>
+  <p>Strangler Fig eliminates big-bang risk by making the migration incremental — each feature is extracted and replaced independently, with the ability to roll back instantly if something goes wrong.</p>
+</div>
+
+<div class="card blue">
+  <div class="card-title blue">⚙️ How It Works</div>
+  <ol>
+    <li style="margin-bottom:8px"><b>Put a routing layer in front of the monolith:</b> An API gateway or reverse proxy sits in front of everything. Initially, 100% of traffic goes to the monolith. Nothing changes for users.</li>
+    <li style="margin-bottom:8px"><b>Extract one feature:</b> Build a new microservice for one specific feature — say, the user profile page. Test it thoroughly.</li>
+    <li style="margin-bottom:8px"><b>Update routing:</b> Change the routing layer to send /profile/* to the new service instead of the monolith. Everything else still goes to the monolith.</li>
+    <li style="margin-bottom:8px"><b>Monitor:</b> Watch metrics and error rates. If anything is wrong, update routing to send /profile/* back to the monolith. Zero user impact.</li>
+    <li style="margin-bottom:8px"><b>Repeat:</b> Extract the next feature. And the next. Over months, the monolith handles less and less.</li>
+    <li><b>Decommission:</b> When the monolith handles zero traffic, shut it down.</li>
+  </ol>
+</div>
+
+<div class="analogy">
+  <div class="analogy-label">Why It Is Called Strangler Fig</div>
+  <p>The strangler fig tree starts as a seed in the canopy of a host tree. It grows roots down around the host tree's trunk. Over years, the fig's roots completely surround the host. The host tree eventually dies and rots away. The fig stands on its own, having used the host as scaffolding. The old monolith is the host tree. Your new microservices are the fig.</p>
+</div>
+
+<hr class="divider">
+
+<!-- ══════════════════════════════════════════════
+     FOLLOW-UP Q&A
+══════════════════════════════════════════════ -->
+<div class="section-heading"><div class="icon">❓</div>Follow-Up Questions &amp; Full Answers</div>
+<p class="section-desc">These are the exact questions interviewers ask after you explain the patterns. Click each to reveal the full answer.</p>
+
+<div class="qa-section">
+
+  <div class="qa-item">
+    <div class="qa-question" onclick="toggleQA(this)">
+      Q1: What is the difference between Choreography and Orchestration Saga? When would you choose each?
+      <span class="qa-icon">+</span>
+    </div>
+    <div class="qa-answer">
+      <p><b>Choreography</b> has no central coordinator. Services communicate entirely through events on a message broker like Kafka. Each service knows what to do when it receives a specific event. There is no single point of failure because there is no coordinator. However, when something goes wrong, you must trace events across multiple service logs to understand what happened — there is no single place that shows the full picture. As the number of steps grows, the event dependencies become hard to visualise and maintain.</p>
+      <p><b>Orchestration</b> has a central Saga Orchestrator class that explicitly calls each service in sequence and handles failures. The entire flow is visible in one class. Debugging is straightforward — the orchestrator's logs show every step. Adding conditional logic (if user is premium, skip step 2) is easy in the orchestrator but complex in choreography (every service would need to know about premium users).</p>
+      <p><b>Choose choreography</b> when: 2-3 steps, simple linear flow, one team owns all services, you want zero central dependency.</p>
+      <p><b>Choose orchestration</b> when: 4 or more steps, complex conditional flows, multiple teams, you need an audit trail, debugging production issues is a concern.</p>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question" onclick="toggleQA(this)">
+      Q2: What happens if a compensating transaction itself fails?
+      <span class="qa-icon">+</span>
+    </div>
+    <div class="qa-answer">
+      <p>This is a real and serious production problem that many candidates overlook. If the refund to the payment provider fails because PaymentService is down, the customer has been charged and no refund was issued. This is a genuine data inconsistency that requires careful handling.</p>
+      <p><b>Solution 1 — Retry with exponential backoff:</b> Compensating transactions must be retried with the same resilience patterns as normal transactions. They should not be attempted once and abandoned.</p>
+      <p><b>Solution 2 — Persist the compensation state:</b> The saga state table records not just which step the saga is on, but also which compensations are pending. If the application restarts mid-compensation, the saga resumes and retries the pending compensation.</p>
+      <p><b>Solution 3 — Human escalation:</b> After a maximum number of retries, the saga moves to a COMPENSATION_FAILED state and triggers a human alert. A support team member manually resolves the inconsistency. This is unavoidable in extreme cases and must be designed into the system — you need tooling to view and resolve stuck sagas.</p>
+      <p>This is why robust saga implementations always include a saga_state table, a maximum retry count per compensation, and an alerting mechanism for stuck sagas.</p>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question" onclick="toggleQA(this)">
+      Q3: What is eventual consistency in CQRS and how do you handle it in the UI?
+      <span class="qa-icon">+</span>
+    </div>
+    <div class="qa-answer">
+      <p><b>Eventual consistency</b> means the read model is slightly behind the write model. There is an asynchronous event pipeline between the write side (where the command was processed) and the read side (the pre-computed view). This pipeline takes milliseconds to seconds. During that window, a user who just placed an order might not see it in their order list because the read model has not yet received and processed the ORDER_PLACED event.</p>
+      <p><b>Handling it in the UI — Option 1 (Optimistic UI Update):</b> When the user submits an order, the frontend immediately adds it to the order list without waiting for the server event to propagate. The frontend is "optimistic" that the write will succeed. If the write fails, the frontend removes it. This is what most modern applications do — users never notice the lag because the UI updates instantly.</p>
+      <p><b>Handling it in the UI — Option 2 (Read Your Own Writes):</b> After a successful command, route that specific user's immediate reads to the write model for a short window (5-10 seconds), then switch back to the read model. The user always sees their own latest changes immediately, but other users' queries still hit the fast read model.</p>
+      <p><b>Handling it in the UI — Option 3 (Version Token):</b> The command response includes a version number. The read request includes that version number as a minimum. The read side waits (up to a timeout) until its data reaches that version. More complex but guarantees consistency for the specific user.</p>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question" onclick="toggleQA(this)">
+      Q4: How do you ensure the Saga Orchestrator does not become a single point of failure?
+      <span class="qa-icon">+</span>
+    </div>
+    <div class="qa-answer">
+      <p>The orchestrator becoming a single point of failure is the most common criticism of the orchestration approach. Three techniques address this:</p>
+      <p><b>Make the orchestrator stateless:</b> The orchestrator itself holds no saga state in memory. All state is persisted to a saga_state database table after every step. Any instance of the orchestrator can pick up any saga by reading the table. If one instance crashes, another picks up from exactly where it left off.</p>
+      <p><b>Run multiple instances:</b> Deploy the orchestrator as a K8s Deployment with multiple replicas. All instances share the same saga_state table. Use optimistic locking or distributed locking (Redis lock) on the saga record to prevent two instances from processing the same saga simultaneously.</p>
+      <p><b>Use a dedicated saga framework:</b> Tools like Axon Framework, Eventuate Tram, or AWS Step Functions manage orchestrator state, retries, and fault tolerance for you. They are designed specifically for this problem and handle the edge cases that are hard to implement correctly from scratch.</p>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question" onclick="toggleQA(this)">
+      Q5: Can you use Saga without Kafka? What are the alternatives?
+      <span class="qa-icon">+</span>
+    </div>
+    <div class="qa-answer">
+      <p>Yes, absolutely. Kafka is a popular choice but not required.</p>
+      <p><b>For Orchestration-based Saga:</b> Kafka is not required at all. The orchestrator can call downstream services directly via REST or gRPC (synchronous calls). The orchestrator decides what to call next — no event needed. This is actually simpler and works well when you control all the services and latency is acceptable.</p>
+      <p><b>For Choreography-based Saga:</b> You need some messaging system, but it does not have to be Kafka. Options:</p>
+      <ul>
+        <li><b>RabbitMQ:</b> Simpler to set up and operate than Kafka, good for enterprise applications with moderate volume. Message delivery guarantees are strong. Not as durable or replayable as Kafka.</li>
+        <li><b>AWS SQS/SNS:</b> Fully managed, no infrastructure to operate, good for cloud-native applications. SNS fans out to multiple SQS queues — naturally supports multiple consumers.</li>
+        <li><b>Azure Service Bus:</b> Microsoft's managed messaging service, similar to SQS/SNS.</li>
+        <li><b>ActiveMQ:</b> The Java EE standard messaging system, still widely used in enterprise environments.</li>
+      </ul>
+      <p>Choose Kafka when you need: very high throughput (millions of events/day), message replay capability (consumers can re-read old events), long retention (keep events for days/weeks), or multiple independent consumer groups reading the same topic.</p>
+      <p>Choose RabbitMQ when you need: simpler setup, lower volume, and you do not need replay capability.</p>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question" onclick="toggleQA(this)">
+      Q6: What is Event Sourcing and how does it relate to CQRS?
+      <span class="qa-icon">+</span>
+    </div>
+    <div class="qa-answer">
+      <p><b>Event Sourcing</b> is the practice of storing every state change as an immutable event in an append-only event log, rather than storing only the current state of the entity.</p>
+      <p>Traditional approach: You have an orders table. A row gets updated as the order progresses: PENDING → CONFIRMED → SHIPPED → DELIVERED. At any point, you only know the current state. You cannot answer "what was the order status yesterday at 3pm?"</p>
+      <p>Event sourcing approach: You have an order_events table. Every change is a new row: ORDER_CREATED, PAYMENT_COMPLETED, STOCK_RESERVED, ORDER_SHIPPED, ORDER_DELIVERED. You never update a row — you only append. The current state is derived by replaying all events for that order. You can answer "what was the status at any point in time" by replaying only events up to that timestamp.</p>
+      <p><b>Relationship with CQRS:</b> They are separate patterns that are often used together but are completely independent. CQRS says "separate your read and write models." Event sourcing says "store state as events, not as current values." When combined: the write side stores events (event sourcing), and the read side subscribes to those events to build pre-computed projections (CQRS). The event log is the source of truth. You can rebuild any read model at any time by replaying the events from the beginning. This is extremely powerful for debugging, audit requirements, and building new views of historical data.</p>
+      <p><b>Downside:</b> Deriving current state by replaying many events can be slow. You use "snapshots" — periodically save the current state so replay starts from the most recent snapshot, not from event 1.</p>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question" onclick="toggleQA(this)">
+      Q7: What pattern would you use if two microservices need to share data — do they share a database?
+      <span class="qa-icon">+</span>
+    </div>
+    <div class="qa-answer">
+      <p>This is one of the most important microservice design decisions and the answer is almost always: <b>no, they should not share a database</b>.</p>
+      <p>Sharing a database between two services creates tight coupling at the data layer — the worst kind of coupling. If Service A changes the schema of a shared table, Service B breaks. If Service A's queries are slow and cause DB locks, Service B's queries are also affected. Both services can now only be deployed together, defeating the purpose of microservices.</p>
+      <p><b>The correct alternatives:</b></p>
+      <ul>
+        <li><b>API calls (synchronous):</b> Service A calls Service B's API to get the data it needs. Service B owns the data. Clean, but adds network latency and creates a runtime dependency.</li>
+        <li><b>Event-driven data replication:</b> Service B publishes events when its data changes. Service A subscribes and maintains its own local copy of the data it needs. No runtime dependency — Service A reads its local copy. This is called the "shared nothing" architecture.</li>
+        <li><b>Saga for write operations:</b> When a write spans both services, use the Saga pattern instead of a shared transaction.</li>
+      </ul>
+      <p>The key principle is: <b>each service owns its data</b>. Other services access that data only through the owning service's API or through events it publishes. Never through direct database access.</p>
+    </div>
+  </div>
+
+</div><!-- end qa-section -->
+
+<div class="tip" style="margin-top:24px">
+  <div class="tip-label">Interview Tip — How to Answer "What Patterns Did You Use?"</div>
+  <p>Never just list pattern names. Connect them to a real problem you solved:</p>
+  <p><b>Strong answer:</b> "In our order management system, we used the Orchestration Saga because we had 5 services involved and needed clear visibility into which step failed when things went wrong in production. We also applied CQRS for our reporting dashboard — our write model was a normalised schema with 8 tables, but our dashboard queries needed pre-aggregated data. By maintaining a separate denormalised read model, dashboard queries went from 3 seconds to under 50ms."</p>
+  <p>Then be ready for the follow-up: "What were the trade-offs?" Always acknowledge the downsides — eventual consistency for CQRS, the complexity of compensating transactions for Saga. Interviewers trust candidates who acknowledge trade-offs far more than those who only highlight benefits.</p>
+</div>
+
+</div><!-- end container -->
+
+<script>
+function toggleQA(el) {
+  var answer = el.nextElementSibling;
+  var icon = el.querySelector('.qa-icon');
+  var isOpen = answer.classList.contains('open');
+  answer.classList.toggle('open', !isOpen);
+  el.classList.toggle('open', !isOpen);
+  icon.textContent = isOpen ? '+' : '×';
+}
+</script>
+</body>
+</html>

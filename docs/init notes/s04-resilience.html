@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S04 — Resilience: Circuit Breaker, Retry, Idempotency, Outbox</title>
+<style>
+  :root {
+    --bg: #f8f9fa; --surface: #ffffff; --border: #e2e8f0;
+    --text-primary: #1a202c; --text-secondary: #4a5568; --text-muted: #718096;
+    --blue-light: #ebf8ff; --blue-border: #bee3f8; --blue-dark: #1a365d;
+    --green-light: #f0fff4; --green-border: #9ae6b4;
+    --red-light: #fff5f5; --red-border: #feb2b2;
+    --orange-light: #fffaf0; --orange-border: #fbd38d;
+    --purple-light: #faf5ff; --purple-border: #d6bcfa;
+    --yellow-light: #fffff0; --yellow-border: #f6e05e;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text-primary); font-size: 15px; line-height: 1.7; }
+  .page-header { background: linear-gradient(135deg, #1a365d 0%, #2a4a8a 100%); color: white; padding: 40px 48px 36px; }
+  .page-header .section-label { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; opacity: .7; margin-bottom: 8px; }
+  .page-header h1 { font-size: 28px; font-weight: 700; margin-bottom: 10px; }
+  .page-header .subtitle { font-size: 15px; opacity: .8; max-width: 680px; line-height: 1.6; }
+  .tags { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 18px; }
+  .tag { background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.25); color: white; font-size: 11.5px; padding: 3px 10px; border-radius: 20px; }
+  .container { max-width: 900px; margin: 0 auto; padding: 40px 24px 80px; }
+  .section-heading { font-size: 20px; font-weight: 700; color: var(--text-primary); margin: 44px 0 6px; padding-bottom: 10px; border-bottom: 2px solid var(--border); display: flex; align-items: center; gap: 10px; }
+  .section-heading .icon { width: 32px; height: 32px; border-radius: 8px; background: #ebf8ff; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
+  .section-desc { font-size: 14px; color: var(--text-muted); margin-bottom: 20px; margin-top: 4px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 22px 26px; margin-bottom: 16px; }
+  .card-title { font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 10px; }
+  .card p { font-size: 14.5px; color: var(--text-secondary); line-height: 1.75; margin-bottom: 10px; }
+  .card p:last-child { margin-bottom: 0; }
+  .card b { color: var(--text-primary); font-weight: 600; }
+  .card code { font-family: 'SF Mono', Consolas, monospace; font-size: 12.5px; background: #edf2f7; padding: 1px 6px; border-radius: 4px; color: #c53030; }
+  .card ul, .card ol { padding-left: 22px; margin: 8px 0; }
+  .card li { font-size: 14.5px; color: var(--text-secondary); line-height: 1.75; margin-bottom: 5px; }
+  .card li b { color: var(--text-primary); }
+  .card.blue   { background: var(--blue-light);   border-color: var(--blue-border); }
+  .card.green  { background: var(--green-light);  border-color: var(--green-border); }
+  .card.red    { background: var(--red-light);    border-color: var(--red-border); }
+  .card.orange { background: var(--orange-light); border-color: var(--orange-border); }
+  .card.purple { background: var(--purple-light); border-color: var(--purple-border); }
+  .card.yellow { background: var(--yellow-light); border-color: var(--yellow-border); }
+  .card.blue p,.card.blue li{color:#2c5282;} .card.blue b{color:var(--blue-dark);}
+  .card.green p,.card.green li{color:#22543d;} .card.green b{color:#1c4532;}
+  .card.red p,.card.red li{color:#742a2a;} .card.red b{color:#63171b;}
+  .card.orange p,.card.orange li{color:#7b341e;} .card.orange b{color:#652b19;}
+  .card.purple p,.card.purple li{color:#44337a;} .card.purple b{color:#322659;}
+  .card.yellow p,.card.yellow li{color:#744210;} .card.yellow b{color:#5f370e;}
+  .definition { background: #1a365d; color: white; border-radius: 12px; padding: 22px 26px; margin-bottom: 16px; }
+  .definition .def-label { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; opacity: .7; margin-bottom: 6px; }
+  .definition p { font-size: 15px; line-height: 1.75; opacity: .95; margin-bottom: 8px; }
+  .definition p:last-child { margin-bottom: 0; }
+  .definition b { font-weight: 700; }
+  .analogy { border-left: 4px solid #d69e2e; background: var(--yellow-light); border-radius: 0 10px 10px 0; padding: 16px 20px; margin-bottom: 16px; }
+  .analogy .analogy-label { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #744210; margin-bottom: 5px; }
+  .analogy p { font-size: 14px; color: #744210; line-height: 1.7; margin-bottom: 6px; }
+  .analogy p:last-child { margin-bottom: 0; }
+  .analogy b { color: #5f370e; }
+  .scenario { border-left: 4px solid #38a169; background: var(--green-light); border-radius: 0 10px 10px 0; padding: 16px 20px; margin-bottom: 16px; }
+  .scenario .scenario-label { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #276749; margin-bottom: 5px; }
+  .scenario p { font-size: 14px; color: #22543d; line-height: 1.75; margin-bottom: 8px; }
+  .scenario p:last-child { margin-bottom: 0; }
+  .scenario b { color: #1c4532; font-weight: 600; }
+  .scenario ol, .scenario ul { padding-left: 20px; margin: 6px 0; }
+  .scenario li { font-size: 14px; color: #22543d; line-height: 1.75; margin-bottom: 6px; }
+  .scenario li b { color: #1c4532; }
+  .warning { border-left: 4px solid #e53e3e; background: var(--red-light); border-radius: 0 10px 10px 0; padding: 16px 20px; margin-bottom: 16px; }
+  .warning .warning-label { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #9b2335; margin-bottom: 5px; }
+  .warning p { font-size: 14px; color: #742a2a; line-height: 1.7; margin-bottom: 6px; }
+  .warning p:last-child { margin-bottom: 0; }
+  .warning b { color: #63171b; }
+  .warning ul { padding-left: 20px; margin: 6px 0; }
+  .warning li { font-size: 14px; color: #742a2a; line-height: 1.7; margin-bottom: 4px; }
+  .tip { border-left: 4px solid #3182ce; background: var(--blue-light); border-radius: 0 10px 10px 0; padding: 16px 20px; margin-bottom: 16px; }
+  .tip .tip-label { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #2b6cb0; margin-bottom: 5px; }
+  .tip p { font-size: 14px; color: #2c5282; line-height: 1.7; margin-bottom: 6px; }
+  .tip p:last-child { margin-bottom: 0; }
+  .tip b { color: #1a365d; }
+  .pro-con { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+  .pro { background: var(--green-light); border: 1px solid var(--green-border); border-radius: 10px; padding: 16px 18px; }
+  .con { background: var(--red-light); border: 1px solid var(--red-border); border-radius: 10px; padding: 16px 18px; }
+  .pro-title { font-size: 11px; font-weight: 700; color: #1c4532; text-transform: uppercase; letter-spacing: .07em; margin-bottom: 8px; }
+  .con-title { font-size: 11px; font-weight: 700; color: #63171b; text-transform: uppercase; letter-spacing: .07em; margin-bottom: 8px; }
+  .pro ul, .con ul { padding-left: 18px; }
+  .pro li { font-size: 13.5px; color: #22543d; line-height: 1.7; margin-bottom: 4px; }
+  .con li { font-size: 13.5px; color: #742a2a; line-height: 1.7; margin-bottom: 4px; }
+  .table-wrap { overflow-x: auto; margin-bottom: 16px; border-radius: 10px; border: 1px solid var(--border); }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  thead th { background: #2d3748; color: white; padding: 11px 14px; text-align: left; font-weight: 600; font-size: 12.5px; }
+  tbody tr:nth-child(even) { background: #f7fafc; }
+  tbody td { padding: 10px 14px; color: var(--text-secondary); border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.6; }
+  tbody tr:last-child td { border-bottom: none; }
+  td b { color: var(--text-primary); font-weight: 600; }
+  .code-block { background: #1a202c; border-radius: 10px; padding: 18px 20px; font-family: 'SF Mono', Consolas, monospace; font-size: 12.5px; color: #e2e8f0; white-space: pre; overflow-x: auto; line-height: 1.65; margin-bottom: 14px; }
+  .code-block .cm { color: #718096; }
+  .code-block .kw { color: #90cdf4; }
+  .code-block .st { color: #9ae6b4; }
+  .code-block .an { color: #fbd38d; }
+  .code-block .num { color: #f6ad55; }
+  .qa-section { margin-bottom: 16px; }
+  .qa-item { margin-bottom: 12px; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  .qa-question { background: #2d3748; color: white; padding: 14px 18px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; align-items: center; user-select: none; }
+  .qa-question:hover { background: #1a202c; }
+  .qa-question .qa-icon { font-size: 18px; transition: transform .25s; flex-shrink: 0; margin-left: 12px; }
+  .qa-question.open .qa-icon { transform: rotate(45deg); }
+  .qa-answer { padding: 0 18px; max-height: 0; overflow: hidden; transition: max-height .35s ease, padding .3s ease; background: var(--surface); }
+  .qa-answer.open { max-height: 1800px; padding: 16px 18px; }
+  .qa-answer p { font-size: 14px; color: var(--text-secondary); line-height: 1.75; margin-bottom: 10px; }
+  .qa-answer p:last-child { margin-bottom: 0; }
+  .qa-answer b { color: var(--text-primary); font-weight: 600; }
+  .qa-answer ul, .qa-answer ol { padding-left: 20px; margin: 6px 0 10px; }
+  .qa-answer li { font-size: 14px; color: var(--text-secondary); line-height: 1.75; margin-bottom: 4px; }
+  .qa-answer code { font-family: 'SF Mono', Consolas, monospace; font-size: 12px; background: #edf2f7; padding: 1px 5px; border-radius: 4px; color: #c53030; }
+  .divider { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+
+  /* CIRCUIT BREAKER STATE MACHINE */
+  .cb-states { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 16px; }
+  .cb-state { border-radius: 12px; padding: 18px; text-align: center; border: 2px solid transparent; }
+  .cb-state.closed  { background: #f0fff4; border-color: #9ae6b4; }
+  .cb-state.open    { background: #fff5f5; border-color: #feb2b2; }
+  .cb-state.half    { background: #fffaf0; border-color: #fbd38d; }
+  .cb-state .state-icon { font-size: 28px; margin-bottom: 8px; }
+  .cb-state .state-name { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+  .cb-state.closed .state-name { color: #1c4532; }
+  .cb-state.open   .state-name { color: #63171b; }
+  .cb-state.half   .state-name { color: #652b19; }
+  .cb-state .state-desc { font-size: 12.5px; line-height: 1.6; }
+  .cb-state.closed .state-desc { color: #22543d; }
+  .cb-state.open   .state-desc { color: #742a2a; }
+  .cb-state.half   .state-desc { color: #7b341e; }
+
+  /* CB TRANSITION ARROWS */
+  .cb-transitions { background: #2d3748; border-radius: 10px; padding: 16px 20px; margin-bottom: 16px; }
+  .cb-transition { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .cb-transition:last-child { margin-bottom: 0; }
+  .cb-from { background: rgba(255,255,255,.1); color: white; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; white-space: nowrap; }
+  .cb-arrow { color: #a0aec0; font-size: 18px; flex-shrink: 0; }
+  .cb-to { background: rgba(255,255,255,.1); color: white; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; white-space: nowrap; }
+  .cb-condition { font-size: 13px; color: #e2e8f0; }
+
+  /* RETRY BACKOFF VISUAL */
+  .backoff-visual { display: flex; align-items: flex-end; gap: 8px; margin: 12px 0 16px; padding: 16px; background: #1a202c; border-radius: 10px; }
+  .backoff-bar { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .backoff-bar-fill { background: #4299e1; border-radius: 4px 4px 0 0; width: 44px; }
+  .backoff-bar-label { font-size: 11px; color: #a0aec0; text-align: center; }
+  .backoff-bar-time  { font-size: 10.5px; color: #68d391; font-weight: 700; }
+
+  /* LAYER STACK */
+  .layer-stack { margin-bottom: 16px; }
+  .layer { display: flex; gap: 14px; margin-bottom: 8px; }
+  .layer-num { min-width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; color: white; }
+  .layer-body { flex: 1; background: white; border: 1px solid var(--border); border-radius: 10px; padding: 13px 16px; }
+  .layer-title { font-size: 13.5px; font-weight: 700; color: var(--text-primary); margin-bottom: 3px; }
+  .layer-desc  { font-size: 13px; color: var(--text-secondary); line-height: 1.65; }
+  .layer-desc b { color: var(--text-primary); }
+
+  /* OUTBOX FLOW */
+  .outbox-flow { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .outbox-col { border-radius: 12px; padding: 18px; }
+  .outbox-col.bad  { background: var(--red-light);   border: 1px solid var(--red-border); }
+  .outbox-col.good { background: var(--green-light); border: 1px solid var(--green-border); }
+  .outbox-col-title { font-size: 13px; font-weight: 700; margin-bottom: 12px; }
+  .outbox-col.bad  .outbox-col-title { color: #63171b; }
+  .outbox-col.good .outbox-col-title { color: #1c4532; }
+  .outbox-step { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 8px; }
+  .outbox-step-dot { width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: white; margin-top: 2px; }
+  .outbox-col.bad  .outbox-step-dot { background: #e53e3e; }
+  .outbox-col.good .outbox-step-dot { background: #38a169; }
+  .outbox-step-text { font-size: 13px; line-height: 1.6; }
+  .outbox-col.bad  .outbox-step-text { color: #742a2a; }
+  .outbox-col.good .outbox-step-text { color: #22543d; }
+  .outbox-step-text b { font-weight: 700; }
+  .outbox-col.bad  .outbox-step-text b { color: #63171b; }
+  .outbox-col.good .outbox-step-text b { color: #1c4532; }
+
+  /* FALLBACK TABLE */
+  .fallback-grid { display: grid; grid-template-columns: 1fr; gap: 8px; margin-bottom: 16px; }
+  .fallback-row { display: grid; grid-template-columns: 200px 1fr 1fr; gap: 12px; background: white; border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; align-items: start; }
+  .fallback-row.header { background: #2d3748; }
+  .fallback-row.header span { font-size: 12px; font-weight: 700; color: white; text-transform: uppercase; letter-spacing: .05em; }
+  .fallback-scenario { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+  .fallback-good { font-size: 13px; color: #22543d; line-height: 1.6; }
+  .fallback-bad  { font-size: 13px; color: #742a2a; line-height: 1.6; }
+
+  @media(max-width:640px){
+    .page-header { padding: 28px 20px; }
+    .container { padding: 24px 16px 60px; }
+    .pro-con, .cb-states, .outbox-flow { grid-template-columns: 1fr; }
+    .fallback-row { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <div class="section-label">Section 04 — Resilience</div>
+  <h1>Handling Service Failures: Circuit Breaker, Retry, Idempotency &amp; Outbox</h1>
+  <div class="subtitle">What happens when a service goes down, how you protect your system from cascading failure, how to retry safely, how to never lose a request, and how to give users a graceful experience when things break.</div>
+  <div class="tags">
+    <span class="tag">Circuit Breaker</span><span class="tag">Resilience4j</span>
+    <span class="tag">Fallback</span><span class="tag">Retry</span>
+    <span class="tag">Exponential Backoff</span><span class="tag">Jitter</span>
+    <span class="tag">Idempotency Key</span><span class="tag">Outbox Pattern</span>
+    <span class="tag">Dead Letter Queue</span><span class="tag">Bulkhead</span>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ══════════════════════════════
+     PART 1 — WHY SERVICES FAIL
+══════════════════════════════ -->
+<div class="section-heading"><div class="icon">💡</div>Start Here — Services Will Fail. Plan for It.</div>
+<p class="section-desc">Understanding why resilience is not optional in microservices.</p>
+
+<div class="card">
+  <div class="card-title">🧮 The Maths of Microservice Availability</div>
+  <p>Imagine each of your 10 microservices has 99.9% uptime — that is only 8.7 hours of downtime per year. Sounds great. But here is the problem:</p>
+  <p>If a user request must pass through all 10 services, the overall availability is:</p>
+  <p style="text-align:center; font-size:16px; font-weight:700; color:#1a365d; margin:12px 0;">99.9% × 99.9% × ... (10 times) = <span style="color:#e53e3e;">99.0%</span></p>
+  <p>That is 87 hours of downtime per year — over 3 full days. And that is with excellent individual service availability. With 20 services: <b>98%</b> availability — over 7 days of downtime per year.</p>
+  <p>Services WILL go down. Network calls WILL fail. The question is not <b>whether</b> your system experiences failure — it is <b>how gracefully it degrades</b> when failure happens. A well-designed system with poor resilience fails completely. A well-designed system with good resilience degrades partially and recovers automatically.</p>
+</div>
+
+<div class="analogy">
+  <div class="analogy-label">The Five Layers of Defence — Like Wearing Body Armour</div>
+  <p>Think of resilience as layers of protection. Each layer catches failures that slipped through the previous one. You do not rely on any single layer — you stack them.</p>
+  <p><b>Layer 1 — Timeout:</b> Do not wait forever for a response.<br>
+  <b>Layer 2 — Retry:</b> Try again on transient failures.<br>
+  <b>Layer 3 — Circuit Breaker:</b> Stop trying when too many failures happen.<br>
+  <b>Layer 4 — Fallback:</b> Return something useful when the service is unavailable.<br>
+  <b>Layer 5 — Bulkhead:</b> Isolate failures so they do not spread.</p>
+</div>
+
+<!-- LAYER STACK -->
+<div class="layer-stack">
+  <div class="layer">
+    <div class="layer-num" style="background:#2b6cb0;">1</div>
+    <div class="layer-body">
+      <div class="layer-title">Timeout — The Simplest Defence</div>
+      <div class="layer-desc">If a downstream service does not respond within X seconds, give up and release the thread. Without a timeout, your thread waits <b>forever</b> — a blocked thread that never returns is how cascading failures start. Always set <b>both</b> a connect timeout (how long to wait for the connection) and a read timeout (how long to wait for the response once connected).</div>
+    </div>
+  </div>
+  <div class="layer">
+    <div class="layer-num" style="background:#38a169;">2</div>
+    <div class="layer-body">
+      <div class="layer-title">Retry — Handle Transient Failures</div>
+      <div class="layer-desc">Many failures are temporary: a brief network blip, a GC pause on the server, a momentary overload. Retrying after a short wait often succeeds. But retry only on <b>safe, transient errors</b> — never blindly retry all failures.</div>
+    </div>
+  </div>
+  <div class="layer">
+    <div class="layer-num" style="background:#dd6b20;">3</div>
+    <div class="layer-body">
+      <div class="layer-title">Circuit Breaker — Stop Hitting a Dead Service</div>
+      <div class="layer-desc">If retries keep failing, the service is not just having a blip — it is truly down. Stop calling it. Return the fallback immediately without wasting time on a call that will fail anyway. Give the service time to recover. Try again after a wait period.</div>
+    </div>
+  </div>
+  <div class="layer">
+    <div class="layer-num" style="background:#9f7aea;">4</div>
+    <div class="layer-body">
+      <div class="layer-title">Fallback — Return Something Useful</div>
+      <div class="layer-desc">When the circuit is open, return a meaningful response instead of an error. <b>Stale cached data, a safe default, or a friendly degraded experience</b> is infinitely better than a 500 error. The fallback should be designed deliberately — what is the least bad experience?</div>
+    </div>
+  </div>
+  <div class="layer">
+    <div class="layer-num" style="background:#e53e3e;">5</div>
+    <div class="layer-body">
+      <div class="layer-title">Bulkhead — Contain the Blast Radius</div>
+      <div class="layer-desc">Separate thread pools per downstream dependency. If InventoryService is slow and fills <b>its</b> thread pool, PaymentService calls — in a <b>different</b> thread pool — are completely unaffected. Named after ship bulkheads: a hole in one compartment does not sink the ship.</div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ══════════════════════════════
+     PART 2 — CIRCUIT BREAKER
+══════════════════════════════ -->
+<div class="section-heading"><div class="icon">⚡</div>Circuit Breaker — Deep Dive</div>
+<p class="section-desc">The most important resilience pattern. Understand the three states and every transition.</p>
+
+<div class="definition">
+  <div class="def-label">Formal Definition</div>
+  <p>A <b>Circuit Breaker</b> is a resilience pattern that monitors calls to a downstream service and automatically stops making those calls when too many failures occur, returning a fallback response instead. After a wait period, it allows a limited number of probe requests to test whether the service has recovered.</p>
+  <p>Named after the electrical circuit breaker in your home — when there is too much current (too many failures), the breaker trips to protect the rest of the circuit (your system).</p>
+</div>
+
+<div class="analogy">
+  <div class="analogy-label">The Electrical Circuit Breaker Analogy</div>
+  <p>In your home, an electrical circuit breaker monitors current flow. Under normal conditions (CLOSED), electricity flows normally. When a fault causes too much current (too many failures), the breaker <b>trips</b> (OPEN) — it cuts the circuit to protect your appliances. You cannot turn it back on immediately — you must wait, find the fault, fix it, then manually reset the breaker (HALF-OPEN — test if it is fixed).</p>
+  <p>The software circuit breaker works identically. Normal calls → CLOSED. Too many failures → OPEN (stop calling, return fallback). After wait period → HALF-OPEN (try one probe call). Probe succeeds → CLOSED. Probe fails → back to OPEN.</p>
+</div>
+
+<!-- THREE STATES -->
+<div class="cb-states">
+  <div class="cb-state closed">
+    <div class="state-icon">🟢</div>
+    <div class="state-name">CLOSED</div>
+    <div class="state-desc">Normal operation. All calls go through to the downstream service. Every call result (success or failure) is recorded in a sliding window. When the failure rate exceeds the threshold — the circuit trips to OPEN.</div>
+  </div>
+  <div class="cb-state open">
+    <div class="state-icon">🔴</div>
+    <div class="state-name">OPEN</div>
+    <div class="state-desc">Circuit is tripped. All calls immediately return the fallback — NO actual call is made to the downstream service. Protects the failing service from being hammered. After the wait duration expires, moves to HALF-OPEN.</div>
+  </div>
+  <div class="cb-state half">
+    <div class="state-icon">🟡</div>
+    <div class="state-name">HALF-OPEN</div>
+    <div class="state-desc">Probe state. A limited number of test calls are allowed through. If enough succeed — service has recovered, move to CLOSED. If too many fail — service is still down, move back to OPEN.</div>
+  </div>
+</div>
+
+<!-- STATE TRANSITIONS -->
+<div class="cb-transitions">
+  <div class="cb-transition">
+    <span class="cb-from">CLOSED</span>
+    <span class="cb-arrow">→</span>
+    <span class="cb-to" style="background:#e53e3e;">OPEN</span>
+    <span class="cb-condition">When failure rate exceeds threshold (e.g. 50% of last 10 calls failed)</span>
+  </div>
+  <div class="cb-transition">
+    <span class="cb-from" style="background:#e53e3e;">OPEN</span>
+    <span class="cb-arrow">→</span>
+    <span class="cb-to" style="background:#dd6b20;">HALF-OPEN</span>
+    <span class="cb-condition">After waitDurationInOpenState expires (e.g. 60 seconds have passed)</span>
+  </div>
+  <div class="cb-transition">
+    <span class="cb-from" style="background:#dd6b20;">HALF-OPEN</span>
+    <span class="cb-arrow">→</span>
+    <span class="cb-to" style="background:#38a169;">CLOSED</span>
+    <span class="cb-condition">When probe calls succeed (e.g. 2 out of 3 probe calls succeeded)</span>
+  </div>
+  <div class="cb-transition">
+    <span class="cb-from" style="background:#dd6b20;">HALF-OPEN</span>
+    <span class="cb-arrow">→</span>
+    <span class="cb-to" style="background:#e53e3e;">OPEN</span>
+    <span class="cb-condition">When probe calls still fail (service has not recovered yet)</span>
+  </div>
+</div>
+
+<div class="scenario">
+  <div class="scenario-label">Step-by-Step Walkthrough — PaymentService Goes Down</div>
+  <p><b>Normal operation (CLOSED):</b> Your service calls PaymentService. Every call result is recorded in a sliding window of the last 10 calls.</p>
+  <p>Calls so far: OK, OK, FAIL, OK, FAIL, FAIL, FAIL, FAIL, FAIL, FAIL → 8 failures in 10 calls = 80% failure rate → threshold was 50% → <b>CIRCUIT TRIPS TO OPEN</b></p>
+  <p><b>OPEN state (60 seconds):</b> Every call to PaymentService immediately returns the fallback response — no actual network call is made. PaymentService gets zero traffic and has 60 seconds to recover. Your threads are freed immediately instead of waiting for timeouts.</p>
+  <p><b>HALF-OPEN probe:</b> After 60 seconds, 3 probe calls are allowed through. Probe 1: OK. Probe 2: OK. Probe 3: OK. All 3 succeed → <b>CIRCUIT CLOSES — service recovered</b>. Normal traffic resumes.</p>
+  <p><b>If probes fail:</b> PaymentService still down. Circuit goes back to OPEN for another 60 seconds. Repeats until the service recovers.</p>
+</div>
+
+<div class="card">
+  <div class="card-title">📋 What Should Your Fallback Actually Return?</div>
+  <p>This is the question from your notes: <em>"What fallback response are we sending? What does the user see? What should the user do?"</em></p>
+  <p>A fallback should <b>never be a 500 error</b>. A 500 tells the user "something is broken" with no further guidance. Design your fallback to give the best possible experience given the circumstances.</p>
+</div>
+
+<div class="fallback-grid">
+  <div class="fallback-row header">
+    <span>Scenario</span>
+    <span>✅ Good Fallback</span>
+    <span>❌ Bad Fallback</span>
+  </div>
+  <div class="fallback-row">
+    <div class="fallback-scenario">Inventory check fails</div>
+    <div class="fallback-good">Return last known stock count from Redis cache with a "may not be current" label. User sees a number, not an error.</div>
+    <div class="fallback-bad">Return null or show "Out of Stock" when you do not actually know. Lose the sale.</div>
+  </div>
+  <div class="fallback-row">
+    <div class="fallback-scenario">Payment service fails during checkout</div>
+    <div class="fallback-good">Persist the order to Outbox table. Show user: "Your order is confirmed and being processed." Process when service recovers.</div>
+    <div class="fallback-bad">Show "Payment failed, please try again." User retries, creates duplicate charges.</div>
+  </div>
+  <div class="fallback-row">
+    <div class="fallback-scenario">Recommendation engine fails</div>
+    <div class="fallback-good">Return a static list of bestsellers or most popular items. Page loads normally, just with generic recommendations.</div>
+    <div class="fallback-bad">Leave the recommendations section blank or throw an error that breaks the whole page.</div>
+  </div>
+  <div class="fallback-row">
+    <div class="fallback-scenario">Auth service fails</div>
+    <div class="fallback-good">Fail closed — return 401. Never assume the user is authenticated when you cannot verify. Security trumps user experience.</div>
+    <div class="fallback-bad">Assume user is authenticated to avoid inconvenience. Security breach.</div>
+  </div>
+  <div class="fallback-row">
+    <div class="fallback-scenario">Product search fails</div>
+    <div class="fallback-good">Show cached search results from the last successful query. Tell user "showing recent results." Degrade gracefully.</div>
+    <div class="fallback-bad">Return empty results. User thinks there are no products.</div>
+  </div>
+</div>
+
+<div class="code-block"><span class="cm">// Resilience4j Circuit Breaker — Spring Boot implementation</span>
+<span class="an">@Service</span>
+<span class="kw">public class</span> InventoryClient {
+
+    <span class="cm">// Annotations stack: TimeLimiter wraps CircuitBreaker wraps Retry</span>
+    <span class="an">@CircuitBreaker</span>(name = <span class="st">"inventoryService"</span>, fallbackMethod = <span class="st">"fallbackStock"</span>)
+    <span class="an">@Retry</span>(name = <span class="st">"inventoryService"</span>)
+    <span class="an">@TimeLimiter</span>(name = <span class="st">"inventoryService"</span>)
+    <span class="kw">public</span> CompletableFuture&lt;StockResponse&gt; getStock(String productId) {
+        <span class="kw">return</span> CompletableFuture.supplyAsync(() ->
+            webClient.get()
+                .uri(<span class="st">"/api/stock/{id}"</span>, productId)
+                .retrieve()
+                .bodyToMono(StockResponse.<span class="kw">class</span>)
+                .block()
+        );
+    }
+
+    <span class="cm">// Fallback method — must have same signature + Throwable param</span>
+    <span class="kw">public</span> CompletableFuture&lt;StockResponse&gt; fallbackStock(String productId, Throwable ex) {
+        log.warn(<span class="st">"Inventory unavailable for {}, using cached data. Error: {}"</span>,
+            productId, ex.getMessage());
+
+        <span class="cm">// Try to serve from Redis cache first</span>
+        StockResponse cached = stockCache.get(productId);
+        <span class="kw">if</span> (cached != <span class="kw">null</span>) {
+            cached.setStale(<span class="kw">true</span>);       <span class="cm">// flag so UI can show warning</span>
+            <span class="kw">return</span> CompletableFuture.completedFuture(cached);
+        }
+
+        <span class="cm">// No cache — return safe default (show as available, let order attempt)</span>
+        <span class="kw">return</span> CompletableFuture.completedFuture(
+            StockResponse.unknown(productId)  <span class="cm">// status=UNKNOWN, not zero</span>
+        );
+    }
+}
+
+<span class="cm"># application.yml — Resilience4j configuration</span>
+resilience4j:
+  circuitbreaker:
+    instances:
+      inventoryService:
+        slidingWindowType: COUNT_BASED
+        slidingWindowSize: <span class="num">10</span>             <span class="cm"># look at last 10 calls</span>
+        failureRateThreshold: <span class="num">50</span>          <span class="cm"># open if 50%+ fail</span>
+        slowCallRateThreshold: <span class="num">80</span>         <span class="cm"># also open if 80%+ are slow</span>
+        slowCallDurationThreshold: <span class="num">2000</span>   <span class="cm"># slow = >2 seconds</span>
+        waitDurationInOpenState: <span class="num">60s</span>      <span class="cm"># stay open 60s before probing</span>
+        permittedNumberOfCallsInHalfOpenState: <span class="num">3</span>
+        automaticTransitionFromOpenToHalfOpenEnabled: <span class="kw">true</span>
+  timelimiter:
+    instances:
+      inventoryService:
+        timeoutDuration: <span class="num">3s</span>              <span class="cm"># cancel call after 3 seconds</span>
+  retry:
+    instances:
+      inventoryService:
+        maxAttempts: <span class="num">3</span>
+        waitDuration: <span class="num">500ms</span>
+        retryExceptions:
+          - java.net.ConnectException    <span class="cm"># retry on connection refused</span>
+          - java.net.SocketTimeoutException
+        ignoreExceptions:
+          - com.example.BusinessException <span class="cm"># don't retry on business errors</span></div>
+
+<hr class="divider">
+
+<!-- ══════════════════════════════
+     PART 3 — RETRY STRATEGY
+══════════════════════════════ -->
+<div class="section-heading"><div class="icon">🔁</div>Retry Strategy — How to Retry Safely</div>
+<p class="section-desc">Not all retries are equal. A bad retry strategy can make failures worse.</p>
+
+<div class="card">
+  <div class="card-title">🤔 What Should and Should Not Be Retried</div>
+  <p>Retrying the wrong operations causes more harm than not retrying at all.</p>
+</div>
+
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>Error Type</th><th>Retry?</th><th>Why</th></tr></thead>
+    <tbody>
+      <tr><td><b>503 Service Unavailable</b></td><td>✅ Yes</td><td>Service is temporarily overloaded. Will likely succeed shortly.</td></tr>
+      <tr><td><b>Network timeout</b></td><td>✅ Yes (if idempotent)</td><td>Transient network issue. Service may not have received the request.</td></tr>
+      <tr><td><b>429 Too Many Requests</b></td><td>✅ Yes, after Retry-After delay</td><td>Rate limited. Wait the specified time and retry.</td></tr>
+      <tr><td><b>500 Internal Server Error</b></td><td>⚠️ Sometimes</td><td>Depends — could be transient (DB overload) or permanent (bug). Retry with caution.</td></tr>
+      <tr><td><b>400 Bad Request</b></td><td>❌ Never</td><td>Your request is malformed. Retrying sends the same bad request. Will always fail.</td></tr>
+      <tr><td><b>401 Unauthorised</b></td><td>❌ Never</td><td>Your token is invalid or expired. Retrying will not fix that.</td></tr>
+      <tr><td><b>404 Not Found</b></td><td>❌ Never</td><td>The resource does not exist. Retrying will not create it.</td></tr>
+      <tr><td><b>409 Conflict</b></td><td>❌ Never</td><td>Business conflict (e.g. duplicate order). Retrying creates duplicates.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="card blue">
+  <div class="card-title blue">⏱️ Exponential Backoff — Wait Longer Between Each Retry</div>
+  <p>Do not retry immediately. Wait before retrying, and wait <b>longer</b> each time. If the service is overloaded, hammering it with immediate retries makes it worse, not better.</p>
+  <p>Exponential backoff doubles the wait time after each failure:</p>
+  <ul>
+    <li>First attempt: immediate</li>
+    <li>Second attempt (retry 1): wait 500ms</li>
+    <li>Third attempt (retry 2): wait 1000ms</li>
+    <li>Fourth attempt (retry 3): wait 2000ms → give up after this</li>
+  </ul>
+</div>
+
+<!-- BACKOFF VISUAL -->
+<div class="backoff-visual">
+  <div class="backoff-bar">
+    <div class="backoff-bar-fill" style="height:20px;"></div>
+    <div class="backoff-bar-label">Attempt 1</div>
+    <div class="backoff-bar-time">0ms</div>
+  </div>
+  <div style="color:#a0aec0;font-size:20px;padding-bottom:30px;">→</div>
+  <div class="backoff-bar">
+    <div class="backoff-bar-fill" style="height:40px;background:#68d391;"></div>
+    <div class="backoff-bar-label">Retry 1</div>
+    <div class="backoff-bar-time">500ms</div>
+  </div>
+  <div style="color:#a0aec0;font-size:20px;padding-bottom:30px;">→</div>
+  <div class="backoff-bar">
+    <div class="backoff-bar-fill" style="height:70px;background:#f6ad55;"></div>
+    <div class="backoff-bar-label">Retry 2</div>
+    <div class="backoff-bar-time">1000ms</div>
+  </div>
+  <div style="color:#a0aec0;font-size:20px;padding-bottom:30px;">→</div>
+  <div class="backoff-bar">
+    <div class="backoff-bar-fill" style="height:110px;background:#fc8181;"></div>
+    <div class="backoff-bar-label">Retry 3</div>
+    <div class="backoff-bar-time">2000ms</div>
+  </div>
+  <div style="color:#a0aec0;font-size:20px;padding-bottom:30px;">→</div>
+  <div class="backoff-bar">
+    <div style="color:#fc8181;font-size:24px;margin-bottom:8px;">✗</div>
+    <div class="backoff-bar-label">Give up</div>
+    <div class="backoff-bar-time">Open CB</div>
+  </div>
+</div>
+
+<div class="card orange">
+  <div class="card-title orange">⚡ Jitter — Why You Must Add Randomness to Backoff</div>
+  <p><b>The thundering herd problem:</b> Your payment gateway goes down at 2pm. You have 500 services all retrying with the same exponential backoff schedule. At exactly t+500ms, all 500 retry simultaneously. The recovering gateway sees a spike of 500 requests and crashes again. At t+1000ms, another 500-request spike. The service cannot recover because it keeps getting overwhelmed at every retry interval.</p>
+  <p><b>The fix — jitter (randomness):</b> Instead of waiting exactly 500ms, each client waits 500ms ± random(0–250ms). The 500 clients spread their retries across a 500ms window instead of hitting simultaneously. The recovering service sees ~10 requests per 10ms instead of 500 at once. It recovers smoothly.</p>
+  <p>Amazon published a paper on this specifically — their retry library has jitter built in by default. Every serious retry implementation must include jitter.</p>
+</div>
+
+<hr class="divider">
+
+<!-- ══════════════════════════════
+     PART 4 — IDEMPOTENCY
+══════════════════════════════ -->
+<div class="section-heading"><div class="icon">🔑</div>Idempotency — Retry Safely Without Creating Duplicates</div>
+<p class="section-desc">One of the most important concepts for safe distributed systems. Understand this deeply.</p>
+
+<div class="definition">
+  <div class="def-label">Formal Definition</div>
+  <p>An operation is <b>idempotent</b> if performing it multiple times produces the exact same result as performing it once. No matter how many times you repeat the operation, the outcome is identical after the first execution.</p>
+  <p>In a distributed system where network failures can cause uncertainty about whether a request was received and processed, idempotency is what makes retries safe.</p>
+</div>
+
+<div class="card">
+  <div class="card-title">🤔 The Problem Idempotency Solves — The Double Charge Nightmare</div>
+  <p>You are checking out. Your app sends a payment request. The payment service receives it, charges your card successfully, and sends back "200 OK". But your network drops at that exact moment — you never receive the 200. Your app sees a timeout exception and retries. The payment service receives a second request — and charges your card <b>again</b>.</p>
+  <p>You have been charged twice for one order. No error was raised. No duplicate flag was set. This is a real problem and it happens in production without proper idempotency handling.</p>
+</div>
+
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>HTTP Method / Operation</th><th>Idempotent?</th><th>Safe to Retry?</th><th>Why</th></tr></thead>
+    <tbody>
+      <tr><td><b>GET /orders/123</b></td><td>✅ Yes</td><td>✅ Yes</td><td>Reading never changes state. Always returns the same data.</td></tr>
+      <tr><td><b>PUT /orders/123</b> (full replace)</td><td>✅ Yes</td><td>✅ Yes</td><td>Replacing with the same data twice gives the same result.</td></tr>
+      <tr><td><b>DELETE /orders/123</b></td><td>✅ Yes</td><td>✅ Yes</td><td>Deleting an already-deleted resource returns 404, not a new deletion.</td></tr>
+      <tr><td><b>POST /orders</b> (create)</td><td>❌ No</td><td>⚠️ Only with Idempotency-Key</td><td>Each POST creates a new order. Retry = duplicate order.</td></tr>
+      <tr><td><b>POST /payments</b> (charge card)</td><td>❌ No</td><td>⚠️ Only with Idempotency-Key</td><td>Each POST charges the card. Retry = double charge.</td></tr>
+      <tr><td><b>PATCH /orders/123/count +1</b></td><td>❌ No</td><td>❌ Never without key</td><td>Adding +1 twice gives count+2. Relative changes are dangerous.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="card blue">
+  <div class="card-title blue">⚙️ How the Idempotency-Key Pattern Works</div>
+  <p>Before making any non-idempotent POST request, the <b>client</b> generates a UUID. This UUID is the idempotency key. It is generated <b>once per user action</b> — before the first attempt. The same key is sent on every retry.</p>
+  <p>On the <b>server</b>, before processing the request, check if this key has been seen before. If yes — return the stored result without re-processing. If no — process it, store the result with the key, return the result.</p>
+  <p>This way: the first request processes and stores the result. All retries find the stored result and return it immediately. The operation only executes once. The client gets the same response every time.</p>
+</div>
+
+<div class="code-block"><span class="cm">// CLIENT — generate key once before first attempt, reuse on retries</span>
+<span class="kw">public</span> PaymentResponse chargeWithIdempotency(PaymentRequest request) {
+    <span class="cm">// Generated ONCE per user action — same key on every retry</span>
+    String idempotencyKey = UUID.randomUUID().toString();
+
+    <span class="kw">int</span> maxAttempts = <span class="num">3</span>;
+    <span class="kw">for</span> (<span class="kw">int</span> attempt = <span class="num">1</span>; attempt &lt;= maxAttempts; attempt++) {
+        <span class="kw">try</span> {
+            <span class="kw">return</span> paymentClient.charge(request, idempotencyKey); <span class="cm">// same key</span>
+        } <span class="kw">catch</span> (TransientException e) {
+            <span class="kw">if</span> (attempt == maxAttempts) <span class="kw">throw</span> e;
+            Thread.sleep((<span class="kw">long</span>) Math.pow(<span class="num">2</span>, attempt) * <span class="num">500</span>); <span class="cm">// backoff</span>
+        }
+    }
+}
+
+<span class="cm">// SERVER — check key before processing</span>
+<span class="an">@PostMapping</span>(<span class="st">"/api/payments"</span>)
+<span class="kw">public</span> ResponseEntity&lt;PaymentResponse&gt; charge(
+        <span class="an">@RequestHeader</span>(<span class="st">"Idempotency-Key"</span>) String key,
+        <span class="an">@RequestBody</span> PaymentRequest request) {
+
+    <span class="cm">// Step 1: check if we have already processed this key</span>
+    Optional&lt;PaymentResponse&gt; cached = idempotencyStore.get(key);
+    <span class="kw">if</span> (cached.isPresent()) {
+        log.info(<span class="st">"Duplicate request detected for key {}, returning cached response"</span>, key);
+        <span class="kw">return</span> ResponseEntity.ok(cached.get()); <span class="cm">// exact same response</span>
+    }
+
+    <span class="cm">// Step 2: process for the first time</span>
+    PaymentResponse result = stripeService.charge(request);
+
+    <span class="cm">// Step 3: store result with key for 24 hours</span>
+    idempotencyStore.save(key, result, Duration.ofHours(<span class="num">24</span>));
+
+    <span class="kw">return</span> ResponseEntity.ok(result);
+}
+
+<span class="cm">// Idempotency Store — Redis implementation</span>
+<span class="an">@Component</span>
+<span class="kw">public class</span> RedisIdempotencyStore {
+
+    <span class="kw">public</span> Optional&lt;PaymentResponse&gt; get(String key) {
+        String stored = redisTemplate.opsForValue().get(<span class="st">"idempotency:"</span> + key);
+        <span class="kw">return</span> Optional.ofNullable(stored)
+            .map(s -> objectMapper.readValue(s, PaymentResponse.<span class="kw">class</span>));
+    }
+
+    <span class="kw">public void</span> save(String key, PaymentResponse response, Duration ttl) {
+        String json = objectMapper.writeValueAsString(response);
+        redisTemplate.opsForValue().set(<span class="st">"idempotency:"</span> + key, json, ttl);
+    }
+}</div>
+
+<div class="scenario">
+  <div class="scenario-label">Real World — Stripe's Idempotency Implementation</div>
+  <p>Stripe is the gold standard for idempotency. Every POST to Stripe's API accepts an <code>Idempotency-Key</code> header. Stripe stores this key with the result. If the same key arrives within 24 hours, Stripe returns the exact same response without re-processing.</p>
+  <p>This is why Stripe charges can be safely retried. The retry either: gets the same result (key already processed), or processes it fresh (key not yet seen — first successful attempt). In both cases the customer is charged exactly once.</p>
+  <p>Your internal payment service should work the same way. Any non-idempotent endpoint that must be retryable should accept and honour an Idempotency-Key header.</p>
+</div>
+
+<hr class="divider">
+
+<!-- ══════════════════════════════
+     PART 5 — REQUEST PERSISTENCE
+══════════════════════════════ -->
+<div class="section-heading"><div class="icon">💾</div>Request Persistence — "Process It When the Service Comes Back"</div>
+<p class="section-desc">From your notes: "I don't want the user to send the request again — process it whenever the service is back up." Here is exactly how to build this.</p>
+
+<div class="card">
+  <div class="card-title">🤔 The Problem — You Cannot Drop Requests</div>
+  <p>PaymentService is down. A user checks out. You have two choices:</p>
+  <ul>
+    <li><b>Drop the request:</b> Tell the user "Payment failed, try again." The user is frustrated. They might not come back. You lost the sale.</li>
+    <li><b>Persist and process later:</b> Accept the request, save it durably, tell the user "Order confirmed, processing payment." Process when the service recovers. User is happy. Sale is saved.</li>
+  </ul>
+  <p>Option 2 is obviously better. But "save it and process later" is harder than it sounds. The naive approach has a fatal flaw called the <b>dual-write problem</b>.</p>
+</div>
+
+<!-- DUAL WRITE PROBLEM -->
+<div class="outbox-flow">
+  <div class="outbox-col bad">
+    <div class="outbox-col-title">❌ Naive Approach — Dual Write (Dangerous)</div>
+    <div class="outbox-step">
+      <div class="outbox-step-dot">1</div>
+      <div class="outbox-step-text">Save order to database ✓</div>
+    </div>
+    <div class="outbox-step">
+      <div class="outbox-step-dot">2</div>
+      <div class="outbox-step-text"><b>App crashes here ←</b></div>
+    </div>
+    <div class="outbox-step">
+      <div class="outbox-step-dot">3</div>
+      <div class="outbox-step-text">Publish ORDER_PLACED to Kafka ✗ <b>(never happens)</b></div>
+    </div>
+    <div style="margin-top:10px; padding:10px; background:rgba(229,62,62,.1); border-radius:6px;">
+      <div style="font-size:12.5px; color:#742a2a; font-weight:700;">Result: Silent data inconsistency</div>
+      <div style="font-size:12px; color:#742a2a; margin-top:4px;">Order is in DB but ShippingService never received the event. Order is never shipped. Customer emails support. Support cannot find any error. Bug is invisible.</div>
+    </div>
+  </div>
+  <div class="outbox-col good">
+    <div class="outbox-col-title">✅ Outbox Pattern — Atomic and Safe</div>
+    <div class="outbox-step">
+      <div class="outbox-step-dot">1</div>
+      <div class="outbox-step-text">Save order to orders table <b>AND</b> save event to outbox table — <b>same single DB transaction</b></div>
+    </div>
+    <div class="outbox-step">
+      <div class="outbox-step-dot">2</div>
+      <div class="outbox-step-text"><b>App crashes here ←</b></div>
+    </div>
+    <div class="outbox-step">
+      <div class="outbox-step-dot">3</div>
+      <div class="outbox-step-text">On restart: relay process reads outbox, finds pending event, publishes to Kafka ✓</div>
+    </div>
+    <div style="margin-top:10px; padding:10px; background:rgba(56,161,105,.1); border-radius:6px;">
+      <div style="font-size:12.5px; color:#1c4532; font-weight:700;">Result: Guaranteed delivery</div>
+      <div style="font-size:12px; color:#22543d; margin-top:4px;">Either BOTH the order and the outbox record exist (crash after commit) — relay publishes on restart. Or NEITHER exists (crash before commit) — nothing to relay. Never inconsistent.</div>
+    </div>
+  </div>
+</div>
+
+<div class="card blue">
+  <div class="card-title blue">⚙️ How the Outbox Pattern Works — Complete Explanation</div>
+  <p>The key insight is: <b>you cannot atomically write to two different systems</b> (DB and Kafka). But you CAN atomically write to two tables in the same database. Use this to your advantage.</p>
+  <p><b>Step 1 — Same transaction:</b> In your service method, within ONE database transaction, you write the business data (the order) AND you write an outbox record (the event to be published later). If either write fails, both roll back. They are always in sync.</p>
+  <p><b>Step 2 — Relay process:</b> A separate background process (a @Scheduled method, a separate thread, or a CDC tool like Debezium) reads PENDING records from the outbox table and publishes them to Kafka. It then marks them as SENT.</p>
+  <p><b>Step 3 — Idempotency on consumer:</b> The relay might publish the same event twice (if it crashes after publishing but before marking as SENT). Consumers must handle duplicate events — use the event ID as an idempotency key at the consumer.</p>
+</div>
+
+<div class="code-block"><span class="cm">// STEP 1: Service — write order + outbox in ONE transaction</span>
+<span class="an">@Service</span>
+<span class="kw">public class</span> OrderService {
+
+    <span class="an">@Transactional</span>  <span class="cm">// one atomic unit — both writes or neither</span>
+    <span class="kw">public</span> Order placeOrder(OrderRequest request) {
+
+        <span class="cm">// Write business data</span>
+        Order order = orderRepository.save(<span class="kw">new</span> Order(request));
+
+        <span class="cm">// Write outbox event — same transaction!</span>
+        OutboxEvent event = OutboxEvent.builder()
+            .id(UUID.randomUUID().toString())       <span class="cm">// for idempotency</span>
+            .aggregateType(<span class="st">"Order"</span>)
+            .aggregateId(order.getId().toString())
+            .type(<span class="st">"ORDER_PLACED"</span>)
+            .payload(objectMapper.writeValueAsString(order))
+            .status(OutboxStatus.PENDING)
+            .createdAt(Instant.now())
+            .build();
+
+        outboxRepository.save(event);
+
+        <span class="cm">// Return immediately — no Kafka call here</span>
+        <span class="kw">return</span> order;
+    }
+}
+
+<span class="cm">// STEP 2: Relay — reads outbox and publishes to Kafka</span>
+<span class="an">@Component</span>
+<span class="kw">public class</span> OutboxRelayService {
+
+    <span class="an">@Scheduled</span>(fixedDelay = <span class="num">1000</span>)  <span class="cm">// run every 1 second</span>
+    <span class="kw">public void</span> relayPendingEvents() {
+        List&lt;OutboxEvent&gt; pending = outboxRepository
+            .findTop100ByStatusOrderByCreatedAtAsc(OutboxStatus.PENDING);
+
+        <span class="kw">for</span> (OutboxEvent event : pending) {
+            <span class="kw">try</span> {
+                <span class="cm">// Publish to Kafka — use event ID as message key for ordering</span>
+                kafkaTemplate.send(event.getType(), event.getId(), event.getPayload())
+                    .get(5, TimeUnit.SECONDS);  <span class="cm">// wait for broker ack</span>
+
+                <span class="cm">// Mark as sent only AFTER successful publish</span>
+                event.setStatus(OutboxStatus.SENT);
+                event.setSentAt(Instant.now());
+            } <span class="kw">catch</span> (Exception e) {
+                <span class="cm">// Kafka down — increment retry count, try again next run</span>
+                event.incrementRetries();
+                <span class="kw">if</span> (event.getRetries() &gt; <span class="num">10</span>) {
+                    event.setStatus(OutboxStatus.DEAD_LETTER); <span class="cm">// alert team</span>
+                }
+                log.error(<span class="st">"Failed to relay event {}: {}"</span>, event.getId(), e.getMessage());
+            }
+            outboxRepository.save(event);
+        }
+    }
+}
+
+<span class="cm">// STEP 3: Consumer — handle duplicates with idempotency check</span>
+<span class="an">@KafkaListener</span>(topics = <span class="st">"ORDER_PLACED"</span>)
+<span class="kw">public void</span> handleOrderPlaced(
+        <span class="an">@Header</span>(KafkaHeaders.MESSAGE_KEY) String eventId,
+        String payload,
+        Acknowledgment ack) {
+
+    <span class="cm">// Check if we have already processed this event (duplicate detection)</span>
+    <span class="kw">if</span> (processedEventStore.exists(eventId)) {
+        log.info(<span class="st">"Duplicate event {} skipped"</span>, eventId);
+        ack.acknowledge(); <span class="cm">// ack to move offset forward</span>
+        <span class="kw">return</span>;
+    }
+
+    OrderEvent order = objectMapper.readValue(payload, OrderEvent.<span class="kw">class</span>);
+    shippingService.scheduleDelivery(order);
+
+    processedEventStore.markProcessed(eventId); <span class="cm">// prevent future duplicates</span>
+    ack.acknowledge();
+}</div>
+
+<div class="card">
+  <div class="card-title">📋 Outbox vs Debezium vs Dead Letter Queue — Which to Use?</div>
+  <p><b>Polling Outbox (what we built above):</b> A @Scheduled job polls the outbox table every 1 second. Simple to implement. Works well for low-to-medium volume (up to ~10,000 events/minute). Adds 0-1s of latency. Some DB polling overhead.</p>
+  <p><b>Debezium (Change Data Capture):</b> Instead of polling, Debezium reads the database's transaction log (MySQL binlog, PostgreSQL WAL) directly. It captures changes the instant they commit — near zero latency, no polling overhead. More complex to set up (separate Debezium service). Used by LinkedIn, Shopify at high volume.</p>
+  <p><b>Dead Letter Queue (DLQ):</b> Handles a different problem — messages that failed to be processed by the consumer after multiple retries. Not for persisting requests when the service is down. Use DLQ alongside the Outbox, not instead of it.</p>
+</div>
+
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>Approach</th><th>Latency</th><th>Volume</th><th>Complexity</th><th>Best For</th></tr></thead>
+    <tbody>
+      <tr><td><b>Polling Outbox</b></td><td>0–1 second</td><td>Low–Medium</td><td>Low</td><td>Most enterprise applications. Simple to build and operate.</td></tr>
+      <tr><td><b>Debezium CDC</b></td><td>Milliseconds</td><td>High</td><td>High</td><td>High volume production systems needing real-time event streaming.</td></tr>
+      <tr><td><b>Dead Letter Queue</b></td><td>N/A</td><td>Any</td><td>Low</td><td>Handling consumer processing failures after retries exhausted.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<hr class="divider">
+
+<!-- ══════════════════════════════
+     FOLLOW-UP Q&A
+══════════════════════════════ -->
+<div class="section-heading"><div class="icon">❓</div>Follow-Up Questions &amp; Full Answers</div>
+<p class="section-desc">Exact questions interviewers ask after you explain resilience patterns. Click to expand.</p>
+
+<div class="qa-section">
+
+  <div class="qa-item">
+    <div class="qa-question" onclick="toggleQA(this)">
+      Q1: Circuit breaker and retry both exist — which runs first? Can they conflict?
+      <span class="qa-icon">+</span>
+    </div>
+    <div class="qa-answer">
+      <p>This is an excellent question about the order of execution. In Resilience4j with stacked annotations, the execution order from outermost to innermost is: <b>TimeLimiter → CircuitBreaker → Retry</b>.</p>
+      <p>What this means in practice: Retry runs first on a failure. If all retries are exhausted and the call still fails, the CircuitBreaker records all those failures. When enough retries fail across enough calls, the CircuitBreaker opens.</p>
+      <p><b>The potential conflict:</b> If Retry is configured to retry 3 times and CircuitBreaker uses a sliding window of 10 calls, each request that fails all 3 retries counts as <b>3 failures</b> in the CircuitBreaker window, not 1. This can cause the circuit to open much faster than intended.</p>
+      <p><b>Best practice to avoid conflict:</b> Keep retry count low (2–3 max) so the circuit breaker does not open prematurely. Configure the retry to only retry on truly transient errors (network exceptions, 503). Configure the circuit breaker on a larger window so random blips do not trip it. Use the circuit breaker's <code>recordExceptions</code> config to specify exactly which exceptions count as failures.</p>
+      <p>Think of it as: Retry handles individual transient blips. Circuit Breaker handles sustained outages. They are complementary, not competing — just be careful about how their windows interact.</p>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question" onclick="toggleQA(this)">
+      Q2: How do you store idempotency keys — Redis or database? What TTL do you set?
+      <span class="qa-icon">+</span>
+    </div>
+    <div class="qa-answer">
+      <p><b>Redis is the preferred choice</b> for most use cases because:</p>
+      <ul>
+        <li>Sub-millisecond lookup — checking an idempotency key should add no noticeable latency</li>
+        <li>Built-in TTL — keys automatically expire without any manual cleanup job</li>
+        <li>Atomic SET with NX (set only if not exists) — race condition safe: two simultaneous requests with the same key are handled correctly</li>
+        <li>Memory-efficient for this use case — keys are just strings, values are compact JSON</li>
+      </ul>
+      <p><b>Use a database when:</b> You need idempotency guarantees that survive a Redis cluster failure, when the idempotency record needs to be part of an audit trail, or when you need to query idempotency records (Redis is not queryable like a DB).</p>
+      <p><b>TTL — how long to keep keys:</b> The TTL should cover the maximum window in which a client might retry. Stripe uses 24 hours. For most APIs, 24 hours is appropriate — if a client is still retrying after 24 hours something is seriously wrong with their retry logic. For financial transactions, consider 7 days to account for batch reconciliation processes. Never set TTL shorter than your maximum retry duration.</p>
+      <p><b>Important edge case:</b> The first request is processing and has not yet stored the result when a duplicate arrives. Use Redis SET NX (set if not exists) to reserve the key first: set key = "PROCESSING". Then process. Then set key = actual result. If a duplicate arrives while processing, it sees "PROCESSING" and either waits (poll) or returns a 409 Conflict. This prevents the window where two simultaneous first attempts both pass the "not found" check.</p>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question" onclick="toggleQA(this)">
+      Q3: What happens if the Outbox relay process itself crashes mid-batch?
+      <span class="qa-icon">+</span>
+    </div>
+    <div class="qa-answer">
+      <p>This is the key reliability question for the Outbox pattern. If the relay publishes event A to Kafka and then crashes before marking it as SENT, event A will be published again on the next run. This is called at-least-once delivery.</p>
+      <p><b>Handling it on the consumer side:</b> Consumers must be idempotent. Every event has a unique ID (set at outbox creation time). The consumer checks if it has already processed an event with this ID before processing. If yes, skip it. This is the processed event store we showed in the code example.</p>
+      <p><b>Preventing it in the relay:</b> Process events one at a time and mark each as SENT immediately after publishing, rather than processing in large batches. This minimises the window of duplication. Using a database transaction to atomically publish to Kafka AND mark as SENT is not possible (two different systems), so at-least-once delivery is inherent — design consumers to be idempotent.</p>
+      <p><b>Multiple relay instances:</b> If you run multiple relay instances for high availability, two instances might pick up the same pending event. Use optimistic locking on the outbox record (a version field) or use a SELECT FOR UPDATE to claim an event before processing it. Only one instance can claim any given event.</p>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question" onclick="toggleQA(this)">
+      Q4: What is the bulkhead pattern and why is it important?
+      <span class="qa-icon">+</span>
+    </div>
+    <div class="qa-answer">
+      <p>The bulkhead pattern isolates failures by giving each downstream dependency its own resource pool (usually a thread pool) rather than sharing one pool across all downstream calls.</p>
+      <p><b>Without bulkheads:</b> Your service has one thread pool of 20 threads shared across all downstream calls. InventoryService becomes slow. 20 simultaneous requests to InventoryService fill all 20 threads. Now when PaymentService calls come in — no threads available. PaymentService calls fail even though PaymentService itself is perfectly healthy. One slow dependency took down all your other dependencies.</p>
+      <p><b>With bulkheads:</b> Separate thread pools: 5 threads for InventoryService calls, 10 threads for PaymentService calls, 5 threads for everything else. InventoryService fills its 5 threads. PaymentService still has its own 10 threads. PaymentService calls continue normally. The blast radius of InventoryService's slowness is contained to those 5 threads only.</p>
+      <p><b>In Resilience4j:</b> Configure a <code>Bulkhead</code> with a max concurrent calls limit per service. Calls that exceed the limit immediately get a BulkheadFullException rather than queuing — this is fail-fast behaviour that prevents thread starvation.</p>
+      <p>Named after ship bulkheads: a cargo ship has watertight compartments. A hole in compartment 3 floods compartment 3 but the bulkheads prevent the water reaching compartments 1, 2, 4, and 5. The ship does not sink. Your service does not cascade.</p>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question" onclick="toggleQA(this)">
+      Q5: How do you test circuit breakers and resilience in a lower environment?
+      <span class="qa-icon">+</span>
+    </div>
+    <div class="qa-answer">
+      <p>Testing resilience is one of the most underinvested areas in most teams. Here are the practical approaches:</p>
+      <p><b>Unit testing with Resilience4j test utilities:</b> Resilience4j provides test helpers that let you manually transition the circuit breaker to any state. You can test your fallback method directly by forcing the circuit to OPEN state and verifying the correct fallback response is returned.</p>
+      <p><b>Integration testing with WireMock:</b> Use WireMock to simulate downstream services. Configure it to return errors (500, timeouts, connection refused) for specific requests. Verify that your service: retries the correct number of times, opens the circuit after enough failures, returns the correct fallback, and recovers when WireMock starts returning success.</p>
+      <p><b>Chaos engineering:</b> In a staging environment, use tools like Chaos Monkey for Spring Boot (part of Netflix's chaos engineering suite) to randomly kill service instances, add network latency, or exhaust resources. Verify that your system degrades gracefully rather than failing completely. Netflix does this in production — they deliberately kill production services to verify resilience. Most teams do this in staging only.</p>
+      <p><b>Manual testing with kubectl:</b> In Kubernetes, you can simulate a service going down by scaling its deployment to zero: <code>kubectl scale deployment payment-service --replicas=0</code>. Then make requests and verify the circuit breaker opens and the fallback is returned. Then scale back up and verify the circuit recovers.</p>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question" onclick="toggleQA(this)">
+      Q6: How do you monitor and alert on circuit breaker state in production?
+      <span class="qa-icon">+</span>
+    </div>
+    <div class="qa-answer">
+      <p>When a circuit breaker opens in production, it means a downstream service is failing. You need to know immediately — not when a customer complains 30 minutes later.</p>
+      <p><b>Resilience4j + Spring Boot Actuator:</b> Resilience4j automatically exposes circuit breaker metrics via Spring Boot Actuator. The metrics include: current state (CLOSED/OPEN/HALF_OPEN), failure rate, slow call rate, number of calls in each outcome. These are exposed at <code>/actuator/health</code> and as Micrometer metrics.</p>
+      <p><b>Prometheus + Grafana:</b> Micrometer publishes Resilience4j metrics to Prometheus. In Grafana, create dashboards showing: failure rate over time per circuit breaker, state transitions (each OPEN event), recovery time (how long each OPEN period lasted), and slow call rate. Set alerts to trigger when a circuit breaker transitions to OPEN.</p>
+      <p><b>Event listeners:</b> Register a Spring event listener on <code>CircuitBreakerOnStateTransitionEvent</code>. When the circuit opens, immediately publish an alert to PagerDuty, OpsGenie, or Slack. Include: which service is down, the failure rate that triggered the trip, and the time it happened. The on-call engineer should know within 30 seconds.</p>
+      <p><b>What to alert on:</b> Alert on CLOSED → OPEN transitions (a service went down). Also alert on HALF_OPEN → OPEN transitions (service is still not recovering). Consider also alerting on high failure rate even before the circuit opens — catching degradation before it becomes an outage.</p>
+    </div>
+  </div>
+
+</div>
+
+<div class="tip" style="margin-top:24px">
+  <div class="tip-label">Interview Tip — Answering "What Happens When a Service Goes Down?"</div>
+  <p>This is one of the most open-ended and revealing interview questions. A weak answer: "We use circuit breakers." A strong answer walks through the full strategy:</p>
+  <p><b>"We handle service failures in layers. First, every outbound call has a configured timeout — we never wait more than 3 seconds for a response from any service. Second, we use Resilience4j with exponential backoff and jitter for transient failures — things like brief network blips. Third, we have a circuit breaker per downstream service — after 50% of calls fail, the circuit opens and we return a pre-designed fallback response immediately rather than making doomed calls. Fourth, our fallback strategy is deliberate — for read operations we serve from Redis cache with a staleness indicator, for write operations we persist to our Outbox table and confirm to the user that their request is queued. The user never sees a raw 500 error. Finally, we have bulkhead isolation — each downstream service gets its own thread pool so a slow service cannot exhaust threads for other services."</b></p>
+  <p>Then mention monitoring: "We alert on circuit breaker state transitions via Resilience4j event listeners publishing to our alerting system. When a circuit opens, the on-call engineer knows within 30 seconds."</p>
+</div>
+
+</div>
+
+<script>
+function toggleQA(el) {
+  var answer = el.nextElementSibling;
+  var isOpen = answer.classList.contains('open');
+  answer.classList.toggle('open', !isOpen);
+  el.classList.toggle('open', !isOpen);
+  el.querySelector('.qa-icon').textContent = isOpen ? '+' : '×';
+}
+</script>
+</body>
+</html>

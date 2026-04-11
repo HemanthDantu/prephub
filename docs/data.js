@@ -18,8 +18,8 @@ const SITE_DATA = {
   meta: {
     title:       'Interview Prep Hub',
     subtitle:    'A focused study system for software engineering interviews',
-    totalTopics:  8,
-    totalHours:  '40+',
+    totalTopics:  9,
+    totalHours:  '45+',
     lastUpdated: '2026-03-22'
   },
 
@@ -187,6 +187,16 @@ const SITE_DATA = {
               tags:       ['concurrency', 'executors'],
               file:       'executor-service.html',
               status:     'available'
+            },
+            {
+              title:      'Java Threads Interview Guide',
+              subtitle:   'Thread lifecycle, synchronization, executors, and common pitfalls',
+              difficulty: 'intermediate',
+              time:       '45 min',
+              tags:       ['threads', 'concurrency'],
+              file:       'java_threads_interview_guide.html',
+              status:     'available',
+              featured:   true
             },
             {
               title:      'CompletableFuture & Async',
@@ -528,6 +538,121 @@ const SITE_DATA = {
               time:       '45 min',
               tags:       ['reference', 'interview'],
               file:       'spring_boot_interview_reference_sheet.html',
+              status:     'available'
+            }
+          ]
+        }
+      ]
+    },
+
+
+
+    /* ════════════════════════════════════ IMPORTANT BACKEND TOPICS */
+    {
+      id:            'important-backend',
+      title:         'Important Backend Topics',
+      description:   'Focused backend interview notes — microservices architecture, API gateways, resilience, messaging, and production trade-offs.',
+      icon:          '🧱',
+      accentColor:   '#22d3ee',
+      accentClass:   'teal',
+      estimatedTime: '5 hrs',
+      difficulty:    'intermediate',
+      tags:          ['backend', 'architecture', 'microservices'],
+      path:          'important-backend/',
+      isNew:         true,
+      groups: [
+        {
+          name: 'Init Notes',
+          concepts: [
+            {
+              title:      'Init Notes Index',
+              subtitle:   'Master index for the backend notes collection',
+              difficulty: 'beginner',
+              time:       '20 min',
+              tags:       ['overview', 'notes'],
+              file:       '../init%20notes/index%20(1).html',
+              status:     'available',
+              featured:   true
+            },
+            {
+              title:      'Microservices Interview Prep',
+              subtitle:   'Core microservices interview topics and trade-offs',
+              difficulty: 'intermediate',
+              time:       '35 min',
+              tags:       ['microservices', 'architecture'],
+              file:       '../init%20notes/microservices-interview-prep-imp.html',
+              status:     'available'
+            },
+            {
+              title:      'Design Patterns (Backend)',
+              subtitle:   'Patterns used in backend services and APIs',
+              difficulty: 'intermediate',
+              time:       '30 min',
+              tags:       ['design', 'patterns'],
+              file:       '../init%20notes/s01-design-patterns.html',
+              status:     'available'
+            },
+            {
+              title:      'API Gateway',
+              subtitle:   'Routing, auth, rate limits, and gateway trade-offs',
+              difficulty: 'intermediate',
+              time:       '30 min',
+              tags:       ['api', 'gateway'],
+              file:       '../init%20notes/s02-api-gateway.html',
+              status:     'available'
+            },
+            {
+              title:      'Service Communication',
+              subtitle:   'Sync vs async, REST vs messaging, and reliability',
+              difficulty: 'intermediate',
+              time:       '30 min',
+              tags:       ['communication', 'reliability'],
+              file:       '../init%20notes/s03-service-communication.html',
+              status:     'available'
+            },
+            {
+              title:      'Resilience Patterns',
+              subtitle:   'Retries, circuit breakers, timeouts, bulkheads',
+              difficulty: 'advanced',
+              time:       '35 min',
+              tags:       ['resilience', 'reliability'],
+              file:       '../init%20notes/s04-resilience.html',
+              status:     'available'
+            },
+            {
+              title:      'Kafka Deployment Notes',
+              subtitle:   'Operational considerations and deployment gotchas',
+              difficulty: 'advanced',
+              time:       '30 min',
+              tags:       ['kafka', 'messaging'],
+              file:       '../init%20notes/s05-kafka-deployment.html',
+              status:     'available'
+            },
+            {
+              title:      'Java Deep Dive (Backend)',
+              subtitle:   'JVM, GC, and backend performance notes',
+              difficulty: 'advanced',
+              time:       '35 min',
+              tags:       ['java', 'performance'],
+              file:       '../init%20notes/s06-java-deep-dive.html',
+              status:     'available'
+            },
+            {
+              title:      'Data & Excel Notes',
+              subtitle:   'Data pipelines, storage, and analytics notes',
+              difficulty: 'intermediate',
+              time:       '25 min',
+              tags:       ['data', 'analytics'],
+              file:       '../init%20notes/s07-data-excel.html',
+              status:     'available'
+            },
+            {
+              title:      'Coding Questions Set',
+              subtitle:   'Backend-focused coding question notes',
+              difficulty: 'intermediate',
+              time:       '30 min',
+              tags:       ['coding', 'practice'],
+              file:       '../init%20notes/s08-coding-questions.html',
               status:     'available'
             }
           ]

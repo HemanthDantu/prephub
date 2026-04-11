@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S07 — Data, Excel &amp; DB Optimization</title>
+<style>
+  :root {
+    --bg:#f8f9fa;--surface:#ffffff;--border:#e2e8f0;
+    --text-primary:#1a202c;--text-secondary:#4a5568;--text-muted:#718096;
+    --blue-light:#ebf8ff;--blue-border:#bee3f8;--blue-dark:#1a365d;
+    --green-light:#f0fff4;--green-border:#9ae6b4;
+    --red-light:#fff5f5;--red-border:#feb2b2;
+    --orange-light:#fffaf0;--orange-border:#fbd38d;
+    --purple-light:#faf5ff;--purple-border:#d6bcfa;
+    --yellow-light:#fffff0;--yellow-border:#f6e05e;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text-primary);font-size:15px;line-height:1.7;}
+  .page-header{background:linear-gradient(135deg,#1a365d 0%,#2a4a8a 100%);color:white;padding:40px 48px 36px;}
+  .page-header .section-label{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;opacity:.7;margin-bottom:8px;}
+  .page-header h1{font-size:28px;font-weight:700;margin-bottom:10px;}
+  .page-header .subtitle{font-size:15px;opacity:.8;max-width:680px;line-height:1.6;}
+  .tags{display:flex;flex-wrap:wrap;gap:7px;margin-top:18px;}
+  .tag{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);color:white;font-size:11.5px;padding:3px 10px;border-radius:20px;}
+  .container{max-width:900px;margin:0 auto;padding:40px 24px 80px;}
+  .section-heading{font-size:20px;font-weight:700;color:var(--text-primary);margin:44px 0 6px;padding-bottom:10px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:10px;}
+  .section-heading .icon{width:32px;height:32px;border-radius:8px;background:#ebf8ff;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+  .section-desc{font-size:14px;color:var(--text-muted);margin-bottom:20px;margin-top:4px;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:22px 26px;margin-bottom:16px;}
+  .card-title{font-size:14px;font-weight:700;color:var(--text-primary);margin-bottom:10px;}
+  .card p{font-size:14.5px;color:var(--text-secondary);line-height:1.75;margin-bottom:10px;}
+  .card p:last-child{margin-bottom:0;}
+  .card b{color:var(--text-primary);font-weight:600;}
+  .card code{font-family:'SF Mono',Consolas,monospace;font-size:12.5px;background:#edf2f7;padding:1px 6px;border-radius:4px;color:#c53030;}
+  .card ul,.card ol{padding-left:22px;margin:8px 0;}
+  .card li{font-size:14.5px;color:var(--text-secondary);line-height:1.75;margin-bottom:5px;}
+  .card li b{color:var(--text-primary);}
+  .card.blue{background:var(--blue-light);border-color:var(--blue-border);}
+  .card.green{background:var(--green-light);border-color:var(--green-border);}
+  .card.red{background:var(--red-light);border-color:var(--red-border);}
+  .card.orange{background:var(--orange-light);border-color:var(--orange-border);}
+  .card.purple{background:var(--purple-light);border-color:var(--purple-border);}
+  .card.yellow{background:var(--yellow-light);border-color:var(--yellow-border);}
+  .card.blue p,.card.blue li{color:#2c5282;}.card.blue b{color:var(--blue-dark);}
+  .card.green p,.card.green li{color:#22543d;}.card.green b{color:#1c4532;}
+  .card.red p,.card.red li{color:#742a2a;}.card.red b{color:#63171b;}
+  .card.orange p,.card.orange li{color:#7b341e;}.card.orange b{color:#652b19;}
+  .card.purple p,.card.purple li{color:#44337a;}.card.purple b{color:#322659;}
+  .card.yellow p,.card.yellow li{color:#744210;}.card.yellow b{color:#5f370e;}
+  .definition{background:#1a365d;color:white;border-radius:12px;padding:22px 26px;margin-bottom:16px;}
+  .definition .def-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;opacity:.7;margin-bottom:6px;}
+  .definition p{font-size:15px;line-height:1.75;opacity:.95;margin-bottom:8px;}
+  .definition p:last-child{margin-bottom:0;}
+  .definition b{font-weight:700;}
+  .analogy{border-left:4px solid #d69e2e;background:var(--yellow-light);border-radius:0 10px 10px 0;padding:16px 20px;margin-bottom:16px;}
+  .analogy .analogy-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#744210;margin-bottom:5px;}
+  .analogy p{font-size:14px;color:#744210;line-height:1.7;margin-bottom:6px;}
+  .analogy p:last-child{margin-bottom:0;}
+  .analogy b{color:#5f370e;}
+  .scenario{border-left:4px solid #38a169;background:var(--green-light);border-radius:0 10px 10px 0;padding:16px 20px;margin-bottom:16px;}
+  .scenario .scenario-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#276749;margin-bottom:5px;}
+  .scenario p{font-size:14px;color:#22543d;line-height:1.75;margin-bottom:8px;}
+  .scenario p:last-child{margin-bottom:0;}
+  .scenario b{color:#1c4532;font-weight:600;}
+  .scenario ol,.scenario ul{padding-left:20px;margin:6px 0;}
+  .scenario li{font-size:14px;color:#22543d;line-height:1.75;margin-bottom:6px;}
+  .scenario li b{color:#1c4532;}
+  .warning{border-left:4px solid #e53e3e;background:var(--red-light);border-radius:0 10px 10px 0;padding:16px 20px;margin-bottom:16px;}
+  .warning .warning-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#9b2335;margin-bottom:5px;}
+  .warning p{font-size:14px;color:#742a2a;line-height:1.7;margin-bottom:6px;}
+  .warning p:last-child{margin-bottom:0;}
+  .warning b{color:#63171b;}
+  .warning ul{padding-left:20px;margin:6px 0;}
+  .warning li{font-size:14px;color:#742a2a;line-height:1.7;margin-bottom:4px;}
+  .tip{border-left:4px solid #3182ce;background:var(--blue-light);border-radius:0 10px 10px 0;padding:16px 20px;margin-bottom:16px;}
+  .tip .tip-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#2b6cb0;margin-bottom:5px;}
+  .tip p{font-size:14px;color:#2c5282;line-height:1.7;margin-bottom:6px;}
+  .tip p:last-child{margin-bottom:0;}
+  .tip b{color:#1a365d;}
+  .pro-con{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+  .pro{background:var(--green-light);border:1px solid var(--green-border);border-radius:10px;padding:16px 18px;}
+  .con{background:var(--red-light);border:1px solid var(--red-border);border-radius:10px;padding:16px 18px;}
+  .pro-title{font-size:11px;font-weight:700;color:#1c4532;text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;}
+  .con-title{font-size:11px;font-weight:700;color:#63171b;text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;}
+  .pro ul,.con ul{padding-left:18px;}
+  .pro li{font-size:13.5px;color:#22543d;line-height:1.7;margin-bottom:4px;}
+  .con li{font-size:13.5px;color:#742a2a;line-height:1.7;margin-bottom:4px;}
+  .table-wrap{overflow-x:auto;margin-bottom:16px;border-radius:10px;border:1px solid var(--border);}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;}
+  thead th{background:#2d3748;color:white;padding:11px 14px;text-align:left;font-weight:600;font-size:12.5px;}
+  tbody tr:nth-child(even){background:#f7fafc;}
+  tbody td{padding:10px 14px;color:var(--text-secondary);border-bottom:1px solid var(--border);vertical-align:top;line-height:1.6;}
+  tbody tr:last-child td{border-bottom:none;}
+  td b{color:var(--text-primary);font-weight:600;}
+  .code-block{background:#1a202c;border-radius:10px;padding:18px 20px;font-family:'SF Mono',Consolas,monospace;font-size:12.5px;color:#e2e8f0;white-space:pre;overflow-x:auto;line-height:1.65;margin-bottom:14px;}
+  .code-block .cm{color:#718096;}
+  .code-block .kw{color:#90cdf4;}
+  .code-block .st{color:#9ae6b4;}
+  .code-block .an{color:#fbd38d;}
+  .code-block .num{color:#f6ad55;}
+  .qa-section{margin-bottom:16px;}
+  .qa-item{margin-bottom:12px;border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+  .qa-question{background:#2d3748;color:white;padding:14px 18px;font-size:14px;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none;}
+  .qa-question:hover{background:#1a202c;}
+  .qa-question .qa-icon{font-size:18px;transition:transform .25s;flex-shrink:0;margin-left:12px;}
+  .qa-question.open .qa-icon{transform:rotate(45deg);}
+  .qa-answer{padding:0 18px;max-height:0;overflow:hidden;transition:max-height .35s ease,padding .3s ease;background:var(--surface);}
+  .qa-answer.open{max-height:2000px;padding:16px 18px;}
+  .qa-answer p{font-size:14px;color:var(--text-secondary);line-height:1.75;margin-bottom:10px;}
+  .qa-answer p:last-child{margin-bottom:0;}
+  .qa-answer b{color:var(--text-primary);font-weight:600;}
+  .qa-answer ul,.qa-answer ol{padding-left:20px;margin:6px 0 10px;}
+  .qa-answer li{font-size:14px;color:var(--text-secondary);line-height:1.75;margin-bottom:4px;}
+  .qa-answer code{font-family:'SF Mono',Consolas,monospace;font-size:12px;background:#edf2f7;padding:1px 5px;border-radius:4px;color:#c53030;}
+  .divider{border:none;border-top:1px solid var(--border);margin:32px 0;}
+
+  /* MEMORY COMPARISON */
+  .mem-compare{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+  .mem-box{border-radius:10px;padding:16px;border:2px solid transparent;}
+  .mem-box.bad{background:var(--red-light);border-color:var(--red-border);}
+  .mem-box.good{background:var(--green-light);border-color:var(--green-border);}
+  .mem-box-title{font-size:13px;font-weight:700;margin-bottom:8px;}
+  .mem-box.bad .mem-box-title{color:#63171b;}
+  .mem-box.good .mem-box-title{color:#1c4532;}
+  .mem-bar{height:16px;border-radius:4px;margin:4px 0;}
+  .mem-bar-label{font-size:11.5px;margin-bottom:2px;}
+  .mem-box.bad .mem-bar-label{color:#742a2a;}
+  .mem-box.good .mem-bar-label{color:#22543d;}
+
+  /* INDEX VISUAL */
+  .index-compare{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+  .index-col{border-radius:10px;padding:14px 16px;border:1px solid var(--border);background:white;}
+  .index-col-title{font-size:13px;font-weight:700;margin-bottom:8px;}
+  .index-row{font-size:12.5px;padding:5px 8px;margin-bottom:4px;border-radius:4px;display:flex;align-items:center;gap:8px;}
+  .index-row.scan{background:#fff5f5;color:#742a2a;}
+  .index-row.jump{background:#f0fff4;color:#22543d;}
+  .index-icon{font-size:14px;flex-shrink:0;}
+
+  /* SCALING STEPS */
+  .scale-step{display:flex;gap:14px;margin-bottom:10px;}
+  .scale-badge{min-width:60px;padding:6px 10px;border-radius:8px;font-size:11px;font-weight:700;text-align:center;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+  .scale-body{background:white;border:1px solid var(--border);border-radius:10px;padding:13px 16px;flex:1;}
+  .scale-title{font-size:13.5px;font-weight:700;color:var(--text-primary);margin-bottom:3px;}
+  .scale-desc{font-size:13px;color:var(--text-secondary);line-height:1.6;}
+  .scale-desc b{color:var(--text-primary);}
+
+  /* POI WORKBOOK COMPARISON */
+  .poi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
+  .poi-card{border-radius:10px;padding:14px 16px;border:2px solid transparent;text-align:center;}
+  .poi-card.xls{background:#fff5f5;border-color:#feb2b2;}
+  .poi-card.xssf{background:var(--orange-light);border-color:var(--orange-border);}
+  .poi-card.sxssf{background:var(--green-light);border-color:var(--green-border);}
+  .poi-icon{font-size:26px;margin-bottom:6px;}
+  .poi-name{font-size:13px;font-weight:700;margin-bottom:4px;}
+  .poi-card.xls .poi-name{color:#63171b;}
+  .poi-card.xssf .poi-name{color:#652b19;}
+  .poi-card.sxssf .poi-name{color:#1c4532;}
+  .poi-detail{font-size:12px;line-height:1.6;}
+  .poi-card.xls .poi-detail{color:#742a2a;}
+  .poi-card.xssf .poi-detail{color:#7b341e;}
+  .poi-card.sxssf .poi-detail{color:#22543d;}
+
+  @media(max-width:640px){
+    .page-header{padding:28px 20px;}
+    .container{padding:24px 16px 60px;}
+    .pro-con,.mem-compare,.index-compare,.poi-grid{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <div class="section-label">Section 07 — Data &amp; Excel</div>
+  <h1>DB Fetch, ORM Optimization, Scaling &amp; Excel Export</h1>
+  <div class="subtitle">How to fetch large datasets without OOM errors, how to optimise JPA queries, what to do when records grow from 10k to 50k, how to write large Excel files efficiently, and the GET vs POST question for file downloads.</div>
+  <div class="tags">
+    <span class="tag">JPA Stream</span><span class="tag">N+1 Problem</span>
+    <span class="tag">JOIN FETCH</span><span class="tag">DTO Projection</span>
+    <span class="tag">Keyset Pagination</span><span class="tag">Database Index</span>
+    <span class="tag">EXPLAIN ANALYZE</span><span class="tag">Read Replica</span>
+    <span class="tag">Apache POI</span><span class="tag">SXSSF</span>
+    <span class="tag">Streaming Response</span><span class="tag">GET vs POST</span>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ══════════════════════════════
+     PART 1 — GET VS POST
+══════════════════════════════ -->
+<div class="section-heading"><div class="icon">💡</div>Start Here — GET vs POST for Excel Download</div>
+<p class="section-desc">From your notes: "In the UI there is a button — clicking it should show an Excel sheet. Why GET, why not POST?" This question tests REST principles, security awareness, and practical HTTP knowledge.</p>
+
+<div class="card">
+  <div class="card-title">🤔 What Does the Question Actually Test?</div>
+  <p>The interviewer is not just asking about HTTP methods. They are testing whether you understand:</p>
+  <ul>
+    <li><b>HTTP semantics</b> — what GET and POST are designed for</li>
+    <li><b>Security implications</b> — what goes in URL vs request body</li>
+    <li><b>Practical constraints</b> — URL length limits, caching, bookmarking</li>
+    <li><b>Real-world patterns</b> — how large exports are handled in production</li>
+  </ul>
+  <p>There is no single correct answer — the right choice depends on the size and sensitivity of your filter parameters. Showing you understand the trade-offs is what impresses interviewers.</p>
+</div>
+
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>Criterion</th><th>GET</th><th>POST</th></tr></thead>
+    <tbody>
+      <tr><td><b>Where parameters go</b></td><td>URL query string — visible in address bar, server logs, browser history</td><td>Request body — not visible in URL, not logged by default</td></tr>
+      <tr><td><b>Parameter size limit</b></td><td>~2,000 characters (URL length limit varies by browser/server)</td><td>Unlimited — can send megabytes of filter data</td></tr>
+      <tr><td><b>Bookmarkable</b></td><td>Yes — user can save the URL and re-download any time</td><td>No — body is not preserved in bookmarks</td></tr>
+      <tr><td><b>Browser trigger</b></td><td>Simple &lt;a href&gt; tag or window.location</td><td>Must use JavaScript fetch/XHR and handle the binary response</td></tr>
+      <tr><td><b>Caching</b></td><td>Yes — browser and CDN can cache the response</td><td>No — POST responses are not cached by default</td></tr>
+      <tr><td><b>Idempotent?</b></td><td>Yes — calling it multiple times returns same result</td><td>No — each POST is a new action</td></tr>
+      <tr><td><b>Sensitive filters</b></td><td>Exposed in logs, proxy servers, browser history</td><td>Hidden from logs — safer for sensitive filter values</td></tr>
+      <tr><td><b>Right for</b></td><td>Simple exports: date range, status filter, a few IDs</td><td>Complex filters: hundreds of selected IDs, sensitive criteria, large filter objects</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="card blue">
+  <div class="card-title blue">⚙️ Three Real-World Export Patterns</div>
+  <p><b>Pattern 1 — Synchronous GET (simple reports, under 10 seconds):</b> User clicks button → GET /api/export?fromDate=2024-01-01&amp;toDate=2024-01-31 → backend builds and streams Excel → browser downloads immediately. Works well for small-to-medium exports. User sees a spinner. The browser shows a download dialog when bytes arrive.</p>
+  <p><b>Pattern 2 — Asynchronous POST (large reports):</b> User clicks button → POST /api/export with filter body → backend returns <code>{"jobId": "abc-123"}</code> immediately (202 Accepted) → frontend polls GET /api/export/status/abc-123 every 2 seconds → when status=READY → download the file from GET /api/export/download/abc-123. User sees a progress indicator. This is how Salesforce, JIRA, and most enterprise apps handle large exports.</p>
+  <p><b>Pattern 3 — Streaming POST (very large, real-time):</b> POST starts, backend streams Excel bytes using chunked transfer encoding as rows are produced. No temp file needed. Browser receives the download progressively. Best for very large datasets where you cannot wait for the full file to be built before sending bytes.</p>
+</div>
+
+<div class="code-block"><span class="cm">// Pattern 1: Synchronous GET — streams directly to response</span>
+<span class="an">@GetMapping</span>(<span class="st">"/api/orders/export"</span>)
+<span class="kw">public void</span> exportGet(
+        <span class="an">@RequestParam</span> String fromDate,
+        <span class="an">@RequestParam</span> String toDate,
+        HttpServletResponse response) <span class="kw">throws</span> IOException {
+
+    response.setContentType(
+        <span class="st">"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"</span>);
+    response.setHeader(HttpHeaders.CONTENT_DISPOSITION,
+        <span class="st">"attachment; filename=orders-export.xlsx"</span>);
+
+    <span class="cm">// Stream directly to response — no byte[] in memory</span>
+    excelExportService.streamOrders(fromDate, toDate, response.getOutputStream());
+}
+
+<span class="cm">// Pattern 2: Async POST — returns job ID immediately</span>
+<span class="an">@PostMapping</span>(<span class="st">"/api/orders/export"</span>)
+<span class="kw">public</span> ResponseEntity&lt;Map&lt;String, String&gt;&gt; requestExport(
+        <span class="an">@RequestBody</span> ExportFilterRequest filter) {
+
+    String jobId = exportJobService.scheduleExport(filter); <span class="cm">// async</span>
+
+    <span class="kw">return</span> ResponseEntity.accepted()
+        .body(Map.of(
+            <span class="st">"jobId"</span>, jobId,
+            <span class="st">"statusUrl"</span>, <span class="st">"/api/orders/export/status/"</span> + jobId,
+            <span class="st">"downloadUrl"</span>, <span class="st">"/api/orders/export/download/"</span> + jobId
+        ));
+}
+
+<span class="cm">// Frontend: trigger GET download without page navigation</span>
+<span class="kw">const</span> downloadExcel = () => {
+  <span class="kw">const</span> params = <span class="kw">new</span> URLSearchParams({fromDate, toDate});
+  <span class="kw">const</span> a = document.createElement(<span class="st">'a'</span>);
+  a.href = <span class="st">'/api/orders/export?'</span> + params.toString();
+  a.download = <span class="st">'orders.xlsx'</span>;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+};</div>
+
+<hr class="divider">
+
+<!-- ══════════════════════════════
+     PART 2 — DB FETCH DESIGN
+══════════════════════════════ -->
+<div class="section-heading"><div class="icon">🗄️</div>DB Fetch Design for Excel Export</div>
+<p class="section-desc">The data is in the DB. How do you get it out for 50,000 rows without running out of memory?</p>
+
+<div class="warning">
+  <div class="warning-label">The Memory Bomb — The Most Common Mistake</div>
+  <p>The most dangerous line of code in a data export:</p>
+  <p><code>List&lt;Order&gt; orders = orderRepository.findAll();</code></p>
+  <p>On a table with 100,000 rows, this loads every row, every column, every association into Java heap memory simultaneously. At approximately 2KB per JPA entity (with associations), that is 200MB. With 10 concurrent export requests, you hit 2GB and your pod OOMKills. K8s restarts the pod. Users lose their downloads. The export button appears broken.</p>
+  <p>The fix is <b>streaming</b> — process one row at a time, writing it directly to the Excel output stream. Memory stays flat at roughly the size of one batch regardless of dataset size.</p>
+</div>
+
+<div class="mem-compare">
+  <div class="mem-box bad">
+    <div class="mem-box-title">❌ findAll() into List — Memory Bomb</div>
+    <div class="mem-bar-label">Row 1 loaded into heap</div>
+    <div class="mem-bar" style="width:10%;background:#fc8181;"></div>
+    <div class="mem-bar-label">Row 1000 loaded</div>
+    <div class="mem-bar" style="width:40%;background:#fc8181;"></div>
+    <div class="mem-bar-label">Row 10,000 loaded</div>
+    <div class="mem-bar" style="width:70%;background:#e53e3e;"></div>
+    <div class="mem-bar-label">Row 50,000 loaded — OOMKill!</div>
+    <div class="mem-bar" style="width:100%;background:#c53030;"></div>
+    <div style="font-size:12px;color:#742a2a;margin-top:8px;">All rows in memory simultaneously</div>
+  </div>
+  <div class="mem-box good">
+    <div class="mem-box-title">✅ JPA Stream — Flat Memory</div>
+    <div class="mem-bar-label">Processing row 1</div>
+    <div class="mem-bar" style="width:12%;background:#68d391;"></div>
+    <div class="mem-bar-label">Processing row 1000</div>
+    <div class="mem-bar" style="width:12%;background:#68d391;"></div>
+    <div class="mem-bar-label">Processing row 10,000</div>
+    <div class="mem-bar" style="width:12%;background:#68d391;"></div>
+    <div class="mem-bar-label">Processing row 50,000</div>
+    <div class="mem-bar" style="width:12%;background:#68d391;"></div>
+    <div style="font-size:12px;color:#22543d;margin-top:8px;">Only one batch in memory at any time</div>
+  </div>
+</div>
+
+<div class="card blue">
+  <div class="card-title blue">⚙️ Three Correct Approaches — Compared</div>
+  <p><b>Approach 1 — JPA Streaming with @QueryHints:</b> Spring Data JPA returns a <code>Stream&lt;Entity&gt;</code> backed by a database cursor. JDBC fetches rows in small batches (e.g. 500 at a time) rather than all at once. You process each row and discard it before the next batch arrives. Memory stays constant. Must be inside <code>@Transactional(readOnly=true)</code> — the JPA session must stay open for the cursor to remain open.</p>
+  <p><b>Approach 2 — Paginated processing:</b> Fetch 1,000 rows at a time using <code>Pageable</code>. Process each page, write to Excel, clear from memory. Simple to implement. Slightly less efficient than streaming (N database round trips). Avoid OFFSET pagination at large page numbers — use keyset instead.</p>
+  <p><b>Approach 3 — Native JDBC ResultSet streaming:</b> Use <code>JdbcTemplate</code> with <code>ResultSetExtractor</code> or Spring's <code>RowCallbackHandler</code>. On MySQL, set <code>fetchSize = Integer.MIN_VALUE</code> to enable streaming mode. Maximum control, maximum efficiency, but more verbose code.</p>
+</div>
+
+<div class="code-block"><span class="cm">// ── Approach 1: JPA Streaming ────────────────────────</span>
+<span class="an">@Repository</span>
+<span class="kw">public interface</span> OrderRepository <span class="kw">extends</span> JpaRepository&lt;Order, Long&gt; {
+
+    <span class="cm">// fetchSize hint: JDBC fetches 500 rows at a time from cursor</span>
+    <span class="an">@QueryHints</span>(<span class="an">@QueryHint</span>(name = HINT_FETCH_SIZE, value = <span class="st">"500"</span>))
+    <span class="an">@Transactional</span>(readOnly = <span class="kw">true</span>)
+    Stream&lt;Order&gt; streamByCreatedAtBetween(LocalDate from, LocalDate to);
+}
+
+<span class="an">@Service</span>
+<span class="kw">public class</span> OrderExportService {
+
+    <span class="an">@Transactional</span>(readOnly = <span class="kw">true</span>)  <span class="cm">// MUST be transactional — cursor needs open session</span>
+    <span class="kw">public void</span> exportToExcel(LocalDate from, LocalDate to,
+                               OutputStream out) <span class="kw">throws</span> IOException {
+
+        <span class="cm">// SXSSFWorkbook keeps only 100 rows in memory — rest flushed to disk</span>
+        <span class="kw">try</span> (SXSSFWorkbook wb = <span class="kw">new</span> SXSSFWorkbook(<span class="num">100</span>);
+             Stream&lt;Order&gt; stream = orderRepo.streamByCreatedAtBetween(from, to)) {
+
+            Sheet sheet = wb.createSheet(<span class="st">"Orders"</span>);
+            AtomicInteger rowNum = <span class="kw">new</span> AtomicInteger(<span class="num">0</span>);
+
+            stream.forEach(order -> {
+                Row row = sheet.createRow(rowNum.getAndIncrement());
+                row.createCell(<span class="num">0</span>).setCellValue(order.getId().toString());
+                row.createCell(<span class="num">1</span>).setCellValue(order.getCustomerName());
+                row.createCell(<span class="num">2</span>).setCellValue(order.getTotal().doubleValue());
+                row.createCell(<span class="num">3</span>).setCellValue(order.getStatus().name());
+                <span class="cm">// row is written and no longer referenced — GC collects it</span>
+            });
+
+            wb.write(out);
+        }
+    }
+}
+
+<span class="cm">// ── Approach 2: Keyset Paginated Processing ──────────</span>
+<span class="an">@Transactional</span>(readOnly = <span class="kw">true</span>)
+<span class="kw">public void</span> exportPaginated(OutputStream out) <span class="kw">throws</span> IOException {
+    <span class="kw">try</span> (SXSSFWorkbook wb = <span class="kw">new</span> SXSSFWorkbook(<span class="num">500</span>)) {
+        Sheet sheet = wb.createSheet(<span class="st">"Orders"</span>);
+        <span class="kw">int</span> rowNum = <span class="num">0</span>;
+        Long lastId = <span class="num">0L</span>;
+
+        <span class="kw">while</span> (<span class="kw">true</span>) {
+            <span class="cm">// Keyset pagination: always fast, no OFFSET scan</span>
+            List&lt;Order&gt; batch = orderRepo.findNextBatch(lastId, <span class="num">1000</span>);
+            <span class="kw">if</span> (batch.isEmpty()) <span class="kw">break</span>;
+
+            <span class="kw">for</span> (Order o : batch) {
+                Row row = sheet.createRow(rowNum++);
+                row.createCell(<span class="num">0</span>).setCellValue(o.getId().toString());
+                <span class="cm">// ... more cells ...</span>
+            }
+            lastId = batch.get(batch.size() - <span class="num">1</span>).getId(); <span class="cm">// remember last ID</span>
+        }
+        wb.write(out);
+    }
+}</div>
+
+<hr class="divider">
+
+<!-- ══════════════════════════════
+     PART 3 — ORM OPTIMIZATION
+══════════════════════════════ -->
+<div class="section-heading"><div class="icon">🔧</div>ORM Choice and Query Optimization</div>
+<p class="section-desc">The N+1 problem, how to fix it, when to abandon JPA, and the full query optimization toolkit.</p>
+
+<div class="card">
+  <div class="card-title">🤔 The N+1 Problem — The Most Common JPA Performance Bug</div>
+  <p>You load a list of 100 orders. For each order, your code accesses <code>order.getCustomer().getName()</code>. This is a lazy-loaded association — JPA does not load the Customer until you access it. So for 100 orders, JPA issues 100 separate SELECT queries for the customer. Plus the 1 initial query to load orders. That is <b>101 queries</b> instead of 1.</p>
+  <p>At 100 orders and 5ms per query, this takes 500ms just for database calls. At 1,000 orders, it takes 5 seconds. This is called the N+1 problem — you intended 1 query but got N+1.</p>
+</div>
+
+<div class="scenario">
+  <div class="scenario-label">Real Production Story — Page That Went From 200ms to 45 Seconds</div>
+  <p>A team built an order listing page. In development with 50 orders it loaded in 200ms. In production with 5,000 orders the page took 45 seconds. Root cause: their template accessed <code>order.getCustomer().getName()</code> for every order in the list. 5,001 queries × 9ms average = 45 seconds.</p>
+  <p>The fix: add one JOIN FETCH to the repository query. New query time: 280ms. The only change was one line in the repository interface.</p>
+</div>
+
+<div class="code-block"><span class="cm">// ── The N+1 Problem ──────────────────────────────────</span>
+List&lt;Order&gt; orders = orderRepo.findAll(); <span class="cm">// 1 SELECT query</span>
+orders.forEach(o -> {
+    System.out.println(o.getCustomer().getName()); <span class="cm">// N SELECT queries!</span>
+    <span class="cm">// Each getCustomer() triggers: SELECT * FROM customers WHERE id=?</span>
+});
+<span class="cm">// Total: 1 + N queries. For 1000 orders: 1001 queries. BAD.</span>
+
+<span class="cm">// ── Fix 1: JOIN FETCH in JPQL ────────────────────────</span>
+<span class="an">@Query</span>(<span class="st">"SELECT o FROM Order o JOIN FETCH o.customer WHERE o.status = :status"</span>)
+List&lt;Order&gt; findWithCustomer(<span class="an">@Param</span>(<span class="st">"status"</span>) OrderStatus status);
+<span class="cm">// Generates: SELECT o.*, c.* FROM orders o INNER JOIN customers c ON o.customer_id = c.id</span>
+<span class="cm">// Total: 1 query with a JOIN. Always.</span>
+
+<span class="cm">// ── Fix 2: @EntityGraph (declarative, no JPQL needed) ─</span>
+<span class="an">@EntityGraph</span>(attributePaths = {<span class="st">"customer"</span>, <span class="st">"items"</span>, <span class="st">"items.product"</span>})
+List&lt;Order&gt; findByStatus(OrderStatus status);
+<span class="cm">// Fetches order + customer + items + each item's product in ONE query</span>
+
+<span class="cm">// ── Fix 3: DTO Projection — only fetch what you need ──</span>
+<span class="cm">// Instead of loading full Order entities with all associations,</span>
+<span class="cm">// fetch only the specific columns you actually display</span>
+<span class="an">@Query</span>(<span class="st">"SELECT new com.example.dto.OrderSummary(o.id, o.total, o.status, c.name) "</span>
+     + <span class="st">"FROM Order o JOIN o.customer c WHERE o.createdAt > :since"</span>)
+List&lt;OrderSummary&gt; findSummariesSince(<span class="an">@Param</span>(<span class="st">"since"</span>) LocalDate since);
+<span class="cm">// Selects 4 columns instead of loading 20-column entity + associations</span>
+<span class="cm">// OrderSummary is a plain POJO — not managed by Hibernate, no dirty checking</span>
+
+<span class="cm">// ── Bulk Update — never load-and-save 50k entities ────</span>
+<span class="cm">// BAD: loads 50k entities, dirty checks all, generates 50k individual UPDATEs</span>
+orderRepo.findByStatus(PENDING).forEach(o -> {
+    o.setStatus(ARCHIVED); orderRepo.save(o);
+});
+
+<span class="cm">// GOOD: one SQL UPDATE for all 50k rows</span>
+<span class="an">@Modifying</span>
+<span class="an">@Query</span>(<span class="st">"UPDATE Order o SET o.status = 'ARCHIVED' WHERE o.createdAt < :cutoff"</span>)
+<span class="kw">int</span> archiveOldOrders(<span class="an">@Param</span>(<span class="st">"cutoff"</span>) LocalDate cutoff);
+
+<span class="cm">// ── When to abandon JPA entirely ─────────────────────</span>
+<span class="cm">// Use native SQL for: complex aggregations, window functions, CTEs,</span>
+<span class="cm">// full-text search, bulk operations, anything JPA makes harder than SQL</span>
+<span class="an">@Query</span>(
+    value = <span class="st">"SELECT DATE_TRUNC('month', created_at) AS month, "</span>
+          + <span class="st">"SUM(total) AS revenue, COUNT(*) AS order_count "</span>
+          + <span class="st">"FROM orders GROUP BY 1 ORDER BY 1"</span>,
+    nativeQuery = <span class="kw">true</span>
+)
+List&lt;MonthlyRevenue&gt; getMonthlyRevenue();</div>
+
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>Scenario</th><th>Best Approach</th><th>Why</th></tr></thead>
+    <tbody>
+      <tr><td><b>Load entity + one related entity</b></td><td>JOIN FETCH or @EntityGraph</td><td>One query instead of N+1</td></tr>
+      <tr><td><b>List page needing 4 specific columns</b></td><td>DTO projection</td><td>Select only needed columns, no dirty checking</td></tr>
+      <tr><td><b>Export 50k rows</b></td><td>JPA Stream + @QueryHints</td><td>Flat memory regardless of row count</td></tr>
+      <tr><td><b>Update status of 10k records</b></td><td>@Modifying @Query bulk UPDATE</td><td>One SQL statement vs 10k individual saves</td></tr>
+      <tr><td><b>Complex aggregation/report</b></td><td>Native SQL query</td><td>JPA cannot express GROUP BY, window functions cleanly</td></tr>
+      <tr><td><b>Full-text search</b></td><td>Native SQL or Elasticsearch</td><td>JPA has no full-text search support</td></tr>
+      <tr><td><b>Insert 10k rows at once</b></td><td>JdbcTemplate batch insert</td><td>JDBC batch is 100x faster than JPA save loop</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<hr class="divider">
+
+<!-- ══════════════════════════════
+     PART 4 — SCALING 10K TO 50K
+══════════════════════════════ -->
+<div class="section-heading"><div class="icon">📈</div>Scaling from 10k to 50k Records</div>
+<p class="section-desc">Performance degrades going from 10k to 50k records. Here is the systematic approach — always diagnose first, then fix the actual bottleneck.</p>
+
+<div class="card">
+  <div class="card-title">🤔 The First Rule — Profile Before You Optimise</div>
+  <p>Most developers jump to "we need Redis caching" or "we need more servers" when performance degrades. This is usually wrong. At 50k records the bottleneck is almost always one of: a missing database index, loading too much data at once, N+1 queries, or connection pool exhaustion. These are all free to fix.</p>
+  <p>Before adding any infrastructure, run EXPLAIN ANALYZE on your slow queries. It will tell you exactly what the database is doing and where the time is going.</p>
+</div>
+
+<div class="card blue">
+  <div class="card-title blue">🔍 How to Read EXPLAIN ANALYZE</div>
+  <p>Run <code>EXPLAIN ANALYZE your_query_here</code> in your database console. Look for these two patterns:</p>
+  <p><b>Seq Scan (bad):</b> The database is reading every single row in the table and checking each one against your WHERE condition. At 50,000 rows this means 50,000 comparisons. At 5,000,000 rows this means 5,000,000 comparisons. Performance degrades linearly with table size.</p>
+  <p><b>Index Scan (good):</b> The database jumps directly to the relevant rows using the index — like looking up a word in a book's index rather than reading the whole book. Performance is O(log n) — almost constant regardless of table size.</p>
+  <p>If you see "Seq Scan" on a large table — add an index on the columns in your WHERE clause. This single change can turn a 3-second query into a 2ms query.</p>
+</div>
+
+<div class="scale-step">
+  <div class="scale-badge" style="background:#ebf8ff;color:#1a365d;">Step 1</div>
+  <div class="scale-body">
+    <div class="scale-title">Add Missing Indexes — Free 10x–1000x Speedup</div>
+    <div class="scale-desc">Index every column used in WHERE, ORDER BY, and JOIN conditions. A composite index on <code>(user_id, status)</code> is faster than two separate indexes when your query filters on both. Use EXPLAIN ANALYZE to confirm the index is being used.</div>
+  </div>
+</div>
+<div class="scale-step">
+  <div class="scale-badge" style="background:#f0fff4;color:#1c4532;">Step 2</div>
+  <div class="scale-body">
+    <div class="scale-title">Fix N+1 Queries — Often Bigger Impact Than Indexes</div>
+    <div class="scale-desc">Profile your requests. If an endpoint makes 50+ database queries, it has N+1. Add JOIN FETCH or @EntityGraph. This often reduces query count from 500 to 1 — a 500x reduction in database round trips.</div>
+  </div>
+</div>
+<div class="scale-step">
+  <div class="scale-badge" style="background:#faf5ff;color:#322659;">Step 3</div>
+  <div class="scale-body">
+    <div class="scale-title">Switch to Keyset Pagination — For Large Tables</div>
+    <div class="scale-desc">OFFSET pagination scans and discards all preceding rows. At page 500 with 100 rows per page, the database scans 50,000 rows to find your 100. Keyset pagination always uses an index — equally fast on page 1 or page 5,000.</div>
+  </div>
+</div>
+<div class="scale-step">
+  <div class="scale-badge" style="background:#fffaf0;color:#652b19;">Step 4</div>
+  <div class="scale-body">
+    <div class="scale-title">Tune Connection Pool — Prevent Thread Starvation</div>
+    <div class="scale-desc">If your API times out under load but individual queries are fast, check HikariCP metrics. "connection timeout" errors mean threads are waiting for a DB connection — increase maximum-pool-size. But do not exceed your DB's max_connections limit.</div>
+  </div>
+</div>
+<div class="scale-step">
+  <div class="scale-badge" style="background:#ebf8ff;color:#2b6cb0;">Step 5</div>
+  <div class="scale-body">
+    <div class="scale-title">Add Redis Caching — For Repeated Hot Reads</div>
+    <div class="scale-desc">Cache data that is read frequently but updated rarely: product catalog, user roles, configuration. Cache misses still hit the DB, but cache hits return in under 1ms. Only add caching after you have fixed queries — caching a slow query just caches slowness.</div>
+  </div>
+</div>
+<div class="scale-step">
+  <div class="scale-badge" style="background:#f0fff4;color:#276749;">Step 6</div>
+  <div class="scale-body">
+    <div class="scale-title">Read Replicas — Route Heavy Reads Away from Primary</div>
+    <div class="scale-desc">If the primary DB CPU is the bottleneck after all optimisations, add a read replica. Route reporting, export, and search queries to the replica. Writes go to primary. Use Spring's routing DataSource to do this transparently based on @Transactional(readOnly=true).</div>
+  </div>
+</div>
+
+<div class="code-block"><span class="cm">// ── Keyset pagination — always fast ──────────────────</span>
+<span class="cm">// BAD: OFFSET scans preceding rows — slows at large offsets</span>
+<span class="an">@Query</span>(<span class="st">"SELECT o FROM Order o ORDER BY o.id LIMIT 100 OFFSET :offset"</span>)
+List&lt;Order&gt; findPage(<span class="an">@Param</span>(<span class="st">"offset"</span>) <span class="kw">int</span> offset);
+<span class="cm">// At offset 49,000 → scans 49,000 rows to skip them. Slow!</span>
+
+<span class="cm">// GOOD: keyset — jumps straight to index entry for lastId</span>
+<span class="an">@Query</span>(<span class="st">"SELECT o FROM Order o WHERE o.id > :lastId ORDER BY o.id LIMIT 100"</span>)
+List&lt;Order&gt; findNextPage(<span class="an">@Param</span>(<span class="st">"lastId"</span>) Long lastId);
+<span class="cm">// Always O(log n) — equally fast at any position in the table</span>
+<span class="cm">// First call: lastId=0, next call: lastId = last id from previous batch</span>
+
+<span class="cm">// ── Database Indexes ──────────────────────────────────</span>
+<span class="cm">-- Single column index: good for queries filtering on one column</span>
+CREATE INDEX idx_orders_user_id ON orders(user_id);
+
+<span class="cm">-- Composite index: better when you always filter on both columns together</span>
+CREATE INDEX idx_orders_user_status ON orders(user_id, status);
+<span class="cm">-- Query: WHERE user_id = 123 AND status = 'PENDING' → uses this index perfectly</span>
+<span class="cm">-- Query: WHERE user_id = 123 alone → also uses this index (leftmost prefix rule)</span>
+<span class="cm">-- Query: WHERE status = 'PENDING' alone → does NOT use this composite index</span>
+
+<span class="cm">-- Covering index: index contains all columns the query needs</span>
+<span class="cm">-- No heap access needed — query satisfied entirely from index</span>
+CREATE INDEX idx_orders_covering ON orders(user_id, status, created_at, total);
+
+<span class="cm">-- EXPLAIN ANALYZE to check if index is being used</span>
+EXPLAIN ANALYZE
+SELECT id, total, status FROM orders
+WHERE user_id = 123 AND status = 'PENDING'
+ORDER BY created_at DESC;
+<span class="cm">-- Look for: "Index Scan using idx_orders_user_status" = good</span>
+<span class="cm">-- Look for: "Seq Scan on orders" = bad, add an index</span>
+
+<span class="cm">// ── HikariCP Tuning ───────────────────────────────────</span>
+spring:
+  datasource:
+    hikari:
+      maximum-pool-size: <span class="num">20</span>       <span class="cm"># increase if seeing connection timeouts</span>
+      minimum-idle: <span class="num">5</span>
+      connection-timeout: <span class="num">30000</span>   <span class="cm"># 30s max wait for connection from pool</span>
+      idle-timeout: <span class="num">600000</span>       <span class="cm"># release idle connections after 10 min</span>
+      max-lifetime: <span class="num">1800000</span>      <span class="cm"># replace connections after 30 min</span></div>
+
+<hr class="divider">
+
+<!-- ══════════════════════════════
+     PART 5 — SXSSF EXCEL
+══════════════════════════════ -->
+<div class="section-heading"><div class="icon">📊</div>Writing Large Excel Files Efficiently with Apache POI</div>
+<p class="section-desc">The right way to generate Excel files with 50,000+ rows without running out of memory.</p>
+
+<div class="poi-grid">
+  <div class="poi-card xls">
+    <div class="poi-icon">📄</div>
+    <div class="poi-name">HSSFWorkbook</div>
+    <div class="poi-detail">Old .xls format (Excel 97-2003). Max 65,535 rows. Entire file in memory. Only use if client requires legacy .xls format.</div>
+  </div>
+  <div class="poi-card xssf">
+    <div class="poi-icon">📋</div>
+    <div class="poi-name">XSSFWorkbook</div>
+    <div class="poi-detail">New .xlsx format. Max 1,048,576 rows. <b>Entire file in memory.</b> Crashes with OOM on large datasets. Only safe for &lt;10,000 rows.</div>
+  </div>
+  <div class="poi-card sxssf">
+    <div class="poi-icon">⚡</div>
+    <div class="poi-name">SXSSFWorkbook</div>
+    <div class="poi-detail">Streaming .xlsx format. Max 1,048,576 rows. <b>Only N rows in memory.</b> Rest flushed to temp disk file. Use for all production exports.</div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-title">⚙️ How SXSSFWorkbook Works — The Sliding Window</div>
+  <p><code>new SXSSFWorkbook(100)</code> means: keep only the last 100 rows in memory. When you create row 101, row 1 is flushed to a temporary file on disk. You can no longer access or modify row 1 — it is gone from memory. Rows are written strictly sequentially.</p>
+  <p>When you call <code>wb.write(outputStream)</code>, POI streams from the temp file to your output stream. The entire file never exists in memory at once. Memory usage is flat at approximately 100 rows × row_size, regardless of whether you write 100 or 1,000,000 rows.</p>
+  <p><code>wb.setCompressTempFiles(true)</code> compresses the temp file with GZIP, reducing disk usage. Worth enabling for large exports.</p>
+</div>
+
+<div class="warning">
+  <div class="warning-label">Three Critical Gotchas That Cause Real Production Bugs</div>
+  <p><b>Gotcha 1 — Cell styles created in a loop:</b> Calling <code>wb.createCellStyle()</code> inside your row loop (once per row) creates a new style object for every row. Excel has a hard limit of 64,000 unique cell styles. At 64,001 rows, you get an exception and your export crashes. Fix: create all cell styles ONCE before the loop and reuse the same style object on every row.</p>
+  <p><b>Gotcha 2 — trackColumnForAutoSizing called after writing rows:</b> In SXSSF, rows that have been flushed to disk cannot be re-read for column width calculation. You must call <code>sheet.trackColumnForAutoSizing(columnIndex)</code> BEFORE writing any rows. If you call it after, column widths will be wrong or an exception will be thrown.</p>
+  <p><b>Gotcha 3 — wb.dispose() not called:</b> SXSSFWorkbook creates temporary files in the system temp directory. They are only cleaned up when you call <code>wb.dispose()</code>. Without it, temp files accumulate over time and fill the disk. Always call dispose() in a finally block or use try-with-resources. Note: <code>wb.close()</code> does NOT call dispose() — you must call both.</p>
+</div>
+
+<div class="code-block"><span class="an">@Service</span>
+<span class="kw">public class</span> ExcelExportService {
+
+    <span class="an">@Transactional</span>(readOnly = <span class="kw">true</span>)
+    <span class="kw">public void</span> streamOrders(LocalDate from, LocalDate to,
+                              OutputStream out) <span class="kw">throws</span> IOException {
+
+        SXSSFWorkbook wb = <span class="kw">new</span> SXSSFWorkbook(<span class="num">500</span>); <span class="cm">// 500-row sliding window</span>
+        wb.setCompressTempFiles(<span class="kw">true</span>);
+        <span class="kw">try</span> {
+            SXSSFSheet sheet = wb.createSheet(<span class="st">"Orders"</span>);
+
+            <span class="cm">// Track columns BEFORE writing any rows</span>
+            <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; i &lt; <span class="num">5</span>; i++) sheet.trackColumnForAutoSizing(i);
+
+            <span class="cm">// Create ALL styles ONCE — never inside the row loop</span>
+            CellStyle headerStyle = createHeaderStyle(wb);
+            CellStyle dateStyle   = createDateStyle(wb);
+            CellStyle moneyStyle  = createMoneyStyle(wb);
+
+            <span class="cm">// Header row</span>
+            String[] headers = {<span class="st">"ID"</span>, <span class="st">"Customer"</span>, <span class="st">"Total"</span>, <span class="st">"Date"</span>, <span class="st">"Status"</span>};
+            Row headerRow = sheet.createRow(<span class="num">0</span>);
+            <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; i &lt; headers.length; i++) {
+                Cell cell = headerRow.createCell(i);
+                cell.setCellValue(headers[i]);
+                cell.setCellStyle(headerStyle); <span class="cm">// REUSE — not createCellStyle()</span>
+            }
+
+            <span class="cm">// Data rows — stream from DB, write row by row</span>
+            <span class="kw">try</span> (Stream&lt;Order&gt; stream = orderRepo.streamByCreatedAtBetween(from, to)) {
+                AtomicInteger rowNum = <span class="kw">new</span> AtomicInteger(<span class="num">1</span>);
+                stream.forEach(order -> {
+                    Row row = sheet.createRow(rowNum.getAndIncrement());
+
+                    row.createCell(<span class="num">0</span>).setCellValue(order.getId().toString());
+                    row.createCell(<span class="num">1</span>).setCellValue(order.getCustomerName());
+
+                    Cell totalCell = row.createCell(<span class="num">2</span>);
+                    totalCell.setCellValue(order.getTotal().doubleValue());
+                    totalCell.setCellStyle(moneyStyle);  <span class="cm">// REUSE</span>
+
+                    Cell dateCell = row.createCell(<span class="num">3</span>);
+                    dateCell.setCellValue(order.getCreatedAt());
+                    dateCell.setCellStyle(dateStyle);    <span class="cm">// REUSE</span>
+
+                    row.createCell(<span class="num">4</span>).setCellValue(order.getStatus().name());
+                });
+            }
+
+            <span class="cm">// Auto-size after writing (works because we tracked above)</span>
+            <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; i &lt; <span class="num">5</span>; i++) sheet.autoSizeColumn(i);
+
+            wb.write(out); <span class="cm">// stream to response output stream</span>
+
+        } <span class="kw">finally</span> {
+            wb.dispose(); <span class="cm">// CRITICAL: clean up temp files on disk</span>
+            wb.close();
+        }
+    }
+
+    <span class="kw">private</span> CellStyle createHeaderStyle(Workbook wb) {
+        CellStyle style = wb.createCellStyle();
+        Font font = wb.createFont();
+        font.setBold(<span class="kw">true</span>);
+        font.setFontHeightInPoints((<span class="kw">short</span>) <span class="num">11</span>);
+        style.setFont(font);
+        style.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        style.setBorderBottom(BorderStyle.THIN);
+        <span class="kw">return</span> style;
+    }
+
+    <span class="kw">private</span> CellStyle createDateStyle(Workbook wb) {
+        CellStyle style = wb.createCellStyle();
+        style.setDataFormat(wb.createDataFormat().getFormat(<span class="st">"dd/mm/yyyy"</span>));
+        <span class="kw">return</span> style;
+    }
+
+    <span class="kw">private</span> CellStyle createMoneyStyle(Workbook wb) {
+        CellStyle style = wb.createCellStyle();
+        style.setDataFormat(wb.createDataFormat().getFormat(<span class="st">"#,##0.00"</span>));
+        <span class="kw">return</span> style;
+    }
+}</div>
+
+<hr class="divider">
+
+<!-- ══════════════════════════════
+     FOLLOW-UP Q&A
+══════════════════════════════ -->
+<div class="section-heading"><div class="icon">❓</div>Follow-Up Questions &amp; Full Answers</div>
+
+<div class="qa-section">
+
+  <div class="qa-item">
+    <div class="qa-question" onclick="toggleQA(this)">
+      Q1: How do you show a progress bar for a large async export?
+      <span class="qa-icon">+</span>
+    </div>
+    <div class="qa-answer">
+      <p>For the async POST pattern, the frontend polls a status endpoint while the export is generating. Here is the complete implementation:</p>
+      <p><b>Backend — export job with progress:</b> When the export job starts, store a job record in Redis with status=PROCESSING and progress=0. As rows are written (using a counter in the stream forEach), periodically update Redis: at every 1,000 rows, update progress=(rowsWritten/totalRows)*100. When complete, set status=READY and store the file path or S3 URL.</p>
+      <p><b>Backend — status endpoint:</b> GET /api/export/status/{jobId} reads the Redis record and returns: <code>{"status": "PROCESSING", "progress": 45, "rowsWritten": 22500, "totalRows": 50000}</code>.</p>
+      <p><b>Frontend — polling:</b> After POST /api/export returns the jobId, start polling GET /api/export/status/{jobId} every 2 seconds. Update a progress bar using the progress field. When status=READY, show a "Download" button pointing to GET /api/export/download/{jobId}. If status=FAILED, show an error message.</p>
+      <p><b>Alternative — Server-Sent Events (SSE):</b> Instead of polling, the backend pushes progress updates via SSE. More efficient (no polling overhead), real-time updates. Spring supports SSE via <code>SseEmitter</code>. The frontend uses the EventSource API. Better user experience but more complex to implement.</p>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question" onclick="toggleQA(this)">
+      Q2: The data is growing and queries are getting slow. What is your exact diagnostic process?
+      <span class="qa-icon">+</span>
+    </div>
+    <div class="qa-answer">
+      <p>Follow this exact sequence — do not skip to solutions before diagnosing:</p>
+      <p><b>Step 1 — Enable slow query logging:</b> In MySQL: <code>SET GLOBAL slow_query_log=1; SET GLOBAL long_query_time=1;</code>. Queries taking more than 1 second appear in the slow query log. This tells you WHICH queries are slow before you look at any code.</p>
+      <p><b>Step 2 — Run EXPLAIN ANALYZE on the slow queries:</b> Paste each slow query into your DB console with EXPLAIN ANALYZE prepended. Look for Seq Scan on large tables. Look at the estimated vs actual row counts — a large discrepancy means your table statistics are stale (run ANALYZE).</p>
+      <p><b>Step 3 — Check for N+1 queries:</b> Add Datasource-proxy or p6spy to your Spring Boot project. These libraries count queries per HTTP request and log them. Any endpoint making 50+ queries has N+1. This is often the biggest issue.</p>
+      <p><b>Step 4 — Check connection pool metrics:</b> Look at HikariCP metrics (exposed via Spring Boot Actuator). If you see "connection timeout" errors or the pool is consistently at maximum size — you have connection pool exhaustion. Either increase the pool size or reduce query time so connections are released faster.</p>
+      <p><b>Step 5 — Check what the query plan is doing:</b> If EXPLAIN ANALYZE shows an index exists but is not being used — the DB might have decided a full table scan is faster (at low cardinality). Consider forcing the index or reconsidering the query structure. Sometimes a slightly rewritten query uses the index better.</p>
+      <p><b>Step 6 — Only after the above — consider infrastructure changes:</b> Redis caching for hot data. Read replicas for read-heavy workloads. Query result caching at the application layer. These are optimisations on top of correct queries, not replacements for correct queries.</p>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question" onclick="toggleQA(this)">
+      Q3: What is a covering index and when does it help?
+      <span class="qa-icon">+</span>
+    </div>
+    <div class="qa-answer">
+      <p>A covering index is an index that contains all the columns a query needs to return its result. When a covering index exists, the database can satisfy the query entirely from the index without accessing the actual table rows (the "heap"). This is called an "index-only scan" in PostgreSQL or a "covering index scan" in MySQL.</p>
+      <p><b>Why it matters:</b> When a regular index is used, the database: (1) searches the index to find matching entries, (2) uses each index entry to look up the actual row in the table heap, (3) reads the columns it needs from the table row. Step 2 and 3 add I/O overhead — potentially one random disk access per matching row.</p>
+      <p>With a covering index: the database searches the index and the index already contains every column the query needs. No heap access. For read-heavy queries on large tables, this can be 2-10x faster.</p>
+      <p><b>Example:</b> Query: <code>SELECT id, status, created_at FROM orders WHERE user_id = 123 ORDER BY created_at</code>. Regular index on (user_id) — uses index to find rows, then reads heap for status and created_at. Covering index on (user_id, status, created_at) — index contains all needed columns, no heap access.</p>
+      <p><b>Trade-off:</b> Covering indexes are larger (more columns) and slower to update (more data to maintain when rows are inserted/updated). Use them on high-read, low-write tables, or for your most critical and frequently-run queries. Do not create covering indexes for every query — the maintenance overhead adds up.</p>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question" onclick="toggleQA(this)">
+      Q4: What is the difference between xlsx and csv for large exports — which is faster?
+      <span class="qa-icon">+</span>
+    </div>
+    <div class="qa-answer">
+      <p>This is a practical question that comes up when optimising export performance.</p>
+      <p><b>CSV is significantly faster to generate and much smaller in file size:</b></p>
+      <ul>
+        <li>CSV is plain text — no binary encoding, no XML, no ZIP compression to manage</li>
+        <li>A CSV row is just values separated by commas and terminated by a newline — trivial to write</li>
+        <li>100,000 rows in CSV: typically 5-20MB and generates in under 1 second</li>
+        <li>100,000 rows in xlsx: typically 20-80MB and generates in 5-20 seconds</li>
+      </ul>
+      <p><b>xlsx has features CSV cannot match:</b></p>
+      <ul>
+        <li>Multiple sheets in one file</li>
+        <li>Cell formatting (bold headers, date formats, currency symbols, colours)</li>
+        <li>Column widths and row heights</li>
+        <li>Formulas and pivot tables</li>
+        <li>Type awareness — numbers stay numbers, dates stay dates (CSV is all strings)</li>
+      </ul>
+      <p><b>Recommendation:</b> If the user needs formatting, charts, or multiple sheets — xlsx. If they just need the raw data quickly and will process it programmatically — CSV. Consider offering both options — a "Quick CSV Export" and a "Formatted Excel Export" button. Most data engineers prefer CSV; most business users prefer Excel.</p>
+      <p>For large datasets where speed matters most: generate CSV in under a second by streaming directly to the response as a text/csv content type. No Apache POI needed — just a StringBuilder or BufferedWriter writing comma-separated values.</p>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question" onclick="toggleQA(this)">
+      Q5: How do you handle the case where data changes while the export is running?
+      <span class="qa-icon">+</span>
+    </div>
+    <div class="qa-answer">
+      <p>This is a subtle consistency problem that many developers do not consider. A large export takes 30 seconds to generate. During those 30 seconds, other users are creating, updating, and deleting records. The exported data may be inconsistent — some rows reflect the state at the start, others at the end.</p>
+      <p><b>Option 1 — Accept inconsistency (most common, usually acceptable):</b> For most business reports, data that is "as of roughly this moment" is fine. A sales report where some orders were captured at 10:00:01 and others at 10:00:29 is still useful. Document the report as a point-in-time snapshot. This is what most applications do.</p>
+      <p><b>Option 2 — Snapshot isolation (database-level):</b> Use REPEATABLE READ or SERIALIZABLE isolation. The entire transaction sees a consistent snapshot of the database as it existed when the transaction started. New commits during the export are invisible to it. Spring: <code>@Transactional(isolation = Isolation.REPEATABLE_READ, readOnly = true)</code>. Works perfectly but holds read locks longer, increasing the chance of deadlocks in high-write environments.</p>
+      <p><b>Option 3 — Export from a read replica:</b> The replica has a slight lag behind the primary (usually milliseconds to seconds). For export purposes, this is acceptable — the export reflects the replica's state at the time it started. No impact on the primary at all. This is the best option for large, frequent exports in high-traffic systems.</p>
+      <p><b>Option 4 — Materialised snapshot:</b> Before exporting, create a snapshot table: <code>INSERT INTO export_snapshot_xyz SELECT * FROM orders WHERE ...</code>. Export from the snapshot. Delete the snapshot after export. Fully consistent export, no long-running transaction holding locks. Requires extra disk space for the snapshot.</p>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question" onclick="toggleQA(this)">
+      Q6: When would you completely abandon JPA and use JDBC directly?
+      <span class="qa-icon">+</span>
+    </div>
+    <div class="qa-answer">
+      <p>JPA is excellent for standard CRUD operations on your domain entities. But it is the wrong tool for several common scenarios:</p>
+      <p><b>1. Bulk inserts of thousands of rows:</b> JPA's save() method for each row means individual INSERT statements (or at best small batches). JDBC's PreparedStatement batch mode can insert 10,000 rows with one database round trip. For importing large datasets, JDBC is 50-100x faster.</p>
+      <p><b>2. Complex analytical queries with window functions, CTEs, GROUPING SETS:</b> JPA's JPQL cannot express these. You can use nativeQuery=true in @Query, but at that point you are writing SQL anyway — use JdbcTemplate for full control and readability. Fighting JPA to produce the right SQL takes longer than writing the SQL directly.</p>
+      <p><b>3. Reporting and aggregation:</b> Queries like "top 10 products by revenue this month with comparison to last month" require self-joins, CASE expressions, and complex GROUP BY. The JPA-generated SQL for these is verbose, hard to tune, and often inefficient. Write native SQL.</p>
+      <p><b>4. Full-text search:</b> JPA has no support for full-text search (MATCH AGAINST in MySQL, tsvector in PostgreSQL). Use nativeQuery=true or switch to Elasticsearch for full-text capabilities.</p>
+      <p><b>5. Database-specific features:</b> Postgres-specific features like JSONB queries, array operations, or custom types. MySQL-specific features like full-text indexes or spatial queries. JPA abstracts these away — use native SQL when you need them.</p>
+      <p><b>The rule of thumb:</b> Use JPA for your core domain entities — the Order, User, Product, Payment classes that represent your business model. Use JDBC directly for everything that feels like a query problem rather than an object problem — reports, analytics, batch operations, imports, exports.</p>
+    </div>
+  </div>
+
+</div>
+
+<div class="tip" style="margin-top:24px">
+  <div class="tip-label">Interview Tip — Answering the Full Excel Export Question</div>
+  <p>The interviewer starts with "In the UI there is a button, clicking it should download an Excel file." They will keep asking follow-up questions to see how deep your knowledge goes. Here is the complete answer chain:</p>
+  <p><b>"For a simple export with date range parameters, I use GET — the parameters fit cleanly in the URL, it is bookmarkable, and the browser handles the download naturally with Content-Disposition: attachment header."</b></p>
+  <p>They ask: "What if it's 50,000 rows?"</p>
+  <p><b>"I switch to an async POST pattern. The POST schedules a background job and returns a job ID immediately. The frontend polls for status and shows a progress bar. When ready, the user downloads via a pre-signed URL."</b></p>
+  <p>They ask: "How do you fetch 50,000 rows from the DB without running out of memory?"</p>
+  <p><b>"I use JPA streaming — Stream&lt;Entity&gt; with @QueryHints setting the fetch size to 500. This keeps a DB cursor open and fetches 500 rows at a time into memory, processes them, then fetches the next 500. The service method must be @Transactional(readOnly=true) to keep the session open. Memory stays flat regardless of row count."</b></p>
+  <p>They ask: "How do you write those 50,000 rows to Excel without OOM?"</p>
+  <p><b>"SXSSFWorkbook with a 500-row sliding window. Rows beyond 500 are flushed to a temp file on disk. I create all cell styles once before the loop. I always call wb.dispose() in a finally block to clean up temp files."</b></p>
+</div>
+
+</div>
+
+<script>
+function toggleQA(el) {
+  var answer = el.nextElementSibling;
+  var isOpen = answer.classList.contains('open');
+  answer.classList.toggle('open', !isOpen);
+  el.classList.toggle('open', !isOpen);
+  el.querySelector('.qa-icon').textContent = isOpen ? '+' : '×';
+}
+</script>
+</body>
+</html>

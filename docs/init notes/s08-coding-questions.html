@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S08 — Coding Questions</title>
+<style>
+  :root {
+    --bg:#f8f9fa;--surface:#ffffff;--border:#e2e8f0;
+    --text-primary:#1a202c;--text-secondary:#4a5568;--text-muted:#718096;
+    --blue-light:#ebf8ff;--blue-border:#bee3f8;--blue-dark:#1a365d;
+    --green-light:#f0fff4;--green-border:#9ae6b4;
+    --red-light:#fff5f5;--red-border:#feb2b2;
+    --orange-light:#fffaf0;--orange-border:#fbd38d;
+    --purple-light:#faf5ff;--purple-border:#d6bcfa;
+    --yellow-light:#fffff0;--yellow-border:#f6e05e;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text-primary);font-size:15px;line-height:1.7;}
+  .page-header{background:linear-gradient(135deg,#1a365d 0%,#2a4a8a 100%);color:white;padding:40px 48px 36px;}
+  .page-header .section-label{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;opacity:.7;margin-bottom:8px;}
+  .page-header h1{font-size:28px;font-weight:700;margin-bottom:10px;}
+  .page-header .subtitle{font-size:15px;opacity:.8;max-width:680px;line-height:1.6;}
+  .tags{display:flex;flex-wrap:wrap;gap:7px;margin-top:18px;}
+  .tag{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);color:white;font-size:11.5px;padding:3px 10px;border-radius:20px;}
+  .container{max-width:900px;margin:0 auto;padding:40px 24px 80px;}
+  .section-heading{font-size:20px;font-weight:700;color:var(--text-primary);margin:44px 0 6px;padding-bottom:10px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:10px;}
+  .section-heading .icon{width:32px;height:32px;border-radius:8px;background:#ebf8ff;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+  .section-desc{font-size:14px;color:var(--text-muted);margin-bottom:20px;margin-top:4px;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:22px 26px;margin-bottom:16px;}
+  .card-title{font-size:14px;font-weight:700;color:var(--text-primary);margin-bottom:10px;}
+  .card p{font-size:14.5px;color:var(--text-secondary);line-height:1.75;margin-bottom:10px;}
+  .card p:last-child{margin-bottom:0;}
+  .card b{color:var(--text-primary);font-weight:600;}
+  .card code{font-family:'SF Mono',Consolas,monospace;font-size:12.5px;background:#edf2f7;padding:1px 6px;border-radius:4px;color:#c53030;}
+  .card ul,.card ol{padding-left:22px;margin:8px 0;}
+  .card li{font-size:14.5px;color:var(--text-secondary);line-height:1.75;margin-bottom:5px;}
+  .card li b{color:var(--text-primary);}
+  .card.blue{background:var(--blue-light);border-color:var(--blue-border);}
+  .card.green{background:var(--green-light);border-color:var(--green-border);}
+  .card.orange{background:var(--orange-light);border-color:var(--orange-border);}
+  .card.purple{background:var(--purple-light);border-color:var(--purple-border);}
+  .card.yellow{background:var(--yellow-light);border-color:var(--yellow-border);}
+  .card.blue p,.card.blue li{color:#2c5282;}.card.blue b{color:var(--blue-dark);}
+  .card.green p,.card.green li{color:#22543d;}.card.green b{color:#1c4532;}
+  .card.orange p,.card.orange li{color:#7b341e;}.card.orange b{color:#652b19;}
+  .card.purple p,.card.purple li{color:#44337a;}.card.purple b{color:#322659;}
+  .card.yellow p,.card.yellow li{color:#744210;}.card.yellow b{color:#5f370e;}
+  .definition{background:#1a365d;color:white;border-radius:12px;padding:22px 26px;margin-bottom:16px;}
+  .definition .def-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;opacity:.7;margin-bottom:6px;}
+  .definition p{font-size:15px;line-height:1.75;opacity:.95;margin-bottom:8px;}
+  .definition p:last-child{margin-bottom:0;}
+  .definition b{font-weight:700;}
+  .analogy{border-left:4px solid #d69e2e;background:var(--yellow-light);border-radius:0 10px 10px 0;padding:16px 20px;margin-bottom:16px;}
+  .analogy .analogy-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#744210;margin-bottom:5px;}
+  .analogy p{font-size:14px;color:#744210;line-height:1.7;margin-bottom:6px;}
+  .analogy p:last-child{margin-bottom:0;}
+  .analogy b{color:#5f370e;}
+  .scenario{border-left:4px solid #38a169;background:var(--green-light);border-radius:0 10px 10px 0;padding:16px 20px;margin-bottom:16px;}
+  .scenario .scenario-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#276749;margin-bottom:5px;}
+  .scenario p{font-size:14px;color:#22543d;line-height:1.75;margin-bottom:8px;}
+  .scenario p:last-child{margin-bottom:0;}
+  .scenario b{color:#1c4532;font-weight:600;}
+  .scenario ol,.scenario ul{padding-left:20px;margin:6px 0;}
+  .scenario li{font-size:14px;color:#22543d;line-height:1.75;margin-bottom:6px;}
+  .scenario li b{color:#1c4532;}
+  .warning{border-left:4px solid #e53e3e;background:var(--red-light);border-radius:0 10px 10px 0;padding:16px 20px;margin-bottom:16px;}
+  .warning .warning-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#9b2335;margin-bottom:5px;}
+  .warning p{font-size:14px;color:#742a2a;line-height:1.7;margin-bottom:6px;}
+  .warning p:last-child{margin-bottom:0;}
+  .warning b{color:#63171b;}
+  .tip{border-left:4px solid #3182ce;background:var(--blue-light);border-radius:0 10px 10px 0;padding:16px 20px;margin-bottom:16px;}
+  .tip .tip-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#2b6cb0;margin-bottom:5px;}
+  .tip p{font-size:14px;color:#2c5282;line-height:1.7;margin-bottom:6px;}
+  .tip p:last-child{margin-bottom:0;}
+  .tip b{color:#1a365d;}
+  .table-wrap{overflow-x:auto;margin-bottom:16px;border-radius:10px;border:1px solid var(--border);}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;}
+  thead th{background:#2d3748;color:white;padding:11px 14px;text-align:left;font-weight:600;font-size:12.5px;}
+  tbody tr:nth-child(even){background:#f7fafc;}
+  tbody td{padding:10px 14px;color:var(--text-secondary);border-bottom:1px solid var(--border);vertical-align:top;line-height:1.6;}
+  tbody tr:last-child td{border-bottom:none;}
+  td b{color:var(--text-primary);font-weight:600;}
+  .code-block{background:#1a202c;border-radius:10px;padding:18px 20px;font-family:'SF Mono',Consolas,monospace;font-size:12.5px;color:#e2e8f0;white-space:pre;overflow-x:auto;line-height:1.65;margin-bottom:14px;}
+  .code-block .cm{color:#718096;}
+  .code-block .kw{color:#90cdf4;}
+  .code-block .st{color:#9ae6b4;}
+  .code-block .an{color:#fbd38d;}
+  .code-block .num{color:#f6ad55;}
+  .qa-section{margin-bottom:16px;}
+  .qa-item{margin-bottom:12px;border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+  .qa-question{background:#2d3748;color:white;padding:14px 18px;font-size:14px;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none;}
+  .qa-question:hover{background:#1a202c;}
+  .qa-question .qa-icon{font-size:18px;transition:transform .25s;flex-shrink:0;margin-left:12px;}
+  .qa-question.open .qa-icon{transform:rotate(45deg);}
+  .qa-answer{padding:0 18px;max-height:0;overflow:hidden;transition:max-height .35s ease,padding .3s ease;background:var(--surface);}
+  .qa-answer.open{max-height:2000px;padding:16px 18px;}
+  .qa-answer p{font-size:14px;color:var(--text-secondary);line-height:1.75;margin-bottom:10px;}
+  .qa-answer p:last-child{margin-bottom:0;}
+  .qa-answer b{color:var(--text-primary);font-weight:600;}
+  .qa-answer ul,.qa-answer ol{padding-left:20px;margin:6px 0 10px;}
+  .qa-answer li{font-size:14px;color:var(--text-secondary);line-height:1.75;margin-bottom:4px;}
+  .qa-answer code{font-family:'SF Mono',Consolas,monospace;font-size:12px;background:#edf2f7;padding:1px 5px;border-radius:4px;color:#c53030;}
+  .divider{border:none;border-top:1px solid var(--border);margin:32px 0;}
+
+  /* COMPLEXITY BADGE */
+  .complexity-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;}
+  .complexity-badge{border-radius:8px;padding:10px 16px;font-size:13px;font-weight:700;display:flex;flex-direction:column;align-items:center;min-width:100px;}
+  .complexity-badge .cb-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;opacity:.75;margin-bottom:4px;}
+  .complexity-badge .cb-value{font-size:16px;font-family:'SF Mono',Consolas,monospace;}
+  .complexity-badge.time{background:#ebf8ff;color:#1a365d;}
+  .complexity-badge.space{background:#f0fff4;color:#1c4532;}
+  .complexity-badge.bad{background:#fff5f5;color:#63171b;}
+
+  /* WALKTHROUGH STEPS */
+  .walkthrough{background:#1a202c;border-radius:10px;padding:18px 20px;margin-bottom:14px;}
+  .wt-title{font-size:11px;font-weight:700;color:#a0aec0;text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;}
+  .wt-step{display:flex;align-items:flex-start;gap:12px;margin-bottom:10px;}
+  .wt-step:last-child{margin-bottom:0;}
+  .wt-num{min-width:24px;height:24px;border-radius:50%;background:#4a5568;color:#e2e8f0;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+  .wt-content{font-family:'SF Mono',Consolas,monospace;font-size:12px;color:#e2e8f0;line-height:1.65;}
+  .wt-content .hl{color:#68d391;font-weight:700;}
+  .wt-content .hl2{color:#f6ad55;}
+  .wt-content .hl3{color:#fc8181;}
+
+  /* APPROACH CARDS */
+  .approach-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+  .approach-card{border-radius:10px;padding:16px 18px;border:1px solid var(--border);background:white;}
+  .approach-title{font-size:13px;font-weight:700;margin-bottom:6px;}
+  .approach-card.good .approach-title{color:#1c4532;}
+  .approach-card.bad  .approach-title{color:#63171b;}
+  .approach-card.good{border-color:var(--green-border);background:var(--green-light);}
+  .approach-card.bad {border-color:var(--red-border);  background:var(--red-light);}
+  .approach-body{font-size:13px;line-height:1.6;}
+  .approach-card.good .approach-body{color:#22543d;}
+  .approach-card.bad  .approach-body{color:#742a2a;}
+
+  /* HEAP VISUAL */
+  .heap-visual{background:#1a202c;border-radius:10px;padding:16px 20px;margin-bottom:16px;}
+  .heap-title{font-size:11px;font-weight:700;color:#a0aec0;text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;}
+  .heap-state{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap;}
+  .heap-label{font-size:11px;color:#718096;min-width:60px;font-family:'SF Mono',Consolas,monospace;}
+  .heap-item{background:#2d3748;border:1px solid #4a5568;border-radius:6px;padding:4px 10px;font-size:12px;font-family:'SF Mono',Consolas,monospace;color:#e2e8f0;}
+  .heap-item.active{background:#276749;border-color:#68d391;color:#68d391;font-weight:700;}
+  .heap-item.merged{background:#7b341e;border-color:#f6ad55;color:#f6ad55;font-weight:700;}
+  .heap-arrow{color:#4a5568;font-size:14px;}
+  .heap-cost{font-size:11px;color:#a0aec0;font-family:'SF Mono',Consolas,monospace;}
+
+  @media(max-width:640px){
+    .page-header{padding:28px 20px;}
+    .container{padding:24px 16px 60px;}
+    .approach-grid{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <div class="section-label">Section 08 — Coding Questions</div>
+  <h1>Coding Interview Questions</h1>
+  <div class="subtitle">List intersection with Java 8 Streams, minimum merge cost using a Priority Queue, and the ArrayList intersection from your notes — with full walkthroughs, time complexity analysis, and every follow-up question answered.</div>
+  <div class="tags">
+    <span class="tag">Java 8 Streams</span><span class="tag">HashSet</span>
+    <span class="tag">retainAll</span><span class="tag">Time Complexity</span>
+    <span class="tag">Priority Queue</span><span class="tag">Min Heap</span>
+    <span class="tag">Greedy Algorithm</span><span class="tag">O(n log n)</span>
+    <span class="tag">Huffman Encoding</span>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ══════════════════════════════
+     HOW TO APPROACH CODING Qs
+══════════════════════════════ -->
+<div class="section-heading"><div class="icon">💡</div>How to Approach Coding Questions in an Interview</div>
+<p class="section-desc">The process matters as much as the solution. Interviewers watch how you think, not just what you produce.</p>
+
+<div class="card">
+  <div class="card-title">🧠 The Five Steps — Always Follow This Order</div>
+  <ol>
+    <li style="margin-bottom:8px;font-size:14.5px;color:var(--text-secondary)"><b>Clarify the problem.</b> Ask: what is the input type? Can there be nulls? What do we do with duplicates? What is the expected output format? This shows maturity and prevents solving the wrong problem.</li>
+    <li style="margin-bottom:8px;font-size:14.5px;color:var(--text-secondary)"><b>Talk through the naive approach first.</b> Even if it is O(n²), say it out loud. "The naive approach is a nested loop — O(n²). That is probably too slow. Let me think about how to do better."</li>
+    <li style="margin-bottom:8px;font-size:14.5px;color:var(--text-secondary)"><b>Explain your optimised approach before coding.</b> "I can convert list B to a HashSet. HashSet.contains() is O(1) instead of O(n). That brings the overall complexity from O(n²) to O(n+m)."</li>
+    <li style="margin-bottom:8px;font-size:14.5px;color:var(--text-secondary)"><b>Code it.</b> Talk while you code. "Here I am creating the set from list B. Now I stream list A and filter using set.contains..."</li>
+    <li style="font-size:14.5px;color:var(--text-secondary)"><b>Analyse complexity and test with examples.</b> State the time and space complexity. Walk through your example to verify correctness. Mention edge cases: empty lists, all duplicates, no common elements.</li>
+  </ol>
+</div>
+
+<hr class="divider">
+
+<!-- ══════════════════════════════
+     QUESTION 1: LIST INTERSECTION
+══════════════════════════════ -->
+<div class="section-heading"><div class="icon">🔗</div>Question 1 — List Intersection (Java 8)</div>
+<p class="section-desc">From your notes: ArrayList l1 = ["a","b","bc"] and l2 = ["cc","dd","aa"] — retrieve all from both lists. Also: list intersection using Java 8 streams.</p>
+
+<div class="card">
+  <div class="card-title">🤔 Clarify First — What Does "Retrieve All From Both" Mean?</div>
+  <p>Before writing code, ask the interviewer which operation they want:</p>
+  <ul>
+    <li><b>Intersection</b> — elements that appear in BOTH lists: [1,2,3] ∩ [2,3,4] = [2,3]</li>
+    <li><b>Union</b> — all unique elements from EITHER list: [1,2,3] ∪ [2,3,4] = [1,2,3,4]</li>
+    <li><b>Difference</b> — elements in A but NOT in B: [1,2,3] - [2,3,4] = [1]</li>
+  </ul>
+  <p>From your notes, the question asks for intersection — elements common to both lists. Always clarify this upfront in an interview.</p>
+</div>
+
+<div class="card blue">
+  <div class="card-title blue">Why the Naive Approach (Nested Loop) Is Wrong</div>
+  <p>The first instinct is: for each element in list A, loop through list B and check if it exists. This works, but:</p>
+  <p>For list A with n elements and list B with m elements, this does n × m comparisons. With n=10,000 and m=10,000 — that is 100,000,000 comparisons. Slow.</p>
+  <p>The key insight: <code>List.contains()</code> is O(n) — it scans the entire list for each lookup. But <code>HashSet.contains()</code> is O(1) — it uses a hash function to jump directly to the answer. Convert list B to a HashSet once, then check each element of list A against the set. Total: O(n+m) instead of O(n×m).</p>
+</div>
+
+<div class="complexity-row">
+  <div class="complexity-badge bad"><span class="cb-label">Nested Loop</span><span class="cb-value">O(n×m)</span></div>
+  <div class="complexity-badge time"><span class="cb-label">HashSet Time</span><span class="cb-value">O(n+m)</span></div>
+  <div class="complexity-badge space"><span class="cb-label">HashSet Space</span><span class="cb-value">O(m)</span></div>
+</div>
+
+<div class="code-block"><span class="cm">// ── Setup ────────────────────────────────────────────</span>
+List&lt;Integer&gt; listA = Arrays.asList(<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>, <span class="num">5</span>, <span class="num">2</span>);
+List&lt;Integer&gt; listB = Arrays.asList(<span class="num">2</span>, <span class="num">4</span>, <span class="num">6</span>, <span class="num">8</span>, <span class="num">2</span>);
+
+<span class="cm">// ── Approach 1: retainAll ────────────────────────────</span>
+<span class="cm">// Simple but MUTATES the original list — dangerous if you need listA later</span>
+List&lt;Integer&gt; copy = <span class="kw">new</span> ArrayList&lt;&gt;(listA); <span class="cm">// protect original</span>
+copy.retainAll(listB);
+System.out.println(copy); <span class="cm">// [2, 4, 2]  — keeps duplicates from listA</span>
+
+<span class="cm">// WARNING: retainAll internally calls listB.contains() for each element</span>
+<span class="cm">// If listB is an ArrayList — that's O(n*m). Use a Set for O(n+m):</span>
+Set&lt;Integer&gt; setFromB = <span class="kw">new</span> HashSet&lt;&gt;(listB);
+copy.retainAll(setFromB); <span class="cm">// now O(n+m) — retainAll checks set</span>
+
+<span class="cm">// ── Approach 2: Stream + HashSet — BEST approach ─────</span>
+<span class="cm">// Functional, does not mutate original, O(n+m) time, O(m) space</span>
+Set&lt;Integer&gt; setB = <span class="kw">new</span> HashSet&lt;&gt;(listB); <span class="cm">// O(m) to build</span>
+
+List&lt;Integer&gt; intersection = listA.stream()
+    .filter(setB::contains)              <span class="cm">// O(1) per lookup</span>
+    .collect(Collectors.toList());
+System.out.println(intersection); <span class="cm">// [2, 4, 2] — preserves duplicates from listA</span>
+
+<span class="cm">// ── Distinct intersection (each element appears once) ─</span>
+List&lt;Integer&gt; distinctIntersection = listA.stream()
+    .filter(setB::contains)
+    .distinct()
+    .collect(Collectors.toList());
+System.out.println(distinctIntersection); <span class="cm">// [2, 4]</span>
+
+<span class="cm">// ── Intersection WITH multiplicity (correct duplicate handling) ─</span>
+<span class="cm">// If 2 appears twice in listA AND twice in listB → result has 2 twice</span>
+<span class="cm">// Use a frequency map to track remaining "budget" from listB</span>
+Map&lt;Integer, Long&gt; freqB = listB.stream()
+    .collect(Collectors.groupingBy(x -> x, Collectors.counting()));
+
+List&lt;Integer&gt; multiIntersection = listA.stream()
+    .filter(x -> freqB.getOrDefault(x, <span class="num">0L</span>) &gt; <span class="num">0</span>)
+    .peek(x -> freqB.merge(x, -<span class="num">1L</span>, Long::sum)) <span class="cm">// decrement count</span>
+    .collect(Collectors.toList());
+System.out.println(multiIntersection); <span class="cm">// [2, 2]  — 2 appears twice in both</span>
+
+<span class="cm">// ── Union (all unique elements from either list) ──────</span>
+List&lt;Integer&gt; union = Stream.concat(listA.stream(), listB.stream())
+    .distinct()
+    .sorted()
+    .collect(Collectors.toList());
+System.out.println(union); <span class="cm">// [1, 2, 3, 4, 5, 6, 8]</span>
+
+<span class="cm">// ── Difference (in listA but NOT in listB) ────────────</span>
+List&lt;Integer&gt; difference = listA.stream()
+    .filter(x -> !setB.contains(x))
+    .collect(Collectors.toList());
+System.out.println(difference); <span class="cm">// [1, 3, 5]</span>
+
+<span class="cm">// ── String intersection (from your notes) ─────────────</span>
+List&lt;String&gt; l1 = Arrays.asList(<span class="st">"a"</span>, <span class="st">"b"</span>, <span class="st">"bc"</span>);
+List&lt;String&gt; l2 = Arrays.asList(<span class="st">"cc"</span>, <span class="st">"dd"</span>, <span class="st">"aa"</span>);
+
+Set&lt;String&gt; setL2 = <span class="kw">new</span> HashSet&lt;&gt;(l2);
+List&lt;String&gt; common = l1.stream()
+    .filter(setL2::contains)
+    .collect(Collectors.toList());
+System.out.println(common); <span class="cm">// [] — no common elements</span>
+
+<span class="cm">// If question means "retrieve ALL elements combined and deduplicated":</span>
+List&lt;String&gt; combined = Stream.concat(l1.stream(), l2.stream())
+    .distinct()
+    .collect(Collectors.toList());
+System.out.println(combined); <span class="cm">// [a, b, bc, cc, dd, aa]</span></div>
+
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>Approach</th><th>Time</th><th>Space</th><th>Mutates?</th><th>Keeps Duplicates?</th><th>When to Use</th></tr></thead>
+    <tbody>
+      <tr><td><b>Nested loop</b></td><td>O(n×m)</td><td>O(1)</td><td>No</td><td>Yes</td><td>Never — too slow</td></tr>
+      <tr><td><b>retainAll (List)</b></td><td>O(n×m)</td><td>O(n)</td><td>YES</td><td>Yes</td><td>Never without converting to Set first</td></tr>
+      <tr><td><b>retainAll (Set)</b></td><td>O(n+m)</td><td>O(n+m)</td><td>YES</td><td>Yes</td><td>When mutation is acceptable</td></tr>
+      <tr><td><b>Stream + HashSet</b></td><td>O(n+m)</td><td>O(m)</td><td>No</td><td>Yes (from A)</td><td>Best — functional, safe, fast</td></tr>
+      <tr><td><b>Stream + distinct()</b></td><td>O(n+m)</td><td>O(m)</td><td>No</td><td>No</td><td>When unique results needed</td></tr>
+      <tr><td><b>Frequency map</b></td><td>O(n+m)</td><td>O(m)</td><td>No</td><td>Correct count</td><td>When multiplicity matters</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<hr class="divider">
+
+<!-- ══════════════════════════════
+     QUESTION 2: CONNECT STICKS
+══════════════════════════════ -->
+<div class="section-heading"><div class="icon">🏗️</div>Question 2 — Minimum Merge Cost / Connect Sticks</div>
+<p class="section-desc">From your notes: Array of integers [5,3,1,2] — find the lesser sum / minimum cost to connect all sticks. LeetCode 1167.</p>
+
+<div class="definition">
+  <div class="def-label">Problem Statement</div>
+  <p>Given an array of stick lengths, connect all sticks into one stick. The cost of connecting two sticks is the sum of their lengths. Return the minimum total cost to connect all sticks into one.</p>
+  <p><b>Example:</b> sticks = [5, 3, 1, 2]<br>
+  Connect 1+2=3, cost=3. Now sticks=[5,3,3].<br>
+  Connect 3+3=6, cost=6. Now sticks=[5,6].<br>
+  Connect 5+6=11, cost=11. Total cost = 3+6+11 = <b>20</b>.</p>
+</div>
+
+<div class="card">
+  <div class="card-title">🤔 Why Does the Order of Merging Matter?</div>
+  <p>Every time you merge two sticks, the result gets merged again in future steps. A small stick that you merge <b>late</b> in the process gets added into every subsequent merge — it contributes to the total cost many times.</p>
+  <p>A small stick merged <b>early</b> contributes to fewer merges. Therefore: <b>always merge the two smallest sticks first</b>. This greedy choice guarantees the minimum total cost.</p>
+</div>
+
+<div class="analogy">
+  <div class="analogy-label">Intuition — Why Smallest First Is Always Optimal</div>
+  <p>Think of it as building a tree from the bottom up. Each merge is a level in the tree. A stick at depth 3 gets counted 3 times in the total cost (once in each merge level). You want the smallest sticks to be deepest in the tree — counted the most times, but since they are small the impact is minimal. Large sticks should be near the root — counted few times.</p>
+  <p>This is exactly how <b>Huffman encoding</b> works — the most frequent characters (analogous to smallest sticks) get shorter codes (fewer merge levels), minimising total bit usage.</p>
+</div>
+
+<div class="heap-visual">
+  <div class="heap-title">Step-by-Step Walkthrough: sticks = [5, 3, 1, 2]</div>
+  <div class="wt-step">
+    <div class="wt-num">0</div>
+    <div class="wt-content">Initial heap (min at top): <span class="hl">[1, 2, 3, 5]</span> &nbsp; totalCost = 0</div>
+  </div>
+  <div class="wt-step">
+    <div class="wt-num">1</div>
+    <div class="wt-content">Poll <span class="hl">1</span> (smallest), poll <span class="hl">2</span> (2nd smallest) → merged = <span class="hl2">3</span>, cost += 3 → totalCost = <span class="hl">3</span><br>Push 3 back → heap: <span class="hl">[3, 3, 5]</span></div>
+  </div>
+  <div class="wt-step">
+    <div class="wt-num">2</div>
+    <div class="wt-content">Poll <span class="hl">3</span> (smallest), poll <span class="hl">3</span> (2nd smallest) → merged = <span class="hl2">6</span>, cost += 6 → totalCost = <span class="hl">9</span><br>Push 6 back → heap: <span class="hl">[5, 6]</span></div>
+  </div>
+  <div class="wt-step">
+    <div class="wt-num">3</div>
+    <div class="wt-content">Poll <span class="hl">5</span> (smallest), poll <span class="hl">6</span> (2nd smallest) → merged = <span class="hl2">11</span>, cost += 11 → totalCost = <span class="hl">20</span><br>Push 11 → heap: <span class="hl">[11]</span> — size is 1, DONE</div>
+  </div>
+  <div class="wt-step">
+    <div class="wt-num">✓</div>
+    <div class="wt-content"><span class="hl">Answer: 20</span></div>
+  </div>
+</div>
+
+<div class="approach-grid">
+  <div class="approach-card good">
+    <div class="approach-title">✅ Greedy + Min Heap — O(n log n)</div>
+    <div class="approach-body">Always merge the two smallest. Use a PriorityQueue (min heap) to efficiently get the two smallest in O(log n). Total: O(n log n) for n-1 merges.</div>
+  </div>
+  <div class="approach-card bad">
+    <div class="approach-title">❌ Wrong: Merge Largest First</div>
+    <div class="approach-body">sticks=[5,3,1,2]: 5+3=8(cost 8), 8+2=10(cost 18), 10+1=11(cost 29). Total=29 vs optimal 20. Large values repeated in too many merges.</div>
+  </div>
+</div>
+
+<div class="complexity-row">
+  <div class="complexity-badge time"><span class="cb-label">Time</span><span class="cb-value">O(n log n)</span></div>
+  <div class="complexity-badge space"><span class="cb-label">Space</span><span class="cb-value">O(n)</span></div>
+</div>
+
+<div class="code-block"><span class="cm">// ── Solution: Greedy + Priority Queue (Min Heap) ─────</span>
+<span class="kw">public int</span> connectSticks(<span class="kw">int</span>[] sticks) {
+    <span class="cm">// PriorityQueue in Java is a MIN heap by default</span>
+    <span class="cm">// poll() returns the SMALLEST element in O(log n)</span>
+    PriorityQueue&lt;Integer&gt; minHeap = <span class="kw">new</span> PriorityQueue&lt;&gt;();
+
+    <span class="cm">// Add all sticks to the heap — O(n)</span>
+    <span class="kw">for</span> (<span class="kw">int</span> stick : sticks) {
+        minHeap.offer(stick);
+    }
+
+    <span class="kw">int</span> totalCost = <span class="num">0</span>;
+
+    <span class="cm">// Keep merging until only one stick remains</span>
+    <span class="kw">while</span> (minHeap.size() &gt; <span class="num">1</span>) {
+        <span class="kw">int</span> first  = minHeap.poll(); <span class="cm">// smallest — O(log n)</span>
+        <span class="kw">int</span> second = minHeap.poll(); <span class="cm">// 2nd smallest — O(log n)</span>
+        <span class="kw">int</span> merged = first + second;
+
+        totalCost += merged;         <span class="cm">// this merge costs first+second</span>
+        minHeap.offer(merged);       <span class="cm">// put merged stick back — O(log n)</span>
+    }
+
+    <span class="kw">return</span> totalCost;
+}
+
+<span class="cm">// ── Test it ──────────────────────────────────────────</span>
+<span class="cm">// connectSticks([5,3,1,2]) → 20 ✓</span>
+<span class="cm">// connectSticks([1,8,3,5]) → 30 ✓  (see walkthrough: 1+3=4, 4+5=9, 8+9=17 → 4+9+17=30)</span>
+<span class="cm">// connectSticks([1])       → 0  ✓  (only one stick — no merges needed)</span>
+<span class="cm">// connectSticks([3,3,3,3]) → 24 ✓  (3+3=6, 3+3=6, 6+6=12 → 6+6+12=24)</span>
+
+<span class="cm">// ── Why PriorityQueue is a Min Heap ──────────────────</span>
+<span class="cm">// Java's PriorityQueue uses natural ordering (Comparable) by default</span>
+<span class="cm">// For integers: smallest integer = highest priority</span>
+<span class="cm">// poll() always removes and returns the minimum element</span>
+
+<span class="cm">// For MAX heap — reverse the comparator:</span>
+PriorityQueue&lt;Integer&gt; maxHeap = <span class="kw">new</span> PriorityQueue&lt;&gt;(Collections.reverseOrder());
+<span class="cm">// or: new PriorityQueue<>((a,b) -> b - a);</span>
+
+<span class="cm">// ── Complexity Analysis ───────────────────────────────</span>
+<span class="cm">// Building the heap: O(n)</span>
+<span class="cm">// n-1 iterations, each with 2 polls + 1 offer:</span>
+<span class="cm">//   each poll/offer is O(log n)</span>
+<span class="cm">//   so (n-1) * 3 * O(log n) = O(n log n)</span>
+<span class="cm">// Total: O(n log n) time, O(n) space for the heap</span></div>
+
+<div class="card green">
+  <div class="card-title green">🔗 Connection to Huffman Encoding</div>
+  <p>This algorithm is identical to building a <b>Huffman encoding tree</b> — the algorithm used in ZIP file compression, JPEG compression, and many other places.</p>
+  <p>In Huffman encoding, you have characters with frequencies (how often they appear in text). Frequent characters get short binary codes. Rare characters get long codes. You build the code by always merging the two least-frequent characters — exactly like merging the two smallest sticks.</p>
+  <p>The total cost in our problem = the total number of bit operations in Huffman encoding. Minimising it gives you the most efficient compression. Same greedy algorithm, same proof of correctness, same O(n log n) complexity.</p>
+</div>
+
+<hr class="divider">
+
+<!-- ══════════════════════════════
+     FOLLOW-UP Q&A
+══════════════════════════════ -->
+<div class="section-heading"><div class="icon">❓</div>Follow-Up Questions &amp; Full Answers</div>
+
+<div class="qa-section">
+
+  <div class="qa-item">
+    <div class="qa-question" onclick="toggleQA(this)">
+      Q1: What is the time and space complexity of each list intersection approach?
+      <span class="qa-icon">+</span>
+    </div>
+    <div class="qa-answer">
+      <p>Let n = size of list A, m = size of list B.</p>
+      <p><b>Nested loop:</b> For each of n elements in A, scan all m elements in B. Time: O(n×m). Space: O(n) for the result list. At n=m=10,000 this is 100,000,000 operations — unacceptably slow.</p>
+      <p><b>retainAll with ArrayList as argument:</b> Internally, ArrayList.contains() is O(m). Called n times. Time: O(n×m). Just as slow as the nested loop despite being a single method call. The method name is misleading — always pass a Set to retainAll.</p>
+      <p><b>retainAll with HashSet as argument:</b> HashSet.contains() is O(1) average. Called n times. Building the HashSet: O(m). Time: O(n+m). Space: O(n) for the copy + O(m) for the set = O(n+m). BUT it mutates the list — dangerous if you need the original.</p>
+      <p><b>Stream + HashSet:</b> Building set: O(m). Streaming A with filter: n × O(1) = O(n). Collecting result: O(k) where k is the intersection size. Total time: O(n+m). Space: O(m) for the set + O(k) for the result. Best balance of performance and immutability.</p>
+      <p><b>Sort + Two Pointers:</b> Sort both: O(n log n + m log m). Merge step: O(n+m). Total: O(n log n + m log m). Space: O(1) extra (if sorting in place). Use this when you cannot afford extra space for a HashSet but can afford to sort. Also useful when the lists are already sorted.</p>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question" onclick="toggleQA(this)">
+      Q2: How would you handle null values in the lists?
+      <span class="qa-icon">+</span>
+    </div>
+    <div class="qa-answer">
+      <p>Null handling depends on the business requirements — always clarify with the interviewer whether nulls are valid inputs.</p>
+      <p><b>Option 1 — Filter out nulls before processing:</b></p>
+      <p><code>Set&lt;Integer&gt; setB = listB.stream().filter(Objects::nonNull).collect(toSet());</code></p>
+      <p><code>List&lt;Integer&gt; result = listA.stream().filter(x -> x != null &amp;&amp; setB.contains(x)).collect(toList());</code></p>
+      <p>This is the safest approach — nulls are silently excluded from both sides.</p>
+      <p><b>Option 2 — Include nulls in intersection:</b> A null in list A that also appears in list B should be in the result. HashSet handles null correctly — you can add null to a HashSet and contains(null) returns true if null is in the set.</p>
+      <p><code>Set&lt;Integer&gt; setB = new HashSet&lt;&gt;(listB); // null is allowed in HashSet</code></p>
+      <p><code>List&lt;Integer&gt; result = listA.stream().filter(setB::contains).collect(toList());</code></p>
+      <p>This works because HashSet.contains(null) does not throw — it returns true if null was added to the set.</p>
+      <p><b>Option 3 — Throw on null:</b> If nulls should never appear: add a validation step at the start that throws IllegalArgumentException if either list contains null. Use <code>Objects.requireNonNull()</code> or a stream with <code>.peek(x -> Objects.requireNonNull(x, "null values not allowed"))</code>.</p>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question" onclick="toggleQA(this)">
+      Q3: How do you find elements in list A but NOT in list B (set difference)?
+      <span class="qa-icon">+</span>
+    </div>
+    <div class="qa-answer">
+      <p>Set difference is a common follow-up. The approach is identical to intersection but with a negated filter:</p>
+      <p><code>Set&lt;Integer&gt; setB = new HashSet&lt;&gt;(listB);</code></p>
+      <p><code>List&lt;Integer&gt; onlyInA = listA.stream().filter(x -> !setB.contains(x)).collect(toList());</code></p>
+      <p>Time: O(n+m). Space: O(m) for the set.</p>
+      <p><b>Symmetric difference</b> (elements in A or B but NOT in both):</p>
+      <p>This requires two passes — once for elements in A not in B, once for elements in B not in A, then combine.</p>
+      <p><code>Set&lt;Integer&gt; setA = new HashSet&lt;&gt;(listA);</code></p>
+      <p><code>Set&lt;Integer&gt; setB = new HashSet&lt;&gt;(listB);</code></p>
+      <p><code>List&lt;Integer&gt; symDiff = Stream.concat(<br>
+      &nbsp;&nbsp;listA.stream().filter(x -> !setB.contains(x)),<br>
+      &nbsp;&nbsp;listB.stream().filter(x -> !setA.contains(x)))<br>
+      .collect(toList());</code></p>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question" onclick="toggleQA(this)">
+      Q4: What if you can only merge 3 sticks at a time instead of 2?
+      <span class="qa-icon">+</span>
+    </div>
+    <div class="qa-answer">
+      <p>This is a great extension question that tests whether you understand the algorithm deeply.</p>
+      <p><b>The answer changes significantly.</b> With 2-way merges, you can always merge the two smallest and it works out. With 3-way merges (merge 3 sticks at a time), there is an additional constraint: you can only perform a merge if you have at least 3 sticks. After each merge, you go from n sticks to n-2 sticks.</p>
+      <p>This means the algorithm only works if you can reduce to 1 stick via 3-way merges. Starting with n sticks, each merge reduces by 2. You need (n-1) to be divisible by 2. If (n-1) % 2 != 0, you cannot form valid 3-way merges with all sticks — some merge will have fewer than 3 sticks. In that case, you would pad with dummy zero-length sticks to make it work.</p>
+      <p>The algorithm itself is the same: use a min heap, poll 3 smallest at a time instead of 2, merge them, push the merged value back, add to total cost.</p>
+      <p>Generalised to k-way merges: each merge reduces stick count by k-1. You need (n-1) % (k-1) == 0. If not, pad with (k-1 - ((n-1)%(k-1))) zero-length sticks.</p>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question" onclick="toggleQA(this)">
+      Q5: Can you solve connect sticks with a sorted array instead of a heap? What is the trade-off?
+      <span class="qa-icon">+</span>
+    </div>
+    <div class="qa-answer">
+      <p><b>Yes</b>, but it requires careful thought about where to insert the merged value.</p>
+      <p><b>Attempt with simple sort:</b> Sort the array, always merge the first two elements. After merging, you need to insert the merged value in the correct sorted position to maintain the sorted order for the next step. Inserting into a sorted array is O(n) (shifting elements). For n merges: O(n²) total. Worse than the heap approach.</p>
+      <p><b>Better approach — two queues:</b> Sort the original array into Queue 1. Create empty Queue 2 for merged values. At each step, find the two smallest by comparing the fronts of both queues (each front access is O(1)). Merge them, push result into Queue 2. Since Queue 2 is always in sorted order (each merged value is larger than or equal to previous merged values), this gives O(n) merges each O(1) = O(n) merge phase after the O(n log n) initial sort. Total: O(n log n).</p>
+      <p>This two-queue approach achieves the same O(n log n) as the heap but avoids the heap overhead (no sifting). In practice the heap is simpler to code and equally fast for most inputs. The two-queue approach is worth knowing as a follow-up demonstration of algorithmic depth.</p>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question" onclick="toggleQA(this)">
+      Q6: How do you prove the greedy algorithm is optimal?
+      <span class="qa-icon">+</span>
+    </div>
+    <div class="qa-answer">
+      <p>This is a harder follow-up for senior positions. The proof uses an exchange argument.</p>
+      <p><b>Claim:</b> An optimal solution always merges the two smallest sticks first.</p>
+      <p><b>Proof by contradiction:</b> Suppose we have an optimal solution that does NOT merge the two smallest sticks (call them a and b, where a ≤ b) at the first step. Instead, it merges some other pair (say c and d, where at least one of them is not the minimum). We will show we can replace the first merge with (a+b) without increasing the total cost.</p>
+      <p>In the optimal solution, at some point a and b are both merged into larger sticks. The cost of merging a is at least a (it contributes to at least one merge). The cost of merging b is at least b. If we merge them first, we "spend" (a+b) for their first merge, but then the merged value (a+b) participates in subsequent merges instead of a and b separately. Because a and b are the smallest values, (a+b) is ≤ any other merged value at the same level. Swapping the first merge to (a,b) either keeps the total cost the same or reduces it.</p>
+      <p>This exchange argument shows that deferring the merge of the two smallest can never improve the solution. Therefore, always merging the two smallest is optimal. This is the same proof used to show Huffman encoding is optimal.</p>
+    </div>
+  </div>
+
+</div>
+
+<div class="tip" style="margin-top:24px">
+  <div class="tip-label">Interview Tip — Talking Through Your Code</div>
+  <p>For the intersection question, always clarify first: <b>"Before I code — are we looking for intersection (common elements), union (all elements), or difference? And should duplicates be preserved or deduplicated?"</b></p>
+  <p>Then explain your approach before typing: <b>"I'll convert list B to a HashSet. That costs O(m) time and space, but each lookup drops from O(m) to O(1). Then I stream list A and filter using the set. Total time is O(n+m) vs O(n×m) for nested loops. For large lists the difference is enormous — at 10,000 elements each: 20,000 operations vs 100,000,000."</b></p>
+  <p>For the connect sticks question: <b>"The greedy insight is that small sticks merged early contribute to fewer total merges — this minimises cost. I'll use a Java PriorityQueue which is a min heap — poll() gives the smallest in O(log n). The algorithm runs in O(n log n) — n-1 merges, each merge is O(log n) for the two polls and one offer."</b></p>
+  <p>Always finish with: <b>"Let me verify with the example: [5,3,1,2] → merge 1+2=3 (cost 3), heap=[3,3,5] → merge 3+3=6 (cost 9), heap=[5,6] → merge 5+6=11 (cost 20). Answer: 20."</b></p>
+</div>
+
+</div>
+
+<script>
+function toggleQA(el) {
+  var answer = el.nextElementSibling;
+  var isOpen = answer.classList.contains('open');
+  answer.classList.toggle('open', !isOpen);
+  el.classList.toggle('open', !isOpen);
+  el.querySelector('.qa-icon').textContent = isOpen ? '+' : '×';
+}
+</script>
+</body>
+</html>

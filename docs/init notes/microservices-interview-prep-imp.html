@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Microservices Interview Prep</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f5f5f4;color:#1c1c1a}
+.shell{display:grid;grid-template-columns:260px 1fr;min-height:100vh}
+.sidebar{background:#fff;border-right:1px solid #e5e5e3;position:sticky;top:0;height:100vh;overflow-y:auto}
+.brand{padding:14px 14px 8px;font-size:14px;font-weight:600;border-bottom:1px solid #e5e5e3;margin-bottom:4px}
+.brand small{display:block;font-size:11px;font-weight:400;color:#999;margin-top:2px}
+.sec{padding:10px 12px 3px;font-size:10px;font-weight:700;color:#aaa;letter-spacing:.08em;text-transform:uppercase}
+.nb{display:block;width:100%;text-align:left;padding:6px 14px;font-size:12.5px;color:#555;background:none;border:none;border-left:3px solid transparent;cursor:pointer;line-height:1.4}
+.nb:hover{background:#f5f5f4;color:#111}
+.nb.on{background:#eff6ff;color:#1d4ed8;font-weight:500;border-left-color:#3b82f6}
+.main{padding:28px 32px;max-width:820px}
+.qhead{display:flex;align-items:flex-start;gap:12px;margin-bottom:14px}
+.qnum{min-width:32px;height:32px;border-radius:50%;background:#dbeafe;color:#1d4ed8;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:3px}
+.qtitle{font-size:20px;font-weight:600;line-height:1.3}
+.lbl{font-size:10px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:.07em;margin:18px 0 7px}
+.prose{font-size:14px;color:#444;line-height:1.75;margin-bottom:10px}
+.prose b{color:#111;font-weight:600}
+.prose code{font-family:monospace;font-size:12px;background:#f0f0ed;padding:1px 5px;border-radius:3px}
+pre{background:#1e1e2e;border-radius:10px;padding:18px 20px;font-family:'SF Mono',Consolas,monospace;font-size:12.5px;color:#cdd6f4;white-space:pre;overflow-x:auto;line-height:1.65;margin-bottom:12px}
+.kw{color:#89b4fa}.cm{color:#6c7086}.st{color:#a6e3a1}.an{color:#fab387}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px}
+.chip{font-size:11px;padding:3px 9px;border-radius:20px;background:#f5f5f4;border:1px solid #e5e5e3;color:#666}
+.fbox{background:#fafaf9;border:1px solid #e5e5e3;border-radius:10px;padding:12px 16px;margin-top:16px}
+.fbox-title{font-size:10px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.fq{font-size:13px;color:#555;padding:6px 0;border-bottom:1px solid #eee;display:flex;gap:6px}
+.fq:last-child{border-bottom:none;padding-bottom:0}
+.fq-arrow{color:#3b82f6;font-size:11px;flex-shrink:0;margin-top:2px}
+.nav-row{display:flex;justify-content:space-between;align-items:center;margin-top:24px;padding-top:16px;border-top:1px solid #e5e5e3}
+.nbtn{padding:7px 18px;font-size:13px;color:#444;background:#fff;border:1px solid #d5d5d0;border-radius:8px;cursor:pointer}
+.nbtn:hover{background:#f5f5f4}
+.nbtn:disabled{opacity:.4;cursor:not-allowed}
+.nav-count{font-size:12px;color:#aaa}
+</style>
+</head>
+<body>
+<div class="shell">
+<div class="sidebar" id="sb"></div>
+<div class="main" id="main"></div>
+</div>
+<script>
+var T = [];
+
+function t(num,title,tags,body,code,fq){
+  T.push({num:num,title:title,tags:tags,body:body,code:code,fq:fq});
+}
+
+t(4,"Microservice Design Patterns",
+["Saga","CQRS","Sidecar","Strangler Fig","BFF"],
+"<b>Saga Pattern</b> manages distributed transactions without 2-phase commit. Each service publishes events; on failure, compensating transactions undo earlier steps. Two flavours: <i>Choreography</i> (services react to events) and <i>Orchestration</i> (a central orchestrator calls each service).<br><br><b>CQRS</b> (Command Query Responsibility Segregation) separates write model from read model. Allows independent scaling and optimised read projections.<br><br><b>BFF</b> (Backend For Frontend) is a dedicated API layer per client type (mobile, web, 3rd party). Avoids one bloated general API.<br><br><b>Sidecar</b> attaches a helper container (logging, tracing, auth) alongside the main service. Used by service meshes like Istio.<br><br><b>Strangler Fig</b> gradually replaces a monolith by routing traffic to new microservices, strangling the old system incrementally.",
+"// Saga Orchestrator (Spring)\n@Service\npublic class OrderSagaOrchestrator {\n\n  public void startSaga(Order order) {\n    try {\n      paymentService.reserve(order);    // Step 1\n      inventoryService.reserve(order);  // Step 2\n      shippingService.schedule(order);  // Step 3\n    } catch (PaymentException e) {\n      // No rollback needed\n    } catch (InventoryException e) {\n      paymentService.release(order);    // Compensate step 1\n    } catch (ShippingException e) {\n      inventoryService.release(order);  // Compensate step 2\n      paymentService.release(order);    // Compensate step 1\n    }\n  }\n}",
+["What is the difference between choreography and orchestration saga?","How does CQRS handle eventual consistency?","When would you use BFF over a single API gateway?","What problem does the Outbox pattern solve alongside Saga?"]);
+
+t(5,"API Gateway in Your Project",
+["Spring Cloud Gateway","Rate Limiting","Auth","Routing","Load Balancing"],
+"An API Gateway is the single entry point for all client requests. It handles cross-cutting concerns:<br><br><b>Routing</b> maps /orders/** to order-service.<br><b>Authentication</b> validates JWT tokens before forwarding.<br><b>Rate limiting</b> prevents one client from flooding the system.<br><b>Load balancing</b> distributes across service instances.<br><b>Logging and tracing</b> injects correlation IDs.<br><br>Popular implementations: Spring Cloud Gateway, Kong, AWS API Gateway, NGINX.",
+"# Spring Cloud Gateway -- application.yml\nspring:\n  cloud:\n    gateway:\n      routes:\n        - id: order-service\n          uri: lb://ORDER-SERVICE\n          predicates:\n            - Path=/api/orders/**\n          filters:\n            - StripPrefix=1\n            - name: RequestRateLimiter\n              args:\n                redis-rate-limiter.replenishRate: 10\n                redis-rate-limiter.burstCapacity: 20",
+["How do you handle authentication at the gateway vs at each service?","What is the difference between API Gateway and Load Balancer?","How does service discovery integrate with the gateway?","What are the risks of putting too much logic in the gateway?"]);
+
+t(6,"Implement a Custom API Gateway",
+["Filter Chain","JWT Validation","Routing","Spring WebFlux","Rate Limiting"],
+"A custom gateway is built using a <b>filter chain</b>. Each request passes through filters before reaching the downstream service -- the classic Chain of Responsibility pattern.<br><br><b>Key components to build:</b><br>1. Router -- maps paths to downstream URLs<br>2. Pre-filters -- auth check, rate limit, add correlation ID<br>3. Proxy -- forwards request via WebClient<br>4. Post-filters -- log response time, strip internal headers<br><br>Use Spring Cloud Gateway's <code>GlobalFilter</code> interface for access to the exchange and filter chain.",
+"@Component\npublic class AuthFilter implements GlobalFilter, Ordered {\n\n  @Override\n  public Mono<Void> filter(ServerWebExchange exchange,\n                           GatewayFilterChain chain) {\n    String path = exchange.getRequest().getURI().getPath();\n\n    if (path.startsWith(\"/api/auth\")) return chain.filter(exchange);\n\n    String token = exchange.getRequest()\n      .getHeaders().getFirst(HttpHeaders.AUTHORIZATION);\n\n    if (token == null || !jwtService.isValid(token)) {\n      exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);\n      return exchange.getResponse().setComplete();\n    }\n\n    ServerHttpRequest mutated = exchange.getRequest().mutate()\n      .header(\"X-User-Id\", jwtService.getUserId(token))\n      .build();\n\n    return chain.filter(exchange.mutate().request(mutated).build());\n  }\n\n  @Override public int getOrder() { return -100; }\n}",
+["How would you implement distributed rate limiting across gateway instances?","How do you propagate user identity to downstream services?","What is the difference between GlobalFilter and GatewayFilter?","How would you test gateway filters?"]);
+
+t(7,"How Services Communicate",
+["REST","gRPC","Kafka","Sync vs Async","Service Mesh"],
+"Services communicate either <b>synchronously</b> (caller waits) or <b>asynchronously</b> (caller fires and forgets).<br><br><b>Synchronous REST/HTTP:</b> Simple, widely supported. Use when the caller needs an immediate response (e.g. check stock before confirming order).<br><br><b>Synchronous gRPC:</b> Binary protocol (protobuf), lower latency, strongly typed. Good for internal high-throughput calls.<br><br><b>Asynchronous Kafka/RabbitMQ:</b> Caller publishes an event; consumer processes independently. Increases resilience since the consumer can be down without losing the message.<br><br><b>Rule of thumb:</b> Use sync for queries, async for commands and events.",
+"// Sync: REST call with WebClient\nwebClient.get()\n  .uri(\"http://inventory-service/api/stock/{id}\", productId)\n  .retrieve()\n  .bodyToMono(StockResponse.class)\n  .block();\n\n// Async: publish event via Kafka\nkafkaTemplate.send(\"order-placed\", OrderEvent.builder()\n  .orderId(order.getId())\n  .userId(order.getUserId())\n  .build());\n\n// Async consumer in notification-service\n@KafkaListener(topics = \"order-placed\", groupId = \"notify-group\")\npublic void handleOrderPlaced(OrderEvent event) {\n  emailService.sendConfirmation(event.getUserId(), event.getOrderId());\n}",
+["How do you avoid losing messages if the consumer is down?","What is the difference between Kafka and RabbitMQ?","How do you handle schema changes in Kafka events?","When would you use gRPC over REST internally?"]);
+
+t(8,"Handling a Service Going Down",
+["Circuit Breaker","Fallback","Retry","Timeout","Health Checks"],
+"Layers of defence to prevent cascading failure:<br><br><b>Layer 1 -- Timeouts:</b> Never wait forever. Always set connect and read timeouts.<br><br><b>Layer 2 -- Retries:</b> Retry transient failures (503, network blip). Never retry non-idempotent operations blindly.<br><br><b>Layer 3 -- Circuit Breaker:</b> After N failures, open the circuit and return fallback immediately.<br><br><b>Layer 4 -- Fallback:</b> Return cached data, a default response, or a degraded response.<br><br><b>Layer 5 -- Health Checks:</b> K8s liveness/readiness probes detect unhealthy instances and remove them from load balancing.",
+"// Resilience4j Circuit Breaker + Retry + Fallback\n@CircuitBreaker(name = \"inventoryService\", fallbackMethod = \"fallbackStock\")\n@Retry(name = \"inventoryService\")\n@TimeLimiter(name = \"inventoryService\")\npublic CompletableFuture<StockResponse> getStock(String productId) {\n  return CompletableFuture.supplyAsync(() ->\n    restTemplate.getForObject(\n      \"http://inventory-service/api/stock/\" + productId,\n      StockResponse.class)\n  );\n}\n\n// Fallback: return cached value\npublic CompletableFuture<StockResponse> fallbackStock(\n    String productId, Throwable t) {\n  return CompletableFuture.completedFuture(\n    stockCache.getOrDefault(productId, StockResponse.unknown())\n  );\n}\n\n# application.yml\nresilience4j:\n  circuitbreaker:\n    instances:\n      inventoryService:\n        failureRateThreshold: 50\n        waitDurationInOpenState: 30s\n        slidingWindowSize: 10",
+["What is the difference between fail-fast and fail-safe?","How do you monitor circuit breaker state changes?","How does a bulkhead pattern complement circuit breakers?","What happens when the fallback itself throws an exception?"]);
+
+t(9,"Circuit Breaker & Fallback Response",
+["Resilience4j","States","Fallback","Hystrix","Half-Open"],
+"The Circuit Breaker has three states:<br><br><b>CLOSED</b> -- normal operation. All requests go through. Failure rate is tracked.<br><b>OPEN</b> -- tripped! All requests return fallback immediately. No calls reach the broken service.<br><b>HALF-OPEN</b> -- after the wait window expires, one probe request is allowed. If it succeeds goes CLOSED. If fails goes back to OPEN.<br><br><b>Fallback strategies (best to worst):</b><br>1. Return cached/stale data<br>2. Return a safe default (empty list, zero count)<br>3. Serve from read replica<br>4. Queue the request for later<br>5. Return a friendly error message<br><br><b>Resilience4j vs Hystrix:</b> Hystrix is in maintenance mode. Resilience4j is the modern lightweight replacement.",
+"# application.yml -- circuit breaker tuning\nresilience4j:\n  circuitbreaker:\n    instances:\n      paymentService:\n        slidingWindowType: COUNT_BASED\n        slidingWindowSize: 10\n        failureRateThreshold: 60\n        slowCallRateThreshold: 80\n        slowCallDurationThreshold: 2s\n        waitDurationInOpenState: 60s\n        permittedNumberOfCallsInHalfOpenState: 3\n        automaticTransitionFromOpenToHalfOpenEnabled: true\n\n// State change listener\n@EventListener\npublic void onStateChange(CircuitBreakerOnStateTransitionEvent event) {\n  log.warn(\"CB '{}' transitioned from {} to {}\",\n    event.getCircuitBreakerName(),\n    event.getStateTransition().getFromState(),\n    event.getStateTransition().getToState());\n}",
+["How would you test a circuit breaker in a unit test?","What is the difference between COUNT_BASED and TIME_BASED sliding window?","How does circuit breaker interact with retry -- which runs first?","What are the downsides of too-aggressive circuit breaking?"]);
+
+t(10,"Retry Strategy & Idempotency",
+["Exponential Backoff","Jitter","Idempotency Key","Safe Methods","At-Least-Once"],
+"<b>Retry strategy:</b> Space retries with <b>exponential backoff</b> (1s, 2s, 4s...) plus <b>jitter</b> (randomise slightly). This prevents the thundering herd problem -- all retrying clients hammering a recovering service at the same time.<br><br><b>What to retry:</b> Only transient errors (timeout, 503, 429). Never retry 4xx client errors -- they won't self-heal.<br><br><b>Idempotency:</b> An operation is idempotent if calling it multiple times produces the same result as calling it once.<br><br>GET, PUT, DELETE are idempotent. POST is NOT -- a retry could create duplicates.<br><br>Fix POST with an <b>Idempotency-Key header</b>: the server stores the key and returns the cached response on duplicate calls.",
+"// Client: send Idempotency-Key with POST\nString idempotencyKey = UUID.randomUUID().toString();\nHttpHeaders headers = new HttpHeaders();\nheaders.set(\"Idempotency-Key\", idempotencyKey);\nrestTemplate.exchange(\"/api/payments\", HttpMethod.POST,\n  new HttpEntity<>(request, headers), PaymentResponse.class);\n\n// Server: check key before processing\n@PostMapping(\"/api/payments\")\npublic ResponseEntity<PaymentResponse> createPayment(\n    @RequestHeader(\"Idempotency-Key\") String key,\n    @RequestBody PaymentRequest request) {\n\n  Optional<PaymentResponse> cached = idempotencyStore.get(key);\n  if (cached.isPresent()) return ResponseEntity.ok(cached.get());\n\n  PaymentResponse result = paymentService.process(request);\n  idempotencyStore.save(key, result, Duration.ofHours(24));\n  return ResponseEntity.ok(result);\n}\n\n# Resilience4j retry config\nresilience4j:\n  retry:\n    instances:\n      paymentService:\n        maxAttempts: 3\n        waitDuration: 500ms\n        enableExponentialBackoff: true\n        exponentialBackoffMultiplier: 2\n        enableRandomizedWait: true",
+["How do you implement an idempotency store -- Redis vs DB?","What TTL would you set on idempotency keys?","How do you distinguish a retry from a genuine duplicate request?","What is the difference between at-least-once and exactly-once delivery?"]);
+
+t(11,"Request Persistence When Service Is Down",
+["Outbox Pattern","Dead Letter Queue","Kafka","Durable Queue"],
+"<b>Transactional Outbox Pattern (gold standard):</b> Write the message to an outbox table in the SAME DB transaction as your business data. A relay process reads the outbox and publishes to Kafka. Guarantees no message loss even if the app crashes.<br><br><b>Dead Letter Queue (DLQ):</b> Kafka/RabbitMQ supports DLQs natively. Failed messages move to DLQ after N retries. A separate consumer retries on a schedule.<br><br><b>Why Outbox beats dual-write:</b> Saving to DB AND publishing to Kafka separately risks them going out of sync if the app crashes between the two operations.",
+"// Outbox: write to DB + outbox in ONE transaction\n@Transactional\npublic Order placeOrder(OrderRequest req) {\n  Order order = orderRepository.save(new Order(req));\n\n  // Same transaction -- both commit or neither!\n  outboxRepository.save(OutboxEvent.builder()\n    .aggregateType(\"Order\")\n    .aggregateId(order.getId())\n    .type(\"ORDER_PLACED\")\n    .payload(toJson(order))\n    .status(OutboxStatus.PENDING)\n    .build());\n\n  return order;\n}\n\n// Relay: poll outbox, publish to Kafka\n@Scheduled(fixedDelay = 1000)\npublic void relayOutboxEvents() {\n  List<OutboxEvent> pending = outboxRepository\n    .findByStatusOrderByCreatedAt(OutboxStatus.PENDING);\n\n  pending.forEach(event -> {\n    try {\n      kafkaTemplate.send(event.getType(), event.getPayload()).get();\n      event.setStatus(OutboxStatus.SENT);\n    } catch (Exception e) {\n      event.incrementRetries();\n    }\n    outboxRepository.save(event);\n  });\n}",
+["What is the dual-write problem?","How does Debezium improve on the polling outbox pattern?","How do you avoid processing outbox events more than once?","What happens if the relay process crashes mid-batch?"]);
+
+t(12,"Kafka Topic Creation & Production Considerations",
+["Partitions","Replication","Retention","Consumer Groups","Compaction"],
+"<b>Partition count</b> determines parallelism. More partitions = more consumers can run in parallel. You can increase partitions but cannot decrease them.<br><br><b>Replication factor</b> determines fault tolerance. Use 3 in production. Set min.insync.replicas=2.<br><br><b>Retention policy:</b> time-based (default 7 days) or size-based. Use log compaction for event sourcing -- only the latest value per key is kept.<br><br><b>Message key</b> determines which partition receives the message. Same key always goes to same partition -- guaranteeing ordering per entity (all events for orderId=123 land on same partition).",
+"# Create topic\nkafka-topics.sh --bootstrap-server localhost:9092 \\\n  --create --topic order-events \\\n  --partitions 6 --replication-factor 3 \\\n  --config retention.ms=604800000 \\\n  --config min.insync.replicas=2\n\n// Producer config -- production settings\nprops.put(ProducerConfig.ACKS_CONFIG, \"all\");\nprops.put(ProducerConfig.RETRIES_CONFIG, Integer.MAX_VALUE);\nprops.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true);\nprops.put(ProducerConfig.COMPRESSION_TYPE_CONFIG, \"snappy\");\n\n// Consumer: manual offset commit\n@KafkaListener(topics = \"order-events\")\npublic void consume(ConsumerRecord<String, OrderEvent> record,\n                    Acknowledgment ack) {\n  process(record.value());\n  ack.acknowledge(); // Commit only after successful processing\n}",
+["What is a consumer lag and how do you monitor it?","How do you handle message ordering across partitions?","What is log compaction and when would you use it?","How does Kafka guarantee exactly-once delivery end-to-end?"]);
+
+t(13,"Deployment Process for Microservices",
+["Docker","Kubernetes","Helm","CI/CD","Rolling Update","Blue-Green"],
+"<b>Typical pipeline:</b> Code push -- CI (build + test) -- Docker image -- push to registry -- Helm deploy to K8s -- smoke test -- promote to prod.<br><br><b>Rolling update (K8s default):</b> Gradually replaces old pods. Zero downtime if health checks are configured.<br><br><b>Blue-Green:</b> Two identical environments. Traffic switches instantly via load balancer. Instant rollback available.<br><br><b>Canary:</b> Route 5% of traffic to new version. Gradually increase as confidence grows.<br><br><b>Key practices:</b> Never run as root. Use resource limits. Always define liveness and readiness probes.",
+"# Kubernetes Deployment -- rolling update\napiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: order-service\nspec:\n  replicas: 3\n  strategy:\n    type: RollingUpdate\n    rollingUpdate:\n      maxSurge: 1\n      maxUnavailable: 0\n  template:\n    spec:\n      containers:\n      - name: order-service\n        image: myregistry/order-service:v1.2.3\n        resources:\n          requests: {cpu: \"250m\", memory: \"256Mi\"}\n          limits:   {cpu: \"500m\", memory: \"512Mi\"}\n        livenessProbe:\n          httpGet: {path: /actuator/health/liveness, port: 8080}\n          initialDelaySeconds: 30\n        readinessProbe:\n          httpGet: {path: /actuator/health/readiness, port: 8080}\n          initialDelaySeconds: 15",
+["What is the difference between liveness and readiness probes?","How do you roll back a bad deployment in Kubernetes?","What is a Helm chart and why is it used?","How do you manage secrets (DB passwords) in Kubernetes?"]);
+
+t(14,"K8s Service-to-Service Connectivity & Debugging",
+["ClusterIP","DNS","kubectl exec","nslookup","NetworkPolicy"],
+"In Kubernetes, services communicate using internal DNS. A Service named <code>order-service</code> in namespace <code>default</code> is reachable at <code>order-service.default.svc.cluster.local</code>.<br><br><b>Service types:</b><br>- ClusterIP (default) -- internal only<br>- NodePort -- exposes on each node<br>- LoadBalancer -- provisions a cloud LB<br><br><b>Debugging steps:</b><br>1. kubectl get pods -n namespace<br>2. kubectl logs pod-name --previous<br>3. kubectl exec -it pod -- /bin/sh<br>4. nslookup order-service (from inside pod)<br>5. kubectl get endpoints order-service (empty = selector mismatch!)<br>6. kubectl get networkpolicies",
+"# Service definition\napiVersion: v1\nkind: Service\nmetadata:\n  name: order-service\nspec:\n  selector:\n    app: order-service      # Must match pod labels!\n  ports:\n  - port: 80\n    targetPort: 8080\n  type: ClusterIP\n\n# Key debugging commands\nkubectl describe pod order-service-abc    # Shows events/errors\nkubectl logs order-service-abc --previous # Logs from crashed pod\nkubectl get endpoints order-service       # Empty = selector mismatch\nkubectl exec -it debug-pod -- curl http://order-service/health\nkubectl describe networkpolicy            # Check if traffic blocked",
+["What is the difference between a Service and an Ingress?","How do you debug a CrashLoopBackOff pod?","What does OOMKilled mean and how do you fix it?","How do you enable mutual TLS between services in Kubernetes?"]);
+
+t(15,"UI Button to Download Excel -- GET vs POST",
+["HTTP Methods","Content-Disposition","File Download","Large Payload"],
+"<b>Use GET when:</b> Parameters fit in the URL (date range, a few filters). GET is bookmarkable, cacheable, and triggers naturally via an anchor tag. Browser handles download with <code>Content-Disposition: attachment</code> header.<br><br><b>Use POST when:</b> Payload is large (hundreds of IDs), contains sensitive data, or involves complex filter objects that don't fit in query params.<br><br><b>POST download pattern:</b> Frontend POSTs filter -- server generates file, stores temporarily -- returns signed URL -- frontend redirects to URL.<br><br><b>Streaming:</b> Backend streams bytes directly rather than building the whole file in memory.",
+"// GET: simple export\n@GetMapping(value = \"/export\", produces = \"application/vnd.ms-excel\")\npublic ResponseEntity<InputStreamResource> exportGet(\n    @RequestParam String fromDate, @RequestParam String toDate) {\n\n  InputStream stream = reportService.generate(fromDate, toDate);\n  return ResponseEntity.ok()\n    .header(HttpHeaders.CONTENT_DISPOSITION,\n            \"attachment; filename=report.xlsx\")\n    .body(new InputStreamResource(stream));\n}\n\n// POST: complex filter\n@PostMapping(\"/export\")\npublic ResponseEntity<Map<String,String>> requestExport(\n    @RequestBody ExportFilterRequest filter) {\n  String jobId = exportService.scheduleExport(filter);\n  return ResponseEntity.accepted().body(\n    Map.of(\"downloadUrl\", \"/api/export/download/\" + jobId)\n  );\n}\n\n// Frontend: trigger GET download without page navigation\nconst download = () => {\n  const a = document.createElement('a');\n  a.href = '/api/export?fromDate=' + from + '&toDate=' + to;\n  a.download = 'report.xlsx';\n  a.click();\n};",
+["How do you show a progress indicator during a large export?","What are the security implications of exposing params in a GET URL?","How would you implement async export -- generate in background?","What HTTP status code do you return while the export is generating?"]);
+
+t(16,"DB Fetch Design for Excel Export",
+["Pagination","Streaming","Cursor","JPA Stream","Memory Management"],
+"<b>Never load all rows at once.</b> Loading 100k rows into a List will cause OutOfMemoryError.<br><br><b>Option 1 -- Pagination:</b> Fetch 1000 rows at a time, write each page to Excel, discard, fetch next.<br><br><b>Option 2 -- JPA Stream:</b> Spring Data JPA supports <code>Stream&lt;Entity&gt;</code> return types. Rows processed one at a time. Must be inside a <code>@Transactional(readOnly=true)</code> method.<br><br><b>Option 3 -- JDBC Streaming:</b> Set <code>setFetchSize(Integer.MIN_VALUE)</code> on MySQL JDBC to stream instead of buffer.<br><br><b>Key rule:</b> Process rows immediately -- never collect a stream into a list.",
+"// JPA streaming -- flat memory\n@Repository\npublic interface OrderRepository extends JpaRepository<Order, Long> {\n\n  @QueryHints(@QueryHint(name = HINT_FETCH_SIZE, value = \"500\"))\n  @Transactional(readOnly = true)\n  Stream<Order> streamByCreatedAtBetween(LocalDate from, LocalDate to);\n}\n\n@Service\npublic class OrderExportService {\n\n  @Transactional(readOnly = true)\n  public void exportToExcel(LocalDate from, LocalDate to,\n                             OutputStream out) throws IOException {\n\n    // SXSSFWorkbook: only 100 rows held in memory at a time\n    try (Workbook wb = new SXSSFWorkbook(100);\n         Stream<Order> stream = orderRepo\n           .streamByCreatedAtBetween(from, to)) {\n\n      Sheet sheet = wb.createSheet(\"Orders\");\n      AtomicInteger rowNum = new AtomicInteger(0);\n\n      stream.forEach(order -> {\n        Row row = sheet.createRow(rowNum.getAndIncrement());\n        row.createCell(0).setCellValue(order.getId().toString());\n        row.createCell(1).setCellValue(order.getTotal().toString());\n      });\n\n      wb.write(out);\n    }\n  }\n}",
+["What is SXSSF vs XSSF in Apache POI?","What is the N+1 problem and how does it affect export queries?","How do you add JOIN FETCH to avoid N+1 in a streaming query?","What database index speeds up the export query?"]);
+
+t(17,"ORM Choice & Query Optimization",
+["JPA","Hibernate","N+1","Fetch Joins","JPQL","Native Query","Indexes"],
+"<b>N+1 problem:</b> Loading 100 orders then Hibernate issues a separate query for each order's items = 101 queries. Fix with <code>JOIN FETCH</code> or <code>@EntityGraph</code>.<br><br><b>Lazy vs Eager:</b> Default is LAZY for collections. Accessing a lazy field outside a transaction throws <code>LazyInitializationException</code>.<br><br><b>Optimization checklist:</b><br>1. Index columns in WHERE, ORDER BY, JOIN conditions<br>2. Use DTO projections -- only fetch needed columns<br>3. Use native queries for complex reports<br>4. Use @Modifying for bulk updates -- avoid loading entities one by one",
+"// N+1 -- BAD: 1 + N queries\nList<Order> orders = orderRepo.findAll();\norders.forEach(o -> o.getItems().size()); // N extra queries!\n\n// FIX 1: JOIN FETCH\n@Query(\"SELECT o FROM Order o JOIN FETCH o.items WHERE o.userId = :userId\")\nList<Order> findWithItems(@Param(\"userId\") Long userId);\n\n// FIX 2: EntityGraph\n@EntityGraph(attributePaths = {\"items\", \"items.product\"})\nList<Order> findByUserId(Long userId);\n\n// DTO projection -- only needed columns\n@Query(\"SELECT new com.example.dto.OrderSummary(o.id, o.total, o.status) \" +\n       \"FROM Order o WHERE o.createdAt > :since\")\nList<OrderSummary> findSummariesSince(@Param(\"since\") LocalDate since);\n\n// Bulk update -- avoids loading 50k entities\n@Modifying\n@Query(\"UPDATE Order o SET o.status = 'ARCHIVED' WHERE o.createdAt < :cutoff\")\nint archiveOldOrders(@Param(\"cutoff\") LocalDate cutoff);\n\n-- Indexes (Flyway migration)\nCREATE INDEX idx_order_user ON orders(user_id, status);\nCREATE INDEX idx_order_date ON orders(created_at);",
+["What is the difference between @OneToMany(fetch=EAGER) and JOIN FETCH?","How do you detect N+1 problems in production?","When would you bypass JPA and use JDBC directly?","What is the first-level vs second-level cache in Hibernate?"]);
+
+t(18,"Scaling from 10k to 50k Records",
+["Pagination","Keyset Pagination","Indexes","Connection Pooling","Read Replicas"],
+"<b>Keyset pagination over OFFSET:</b> OFFSET scans all preceding rows and slows as pages grow. Keyset pagination always uses an index -- O(log n) regardless of position.<br><br><b>Indexes:</b> Most impactful change. Index every column in WHERE, ORDER BY, JOIN. Use EXPLAIN ANALYZE to verify index is being used.<br><br><b>Connection pooling:</b> HikariCP is Spring default. Tune maximum-pool-size to avoid thread starvation.<br><br><b>Read replicas:</b> Route read-heavy queries (reports, exports) to a replica. Writes go to primary.<br><br><b>Caching:</b> Cache repeated lookups (product catalog, user roles) with Redis to reduce DB load.",
+"// OFFSET pagination -- gets slow at high page numbers\nPage<Order> page = orderRepo.findAll(\n  PageRequest.of(pageNumber, 100, Sort.by(\"id\")));\n\n// Keyset pagination -- always fast (index scan)\n@Query(\"SELECT o FROM Order o WHERE o.id > :lastId ORDER BY o.id LIMIT 100\")\nList<Order> findNextPage(@Param(\"lastId\") Long lastId);\n// First call: lastId=0, next: lastId = last id from previous batch\n\n# HikariCP tuning\nspring.datasource.hikari.maximum-pool-size=20\nspring.datasource.hikari.minimum-idle=5\nspring.datasource.hikari.connection-timeout=30000\n\n// Read/Write routing\n@Bean\npublic DataSource routingDataSource() {\n  AbstractRoutingDataSource router = new AbstractRoutingDataSource() {\n    @Override protected Object determineCurrentLookupKey() {\n      return TransactionSynchronizationManager\n        .isCurrentTransactionReadOnly() ? \"replica\" : \"primary\";\n    }\n  };\n  // set target datasources...\n  return router;\n}",
+["What is EXPLAIN ANALYZE and how do you read it?","What is a covering index?","How would you handle 50k concurrent users?","When would you consider database sharding?"]);
+
+t(19,"Writing Large Excel Files Efficiently",
+["Apache POI","SXSSF","Streaming","SXSSFWorkbook","Memory"],
+"<b>XSSFWorkbook</b> keeps the entire file in memory -- OOMs at 50k+ rows.<br><br><b>SXSSFWorkbook</b> uses streaming mode, flushing rows to disk. Only N rows held in memory at a time. This is the correct choice for large exports.<br><br><b>Row window:</b> <code>new SXSSFWorkbook(100)</code> keeps only 100 rows in RAM. Flushed rows cannot be modified.<br><br><b>Cell styles:</b> Create once, reuse everywhere. Creating a new style per cell hits the 64k limit and slows writes dramatically.<br><br><b>Auto-size columns:</b> Call <code>sheet.trackColumnForAutoSizing()</code> BEFORE writing rows in SXSSF mode.",
+"@Service\npublic class ExcelWriterService {\n\n  private CellStyle createHeaderStyle(Workbook wb) {\n    CellStyle style = wb.createCellStyle();\n    Font font = wb.createFont();\n    font.setBold(true);\n    style.setFont(font);\n    return style;\n  }\n\n  public void writeOrders(List<Order> orders, OutputStream out)\n      throws IOException {\n\n    try (SXSSFWorkbook wb = new SXSSFWorkbook(100)) {\n      wb.setCompressTempFiles(true);\n      SXSSFSheet sheet = wb.createSheet(\"Orders\");\n      sheet.trackColumnForAutoSizing(0); // Before writing!\n\n      CellStyle headerStyle = createHeaderStyle(wb); // Once!\n      CellStyle dateStyle = wb.createCellStyle();    // Once!\n      dateStyle.setDataFormat(\n        wb.createDataFormat().getFormat(\"dd/mm/yyyy\"));\n\n      String[] cols = {\"ID\",\"Customer\",\"Total\",\"Date\",\"Status\"};\n      Row header = sheet.createRow(0);\n      for (int i = 0; i < cols.length; i++) {\n        Cell cell = header.createCell(i);\n        cell.setCellValue(cols[i]);\n        cell.setCellStyle(headerStyle); // Reuse!\n      }\n\n      int rowNum = 1;\n      for (Order o : orders) {\n        Row row = sheet.createRow(rowNum++);\n        row.createCell(0).setCellValue(o.getId());\n        row.createCell(1).setCellValue(o.getCustomerName());\n        Cell dc = row.createCell(3);\n        dc.setCellValue(o.getCreatedAt());\n        dc.setCellStyle(dateStyle); // Reuse!\n      }\n      wb.write(out);\n    }\n  }\n}",
+["What is the maximum number of rows in an xlsx file?","How do you add formulas to cells in Apache POI?","How would you generate an Excel file with multiple sheets?","Is xlsx or csv faster for large exports?"]);
+
+t(20,"Multithreading & Async Processing",
+["CompletableFuture","@Async","ThreadPoolExecutor","Virtual Threads","Parallel Streams"],
+"<b>@Async (Spring):</b> Annotate a method to run in a thread pool. Caller gets a CompletableFuture immediately and continues.<br><br><b>CompletableFuture:</b> Compose async operations with thenApply, thenCompose, allOf. Handles chaining and combining results.<br><br><b>Virtual threads (Java 21+):</b> Lightweight threads, not mapped 1:1 to OS threads. Spawn millions. Ideal for I/O-bound workloads. Spring Boot 3.2 enables with one config line.<br><br><b>Parallel Streams:</b> Good for CPU-bound list processing. Use with care -- shares the common ForkJoinPool. Define a custom pool in production.",
+"@Configuration @EnableAsync\npublic class AsyncConfig {\n  @Bean(name = \"exportExecutor\")\n  public Executor exportExecutor() {\n    ThreadPoolTaskExecutor exec = new ThreadPoolTaskExecutor();\n    exec.setCorePoolSize(4);\n    exec.setMaxPoolSize(8);\n    exec.setQueueCapacity(100);\n    exec.setThreadNamePrefix(\"export-\");\n    exec.initialize();\n    return exec;\n  }\n}\n\n@Async(\"exportExecutor\")\npublic CompletableFuture<List<Row>> processChunk(List<Order> chunk) {\n  List<Row> rows = chunk.stream().map(this::toRow).collect(toList());\n  return CompletableFuture.completedFuture(rows);\n}\n\n// Parallel export: batch -> process -> merge\npublic void parallelExport(List<Order> orders) {\n  int batchSize = 5000;\n  List<CompletableFuture<List<Row>>> futures = new ArrayList<>();\n  for (int i = 0; i < orders.size(); i += batchSize) {\n    futures.add(processChunk(\n      orders.subList(i, Math.min(i+batchSize, orders.size()))));\n  }\n  CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))\n    .thenApply(v -> futures.stream()\n      .map(CompletableFuture::join)\n      .flatMap(List::stream).collect(toList()))\n    .thenAccept(rows -> writeToExcel(rows));\n}\n\n# Enable virtual threads (Spring Boot 3.2+)\nspring.threads.virtual.enabled=true",
+["What is the difference between parallelStream() and CompletableFuture?","How do you handle exceptions in CompletableFuture chains?","What is a thread pool rejection policy and when does it trigger?","When would you NOT use virtual threads?"]);
+
+t(21,"Concurrent Updates to the Same Object",
+["Optimistic Locking","Pessimistic Locking","@Version","Lost Update","CAS"],
+"<b>Lost update problem:</b> Two users read the same record, both modify it, second write silently overwrites the first.<br><br><b>Optimistic Locking (@Version):</b> Hibernate adds version to UPDATE WHERE clause. If version changed since you read, update fails with OptimisticLockException. Good for low-contention scenarios.<br><br><b>Pessimistic Locking (SELECT FOR UPDATE):</b> Lock the row on read. Other threads block. Use for financial operations where you cannot lose updates.<br><br><b>Rule of thumb:</b> Optimistic for user-facing edits. Pessimistic for inventory and financial operations.",
+"// Optimistic locking\n@Entity\npublic class Product {\n  @Id private Long id;\n  private int stockCount;\n  @Version private Long version; // Hibernate manages this\n}\n\n// Handle conflict with retry\npublic void decrementStock(Long productId, int qty) {\n  int retries = 3;\n  while (retries-- > 0) {\n    try {\n      Product p = productRepo.findById(productId).orElseThrow();\n      if (p.getStockCount() < qty) throw new InsufficientStockException();\n      p.setStockCount(p.getStockCount() - qty);\n      productRepo.save(p);\n      return;\n    } catch (OptimisticLockingFailureException e) {\n      if (retries == 0) throw new ConcurrentUpdateException();\n    }\n  }\n}\n\n// Pessimistic locking -- SELECT FOR UPDATE\n@Lock(LockModeType.PESSIMISTIC_WRITE)\n@Query(\"SELECT p FROM Product p WHERE p.id = :id\")\nProduct findByIdForUpdate(@Param(\"id\") Long id);\n\n// Redis distributed lock\nRLock lock = redissonClient.getLock(\"product:\" + productId);\ntry {\n  lock.lock(5, TimeUnit.SECONDS);\n  // ... update ...\n} finally { lock.unlock(); }",
+["What is the ABA problem in concurrent programming?","What is the difference between a race condition and a deadlock?","How do you detect and resolve a deadlock in a database?","What is compare-and-swap (CAS) in Java?"]);
+
+t(22,"@Transactional & Read-Only Transactions",
+["Propagation","Isolation","readOnly","REQUIRES_NEW","Rollback"],
+"<code>@Transactional</code> wraps a method in a DB transaction. Unchecked exception triggers automatic rollback.<br><br><b>Propagation levels:</b><br>- REQUIRED (default) -- join existing or create new<br>- REQUIRES_NEW -- always new transaction, suspends existing<br>- MANDATORY -- must be called within existing transaction<br><br><b>readOnly = true:</b> Hibernate skips dirty checking. DB driver may route to read replica. Big performance win for read-heavy methods.<br><br><b>Common mistake:</b> Calling a @Transactional method from within the same class bypasses the Spring proxy. Must call through the Spring bean.",
+"@Service\npublic class OrderService {\n\n  @Transactional(readOnly = true)\n  public List<Order> findByUser(Long userId) {\n    return orderRepo.findByUserId(userId);\n  }\n\n  @Transactional\n  public Order createOrder(OrderRequest req) {\n    Order order = orderRepo.save(new Order(req));\n    auditService.log(\"Order created\", order.getId());\n    return order;\n  }\n\n  // REQUIRES_NEW: audit commits even if parent rolls back\n  @Transactional(propagation = Propagation.REQUIRES_NEW)\n  public void logAudit(String action, Long entityId) {\n    auditRepo.save(new AuditLog(action, entityId, LocalDateTime.now()));\n  }\n\n  @Transactional(\n    rollbackFor = {PaymentException.class},\n    noRollbackFor = {NotificationException.class})\n  public void processPayment(Payment payment) { ... }\n\n  // Isolation levels (low to high strictness):\n  // READ_UNCOMMITTED -> READ_COMMITTED\n  //   -> REPEATABLE_READ -> SERIALIZABLE\n  @Transactional(isolation = Isolation.REPEATABLE_READ)\n  public Report generateReport() { ... }\n}",
+["What is dirty read, phantom read, and non-repeatable read?","What happens if you annotate a private method with @Transactional?","How do you roll back a transaction on a checked exception?","What is the difference between application-level and DB-level transactions?"]);
+
+t(23,"@Autowired vs @Component",
+["Dependency Injection","IoC","@Service","@Repository","@Bean","Spring Context"],
+"<b>@Component</b> (and @Service, @Repository, @Controller) marks a class for Spring to instantiate and manage as a bean.<br><br><b>@Autowired</b> tells Spring to inject a dependency. In modern Spring, constructor injection does not need @Autowired explicitly.<br><br><b>Best practice -- constructor injection:</b><br>- Dependencies are explicit<br>- Class is testable without Spring<br>- Fields can be final<br><br><b>@Bean in @Configuration:</b> Use when configuring third-party classes (RestTemplate, ObjectMapper) you can't annotate with @Component.",
+"// @Service: Spring manages this as a bean\n@Service\npublic class OrderService {\n\n  // Constructor injection -- preferred, no @Autowired needed\n  private final OrderRepository orderRepo;\n  private final KafkaTemplate<String, Object> kafka;\n\n  public OrderService(OrderRepository orderRepo,\n                      KafkaTemplate<String, Object> kafka) {\n    this.orderRepo = orderRepo;\n    this.kafka = kafka;\n  }\n}\n\n// @Repository: @Component + translates DB exceptions\n@Repository\npublic interface OrderRepository extends JpaRepository<Order, Long> {}\n\n// @Bean: configure third-party class you don't own\n@Configuration\npublic class AppConfig {\n\n  @Bean\n  public RestTemplate restTemplate(RestTemplateBuilder builder) {\n    return builder\n      .setConnectTimeout(Duration.ofSeconds(5))\n      .setReadTimeout(Duration.ofSeconds(10))\n      .build();\n  }\n\n  @Bean @Primary\n  public ObjectMapper objectMapper() {\n    return JsonMapper.builder()\n      .configure(DeserializationFeature\n        .FAIL_ON_UNKNOWN_PROPERTIES, false)\n      .build();\n  }\n}",
+["What is the functional difference between @Service and @Repository?","What happens if there are two beans of the same type?","How does Spring Boot component scan work?","What is circular dependency and how do you resolve it?"]);
+
+t(24,"SOLID Principles & Coding Practices",
+["SRP","OCP","LSP","ISP","DIP","Clean Code"],
+"<b>S -- Single Responsibility:</b> A class should have one reason to change. Don't mix business logic, DB access and HTTP handling in one class.<br><br><b>O -- Open/Closed:</b> Open for extension, closed for modification. Add new behaviour via new classes, not editing existing ones.<br><br><b>L -- Liskov Substitution:</b> Subtypes must be usable wherever their base type is expected without surprising the caller.<br><br><b>I -- Interface Segregation:</b> Don't force clients to depend on methods they don't use. Split fat interfaces.<br><br><b>D -- Dependency Inversion:</b> Depend on abstractions (interfaces), not concretions. This is what makes @Autowired work.",
+"// SRP violation\nclass OrderProcessor {\n  void process(Order o) {\n    validate(o);              // validation\n    save(o);                  // DB\n    sendEmail(o.getEmail());  // email\n    publishEvent(o);          // messaging\n  }\n}\n\n// SRP fix\nclass OrderValidator      { void validate(Order o) {...} }\nclass OrderRepository     { void save(Order o) {...} }\nclass OrderNotifier       { void notify(Order o) {...} }\nclass OrderEventPublisher { void publish(Order o) {...} }\n\n// OCP: add new payment type without modifying existing code\ninterface PaymentProcessor { void process(Payment p); }\nclass CreditCardProcessor implements PaymentProcessor {...}\nclass PayPalProcessor implements PaymentProcessor {...}\n// Adding Bitcoin? New class -- don't edit existing!\n\n// DIP: depend on interface, not concrete class\n@Service\npublic class OrderService {\n  private final NotificationService notifier; // Interface!\n  public OrderService(NotificationService notifier) {\n    this.notifier = notifier; // Spring injects impl at runtime\n  }\n}\n\n// ISP: split fat interface\ninterface Readable  { Order findById(Long id); }\ninterface Writable  { Order save(Order o); }\ninterface Deletable { void delete(Long id); }",
+["Give an example of an LSP violation.","How does the Strategy pattern implement OCP?","What is the difference between composition and inheritance?","How do SOLID principles improve testability?"]);
+
+t(25,"Java 8 List Intersection",
+["Streams","retainAll","HashSet","Time Complexity","Lambda"],
+"Find elements that appear in both lists. Key insight: use a <b>HashSet for O(1) lookups</b> -- the naive nested loop approach is O(n^2).<br><br><b>Approaches:</b><br>1. retainAll -- mutates the list in place<br>2. Stream + HashSet -- functional, O(n), creates new list<br>3. Nested loop -- O(n^2), never use in interviews<br><br><b>Handling duplicates:</b> Use a frequency map if the same element can appear multiple times and you need to preserve the count.",
+"List<Integer> a = Arrays.asList(1, 2, 3, 4, 5, 2);\nList<Integer> b = Arrays.asList(2, 4, 6, 2, 8);\n\n// 1. retainAll (mutates list)\nList<Integer> copy = new ArrayList<>(a);\ncopy.retainAll(b); // [2, 4, 2]\n\n// 2. Stream + HashSet -- O(n), no mutation\nSet<Integer> setB = new HashSet<>(b);\nList<Integer> result = a.stream()\n  .filter(setB::contains)\n  .collect(Collectors.toList()); // [2, 4, 2]\n\n// 3. Distinct intersection (each element once)\nList<Integer> distinct = a.stream()\n  .filter(setB::contains)\n  .distinct()\n  .collect(Collectors.toList()); // [2, 4]\n\n// 4. With multiplicity\n// a has 2 twice, b has 2 twice -> result has 2 twice\nMap<Integer, Long> freqB = b.stream()\n  .collect(Collectors.groupingBy(x -> x, Collectors.counting()));\n\nList<Integer> multi = a.stream()\n  .filter(x -> freqB.getOrDefault(x, 0L) > 0)\n  .peek(x -> freqB.merge(x, -1L, Long::sum))\n  .collect(Collectors.toList()); // [2, 2]",
+["What is the time and space complexity of each approach?","How would you find the union of two lists?","How would you find elements in A but not in B?","How would you handle null values in the lists?"]);
+
+t(26,"Minimum Merge Cost / Connect Sticks",
+["Priority Queue","Min Heap","Greedy","O(n log n)","LeetCode 1167"],
+"<b>Problem:</b> Connect all sticks into one. Cost of connecting two sticks = their sum. Minimize total cost.<br><br><b>Key insight:</b> Always merge the two smallest sticks first. This is a greedy algorithm identical to building a Huffman encoding tree.<br><br><b>Algorithm:</b><br>1. Add all sticks to a min-heap (PriorityQueue)<br>2. While heap.size() > 1: poll two smallest, merge, add cost, push merged back<br>3. Return total cost<br><br><b>Complexity:</b> O(n log n)<br><br><b>Why greedy works:</b> Merging smallest first means small values are added the fewest times across all intermediate merges.",
+"public int connectSticks(int[] sticks) {\n  PriorityQueue<Integer> minHeap = new PriorityQueue<>();\n  for (int s : sticks) minHeap.offer(s);\n\n  int totalCost = 0;\n  while (minHeap.size() > 1) {\n    int first  = minHeap.poll(); // Smallest\n    int second = minHeap.poll(); // 2nd smallest\n    int merged = first + second;\n    totalCost += merged;\n    minHeap.offer(merged);\n  }\n  return totalCost;\n}\n\n// Walkthrough: sticks = [1, 8, 3, 5]\n// Heap: [1, 3, 5, 8]\n// Step 1: 1+3=4,   cost=4,  heap: [4,5,8]\n// Step 2: 4+5=9,   cost=13, heap: [8,9]\n// Step 3: 8+9=17,  cost=30, heap: [17]\n// Total: 30\n\n// Wrong approach (merge largest first):\n// Step 1: 8+5=13, cost=13, heap:[1,3,13]\n// Step 2: 3+13=16,cost=29, heap:[1,16]\n// Step 3: 1+16=17,cost=46  <-- much worse!",
+["How is this problem related to Huffman encoding?","How would you implement a max-heap in Java?","How would you modify this if only 3 sticks can merge at once?","What is the time complexity using a sorted array instead of heap?"]);
+
+t(27,"Local vs Static vs Instance Variables",
+["Variable Scope","Stack","Heap","Memory","Thread Safety","JVM"],
+"<b>Local variable:</b> Declared inside a method. Lives on the stack. Destroyed when method returns. Thread-safe by default (each thread has its own stack).<br><br><b>Instance variable:</b> Declared in a class (non-static). Lives on the heap inside the object. Each object has its own copy. Not thread-safe without synchronisation.<br><br><b>Static variable:</b> One copy per class, shared across all instances. Lives in Metaspace. Not thread-safe without synchronisation. Use for constants (static final) or shared caches.<br><br><b>Memory summary:</b> Local = Stack | Instance = Heap | Static = Metaspace",
+"public class BankAccount {\n\n  // STATIC: one copy shared across ALL instances\n  private static int totalAccountsCreated = 0;\n  public static final String CURRENCY = \"AUD\"; // Constant\n\n  // INSTANCE: each object has its own copy\n  private double balance;\n  private String owner;\n\n  public BankAccount(String owner, double initial) {\n    this.owner = owner;         // 'this' = instance variable\n    this.balance = initial;\n    totalAccountsCreated++;     // Shared -- not thread-safe as-is!\n  }\n\n  public void deposit(double amount) {\n    // LOCAL: stack variables, gone when method returns\n    double newBalance = this.balance + amount;\n    double tax = amount * 0.01;\n    this.balance = newBalance;  // Update instance variable\n  }\n\n  // Thread-safe static counter\n  private static AtomicInteger safeCount = new AtomicInteger(0);\n  // safeCount.incrementAndGet() is atomic\n\n  // ThreadLocal: each thread gets its own copy (no sharing)\n  private static ThreadLocal<String> currentUser = new ThreadLocal<>();\n  // Spring Security uses this for per-request auth context\n}",
+["Where in JVM memory does each variable type live?","What is a memory leak caused by static variables?","What is ThreadLocal and when would you use it?","What is the difference between static and instance methods?"]);
+
+// ---- Sidebar sections ----
+var sections = [
+  {label:"Architecture",    count:4},
+  {label:"Resilience",      count:4},
+  {label:"Infra & Kafka",   count:3},
+  {label:"Data & Excel",    count:5},
+  {label:"Java & Concurrency", count:5},
+  {label:"Coding Questions",count:3}
+];
+
+var current = 0;
+
+function esc(s){
+  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+
+function highlight(code){
+  var s = esc(code);
+  s = s.replace(/(\/\/[^\n]*)/g,'<span class="cm">$1</span>');
+  s = s.replace(/(#[^\n]*)/g,'<span class="cm">$1</span>');
+  s = s.replace(/(--[^\n]*)/g,'<span class="cm">$1</span>');
+  s = s.replace(/"([^"\\]*(\\.[^"\\]*)*)"/g,'<span class="st">"$1"</span>');
+  s = s.replace(/(@[A-Za-z][A-Za-z0-9]*)/g,'<span class="an">$1</span>');
+  var kws = ["public","private","protected","static","final","class","interface",
+    "extends","implements","new","return","void","if","else","try","catch",
+    "while","for","throws","import","package","this","super","null","true",
+    "false","var","abstract","enum","boolean","int","long","double","String"];
+  for(var k=0;k<kws.length;k++){
+    s = s.replace(new RegExp("\\b("+kws[k]+")\\b","g"),'<span class="kw">$1</span>');
+  }
+  return s;
+}
+
+function buildSidebar(){
+  var h = '<div class="brand">Interview Prep<small>Microservices \xb7 Java \xb7 K8s</small></div>';
+  var ti = 0;
+  for(var s=0;s<sections.length;s++){
+    h += '<div class="sec">'+sections[s].label+'</div>';
+    for(var i=0;i<sections[s].count;i++){
+      var top = T[ti];
+      h += '<button class="nb'+(ti===0?' on':'')+'" onclick="show('+ti+')">'+top.num+'. '+esc(top.title)+'</button>';
+      ti++;
+    }
+  }
+  document.getElementById('sb').innerHTML = h;
+}
+
+function show(idx){
+  current = idx;
+  var btns = document.querySelectorAll('.nb');
+  for(var i=0;i<btns.length;i++) btns[i].className='nb'+(i===idx?' on':'');
+
+  var tp = T[idx];
+  var chips='';
+  for(var i=0;i<tp.tags.length;i++) chips+='<span class="chip">'+esc(tp.tags[i])+'</span>';
+
+  var fqs='';
+  for(var i=0;i<tp.fq.length;i++) fqs+='<div class="fq"><span class="fq-arrow">&#8599;</span>'+esc(tp.fq[i])+'</div>';
+
+  var pd = idx===0?' disabled':'';
+  var nd = idx===T.length-1?' disabled':'';
+
+  document.getElementById('main').innerHTML =
+    '<div class="qhead"><div class="qnum">'+tp.num+'</div><div class="qtitle">'+esc(tp.title)+'</div></div>'+
+    '<div class="chips">'+chips+'</div>'+
+    '<div class="lbl">Explanation</div>'+
+    '<p class="prose">'+tp.body+'</p>'+
+    '<div class="lbl">Code Example</div>'+
+    '<pre>'+highlight(tp.code)+'</pre>'+
+    '<div class="fbox"><div class="fbox-title">Follow-up &amp; Related Questions</div>'+fqs+'</div>'+
+    '<div class="nav-row">'+
+      '<button class="nbtn" onclick="show('+(idx-1)+')"'+pd+'>\u2190 Prev</button>'+
+      '<span class="nav-count">'+(idx+1)+' / '+T.length+'</span>'+
+      '<button class="nbtn" onclick="show('+(idx+1)+')"'+nd+'>Next \u2192</button>'+
+    '</div>';
+
+  document.getElementById('main').scrollTop=0;
+}
+
+buildSidebar();
+show(0);
+</script>
+</body>
+</html>

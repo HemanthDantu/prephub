@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S02 — API Gateway</title>
+<style>
+  :root {
+    --bg: #f8f9fa;
+    --surface: #ffffff;
+    --border: #e2e8f0;
+    --text-primary: #1a202c;
+    --text-secondary: #4a5568;
+    --text-muted: #718096;
+    --blue-light: #ebf8ff;
+    --blue-border: #bee3f8;
+    --blue-dark: #1a365d;
+    --green-light: #f0fff4;
+    --green-border: #9ae6b4;
+    --red-light: #fff5f5;
+    --red-border: #feb2b2;
+    --orange-light: #fffaf0;
+    --orange-border: #fbd38d;
+    --purple-light: #faf5ff;
+    --purple-border: #d6bcfa;
+    --yellow-light: #fffff0;
+    --yellow-border: #f6e05e;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  /* PAGE HEADER */
+  .page-header {
+    background: linear-gradient(135deg, #1a365d 0%, #2a4a8a 100%);
+    color: white;
+    padding: 40px 48px 36px;
+  }
+  .page-header .section-label {
+    font-size: 11px; font-weight: 700; letter-spacing: .12em;
+    text-transform: uppercase; opacity: .7; margin-bottom: 8px;
+  }
+  .page-header h1 { font-size: 28px; font-weight: 700; margin-bottom: 10px; }
+  .page-header .subtitle { font-size: 15px; opacity: .8; max-width: 680px; line-height: 1.6; }
+  .tags { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 18px; }
+  .tag {
+    background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.25);
+    color: white; font-size: 11.5px; padding: 3px 10px; border-radius: 20px;
+  }
+
+  /* LAYOUT */
+  .container { max-width: 900px; margin: 0 auto; padding: 40px 24px 80px; }
+
+  /* SECTION HEADING */
+  .section-heading {
+    font-size: 20px; font-weight: 700; color: var(--text-primary);
+    margin: 44px 0 6px; padding-bottom: 10px;
+    border-bottom: 2px solid var(--border);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .section-heading .icon {
+    width: 32px; height: 32px; border-radius: 8px; background: #ebf8ff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; flex-shrink: 0;
+  }
+  .section-desc { font-size: 14px; color: var(--text-muted); margin-bottom: 20px; margin-top: 4px; }
+
+  /* CARDS */
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 22px 26px; margin-bottom: 16px;
+  }
+  .card-title {
+    font-size: 14px; font-weight: 700; color: var(--text-primary);
+    margin-bottom: 10px; display: flex; align-items: center; gap: 7px;
+  }
+  .card p { font-size: 14.5px; color: var(--text-secondary); line-height: 1.75; margin-bottom: 10px; }
+  .card p:last-child { margin-bottom: 0; }
+  .card b { color: var(--text-primary); font-weight: 600; }
+  .card code {
+    font-family: 'SF Mono', Consolas, monospace; font-size: 12.5px;
+    background: #edf2f7; padding: 1px 6px; border-radius: 4px; color: #c53030;
+  }
+  .card ul, .card ol { padding-left: 22px; margin: 8px 0; }
+  .card li { font-size: 14.5px; color: var(--text-secondary); line-height: 1.75; margin-bottom: 5px; }
+  .card li b { color: var(--text-primary); }
+  .card.blue   { background: var(--blue-light);   border-color: var(--blue-border); }
+  .card.green  { background: var(--green-light);  border-color: var(--green-border); }
+  .card.red    { background: var(--red-light);    border-color: var(--red-border); }
+  .card.orange { background: var(--orange-light); border-color: var(--orange-border); }
+  .card.purple { background: var(--purple-light); border-color: var(--purple-border); }
+  .card.yellow { background: var(--yellow-light); border-color: var(--yellow-border); }
+  .card.blue   p, .card.blue   li { color: #2c5282; }
+  .card.blue   b { color: var(--blue-dark); }
+  .card.green  p, .card.green  li { color: #22543d; }
+  .card.green  b { color: #1c4532; }
+  .card.red    p, .card.red    li { color: #742a2a; }
+  .card.red    b { color: #63171b; }
+  .card.orange p, .card.orange li { color: #7b341e; }
+  .card.orange b { color: #652b19; }
+  .card.purple p, .card.purple li { color: #44337a; }
+  .card.purple b { color: #322659; }
+  .card.yellow p, .card.yellow li { color: #744210; }
+  .card.yellow b { color: #5f370e; }
+  .card-title.blue   { color: var(--blue-dark); }
+  .card-title.green  { color: #1c4532; }
+  .card-title.orange { color: #652b19; }
+  .card-title.purple { color: #322659; }
+  .card-title.yellow { color: #5f370e; }
+
+  /* DEFINITION */
+  .definition {
+    background: #1a365d; color: white; border-radius: 12px;
+    padding: 22px 26px; margin-bottom: 16px;
+  }
+  .definition .def-label {
+    font-size: 10px; font-weight: 700; letter-spacing: .1em;
+    text-transform: uppercase; opacity: .7; margin-bottom: 6px;
+  }
+  .definition p { font-size: 15px; line-height: 1.75; opacity: .95; margin-bottom: 8px; }
+  .definition p:last-child { margin-bottom: 0; }
+  .definition b { opacity: 1; font-weight: 700; }
+
+  /* ANALOGY */
+  .analogy {
+    border-left: 4px solid #d69e2e; background: var(--yellow-light);
+    border-radius: 0 10px 10px 0; padding: 16px 20px; margin-bottom: 16px;
+  }
+  .analogy .analogy-label {
+    font-size: 10px; font-weight: 700; letter-spacing: .1em;
+    text-transform: uppercase; color: #744210; margin-bottom: 5px;
+  }
+  .analogy p { font-size: 14px; color: #744210; line-height: 1.7; margin-bottom: 6px; }
+  .analogy p:last-child { margin-bottom: 0; }
+  .analogy b { color: #5f370e; }
+
+  /* SCENARIO */
+  .scenario {
+    border-left: 4px solid #38a169; background: var(--green-light);
+    border-radius: 0 10px 10px 0; padding: 16px 20px; margin-bottom: 16px;
+  }
+  .scenario .scenario-label {
+    font-size: 10px; font-weight: 700; letter-spacing: .1em;
+    text-transform: uppercase; color: #276749; margin-bottom: 5px;
+  }
+  .scenario p { font-size: 14px; color: #22543d; line-height: 1.75; margin-bottom: 8px; }
+  .scenario p:last-child { margin-bottom: 0; }
+  .scenario b { color: #1c4532; font-weight: 600; }
+  .scenario ol, .scenario ul { padding-left: 20px; margin: 6px 0; }
+  .scenario li { font-size: 14px; color: #22543d; line-height: 1.75; margin-bottom: 4px; }
+  .scenario li b { color: #1c4532; }
+
+  /* WARNING */
+  .warning {
+    border-left: 4px solid #e53e3e; background: var(--red-light);
+    border-radius: 0 10px 10px 0; padding: 16px 20px; margin-bottom: 16px;
+  }
+  .warning .warning-label {
+    font-size: 10px; font-weight: 700; letter-spacing: .1em;
+    text-transform: uppercase; color: #9b2335; margin-bottom: 5px;
+  }
+  .warning p { font-size: 14px; color: #742a2a; line-height: 1.7; margin-bottom: 6px; }
+  .warning p:last-child { margin-bottom: 0; }
+  .warning b { color: #63171b; }
+
+  /* TIP */
+  .tip {
+    border-left: 4px solid #3182ce; background: var(--blue-light);
+    border-radius: 0 10px 10px 0; padding: 16px 20px; margin-bottom: 16px;
+  }
+  .tip .tip-label {
+    font-size: 10px; font-weight: 700; letter-spacing: .1em;
+    text-transform: uppercase; color: #2b6cb0; margin-bottom: 5px;
+  }
+  .tip p { font-size: 14px; color: #2c5282; line-height: 1.7; margin-bottom: 6px; }
+  .tip p:last-child { margin-bottom: 0; }
+  .tip b { color: #1a365d; }
+
+  /* PRO CON */
+  .pro-con { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+  .pro { background: var(--green-light); border: 1px solid var(--green-border); border-radius: 10px; padding: 16px 18px; }
+  .con { background: var(--red-light);   border: 1px solid var(--red-border);   border-radius: 10px; padding: 16px 18px; }
+  .pro-title { font-size: 11px; font-weight: 700; color: #1c4532; text-transform: uppercase; letter-spacing: .07em; margin-bottom: 8px; }
+  .con-title { font-size: 11px; font-weight: 700; color: #63171b; text-transform: uppercase; letter-spacing: .07em; margin-bottom: 8px; }
+  .pro ul, .con ul { padding-left: 18px; }
+  .pro li { font-size: 13.5px; color: #22543d; line-height: 1.7; margin-bottom: 4px; }
+  .con li { font-size: 13.5px; color: #742a2a; line-height: 1.7; margin-bottom: 4px; }
+
+  /* TABLE */
+  .table-wrap { overflow-x: auto; margin-bottom: 16px; border-radius: 10px; border: 1px solid var(--border); }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  thead th {
+    background: #2d3748; color: white; padding: 11px 14px;
+    text-align: left; font-weight: 600; font-size: 12.5px;
+  }
+  tbody tr:nth-child(even) { background: #f7fafc; }
+  tbody td { padding: 10px 14px; color: var(--text-secondary); border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.6; }
+  tbody tr:last-child td { border-bottom: none; }
+  td b { color: var(--text-primary); font-weight: 600; }
+
+  /* FLOW */
+  .flow { display: flex; flex-direction: column; gap: 0; margin-bottom: 16px; }
+  .flow-step {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px 18px;
+  }
+  .flow-step .step-num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 26px; height: 26px; border-radius: 50%;
+    background: #2b6cb0; color: white;
+    font-size: 12px; font-weight: 700;
+    margin-right: 10px; flex-shrink: 0; float: left; margin-top: 1px;
+  }
+  .flow-step .step-content { margin-left: 36px; }
+  .flow-step .step-title { font-size: 14px; font-weight: 600; color: var(--text-primary); margin-bottom: 3px; }
+  .flow-step .step-desc  { font-size: 13.5px; color: var(--text-secondary); line-height: 1.65; }
+  .flow-step .step-desc b { color: var(--text-primary); }
+  .flow-step.green-step { border-color: var(--green-border); background: var(--green-light); }
+  .flow-step.green-step .step-title { color: #1c4532; }
+  .flow-step.green-step .step-desc  { color: #22543d; }
+  .flow-step.blue-step  { border-color: var(--blue-border); background: var(--blue-light); }
+  .flow-step.blue-step  .step-title { color: #1a365d; }
+  .flow-step.blue-step  .step-desc  { color: #2c5282; }
+  .flow-step.orange-step{ border-color: var(--orange-border); background: var(--orange-light); }
+  .flow-step.orange-step .step-title { color: #652b19; }
+  .flow-step.orange-step .step-desc  { color: #7b341e; }
+  .flow-arrow { text-align: center; color: #a0aec0; font-size: 20px; line-height: 1; margin: 4px 0; }
+
+  /* PIPELINE VISUAL */
+  .pipeline { display: flex; align-items: center; gap: 0; margin-bottom: 20px; overflow-x: auto; padding: 4px 0; }
+  .pipe-step {
+    background: white; border: 2px solid #2b6cb0; border-radius: 10px;
+    padding: 12px 14px; text-align: center; min-width: 110px; flex-shrink: 0;
+  }
+  .pipe-step .pipe-icon { font-size: 20px; margin-bottom: 4px; }
+  .pipe-step .pipe-name { font-size: 12px; font-weight: 700; color: #1a365d; }
+  .pipe-step .pipe-desc { font-size: 10.5px; color: #4a5568; margin-top: 2px; line-height: 1.4; }
+  .pipe-arrow { color: #a0aec0; font-size: 22px; padding: 0 6px; flex-shrink: 0; }
+  .pipe-step.highlight { background: #ebf8ff; border-color: #3182ce; }
+
+  /* FILTER CHAIN VISUAL */
+  .filter-chain { margin-bottom: 16px; }
+  .filter-item {
+    display: flex; align-items: flex-start; gap: 12px;
+    background: white; border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px 16px; margin-bottom: 6px;
+    position: relative;
+  }
+  .filter-item::before {
+    content: ''; position: absolute; left: 28px; bottom: -6px;
+    width: 2px; height: 6px; background: #cbd5e0;
+  }
+  .filter-item:last-child::before { display: none; }
+  .filter-badge {
+    background: #2d3748; color: white; border-radius: 6px;
+    padding: 4px 10px; font-size: 11px; font-weight: 700;
+    white-space: nowrap; flex-shrink: 0; margin-top: 1px;
+    min-width: 60px; text-align: center;
+  }
+  .filter-badge.auth    { background: #e53e3e; }
+  .filter-badge.rate    { background: #dd6b20; }
+  .filter-badge.log     { background: #2f855a; }
+  .filter-badge.route   { background: #2b6cb0; }
+  .filter-badge.trace   { background: #6b46c1; }
+  .filter-badge.cache   { background: #2c7a7b; }
+  .filter-content .f-title { font-size: 13.5px; font-weight: 600; color: var(--text-primary); margin-bottom: 3px; }
+  .filter-content .f-desc  { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+  .filter-content .f-desc b { color: var(--text-primary); }
+
+  /* Q&A */
+  .qa-section { margin-bottom: 16px; }
+  .qa-item { margin-bottom: 12px; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  .qa-question {
+    background: #2d3748; color: white; padding: 14px 18px;
+    font-size: 14px; font-weight: 600; cursor: pointer;
+    display: flex; justify-content: space-between; align-items: center;
+    user-select: none;
+  }
+  .qa-question:hover { background: #1a202c; }
+  .qa-question .qa-icon { font-size: 18px; transition: transform .25s; flex-shrink: 0; margin-left: 12px; }
+  .qa-question.open .qa-icon { transform: rotate(45deg); }
+  .qa-answer {
+    padding: 0 18px; max-height: 0; overflow: hidden;
+    transition: max-height .35s ease, padding .3s ease; background: var(--surface);
+  }
+  .qa-answer.open { max-height: 1400px; padding: 16px 18px; }
+  .qa-answer p  { font-size: 14px; color: var(--text-secondary); line-height: 1.75; margin-bottom: 10px; }
+  .qa-answer p:last-child { margin-bottom: 0; }
+  .qa-answer b  { color: var(--text-primary); font-weight: 600; }
+  .qa-answer ul, .qa-answer ol { padding-left: 20px; margin: 6px 0 10px; }
+  .qa-answer li { font-size: 14px; color: var(--text-secondary); line-height: 1.75; margin-bottom: 4px; }
+  .qa-answer code {
+    font-family: 'SF Mono', Consolas, monospace; font-size: 12px;
+    background: #edf2f7; padding: 1px 5px; border-radius: 4px; color: #c53030;
+  }
+
+  /* DIVIDER */
+  .divider { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+
+  /* CODE BLOCK */
+  .code-block {
+    background: #1a202c; border-radius: 10px; padding: 18px 20px;
+    font-family: 'SF Mono', Consolas, monospace; font-size: 12.5px;
+    color: #e2e8f0; white-space: pre; overflow-x: auto;
+    line-height: 1.65; margin-bottom: 14px;
+  }
+  .code-block .cm { color: #718096; }
+  .code-block .kw { color: #90cdf4; }
+  .code-block .st { color: #9ae6b4; }
+  .code-block .an { color: #fbd38d; }
+  .code-block .num{ color: #f6ad55; }
+
+  /* NUMBERED STEP LIST */
+  .step-list { counter-reset: step; margin-bottom: 16px; }
+  .step-list-item {
+    display: flex; gap: 14px; margin-bottom: 12px;
+    background: white; border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px 16px;
+  }
+  .step-list-num {
+    counter-increment: step;
+    min-width: 28px; height: 28px; border-radius: 50%;
+    background: #1a365d; color: white; display: flex;
+    align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; flex-shrink: 0; margin-top: 1px;
+  }
+  .step-list-num::before { content: counter(step); }
+  .step-list-body .sl-title { font-size: 14px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
+  .step-list-body .sl-desc  { font-size: 13.5px; color: var(--text-secondary); line-height: 1.65; }
+  .step-list-body .sl-desc b { color: var(--text-primary); }
+
+  @media(max-width:640px){
+    .page-header { padding: 28px 20px; }
+    .container { padding: 24px 16px 60px; }
+    .pro-con { grid-template-columns: 1fr; }
+    .pipeline { flex-direction: column; align-items: flex-start; }
+    .pipe-arrow { transform: rotate(90deg); }
+  }
+</style>
+</head>
+<body>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <div class="section-label">Section 02 — Architecture</div>
+  <h1>API Gateway</h1>
+  <div class="subtitle">What it is, why it exists, how routing works, how throttling works, how auth works — explained from zero, with real production scenarios and everything in between.</div>
+  <div class="tags">
+    <span class="tag">Spring Cloud Gateway</span>
+    <span class="tag">Routing</span>
+    <span class="tag">Rate Limiting</span>
+    <span class="tag">JWT Auth</span>
+    <span class="tag">Throttling</span>
+    <span class="tag">Filter Chain</span>
+    <span class="tag">Correlation ID</span>
+    <span class="tag">Load Balancing</span>
+    <span class="tag">Kong</span>
+    <span class="tag">AWS API Gateway</span>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ══════════════════════════════════════════════
+     PART 1 — WHAT IS AN API GATEWAY
+══════════════════════════════════════════════ -->
+<div class="section-heading"><div class="icon">💡</div>Start Here — What Even Is an API Gateway?</div>
+<p class="section-desc">Before anything else — understand the problem it solves from scratch.</p>
+
+<div class="card">
+  <div class="card-title">🤔 Imagine Your System Without a Gateway</div>
+  <p>You have built a microservices system. You have 8 services:</p>
+  <ul>
+    <li>UserService running at <code>http://user-service:8081</code></li>
+    <li>OrderService running at <code>http://order-service:8082</code></li>
+    <li>ProductService running at <code>http://product-service:8083</code></li>
+    <li>PaymentService running at <code>http://payment-service:8084</code></li>
+    <li>InventoryService running at <code>http://inventory-service:8085</code></li>
+    <li>NotificationService running at <code>http://notification-service:8086</code></li>
+    <li>ReportService running at <code>http://report-service:8087</code></li>
+    <li>SearchService running at <code>http://search-service:8088</code></li>
+  </ul>
+  <p>Now your mobile app needs to show a home screen. It needs user profile data, recent orders, and featured products. Without a gateway, the mobile app must:</p>
+  <ul>
+    <li>Know the address of all 3 services</li>
+    <li>Make 3 separate network calls — one to each service</li>
+    <li>Handle auth separately for each call</li>
+    <li>Handle errors separately for each call</li>
+    <li>Every time a service moves to a new server or port, the app must be updated and redeployed</li>
+  </ul>
+  <p>This is a <b>maintenance nightmare</b>. Now multiply this by 10 different client apps (iOS, Android, Web, Admin dashboard, 3rd party partners). Every one of them must know about every service. Every service change breaks every client.</p>
+</div>
+
+<div class="definition">
+  <div class="def-label">Formal Definition</div>
+  <p>An <b>API Gateway</b> is a server that acts as the <b>single entry point</b> for all client requests into a microservices system. It receives all incoming requests, applies cross-cutting concerns (authentication, rate limiting, logging, routing), and forwards them to the appropriate downstream microservice.</p>
+  <p>The client only ever knows about <b>one address</b> — the gateway. The gateway knows about all the services. When services move, scale up, or change — only the gateway configuration changes. Clients are unaffected.</p>
+</div>
+
+<div class="analogy">
+  <div class="analogy-label">The Best Analogy — A Hotel Reception Desk</div>
+  <p>Imagine a large hotel with hundreds of rooms, a restaurant, a spa, a gym, a conference centre, and a parking garage. <b>Guests never wander the building looking for things themselves.</b> They go to reception.</p>
+  <p>Reception (the API Gateway):</p>
+  <p><b>Checks your identity</b> (authentication — "can I see your booking?") → <b>Checks what you are allowed to do</b> (authorisation — "you have a standard room, not a suite") → <b>Directs you to the right place</b> (routing — "the restaurant is on floor 2, the spa is on floor 5") → <b>Logs every interaction</b> (audit trail) → <b>Manages queue</b> (rate limiting — "the spa is full, please wait or come back").</p>
+  <p>The guest never needs to know the internal layout of the hotel. If the restaurant moves to floor 3 tomorrow, reception updates their information — the guests still just ask reception.</p>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     PART 2 — WHAT DOES IT ACTUALLY DO
+══════════════════════════════════════════════ -->
+<div class="section-heading"><div class="icon">⚙️</div>What Does an API Gateway Actually Do?</div>
+<p class="section-desc">A gateway is not just a proxy. It handles a whole layer of concerns so your services do not have to.</p>
+
+<div class="card">
+  <div class="card-title">📋 The Full List of Responsibilities</div>
+  <p>Every request that enters your system passes through the gateway. Here is everything it does along the way:</p>
+</div>
+
+<div class="filter-chain">
+  <div class="filter-item">
+    <span class="filter-badge" style="background:#6b46c1;">CORR ID</span>
+    <div class="filter-content">
+      <div class="f-title">1. Correlation ID Injection</div>
+      <div class="f-desc">The very first thing. If the request does not have an <code>X-Correlation-ID</code> header, the gateway generates a UUID and adds it. <b>Every downstream service logs this ID.</b> When something breaks in production, you can search all service logs for one ID and see the exact path the request took.</div>
+    </div>
+  </div>
+  <div class="filter-item">
+    <span class="filter-badge" style="background:#2c7a7b;">TLS</span>
+    <div class="filter-content">
+      <div class="f-title">2. TLS Termination</div>
+      <div class="f-desc">The gateway decrypts incoming HTTPS traffic. Internal service-to-service calls then happen over plain HTTP — <b>faster and no certificate management needed on every service.</b> This is called TLS termination. The gateway is the only thing that handles SSL certificates.</div>
+    </div>
+  </div>
+  <div class="filter-item">
+    <span class="filter-badge auth">AUTH</span>
+    <div class="filter-content">
+      <div class="f-title">3. Authentication — Verify the Token</div>
+      <div class="f-desc">Checks the <code>Authorization: Bearer &lt;token&gt;</code> header. Validates the JWT signature. Checks expiry. <b>If invalid, returns 401 immediately — the request never reaches your services.</b> Extracts the user ID and roles from the token and adds them as headers for downstream services.</div>
+    </div>
+  </div>
+  <div class="filter-item">
+    <span class="filter-badge rate">RATE</span>
+    <div class="filter-content">
+      <div class="f-title">4. Rate Limiting / Throttling</div>
+      <div class="f-desc">Counts how many requests this user or IP has made in the current time window. <b>If they have exceeded the limit, returns 429 Too Many Requests immediately.</b> Protects your services from being overwhelmed by one bad actor or a traffic spike.</div>
+    </div>
+  </div>
+  <div class="filter-item">
+    <span class="filter-badge route">ROUTE</span>
+    <div class="filter-content">
+      <div class="f-title">5. Routing — Send to the Right Service</div>
+      <div class="f-desc">Looks at the request path and maps it to the correct service. <code>/api/orders/**</code> goes to OrderService. <code>/api/products/**</code> goes to ProductService. The client sends one request to the gateway. The gateway forwards it to the right place. <b>Client never needs to know internal service addresses.</b></div>
+    </div>
+  </div>
+  <div class="filter-item">
+    <span class="filter-badge" style="background:#2b6cb0;">LB</span>
+    <div class="filter-content">
+      <div class="f-title">6. Load Balancing</div>
+      <div class="f-desc">If OrderService has 3 running instances, the gateway distributes requests across all 3. <b>Client makes one request — gateway decides which instance handles it.</b> If one instance is slow, fewer requests are sent to it. If one instance crashes, gateway removes it from rotation.</div>
+    </div>
+  </div>
+  <div class="filter-item">
+    <span class="filter-badge" style="background:#276749;">TRANS</span>
+    <div class="filter-content">
+      <div class="f-title">7. Request / Response Transformation</div>
+      <div class="f-desc">Can add headers to the request before forwarding (like User-ID extracted from token). Can strip sensitive internal headers from the response before returning to the client. Can transform request formats if needed.</div>
+    </div>
+  </div>
+  <div class="filter-item">
+    <span class="filter-badge log">LOG</span>
+    <div class="filter-content">
+      <div class="f-title">8. Logging and Metrics — Always Last</div>
+      <div class="f-desc">Records every request: timestamp, path, user, response code, response time in milliseconds. <b>Even requests that were rejected at step 3 or 4 are logged.</b> This gives you a complete picture of everything that entered your system.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     PART 3 — ROUTING IN DETAIL
+══════════════════════════════════════════════ -->
+<div class="section-heading"><div class="icon">🗺️</div>How Routing Works — The Core Function</div>
+<p class="section-desc">Routing is how the gateway decides where to send each request. Here is exactly how it works.</p>
+
+<div class="card">
+  <div class="card-title">🤔 What Is Routing?</div>
+  <p>Routing is a <b>set of rules</b> that maps incoming request paths to downstream service addresses. Think of it as a phone directory — you look up "orders" and get the address of OrderService.</p>
+  <p>A routing rule has three parts:</p>
+  <ul>
+    <li><b>Predicate (if):</b> A condition that must be true to match this rule. Usually the URL path pattern. Can also be based on HTTP method, headers, query parameters, or time of day.</li>
+    <li><b>URI (go to):</b> The destination — where to forward the request if the predicate matches.</li>
+    <li><b>Filters (do this along the way):</b> Transformations to apply to the request or response for this specific route.</li>
+  </ul>
+</div>
+
+<div class="scenario">
+  <div class="scenario-label">Concrete Example — What Routing Looks Like in Practice</div>
+  <p>Your gateway receives: <code>GET https://api.myapp.com/api/orders/123</code></p>
+  <p>The gateway checks its routing rules in order:</p>
+  <ol>
+    <li>Does path match <code>/api/users/**</code>? → No, skip</li>
+    <li>Does path match <code>/api/orders/**</code>? → <b>Yes! Match found.</b></li>
+    <li>Strip the <code>/api</code> prefix from the path → path becomes <code>/orders/123</code></li>
+    <li>Forward to <code>http://order-service:8082/orders/123</code></li>
+  </ol>
+  <p>The client sent to <code>api.myapp.com/api/orders/123</code>. OrderService received <code>/orders/123</code>. The client never knew the internal address. OrderService never knew about the gateway prefix.</p>
+</div>
+
+<div class="code-block"><span class="cm"># Spring Cloud Gateway — application.yml routing configuration</span>
+spring:
+  cloud:
+    gateway:
+      routes:
+        <span class="cm"># Route 1: anything starting with /api/orders goes to order-service</span>
+        - id: order-service-route
+          uri: <span class="st">lb://ORDER-SERVICE</span>     <span class="cm"># lb:// means use load balancer</span>
+          predicates:
+            - Path=<span class="st">/api/orders/**</span>       <span class="cm"># match condition</span>
+          filters:
+            - StripPrefix=<span class="num">1</span>             <span class="cm"># remove /api from path before forwarding</span>
+
+        <span class="cm"># Route 2: product service</span>
+        - id: product-service-route
+          uri: <span class="st">lb://PRODUCT-SERVICE</span>
+          predicates:
+            - Path=<span class="st">/api/products/**</span>
+          filters:
+            - StripPrefix=<span class="num">1</span>
+
+        <span class="cm"># Route 3: public auth endpoints — no auth check needed</span>
+        - id: auth-service-route
+          uri: <span class="st">lb://AUTH-SERVICE</span>
+          predicates:
+            - Path=<span class="st">/api/auth/**</span>
+          filters:
+            - StripPrefix=<span class="num">1</span></div>
+
+<div class="card blue">
+  <div class="card-title blue">📌 What Does lb:// Mean?</div>
+  <p><code>lb://ORDER-SERVICE</code> means "use the load balancer to find an instance of a service registered under the name ORDER-SERVICE". The gateway integrates with a <b>Service Registry</b> (like Eureka or Kubernetes DNS). Instead of hardcoding <code>http://192.168.1.5:8082</code>, you use the service name. The registry tells the gateway the current addresses of all running instances, and the gateway load-balances across them.</p>
+  <p>If you scale OrderService from 2 to 5 pods, the registry automatically updates. The gateway starts using all 5 pods without any configuration change.</p>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     PART 4 — RATE LIMITING / THROTTLING
+══════════════════════════════════════════════ -->
+<div class="section-heading"><div class="icon">🚦</div>Rate Limiting and Throttling — Protecting Your System</div>
+<p class="section-desc">What throttling is, why you need it, and how it works under the hood.</p>
+
+<div class="card">
+  <div class="card-title">🤔 What Is Rate Limiting and Why Do You Need It?</div>
+  <p>Imagine your API is free to use. A competitor writes a script that sends 50,000 requests per minute to your API. Without rate limiting:</p>
+  <ul>
+    <li>Your services are overwhelmed — legitimate users cannot get responses</li>
+    <li>Your database gets hammered with queries — it slows down for everyone</li>
+    <li>Your infrastructure costs spike — you are paying for their abuse</li>
+    <li>Your system potentially crashes — a denial of service attack</li>
+  </ul>
+  <p><b>Rate limiting</b> says: "Each user can make a maximum of X requests per Y time window. After that, we return 429 Too Many Requests and they must wait."</p>
+  <p><b>Throttling</b> is a related concept — instead of rejecting excess requests, you slow them down. The terms are often used interchangeably in practice.</p>
+</div>
+
+<div class="analogy">
+  <div class="analogy-label">Everyday Analogy — A Nightclub Bouncer</div>
+  <p>A nightclub has a maximum capacity. A bouncer stands at the door counting how many people are inside. When the club is full, the bouncer stops letting people in — they must wait outside. Regular guests get a VIP pass (higher limit). Unknown people (unregistered IPs) get a stricter limit.</p>
+  <p>The API gateway rate limiter is the bouncer. The time window is the "per hour" capacity. The Redis counter is the clicker the bouncer uses to count.</p>
+</div>
+
+<div class="card blue">
+  <div class="card-title blue">⚙️ How Rate Limiting Works Internally</div>
+  <p>When a request arrives, the gateway does this in order:</p>
+  <ol style="padding-left:20px; margin-top:8px">
+    <li style="margin-bottom:8px"><b>Identify who is making the request:</b> Extract the user ID from the JWT token (preferred), or use the IP address if not authenticated.</li>
+    <li style="margin-bottom:8px"><b>Build a Redis key:</b> Something like <code>rate_limit:userId:123:minute:2024-01-15-14-35</code>. The key includes the time window so it automatically resets every minute.</li>
+    <li style="margin-bottom:8px"><b>Increment the counter in Redis:</b> This is an atomic operation — <code>INCR</code> command in Redis. Returns the new count.</li>
+    <li style="margin-bottom:8px"><b>Set TTL on the key:</b> The Redis key expires after 60 seconds so counters automatically reset each minute. No manual cleanup needed.</li>
+    <li><b>Check the count:</b> If count is under the limit — allow the request. If count is over the limit — return <code>429 Too Many Requests</code> with a <code>Retry-After: 45</code> header telling the client how many seconds to wait.</li>
+  </ol>
+</div>
+
+<div class="card">
+  <div class="card-title">📊 Why Redis? Why Not In-Memory?</div>
+  <p>Your gateway runs as 3 instances behind a load balancer for high availability. Each instance handles roughly one third of traffic.</p>
+  <p><b>With in-memory counter (wrong):</b> User makes 30 requests to instance 1, 30 to instance 2, 30 to instance 3 = 90 total. Each instance thinks the user only made 30. Limit was 50. Rate limit never triggers. User effectively made 90 requests without restriction.</p>
+  <p><b>With Redis counter (correct):</b> All 3 instances increment the same Redis key. Every instance sees the true total. When the user hits 50 total across all instances, all instances return 429. Rate limiting works correctly regardless of how many gateway instances you run.</p>
+  <p>This is called <b>distributed rate limiting</b>. It only works correctly with a shared external store — Redis is the standard choice because <code>INCR</code> is atomic and Redis is extremely fast (sub-millisecond).</p>
+</div>
+
+<div class="card purple">
+  <div class="card-title purple">🪣 Token Bucket vs Sliding Window — Two Algorithms</div>
+  <p><b>Token Bucket (most common):</b></p>
+  <ul>
+    <li>Imagine a bucket that holds 100 tokens. Each request consumes one token.</li>
+    <li>Tokens refill at a steady rate (e.g. 10 tokens per second = 600 per minute).</li>
+    <li>If the bucket is empty, the request is rejected.</li>
+    <li><b>Allows bursting</b> — a user can send 100 requests instantly if the bucket is full, then must slow down. Good for APIs where occasional bursts are acceptable.</li>
+  </ul>
+  <p><b>Sliding Window (more precise):</b></p>
+  <ul>
+    <li>Counts all requests in the last N seconds (not a fixed minute boundary).</li>
+    <li>At any point in time, the user cannot have more than X requests in the past 60 seconds.</li>
+    <li><b>No burst allowed</b> — the limit is enforced continuously, not reset at the start of each minute.</li>
+    <li>Fairer but more complex and uses more Redis memory.</li>
+  </ul>
+  <p>For most enterprise applications, <b>token bucket is the right choice</b> — it is simpler, efficient in Redis, and the burst allowance is actually a feature (allows users to do occasional heavy tasks).</p>
+</div>
+
+<div class="code-block"><span class="cm"># Rate limiting configuration in Spring Cloud Gateway</span>
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: order-service-route
+          uri: <span class="st">lb://ORDER-SERVICE</span>
+          predicates:
+            - Path=<span class="st">/api/orders/**</span>
+          filters:
+            - StripPrefix=<span class="num">1</span>
+            - name: RequestRateLimiter
+              args:
+                <span class="cm"># How many tokens refill per second</span>
+                redis-rate-limiter.replenishRate: <span class="num">10</span>
+                <span class="cm"># Maximum tokens in the bucket (burst capacity)</span>
+                redis-rate-limiter.burstCapacity: <span class="num">20</span>
+                <span class="cm"># How many tokens each request costs (default 1)</span>
+                redis-rate-limiter.requestedTokens: <span class="num">1</span>
+                <span class="cm"># Which header/key to use to identify the caller</span>
+                key-resolver: "<span class="st">#{@userKeyResolver}</span>"</div>
+
+<!-- ══════════════════════════════════════════════
+     PART 5 — AUTHENTICATION AT GATEWAY
+══════════════════════════════════════════════ -->
+<div class="section-heading"><div class="icon">🔐</div>Authentication at the Gateway — JWT Validation</div>
+<p class="section-desc">How the gateway checks who you are before forwarding your request.</p>
+
+<div class="card">
+  <div class="card-title">🤔 Why Handle Auth at the Gateway?</div>
+  <p>If you did not have a gateway, every single one of your 8 services would need to implement JWT validation. That means:</p>
+  <ul>
+    <li>8 copies of the same auth code — 8 places to update when the algorithm changes</li>
+    <li>8 places where a bug could expose an endpoint</li>
+    <li>8 services each making calls to the auth server to validate tokens</li>
+    <li>Inconsistency — one service might have a stricter validation than another</li>
+  </ul>
+  <p>With a gateway, auth is implemented <b>once</b>. Any request that reaches a downstream service has already been validated. Services can trust the headers the gateway adds (<code>X-User-Id</code>, <code>X-User-Roles</code>) without re-validating.</p>
+</div>
+
+<div class="card blue">
+  <div class="card-title blue">⚙️ How JWT Authentication Works at the Gateway — Step by Step</div>
+  <p>A JWT (JSON Web Token) is a string in three parts separated by dots: <code>header.payload.signature</code>. The header says which algorithm was used. The payload contains claims (userId, email, roles, expiry time). The signature proves it was issued by your auth server and has not been tampered with.</p>
+  <p><b>Step 1 — Extract the token:</b> The gateway reads the <code>Authorization: Bearer eyJhbGci...</code> header from the request.</p>
+  <p><b>Step 2 — Check if the route is public:</b> Routes like <code>/api/auth/login</code> or <code>/api/auth/register</code> do not require a token. The gateway has a whitelist of public paths — it skips token validation for these.</p>
+  <p><b>Step 3 — Verify the signature:</b> The gateway checks the token signature using the public key of your auth server. This is a <b>local cryptographic check</b> — no network call to the auth server is needed. If the signature is invalid, the token was either forged or tampered with. Return 401.</p>
+  <p><b>Step 4 — Check expiry:</b> The payload contains an <code>exp</code> (expiry) timestamp. The gateway checks if the current time is past this timestamp. If expired, return 401.</p>
+  <p><b>Step 5 — Enrich the request:</b> Extract <code>userId</code> and <code>roles</code> from the payload. Add them as request headers: <code>X-User-Id: 456</code> and <code>X-User-Roles: ADMIN,USER</code>. Forward the enriched request to the downstream service.</p>
+  <p><b>Step 6 — Downstream service trusts the headers:</b> OrderService receives the request. It reads <code>X-User-Id</code> to know whose order it is. It reads <code>X-User-Roles</code> to check permissions. It never validates the token itself — it trusts the gateway.</p>
+</div>
+
+<div class="warning">
+  <div class="warning-label">Important Security Note</div>
+  <p>Downstream services should <b>only trust the X-User-Id and X-User-Roles headers if they come from the gateway</b>. If a clever user manually adds these headers to their request trying to impersonate someone, the gateway must strip these headers from the incoming request before adding its own verified values. Never trust client-supplied identity headers — always use the gateway's validated version.</p>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     PART 6 — CORRELATION ID
+══════════════════════════════════════════════ -->
+<div class="section-heading"><div class="icon">🔍</div>Correlation ID — How You Debug Production Problems</div>
+<p class="section-desc">One of the most valuable things a gateway does — and often the most overlooked.</p>
+
+<div class="card">
+  <div class="card-title">🤔 The Problem Without Correlation IDs</div>
+  <p>A user calls your support team saying their order failed at 2:47pm on Tuesday. You go to investigate. Your system has 8 services each writing logs. You search for this user's requests — you find 3,000 log entries across all services from that time window. You cannot tell which log entries belong to the same failed request versus other successful requests from the same user. You spend 2 hours trying to piece it together.</p>
+</div>
+
+<div class="scenario">
+  <div class="scenario-label">With Correlation IDs — The Same Investigation Takes 2 Minutes</div>
+  <p>The gateway assigned a UUID (<code>req-7f3a-4b22-9c11</code>) to the request. Every service that handled that request logged this ID alongside every log entry.</p>
+  <p>You open Kibana (or any log aggregator) and search: <code>correlationId:"req-7f3a-4b22-9c11"</code>. You see every log entry from every service, in chronological order, for that exact request:</p>
+  <ol>
+    <li>Gateway received request at 14:47:23.041</li>
+    <li>OrderService received forwarded request at 14:47:23.089</li>
+    <li>OrderService called PaymentService at 14:47:23.201</li>
+    <li>PaymentService called Stripe API at 14:47:23.350</li>
+    <li>Stripe API timed out at 14:47:25.351 (exactly 2 seconds — the configured timeout)</li>
+    <li>PaymentService returned 503 to OrderService at 14:47:25.400</li>
+    <li>OrderService returned 503 to Gateway at 14:47:25.440</li>
+    <li>Gateway returned 503 to client at 14:47:25.441</li>
+  </ol>
+  <p>Root cause found: Stripe API was slow at that time. Total investigation time: 2 minutes.</p>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     PART 7 — CUSTOM GATEWAY IMPLEMENTATION
+══════════════════════════════════════════════ -->
+<div class="section-heading"><div class="icon">🔧</div>How Would You Implement a Custom API Gateway?</div>
+<p class="section-desc">Interviewers ask this to test whether you understand how gateways work internally.</p>
+
+<div class="card">
+  <div class="card-title">🤔 Why Would You Build a Custom Gateway?</div>
+  <p>Most teams use Spring Cloud Gateway or Kong. But interviewers ask this to test your understanding of internals. Also: sometimes existing solutions are overkill for internal service meshes, or a company has specific compliance requirements that off-the-shelf solutions cannot satisfy.</p>
+  <p>The key insight is: a gateway is fundamentally a <b>filter chain</b> — the Chain of Responsibility design pattern. Every request passes through a series of filters. Each filter either processes the request and passes it to the next filter, or stops the chain and returns a response.</p>
+</div>
+
+<div class="card blue">
+  <div class="card-title blue">⚙️ The Filter Chain — Chain of Responsibility Pattern</div>
+  <p>The filters run in a specific order. The order matters enormously:</p>
+</div>
+
+<div class="step-list">
+  <div class="step-list-item">
+    <div class="step-list-num"></div>
+    <div class="step-list-body">
+      <div class="sl-title">CorrelationIdFilter — Always First</div>
+      <div class="sl-desc">If no <code>X-Correlation-ID</code> header exists, generate a UUID and add it. Every subsequent filter and every downstream service will log this ID. Must be first so all other filters can include it in their logs.</div>
+    </div>
+  </div>
+  <div class="step-list-item">
+    <div class="step-list-num"></div>
+    <div class="step-list-body">
+      <div class="sl-title">AuthenticationFilter — Second</div>
+      <div class="sl-desc">Validate the JWT. If invalid → return 401 immediately, chain stops. If valid → extract userId and roles, add as headers, pass to next filter. Must run before rate limiting so we know <b>which user</b> to rate-limit.</div>
+    </div>
+  </div>
+  <div class="step-list-item">
+    <div class="step-list-num"></div>
+    <div class="step-list-body">
+      <div class="sl-title">RateLimitFilter — Third</div>
+      <div class="sl-desc">Uses the userId (now available from step 2) to check Redis counter. If over limit → return 429. If under → increment counter and pass to next filter. Needs userId from auth filter, so must come after it.</div>
+    </div>
+  </div>
+  <div class="step-list-item">
+    <div class="step-list-num"></div>
+    <div class="step-list-body">
+      <div class="sl-title">RoutingFilter — Fourth</div>
+      <div class="sl-desc">Look up which service this path maps to. Forward the request using WebClient (reactive) or RestTemplate (blocking). Wait for the response. Pass response through the remaining filters.</div>
+    </div>
+  </div>
+  <div class="step-list-item">
+    <div class="step-list-num"></div>
+    <div class="step-list-body">
+      <div class="sl-title">ResponseCleanupFilter — Fifth</div>
+      <div class="sl-desc">Strip internal headers from the response before returning to client (<code>X-Internal-Service-Name</code>, <code>X-Pod-Id</code>, etc.). Clients should not see internal infrastructure details.</div>
+    </div>
+  </div>
+  <div class="step-list-item">
+    <div class="step-list-num"></div>
+    <div class="step-list-body">
+      <div class="sl-title">LoggingFilter — Always Last</div>
+      <div class="sl-desc">Log the request: correlation ID, path, user, response status code, total time in milliseconds. Must be last so it captures the final response code and total end-to-end latency. Logs even rejected requests (401, 429) so you have a complete audit trail of everything that entered the system.</div>
+    </div>
+  </div>
+</div>
+
+<div class="code-block"><span class="an">@Component</span>
+<span class="kw">public class</span> AuthFilter <span class="kw">implements</span> GlobalFilter, Ordered {
+
+    <span class="an">@Override</span>
+    <span class="kw">public</span> Mono&lt;Void&gt; filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+
+        String path = exchange.getRequest().getURI().getPath();
+
+        <span class="cm">// Step 1: Skip auth for public routes like /api/auth/login</span>
+        <span class="kw">if</span> (isPublicPath(path)) {
+            <span class="kw">return</span> chain.filter(exchange);  <span class="cm">// pass to next filter</span>
+        }
+
+        <span class="cm">// Step 2: Extract the token from Authorization header</span>
+        String authHeader = exchange.getRequest()
+            .getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
+
+        <span class="kw">if</span> (authHeader == <span class="kw">null</span> || !authHeader.startsWith(<span class="st">"Bearer "</span>)) {
+            exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+            <span class="kw">return</span> exchange.getResponse().setComplete(); <span class="cm">// stop chain, return 401</span>
+        }
+
+        String token = authHeader.substring(<span class="num">7</span>); <span class="cm">// remove "Bearer " prefix</span>
+
+        <span class="cm">// Step 3: Validate the JWT (local cryptographic check — no network call)</span>
+        <span class="kw">if</span> (!jwtService.isValid(token)) {
+            exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+            <span class="kw">return</span> exchange.getResponse().setComplete(); <span class="cm">// stop chain, return 401</span>
+        }
+
+        <span class="cm">// Step 4: Extract claims and add as headers for downstream services</span>
+        String userId = jwtService.getUserId(token);
+        String roles  = jwtService.getRoles(token);
+
+        ServerHttpRequest enrichedRequest = exchange.getRequest().mutate()
+            .header(<span class="st">"X-User-Id"</span>, userId)
+            .header(<span class="st">"X-User-Roles"</span>, roles)
+            .build();
+
+        <span class="cm">// Step 5: Pass enriched request to next filter in chain</span>
+        <span class="kw">return</span> chain.filter(exchange.mutate().request(enrichedRequest).build());
+    }
+
+    <span class="cm">// Order = -100 means this filter runs BEFORE Spring's built-in filters</span>
+    <span class="an">@Override</span>
+    <span class="kw">public int</span> getOrder() { <span class="kw">return</span> -<span class="num">100</span>; }
+}</div>
+
+<!-- ══════════════════════════════════════════════
+     PART 8 — POPULAR IMPLEMENTATIONS
+══════════════════════════════════════════════ -->
+<div class="section-heading"><div class="icon">🛠️</div>Popular API Gateway Implementations</div>
+<p class="section-desc">What your options are and when to choose each one.</p>
+
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>Gateway</th>
+        <th>Best For</th>
+        <th>How You Configure It</th>
+        <th>Cost</th>
+        <th>Learning Curve</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><b>Spring Cloud Gateway</b></td>
+        <td>Spring Boot microservices on Kubernetes. Java teams who want full control.</td>
+        <td>YAML config + Java filter code. Full access to Spring ecosystem.</td>
+        <td>Free (open source)</td>
+        <td>Medium — need Spring knowledge</td>
+      </tr>
+      <tr>
+        <td><b>Kong</b></td>
+        <td>Polyglot systems (Java, Python, Node). Teams who want plugin-based config.</td>
+        <td>Config files or Admin API. Plugins for auth, rate limiting, logging — no code needed.</td>
+        <td>Free OSS / paid enterprise</td>
+        <td>Low — mostly config-based</td>
+      </tr>
+      <tr>
+        <td><b>AWS API Gateway</b></td>
+        <td>AWS-native apps. Serverless (Lambda) backends. Managed, no servers to operate.</td>
+        <td>AWS Console or Terraform. Integrates with Cognito, IAM, Lambda.</td>
+        <td>Pay per million requests (~$3.50)</td>
+        <td>Low — AWS console</td>
+      </tr>
+      <tr>
+        <td><b>NGINX</b></td>
+        <td>Simple routing and load balancing. High performance static content + API proxying.</td>
+        <td>nginx.conf file. Less feature-rich — no built-in rate limiting without Lua scripts.</td>
+        <td>Free (open source)</td>
+        <td>Low — config file</td>
+      </tr>
+      <tr>
+        <td><b>Traefik</b></td>
+        <td>Kubernetes-native. Auto-discovers services via K8s annotations. No manual routing config.</td>
+        <td>Kubernetes annotations on services. Auto-reconfigures as services are deployed.</td>
+        <td>Free (open source)</td>
+        <td>Low for K8s users</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     PART 9 — GATEWAY vs LOAD BALANCER
+══════════════════════════════════════════════ -->
+<div class="section-heading"><div class="icon">⚖️</div>API Gateway vs Load Balancer — A Common Interview Trap</div>
+<p class="section-desc">These two are often confused. Understanding the difference is a key interview signal.</p>
+
+<div class="card">
+  <div class="card-title">🤔 What Is the Difference?</div>
+  <p>This is one of the most common interview follow-up questions. Many candidates confuse them or think they are the same thing.</p>
+</div>
+
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr><th>Aspect</th><th>Load Balancer</th><th>API Gateway</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><b>Primary job</b></td>
+        <td>Distribute traffic across multiple identical instances of the same service</td>
+        <td>Route traffic to different services based on the request path, apply auth, rate limiting, logging</td>
+      </tr>
+      <tr>
+        <td><b>Awareness</b></td>
+        <td>Has no knowledge of your application or business logic. Purely distributes requests.</td>
+        <td>Application-aware. Understands paths, headers, JWT tokens, business rules.</td>
+      </tr>
+      <tr>
+        <td><b>Works at</b></td>
+        <td>Network layer (Layer 4) or HTTP layer (Layer 7). Mostly traffic distribution.</td>
+        <td>Application layer (Layer 7). Full HTTP awareness — reads and modifies requests and responses.</td>
+      </tr>
+      <tr>
+        <td><b>Example</b></td>
+        <td>AWS ELB, NGINX upstream block, Kubernetes Service — all send traffic to 3 copies of the same pod</td>
+        <td>Spring Cloud Gateway, Kong, AWS API Gateway — routes /orders to OrderService, /products to ProductService</td>
+      </tr>
+      <tr>
+        <td><b>Handles auth?</b></td>
+        <td>No — no concept of JWT or user identity</td>
+        <td>Yes — validates JWT and extracts user claims</td>
+      </tr>
+      <tr>
+        <td><b>Used together?</b></td>
+        <td colspan="2">Yes — the API Gateway is often itself behind a load balancer. External traffic hits the load balancer, which distributes it across 3 gateway instances. Each gateway instance routes to the appropriate services.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="pro-con">
+  <div class="pro">
+    <div class="pro-title">✅ API Gateway — Advantages</div>
+    <ul>
+      <li>Single entry point — clients only need one address</li>
+      <li>Cross-cutting concerns in one place — auth, rate limiting, logging</li>
+      <li>Services are hidden from the outside world</li>
+      <li>Easy to add new services without changing clients</li>
+      <li>Can do request/response transformation</li>
+      <li>Simplifies client code — one call instead of many</li>
+    </ul>
+  </div>
+  <div class="con">
+    <div class="con-title">❌ API Gateway — Disadvantages</div>
+    <ul>
+      <li>Single point of failure if not made highly available</li>
+      <li>Added network hop — every request goes through it</li>
+      <li>Risk of becoming a bottleneck at very high traffic</li>
+      <li>Operational complexity — must be deployed, monitored, updated</li>
+      <li>Risk of "smart gateway" anti-pattern — business logic leaking in</li>
+      <li>Can become a deployment blocker if all teams share one gateway</li>
+    </ul>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ══════════════════════════════════════════════
+     FOLLOW-UP Q&A
+══════════════════════════════════════════════ -->
+<div class="section-heading"><div class="icon">❓</div>Follow-Up Questions &amp; Full Answers</div>
+<p class="section-desc">The exact questions interviewers ask after you explain the API gateway. Click to expand.</p>
+
+<div class="qa-section">
+
+  <div class="qa-item">
+    <div class="qa-question" onclick="toggleQA(this)">
+      Q1: Should authentication happen at the gateway or at each service? What are the trade-offs?
+      <span class="qa-icon">+</span>
+    </div>
+    <div class="qa-answer">
+      <p><b>Authentication at the gateway (recommended for most systems):</b> The gateway validates the JWT once, extracts the user identity, and passes it downstream as trusted headers. Services do not need to implement JWT validation — they just read the <code>X-User-Id</code> header. This is the most common pattern for internal microservices behind a corporate API gateway.</p>
+      <p><b>Authentication at each service (defence in depth):</b> Each service independently validates the JWT. Even if the gateway is bypassed or compromised, services still protect themselves. This is the pattern used for highly sensitive financial or healthcare systems where a single compromised gateway cannot expose all services.</p>
+      <p><b>Hybrid (best of both):</b> The gateway handles JWT validation and adds identity headers. Services do not re-validate the JWT but they DO check authorisation — they verify the user has permission for the specific resource they are requesting. Authorisation is business-specific and belongs in the service. Authentication (proving who you are) can be centralised. Authorisation (proving what you can do) should stay in the service.</p>
+      <p><b>The practical rule:</b> Centralise authentication at the gateway. Keep authorisation in each service. This gives you the simplicity of centralised auth without the risk of centralised authorisation (which would require every service to call a central auth service for every request).</p>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question" onclick="toggleQA(this)">
+      Q2: What happens to in-flight requests when you deploy a new version of the gateway?
+      <span class="qa-icon">+</span>
+    </div>
+    <div class="qa-answer">
+      <p>This is a question about zero-downtime deployments for the gateway itself. The gateway is a microservice too — it has the same deployment challenges.</p>
+      <p><b>The solution is a rolling deployment:</b> You run multiple instances of the gateway (at least 2, ideally 3) behind a load balancer. When you deploy a new version, you update one instance at a time. At any point, both old and new gateway versions are running.</p>
+      <p>The load balancer in front of the gateways detects when a gateway instance is being updated (via health checks) and stops sending it new traffic. In-flight requests on the old instance complete normally. Once the old instance drains (all in-flight requests finish), it shuts down and the new instance takes over. Then the next instance is updated the same way. This is called a <b>rolling update with connection draining</b>.</p>
+      <p>In Kubernetes, this is handled by the Deployment's rolling update strategy combined with a <code>preStop</code> lifecycle hook that waits for in-flight requests to drain before the pod terminates.</p>
+      <p><b>Important:</b> New and old gateway versions must be backward compatible during the transition. Avoid making breaking changes to gateway configuration that would cause the old and new versions to behave incompatibly with the same backend services.</p>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question" onclick="toggleQA(this)">
+      Q3: How do you prevent the gateway from becoming a single point of failure?
+      <span class="qa-icon">+</span>
+    </div>
+    <div class="qa-answer">
+      <p>The API gateway by definition is the entry point for all traffic — if it goes down, nothing works. Three strategies prevent this:</p>
+      <p><b>Strategy 1 — Multiple instances:</b> Run at least 3 gateway instances in Kubernetes, each on a different node (using pod anti-affinity rules). A cloud load balancer distributes traffic across all 3. If one instance crashes or a node goes down, traffic automatically routes to the remaining 2. This eliminates single-instance failure.</p>
+      <p><b>Strategy 2 — Multi-region or multi-AZ:</b> In cloud environments, run gateway instances across multiple Availability Zones (AZs). AWS, GCP, and Azure each have multiple physically separate data centres within a region. Traffic is load balanced across AZs. An entire AZ can fail and your gateway stays up.</p>
+      <p><b>Strategy 3 — Circuit breakers on the gateway itself:</b> The gateway should have circuit breakers on its calls to downstream services. If OrderService goes down, the gateway should not keep making calls to it (wasting threads and connections). The circuit breaker opens, returns a fallback 503 response, and gives OrderService time to recover.</p>
+      <p><b>Strategy 4 — Stateless gateway:</b> The gateway should not store any request state in memory. Rate limiting state goes to Redis. Route configurations come from a config server. This means any instance can handle any request — no sticky sessions, no in-memory data to lose if an instance crashes.</p>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question" onclick="toggleQA(this)">
+      Q4: How do you implement A/B testing or canary releases at the gateway level?
+      <span class="qa-icon">+</span>
+    </div>
+    <div class="qa-answer">
+      <p>The gateway is the perfect place to implement traffic splitting because it sees every request before it reaches any service.</p>
+      <p><b>Canary release:</b> You have OrderService v1 and OrderService v2. You want 5% of traffic to go to v2 as a test. In Spring Cloud Gateway, you can configure a <code>WeightRoutePredicateFactory</code> that assigns weights to routes. 95 weight to v1, 5 weight to v2. The gateway randomly routes 5% of requests to v2 matching the weight distribution.</p>
+      <p><b>A/B testing by user segment:</b> Instead of random splitting, route specific users to the new version. Extract the user ID or a feature flag from the JWT header. Check if this user is in the experiment group (stored in Redis or a feature flag service). If yes, route to v2. If no, route to v1. This lets you test with specific user cohorts rather than random traffic.</p>
+      <p><b>Header-based routing:</b> Developers or QA testers send a special header like <code>X-Version: v2</code>. The gateway routes requests with that header to the new version. Normal users without the header go to v1. This lets the team test v2 in production with real data without exposing it to users.</p>
+      <p>Tools like <b>Argo Rollouts</b> or <b>Flagger</b> automate this in Kubernetes — they progressively increase the canary percentage while monitoring metrics, and automatically roll back if error rates increase.</p>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question" onclick="toggleQA(this)">
+      Q5: What is the "smart gateway, dumb services" anti-pattern?
+      <span class="qa-icon">+</span>
+    </div>
+    <div class="qa-answer">
+      <p>This is a well-known anti-pattern where business logic gradually migrates into the gateway, making it a monolith in disguise.</p>
+      <p>It starts innocuously. A developer adds a rule: "if the user is a premium member, route them to the fast endpoint." Then: "if the order total is over £100, add a free shipping header." Then: "if it is Black Friday, add a discount code to the request." Before long, the gateway contains business rules that belong in services, and the gateway has become a central intelligence layer that all services depend on.</p>
+      <p><b>Why this is harmful:</b></p>
+      <ul>
+        <li>The gateway becomes a deployment bottleneck — every business change requires a gateway deployment</li>
+        <li>The gateway starts knowing about domain concepts (premium users, order totals) which violates its purpose</li>
+        <li>Business logic in the gateway is harder to test — it processes raw HTTP traffic, not domain objects</li>
+        <li>It reintroduces coupling — services become dependent on the gateway's transformations</li>
+      </ul>
+      <p><b>The rule:</b> The gateway should handle only <b>cross-cutting infrastructure concerns</b> — authentication, rate limiting, routing, logging, SSL, correlation IDs. Any logic that involves understanding your domain (users, orders, products, pricing) belongs in services.</p>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question" onclick="toggleQA(this)">
+      Q6: How do you handle different rate limits for different tiers of users (free vs paid vs enterprise)?
+      <span class="qa-icon">+</span>
+    </div>
+    <div class="qa-answer">
+      <p>This is a very common real-world requirement. Most public APIs have tiered rate limits — free users get 100 requests/hour, paid users get 1,000, enterprise customers get unlimited.</p>
+      <p><b>Implementation approach:</b></p>
+      <p>When the gateway validates the JWT token, the payload includes the user's subscription tier (<code>"tier": "PREMIUM"</code>). The gateway's rate limiter reads this claim and applies tier-specific limits.</p>
+      <p>In Spring Cloud Gateway, you implement a custom <code>KeyResolver</code> that returns a key like <code>userId:PREMIUM</code>. The rate limiter config maps each key pattern to different limits: FREE = 100/hour, PREMIUM = 1000/hour, ENTERPRISE = no limit.</p>
+      <p>Alternatively, the tier information is stored in Redis alongside the counter. When the gateway looks up the rate limit, it first fetches the user's tier from Redis (cached from the last auth call), then applies the appropriate limit for that tier.</p>
+      <p><b>For enterprise customers:</b> The recommended approach is a separate API key (not a JWT) that bypasses the standard rate limiter entirely and goes through a dedicated route with no limit. This also makes it easy to revoke access or apply custom per-customer limits.</p>
+    </div>
+  </div>
+
+</div><!-- end qa-section -->
+
+<div class="tip" style="margin-top:24px">
+  <div class="tip-label">Interview Tip — The Complete Answer Pattern</div>
+  <p>When asked "what API gateway did you use in your project and what did it do?", structure your answer in three parts:</p>
+  <p><b>1. What it is:</b> "We used Spring Cloud Gateway as our single entry point for all client requests into our microservices system."</p>
+  <p><b>2. What it did:</b> "It handled JWT authentication by validating tokens and extracting user identity, rate limiting via Redis counters to protect services from traffic spikes, request routing based on path predicates to 8 downstream services, correlation ID injection for distributed tracing, and TLS termination."</p>
+  <p><b>3. The trade-off you were aware of:</b> "We ran 3 gateway instances to avoid a single point of failure, and we were careful not to put any business logic in the gateway — keeping it purely as an infrastructure concern."</p>
+  <p>This shows you understand the what, the how, and the why — and that you have thought about failure modes.</p>
+</div>
+
+</div><!-- end container -->
+
+<script>
+function toggleQA(el) {
+  var answer = el.nextElementSibling;
+  var isOpen = answer.classList.contains('open');
+  answer.classList.toggle('open', !isOpen);
+  el.classList.toggle('open', !isOpen);
+  el.querySelector('.qa-icon').textContent = isOpen ? '+' : '×';
+}
+</script>
+</body>
+</html>

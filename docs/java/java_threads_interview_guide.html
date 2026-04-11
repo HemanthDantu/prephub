@@ -1,0 +1,2169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java Threads & Multithreading — Interview Guide</title>
+    <style>
+        :root {
+            --primary: #1a1a2e;
+            --secondary: #16213e;
+            --accent: #0f3460;
+            --highlight: #e94560;
+            --text-primary: #eaeaea;
+            --text-secondary: #b0b0b0;
+            --code-bg: #0f1419;
+            --code-border: #2d3748;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            margin-bottom: 3rem;
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 2rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--highlight);
+            font-family: 'Georgia', serif;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            border-bottom: 1px solid var(--code-border);
+            padding-bottom: 0;
+        }
+
+        .tab-button {
+            padding: 1rem 1.5rem;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            position: relative;
+            bottom: -1px;
+        }
+
+        .tab-button:hover {
+            color: var(--highlight);
+            border-bottom-color: var(--highlight);
+        }
+
+        .tab-button.active {
+            color: var(--highlight);
+            border-bottom-color: var(--highlight);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .section {
+            margin-bottom: 3rem;
+            background: rgba(15, 52, 96, 0.3);
+            padding: 2rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--highlight);
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            color: var(--highlight);
+            font-family: 'Georgia', serif;
+        }
+
+        h3 {
+            font-size: 1.3rem;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        p {
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        .analogy {
+            background: rgba(14, 165, 233, 0.1);
+            border-left: 4px solid #0ea5e9;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 4px;
+        }
+
+        .analogy strong {
+            color: #0ea5e9;
+        }
+
+        .code-block {
+            background: var(--code-bg);
+            border: 1px solid var(--code-border);
+            padding: 1.5rem;
+            border-radius: 6px;
+            margin: 1.5rem 0;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            position: relative;
+        }
+
+        .code-label {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            background: var(--code-border);
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+        }
+
+        .code-block code {
+            color: var(--text-primary);
+        }
+
+        .keyword { color: #ff79c6; }
+        .class-name { color: #8be9fd; }
+        .string { color: #f1fa8c; }
+        .comment { color: #6272a4; }
+        .number { color: #bd93f9; }
+        .method { color: #50fa7b; }
+
+        .state-diagram {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .state-box {
+            background: var(--accent);
+            border: 2px solid var(--highlight);
+            padding: 1rem;
+            border-radius: 6px;
+            min-width: 120px;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .state-arrow {
+            color: var(--highlight);
+            font-size: 1.5rem;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            background: var(--code-bg);
+            border: 1px solid var(--code-border);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .comparison-table th {
+            background: var(--accent);
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            border-right: 1px solid var(--code-border);
+        }
+
+        .comparison-table td {
+            padding: 1rem;
+            border-right: 1px solid var(--code-border);
+            border-bottom: 1px solid var(--code-border);
+        }
+
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .pitfall {
+            background: rgba(239, 68, 68, 0.1);
+            border-left: 4px solid var(--error);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 4px;
+        }
+
+        .pitfall strong {
+            color: var(--error);
+        }
+
+        .quiz-container {
+            max-width: 900px;
+        }
+
+        .quiz-question {
+            background: var(--code-bg);
+            border: 1px solid var(--code-border);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border-radius: 6px;
+        }
+
+        .quiz-number {
+            font-size: 0.85rem;
+            color: var(--highlight);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .quiz-question p {
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .quiz-option {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem;
+            background: rgba(15, 52, 96, 0.5);
+            border: 2px solid transparent;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .quiz-option:hover {
+            background: rgba(15, 52, 96, 0.8);
+            border-color: var(--highlight);
+        }
+
+        .quiz-option input {
+            margin-right: 1rem;
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+        }
+
+        .quiz-option.selected {
+            background: rgba(233, 69, 96, 0.2);
+            border-color: var(--highlight);
+        }
+
+        .quiz-option.correct {
+            background: rgba(16, 185, 129, 0.2);
+            border-color: var(--success);
+        }
+
+        .quiz-option.incorrect {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: var(--error);
+        }
+
+        .quiz-feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 4px;
+            display: none;
+        }
+
+        .quiz-feedback.show {
+            display: block;
+        }
+
+        .quiz-feedback.correct {
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 4px solid var(--success);
+            color: var(--success);
+        }
+
+        .quiz-feedback.incorrect {
+            background: rgba(239, 68, 68, 0.1);
+            border-left: 4px solid var(--error);
+            color: var(--error);
+        }
+
+        .quiz-submit {
+            background: var(--highlight);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            margin-top: 1rem;
+        }
+
+        .quiz-submit:hover {
+            background: #d63653;
+            transform: translateY(-2px);
+        }
+
+        .quiz-results {
+            background: var(--accent);
+            padding: 2rem;
+            border-radius: 6px;
+            text-align: center;
+            margin-top: 2rem;
+            display: none;
+        }
+
+        .quiz-results.show {
+            display: block;
+        }
+
+        .score {
+            font-size: 3rem;
+            color: var(--highlight);
+            font-weight: 700;
+            margin: 1rem 0;
+        }
+
+        .checklist {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 1rem;
+            background: rgba(15, 52, 96, 0.5);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .checklist-item:hover {
+            background: rgba(15, 52, 96, 0.8);
+        }
+
+        .checklist-item input {
+            margin-right: 1rem;
+            margin-top: 0.25rem;
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+        }
+
+        .checklist-item.checked {
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 4px solid var(--success);
+        }
+
+        .pattern-card {
+            background: var(--code-bg);
+            border: 1px solid var(--code-border);
+            padding: 1.5rem;
+            border-radius: 6px;
+            margin-bottom: 1.5rem;
+        }
+
+        .pattern-title {
+            color: var(--highlight);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .pattern-description {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: var(--highlight);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #d63653;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: var(--accent);
+            color: var(--highlight);
+            border: 2px solid var(--highlight);
+        }
+
+        .btn-secondary:hover {
+            background: var(--highlight);
+            color: white;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--code-border);
+            border-radius: 4px;
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--highlight);
+            transition: width 0.3s ease;
+        }
+
+        .timer {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background: var(--accent);
+            border-radius: 4px;
+            margin-bottom: 1rem;
+            font-weight: 500;
+            color: var(--highlight);
+        }
+
+        .key-concept {
+            background: linear-gradient(135deg, rgba(233, 69, 96, 0.1), rgba(14, 165, 233, 0.1));
+            border-left: 4px solid var(--highlight);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 4px;
+        }
+
+        .key-concept strong {
+            color: var(--highlight);
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .tabs {
+                gap: 0;
+            }
+
+            .tab-button {
+                padding: 0.75rem 1rem;
+                font-size: 0.85rem;
+            }
+
+            .state-diagram {
+                flex-direction: column;
+            }
+
+            .comparison-table {
+                font-size: 0.85rem;
+            }
+
+            .comparison-table th,
+            .comparison-table td {
+                padding: 0.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>☕ Java Threads & Multithreading</h1>
+            <p class="subtitle">Interview Prep Guide — Core Concepts to Executors</p>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
+            </div>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-button active" data-tab="concepts">Core Concepts</button>
+            <button class="tab-button" data-tab="lifecycle">Thread Lifecycle</button>
+            <button class="tab-button" data-tab="race-conditions">Race Conditions</button>
+            <button class="tab-button" data-tab="synchronization">Synchronization</button>
+            <button class="tab-button" data-tab="executors">Executors & Pools</button>
+            <button class="tab-button" data-tab="patterns">Interview Patterns</button>
+            <button class="tab-button" data-tab="advanced">Advanced Topics</button>
+            <button class="tab-button" data-tab="quiz">Quiz</button>
+            <button class="tab-button" data-tab="pitfalls">Pitfalls</button>
+        </div>
+
+        <!-- CORE CONCEPTS TAB -->
+        <div id="concepts" class="tab-content active">
+            <div class="section">
+                <h2>1. Core Concepts</h2>
+
+                <h3>What is a Thread?</h3>
+                <p>A thread is the smallest unit of execution within a process. Think of it like a worker in Kafka's consumer group—each worker (thread) can independently process messages (tasks) from a queue, and multiple workers can run in parallel.</p>
+
+                <div class="analogy">
+                    <strong>🔄 Work Analogy:</strong> Imagine your SR Path funnel processing user signups. With 1 thread, you process one signup at a time. With 10 threads, you can handle 10 signups concurrently. But if they all try to increment the same counter without coordination, chaos ensues (race condition).
+                </div>
+
+                <h3>Thread vs Process</h3>
+                <div class="comparison-table">
+                    <tr>
+                        <th>Aspect</th>
+                        <th>Process</th>
+                        <th>Thread</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Memory</strong></td>
+                        <td>Separate address space</td>
+                        <td>Shared memory (same process)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Creation Cost</strong></td>
+                        <td>Very expensive</td>
+                        <td>Cheaper than processes</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Communication</strong></td>
+                        <td>IPC (complex)</td>
+                        <td>Shared heap (careful!)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Isolation</strong></td>
+                        <td>Complete isolation</td>
+                        <td>Share code, heap, open files</td>
+                    </tr>
+                </div>
+
+                <h3>CPU-Bound vs I/O-Bound Work</h3>
+                <div class="key-concept">
+                    <strong>CPU-Bound:</strong> Pure computation. Threads can't help if limited by CPU cores. (Limit threads ≈ CPU cores)
+                    <br><br>
+                    <strong>I/O-Bound:</strong> Waiting for network, disk, database. More threads = parallelism. (Can have many more threads than cores)
+                </div>
+
+                <div class="code-block">
+                    <div class="code-label">CPU-Bound Example</div>
+                    <code><span class="keyword">long</span> sum = <span class="number">0</span>;
+<span class="keyword">for</span> (<span class="keyword">long</span> i = <span class="number">0</span>; i &lt; <span class="number">1_000_000_000</span>; i++) {
+    sum += i;  <span class="comment">// Pure computation, CPU keeps working</span>
+}
+<span class="comment">// Adding more threads won't help (still limited by CPU)</span></code>
+                </div>
+
+                <div class="code-block">
+                    <div class="code-label">I/O-Bound Example</div>
+                    <code><span class="comment">// Waiting for database query</span>
+<span class="class-name">User</span> user = userRepository.<span class="method">findById</span>(<span class="number">123</span>);  <span class="comment">// Thread sleeps here</span>
+<span class="comment">// CPU is idle—other threads can work</span>
+<span class="comment">// So more threads = higher throughput</span></code>
+                </div>
+
+                <h3>Context Switching & Overhead</h3>
+                <p>When you have more threads than CPU cores, the OS rapidly switches between them. This is powerful but has cost:</p>
+                <ul style="margin-left: 2rem; color: var(--text-secondary);">
+                    <li><strong>Cache invalidation:</strong> CPU cache loses data when switching threads</li>
+                    <li><strong>Memory overhead:</strong> Each thread needs stack memory (~1MB)</li>
+                    <li><strong>Diminishing returns:</strong> Too many threads = thrashing, not parallelism</li>
+                </ul>
+
+                <div class="analogy">
+                    <strong>🎯 Work Analogy:</strong> More Kafka consumer threads = good for I/O. But if you spin up 1000 threads on 4 CPU cores, context switching becomes the bottleneck, not the work itself.
+                </div>
+
+                <h3>Thread States</h3>
+                <div class="state-diagram">
+                    <div class="state-box">NEW</div>
+                    <div class="state-arrow">→</div>
+                    <div class="state-box">RUNNABLE</div>
+                    <div class="state-arrow">→</div>
+                    <div class="state-box">BLOCKED /<br>WAITING /<br>TIMED_WAITING</div>
+                    <div class="state-arrow">→</div>
+                    <div class="state-box">RUNNABLE</div>
+                    <div class="state-arrow">→</div>
+                    <div class="state-box">TERMINATED</div>
+                </div>
+
+                <table class="comparison-table" style="margin-top: 2rem;">
+                    <tr>
+                        <th>State</th>
+                        <th>What it means</th>
+                        <th>Can execute?</th>
+                    </tr>
+                    <tr>
+                        <td><strong>NEW</strong></td>
+                        <td>Created but <code>start()</code> not called</td>
+                        <td>No</td>
+                    </tr>
+                    <tr>
+                        <td><strong>RUNNABLE</strong></td>
+                        <td>Ready to run, waiting for CPU time</td>
+                        <td>Yes (if CPU available)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>BLOCKED</strong></td>
+                        <td>Waiting to acquire a lock (monitor)</td>
+                        <td>No</td>
+                    </tr>
+                    <tr>
+                        <td><strong>WAITING</strong></td>
+                        <td>Waiting for another thread (e.g., <code>join()</code>, <code>wait()</code>)</td>
+                        <td>No</td>
+                    </tr>
+                    <tr>
+                        <td><strong>TIMED_WAITING</strong></td>
+                        <td>Waiting with a timeout (e.g., <code>sleep(1000)</code>)</td>
+                        <td>No</td>
+                    </tr>
+                    <tr>
+                        <td><strong>TERMINATED</strong></td>
+                        <td>Thread finished executing</td>
+                        <td>No</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- THREAD LIFECYCLE TAB -->
+        <div id="lifecycle" class="tab-content">
+            <div class="section">
+                <h2>2. Thread Lifecycle & Basics</h2>
+
+                <h3>Creating Threads: 3 Approaches</h3>
+
+                <h4>Approach 1: Extend Thread (old, less flexible)</h4>
+                <div class="code-block">
+                    <div class="code-label">Extended Thread</div>
+                    <code><span class="keyword">class</span> <span class="class-name">MyThread</span> <span class="keyword">extends</span> <span class="class-name">Thread</span> {
+    <span class="keyword">@Override</span>
+    <span class="keyword">public void</span> <span class="method">run</span>() {
+        <span class="class-name">System</span>.<span class="keyword">out</span>.<span class="method">println</span>(<span class="string">"Thread running"</span>);
+    }
+}
+
+<span class="comment">// Usage</span>
+<span class="class-name">MyThread</span> t = <span class="keyword">new</span> <span class="class-name">MyThread</span>();
+t.<span class="method">start</span>();  <span class="comment">// CORRECT: calls run() in new thread</span>
+<span class="comment">// t.run();  // WRONG: runs in current thread!</span></code>
+                </div>
+
+                <h4>Approach 2: Implement Runnable (preferred)</h4>
+                <div class="code-block">
+                    <div class="code-label">Runnable Implementation</div>
+                    <code><span class="keyword">class</span> <span class="class-name">MyRunnable</span> <span class="keyword">implements</span> <span class="class-name">Runnable</span> {
+    <span class="keyword">@Override</span>
+    <span class="keyword">public void</span> <span class="method">run</span>() {
+        <span class="class-name">System</span>.<span class="keyword">out</span>.<span class="method">println</span>(<span class="string">"Runnable task"</span>);
+    }
+}
+
+<span class="comment">// Usage</span>
+<span class="class-name">Thread</span> t = <span class="keyword">new</span> <span class="class-name">Thread</span>(<span class="keyword">new</span> <span class="class-name">MyRunnable</span>());
+t.<span class="method">start</span>();
+
+<span class="comment">// Or with lambda (Java 8+)</span>
+<span class="class-name">Thread</span> t = <span class="keyword">new</span> <span class="class-name">Thread</span>(() → {
+    <span class="class-name">System</span>.<span class="keyword">out</span>.<span class="method">println</span>(<span class="string">"Lambda task"</span>);
+});
+t.<span class="method">start</span>();</code>
+                </div>
+
+                <h4>Approach 3: Callable (returns result, throws checked exceptions)</h4>
+                <div class="code-block">
+                    <div class="code-label">Callable Implementation</div>
+                    <code><span class="keyword">class</span> <span class="class-name">MyCallable</span> <span class="keyword">implements</span> <span class="class-name">Callable</span>&lt;<span class="class-name">Integer</span>&gt; {
+    <span class="keyword">@Override</span>
+    <span class="keyword">public</span> <span class="class-name">Integer</span> <span class="method">call</span>() <span class="keyword">throws</span> <span class="class-name">Exception</span> {
+        <span class="keyword">return</span> <span class="number">42</span>;
+    }
+}
+
+<span class="comment">// Use with ExecutorService (section 5)</span>
+<span class="class-name">ExecutorService</span> executor = <span class="class-name">Executors</span>.<span class="method">newFixedThreadPool</span>(<span class="number">2</span>);
+<span class="class-name">Future</span>&lt;<span class="class-name">Integer</span>&gt; future = executor.<span class="method">submit</span>(<span class="keyword">new</span> <span class="class-name">MyCallable</span>());
+<span class="class-name">Integer</span> result = future.<span class="method">get</span>();  <span class="comment">// Blocks until done</span></code>
+                </div>
+
+                <h3>start() vs run() — The Most Common Mistake</h3>
+                <div class="key-concept">
+                    <strong>⚠️ CRITICAL:</strong> Always call <code>start()</code>, NOT <code>run()</code>
+                    <br><br>
+                    <code>start()</code> → JVM creates new thread → calls <code>run()</code> in that thread
+                    <br>
+                    <code>run()</code> → executes in CURRENT thread (no parallelism!)
+                </div>
+
+                <h3>Key Thread Methods</h3>
+                <div class="comparison-table">
+                    <tr>
+                        <th>Method</th>
+                        <th>What it does</th>
+                        <th>Blocking?</th>
+                    </tr>
+                    <tr>
+                        <td><code>start()</code></td>
+                        <td>Creates new thread, calls <code>run()</code></td>
+                        <td>No</td>
+                    </tr>
+                    <tr>
+                        <td><code>join()</code></td>
+                        <td>Wait for thread to finish</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td><code>sleep(millis)</code></td>
+                        <td>Sleep for N milliseconds</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td><code>interrupt()</code></td>
+                        <td>Request thread to stop (cooperative)</td>
+                        <td>No</td>
+                    </tr>
+                    <tr>
+                        <td><code>isAlive()</code></td>
+                        <td>Check if thread still running</td>
+                        <td>No</td>
+                    </tr>
+                </div>
+
+                <h3>join() Example: Waiting for Threads</h3>
+                <div class="code-block">
+                    <div class="code-label">Using join()</div>
+                    <code><span class="class-name">Thread</span> t1 = <span class="keyword">new</span> <span class="class-name">Thread</span>(() → {
+    <span class="class-name">System</span>.<span class="keyword">out</span>.<span class="method">println</span>(<span class="string">"T1 working..."</span>);
+    <span class="class-name">Thread</span>.<span class="method">sleep</span>(<span class="number">2000</span>);
+});
+
+t1.<span class="method">start</span>();
+<span class="class-name">System</span>.<span class="keyword">out</span>.<span class="method">println</span>(<span class="string">"Main continues immediately"</span>);
+t1.<span class="method">join</span>();  <span class="comment">// Main BLOCKS here until t1 finishes</span>
+<span class="class-name">System</span>.<span class="keyword">out</span>.<span class="method">println</span>(<span class="string">"T1 finished!"</span>);</code>
+                </div>
+
+                <h3>Interrupt Handling (Cooperative Cancellation)</h3>
+                <p>Interrupts don't force a thread to stop—they request it. The thread must check and respond.</p>
+
+                <div class="code-block">
+                    <div class="code-label">Interrupt Handling</div>
+                    <code><span class="class-name">Thread</span> worker = <span class="keyword">new</span> <span class="class-name">Thread</span>(() → {
+    <span class="keyword">try</span> {
+        <span class="keyword">while</span> (!<span class="class-name">Thread</span>.<span class="method">currentThread</span>().<span class="method">isInterrupted</span>()) {
+            <span class="keyword">do</span> work...
+            <span class="class-name">Thread</span>.<span class="method">sleep</span>(<span class="number">1000</span>);
+        }
+    } <span class="keyword">catch</span> (<span class="class-name">InterruptedException</span> e) {
+        <span class="comment">// Restore interrupt status and exit</span>
+        <span class="class-name">Thread</span>.<span class="method">currentThread</span>().<span class="method">interrupt</span>();
+    }
+});
+
+worker.<span class="method">start</span>();
+worker.<span class="method">interrupt</span>();  <span class="comment">// Request stop</span></code>
+                </div>
+            </div>
+        </div>
+
+        <!-- RACE CONDITIONS TAB -->
+        <div id="race-conditions" class="tab-content">
+            <div class="section">
+                <h2>3. Race Conditions & Visibility</h2>
+
+                <h3>What is a Race Condition?</h3>
+                <p>Two or more threads access shared data, at least one modifies it, and the result depends on timing. The outcome "races" to completion—unpredictable.</p>
+
+                <div class="analogy">
+                    <strong>🏁 Work Analogy:</strong> Two Kafka consumers try to increment the same counter without coordination. Consumer A reads (value = 5), Consumer B reads (value = 5). Both add 1. Both write back 6. Result: 6 instead of 7. Data lost!
+                </div>
+
+                <h3>Classic Example: Unsynchronized Counter</h3>
+                <div class="code-block">
+                    <div class="code-label">Race Condition (BROKEN)</div>
+                    <code><span class="keyword">class</span> <span class="class-name">Counter</span> {
+    <span class="keyword">private int</span> count = <span class="number">0</span>;
+
+    <span class="keyword">public void</span> <span class="method">increment</span>() {
+        count++;  <span class="comment">// NOT atomic! 3 steps:</span>
+                  <span class="comment">// 1. READ count</span>
+                  <span class="comment">// 2. ADD 1</span>
+                  <span class="comment">// 3. WRITE count</span>
+    }
+
+    <span class="keyword">public int</span> <span class="method">getCount</span>() { <span class="keyword">return</span> count; }
+}
+
+<span class="comment">// Race condition demo</span>
+<span class="class-name">Counter</span> counter = <span class="keyword">new</span> <span class="class-name">Counter</span>();
+<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">1000</span>; i++) {
+    <span class="keyword">new</span> <span class="class-name">Thread</span>(() → counter.<span class="method">increment</span>()).<span class="method">start</span>();
+}
+<span class="comment">// Expected: 1000, Actual: 950-1000 (varies!)</span></code>
+                </div>
+
+                <h3>Visibility vs Atomicity</h3>
+                <div class="key-concept">
+                    <strong>Atomicity:</strong> An operation completes without interruption. <code>count++</code> is NOT atomic.
+                    <br><br>
+                    <strong>Visibility:</strong> Changes made by one thread are seen by others. Without synchronization, changes may stay in thread-local caches.
+                </div>
+
+                <div class="comparison-table">
+                    <tr>
+                        <th>Problem</th>
+                        <th>Cause</th>
+                        <th>Solution</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Lost update</strong></td>
+                        <td>Non-atomic read-modify-write</td>
+                        <td><code>synchronized</code>, <code>AtomicInteger</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Stale reads</strong></td>
+                        <td>No visibility guarantee</td>
+                        <td><code>volatile</code>, synchronization</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Out-of-order execution</strong></td>
+                        <td>Compiler/CPU reordering</td>
+                        <td>Synchronization, <code>volatile</code></td>
+                    </tr>
+                </div>
+
+                <h3>volatile: Guarantees Visibility, NOT Atomicity</h3>
+                <p><code>volatile</code> ensures all threads see the latest value, but doesn't prevent race conditions.</p>
+
+                <div class="code-block">
+                    <div class="code-label">volatile Example</div>
+                    <code><span class="keyword">class</span> <span class="class-name">Flag</span> {
+    <span class="keyword">private volatile boolean</span> running = <span class="keyword">true</span>;
+
+    <span class="keyword">public void</span> <span class="method">stop</span>() {
+        running = <span class="keyword">false</span>;  <span class="comment">// All threads see this immediately</span>
+    }
+
+    <span class="keyword">public void</span> <span class="method">loop</span>() {
+        <span class="keyword">while</span> (running) {  <span class="comment">// Always reads fresh value</span>
+            <span class="keyword">do</span> work...
+        }
+    }
+}
+
+<span class="comment">// But for counters, volatile still fails (not atomic):</span>
+<span class="keyword">private volatile int</span> count;
+count++;  <span class="comment">// STILL NOT SAFE!</span></code>
+                </div>
+
+                <h3>Happens-Before: Memory Visibility Guarantees</h3>
+                <p>The Java Memory Model (JMM) defines happens-before relationships:</p>
+                <ul style="margin-left: 2rem; color: var(--text-secondary);">
+                    <li><strong>Synchronization:</strong> Lock release → lock acquire</li>
+                    <li><strong>volatile write → volatile read</strong></li>
+                    <li><strong>Thread.start()</strong> → code in that thread</li>
+                    <li><strong>Thread code → Thread.join()</strong> return</li>
+                </ul>
+
+                <div class="key-concept">
+                    <strong>Key insight:</strong> If your critical section is inside a <code>synchronized</code> block or guarded by a lock, all visibility issues are handled automatically.
+                </div>
+            </div>
+        </div>
+
+        <!-- SYNCHRONIZATION TAB -->
+        <div id="synchronization" class="tab-content">
+            <div class="section">
+                <h2>4. Synchronization Primitives</h2>
+
+                <h3>synchronized Blocks & Methods</h3>
+                <p>The simplest way to ensure atomicity and visibility. Acquiring a lock (monitor) prevents other threads from entering the synchronized block simultaneously.</p>
+
+                <div class="code-block">
+                    <div class="code-label">synchronized Method</div>
+                    <code><span class="keyword">class</span> <span class="class-name">Counter</span> {
+    <span class="keyword">private int</span> count = <span class="number">0</span>;
+
+    <span class="keyword">public synchronized void</span> <span class="method">increment</span>() {
+        count++;  <span class="comment">// Now atomic! Lock held by one thread</span>
+    }
+
+    <span class="keyword">public synchronized int</span> <span class="method">getCount</span>() {
+        <span class="keyword">return</span> count;
+    }
+}
+
+<span class="comment">// Now safe: count will be exactly 1000 after 1000 increments</span></code>
+                </div>
+
+                <div class="code-block">
+                    <div class="code-label">synchronized Block (fine-grained locking)</div>
+                    <code><span class="keyword">class</span> <span class="class-name">BankAccount</span> {
+    <span class="keyword">private int</span> balance = <span class="number">100</span>;
+    <span class="keyword">private int</span> transactions = <span class="number">0</span>;
+
+    <span class="keyword">public void</span> <span class="method">withdraw</span>(<span class="keyword">int</span> amount) {
+        <span class="keyword">synchronized</span> (<span class="keyword">this</span>) {
+            <span class="keyword">if</span> (balance &gt;= amount) {
+                balance -= amount;
+                transactions++;  <span class="comment">// Both protected</span>
+            }
+        }
+    }
+}
+
+<span class="comment">// Or synchronize on a different object (lock striping)</span>
+<span class="keyword">private Object</span> balanceLock = <span class="keyword">new</span> <span class="class-name">Object</span>();
+<span class="keyword">synchronized</span> (balanceLock) {
+    balance -= amount;
+}</code>
+                </div>
+
+                <h3>Intrinsic Locks & Monitor Concept</h3>
+                <p>Every Java object has an intrinsic lock (monitor). When you use <code>synchronized</code> on an object, you're acquiring its lock.</p>
+
+                <div class="analogy">
+                    <strong>🔐 Work Analogy:</strong> The lock is like a badge that lets only one worker access the shared counter at a time. Other workers wait in a queue. When the badge holder exits, the next worker in queue gets the badge.
+                </div>
+
+                <h3>Lock Interface (More Flexible)</h3>
+                <p><code>synchronized</code> is simple but inflexible. <code>Lock</code> provides more control:</p>
+
+                <div class="code-block">
+                    <div class="code-label">ReentrantLock</div>
+                    <code><span class="keyword">import java.util.concurrent.locks.*;</span>
+
+<span class="keyword">class</span> <span class="class-name">Counter</span> {
+    <span class="keyword">private int</span> count = <span class="number">0</span>;
+    <span class="keyword">private</span> <span class="class-name">Lock</span> lock = <span class="keyword">new</span> <span class="class-name">ReentrantLock</span>();
+
+    <span class="keyword">public void</span> <span class="method">increment</span>() {
+        lock.<span class="method">lock</span>();
+        <span class="keyword">try</span> {
+            count++;
+        } <span class="keyword">finally</span> {
+            lock.<span class="method">unlock</span>();  <span class="comment">// ALWAYS unlock in finally</span>
+        }
+    }
+
+    <span class="keyword">public int</span> <span class="method">getCount</span>() {
+        <span class="keyword">return</span> count;  <span class="comment">// Unprotected read (risky!)</span>
+    }
+}
+
+<span class="comment">// Advantages over synchronized:</span>
+<span class="comment">// - tryLock(timeout): non-blocking attempt</span>
+<span class="comment">// - Multiple Condition objects for waiting</span>
+<span class="comment">// - Fair locking option</span></code>
+                </div>
+
+                <h3>Deadlock, Livelock, Starvation</h3>
+                <div class="pitfall">
+                    <strong>Deadlock:</strong> Two threads hold locks and wait for each other. Program hangs forever.
+                    <br><br>
+                    Example: Thread A holds lock1, needs lock2. Thread B holds lock2, needs lock1. Both wait infinitely.
+                </div>
+
+                <div class="pitfall">
+                    <strong>Livelock:</strong> Threads are active but making no progress. They keep changing state in response to each other.
+                    <br><br>
+                    Example: Both threads keep releasing locks and retrying, but one always "gives way" to the other.
+                </div>
+
+                <div class="pitfall">
+                    <strong>Starvation:</strong> A thread never gets access to a resource due to unfair scheduling.
+                    <br><br>
+                    Example: High-priority threads continuously run, low-priority threads never get CPU time.
+                </div>
+
+                <h3>How to Avoid Deadlock</h3>
+                <ul style="margin-left: 2rem; color: var(--text-secondary);">
+                    <li><strong>Lock order:</strong> Always acquire locks in the same order</li>
+                    <li><strong>Minimize critical sections:</strong> Don't hold locks longer than needed</li>
+                    <li><strong>Use timeouts:</strong> <code>lock.tryLock(1, TimeUnit.SECONDS)</code></li>
+                    <li><strong>Single lock:</strong> When possible, use one lock instead of multiple</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- EXECUTORS TAB -->
+        <div id="executors" class="tab-content">
+            <div class="section">
+                <h2>5. Executors & Thread Pools</h2>
+
+                <h3>Why Thread Pools?</h3>
+                <p>Creating a new thread for every task is expensive. Thread pools reuse threads, reducing overhead dramatically. Think of it as a Kafka consumer group with a fixed number of workers.</p>
+
+                <div class="analogy">
+                    <strong>⚙️ Work Analogy:</strong> Instead of hiring a new worker for each signup, you hire 10 workers once. They wait for tasks in a queue. When a signup arrives, any idle worker picks it up. Much cheaper!
+                </div>
+
+                <h3>ExecutorService: The Main Interface</h3>
+                <div class="code-block">
+                    <div class="code-label">Basic ExecutorService Usage</div>
+                    <code><span class="class-name">ExecutorService</span> executor = <span class="class-name">Executors</span>.<span class="method">newFixedThreadPool</span>(<span class="number">5</span>);
+
+<span class="comment">// Submit Runnable (no return value)</span>
+executor.<span class="method">execute</span>(() → <span class="class-name">System</span>.<span class="keyword">out</span>.<span class="method">println</span>(<span class="string">"Task"</span>));
+
+<span class="comment">// Submit Callable (with return value)</span>
+<span class="class-name">Future</span>&lt;<span class="class-name">Integer</span>&gt; future = executor.<span class="method">submit</span>(() → <span class="number">42</span>);
+<span class="class-name">Integer</span> result = future.<span class="method">get</span>();  <span class="comment">// Blocks until ready</span>
+
+<span class="comment">// Shutdown</span>
+executor.<span class="method">shutdown</span>();  <span class="comment">// No new tasks, wait for existing</span>
+<span class="keyword">if</span> (!executor.<span class="method">awaitTermination</span>(<span class="number">10</span>, <span class="class-name">TimeUnit</span>.SECONDS)) {
+    executor.<span class="method">shutdownNow</span>();  <span class="comment">// Force kill</span>
+}</code>
+                </div>
+
+                <h3>Common Executor Types</h3>
+                <div class="comparison-table">
+                    <tr>
+                        <th>Type</th>
+                        <th>Use Case</th>
+                        <th>Pool Size</th>
+                    </tr>
+                    <tr>
+                        <td><code>newFixedThreadPool(n)</code></td>
+                        <td>General purpose, known workload</td>
+                        <td>Fixed n threads</td>
+                    </tr>
+                    <tr>
+                        <td><code>newCachedThreadPool()</code></td>
+                        <td>Many short-lived tasks</td>
+                        <td>Unbounded (⚠️ can exhaust memory)</td>
+                    </tr>
+                    <tr>
+                        <td><code>newSingleThreadExecutor()</code></td>
+                        <td>Sequential execution, 1 thread</td>
+                        <td>1 thread</td>
+                    </tr>
+                    <tr>
+                        <td><code>newScheduledThreadPool(n)</code></td>
+                        <td>Delayed/periodic tasks</td>
+                        <td>Fixed n threads</td>
+                    </tr>
+                </div>
+
+                <h3>ThreadPoolExecutor (Under the Hood)</h3>
+                <p>ExecutorService is built on ThreadPoolExecutor. Understanding it helps with tuning.</p>
+
+                <div class="code-block">
+                    <div class="code-label">Creating a Tuned ThreadPoolExecutor</div>
+                    <code><span class="class-name">ThreadPoolExecutor</span> executor = <span class="keyword">new</span> <span class="class-name">ThreadPoolExecutor</span>(
+    <span class="number">5</span>,      <span class="comment">// corePoolSize: threads kept alive</span>
+    <span class="number">10</span>,     <span class="comment">// maxPoolSize: max threads</span>
+    <span class="number">60</span>, <span class="class-name">TimeUnit</span>.SECONDS,  <span class="comment">// keepAliveTime</span>
+    <span class="keyword">new</span> <span class="class-name">LinkedBlockingQueue</span>&lt;&gt;(<span class="number">100</span>),  <span class="comment">// task queue</span>
+    <span class="keyword">new</span> <span class="class-name">ThreadPoolExecutor</span>.<span class="class-name">CallerRunsPolicy</span>()  <span class="comment">// if queue full</span>
+);
+
+<span class="comment">// Rejection policies:</span>
+<span class="comment">// - AbortPolicy: throw exception (default)</span>
+<span class="comment">// - CallerRunsPolicy: caller thread runs task</span>
+<span class="comment">// - DiscardPolicy: silently drop task</span>
+<span class="comment">// - DiscardOldestPolicy: drop oldest, add new</span></code>
+                </div>
+
+                <h3>Pool Sizing Guidelines</h3>
+                <ul style="margin-left: 2rem; color: var(--text-secondary);">
+                    <li><strong>I/O-bound (network, database):</strong> Use more threads. Formula: <code>(tasks * expected blocking ratio) / CPU cores</code>. Often 2-3x cores.</li>
+                    <li><strong>CPU-bound (computation):</strong> Use ~CPU cores. More threads = context switching overhead.</li>
+                    <li><strong>Web servers:</strong> Often 10-100 threads, tune based on latency/throughput tradeoffs.</li>
+                </ul>
+
+                <div class="key-concept">
+                    <strong>For Kafka consumers (I/O-bound):</strong> More threads = more parallelism. But watch memory: each thread = ~1MB stack. 1000 threads = ~1GB just for stacks.
+                </div>
+
+                <h3>Future & Timeouts</h3>
+                <div class="code-block">
+                    <div class="code-label">Using Future with Timeout</div>
+                    <code><span class="class-name">ExecutorService</span> executor = <span class="class-name">Executors</span>.<span class="method">newFixedThreadPool</span>(<span class="number">2</span>);
+<span class="class-name">Future</span>&lt;<span class="class-name">String</span>&gt; future = executor.<span class="method">submit</span>(() → {
+    <span class="class-name">Thread</span>.<span class="method">sleep</span>(<span class="number">5000</span>);
+    <span class="keyword">return</span> <span class="string">"Done"</span>;
+});
+
+<span class="keyword">try</span> {
+    <span class="class-name">String</span> result = future.<span class="method">get</span>(<span class="number">2</span>, <span class="class-name">TimeUnit</span>.SECONDS);  <span class="comment">// 2 second timeout</span>
+} <span class="keyword">catch</span> (<span class="class-name">TimeoutException</span> e) {
+    <span class="class-name">System</span>.<span class="keyword">out</span>.<span class="method">println</span>(<span class="string">"Timeout! Cancelling..."</span>);
+    future.<span class="method">cancel</span>(<span class="keyword">true</span>);  <span class="comment">// Interrupt if running</span>
+}</code>
+                </div>
+            </div>
+        </div>
+
+        <!-- INTERVIEW PATTERNS TAB -->
+        <div id="patterns" class="tab-content">
+            <div class="section">
+                <h2>6. Interview Patterns</h2>
+
+                <h3>Pattern 1: Producer-Consumer (Thread-Safe Queue)</h3>
+                <div class="pattern-card">
+                    <div class="pattern-title">Problem</div>
+                    <div class="pattern-description">Producer threads add items to a queue, consumer threads process them. Handle blocking when queue is empty or full.</div>
+                </div>
+
+                <div class="code-block">
+                    <div class="code-label">Producer-Consumer with BlockingQueue</div>
+                    <code><span class="class-name">BlockingQueue</span>&lt;<span class="class-name">String</span>&gt; queue = <span class="keyword">new</span> <span class="class-name">LinkedBlockingQueue</span>&lt;&gt;(<span class="number">10</span>);
+
+<span class="comment">// Producer</span>
+<span class="keyword">new</span> <span class="class-name">Thread</span>(() → {
+    <span class="keyword">try</span> {
+        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">100</span>; i++) {
+            queue.<span class="method">put</span>(<span class="string">"item-"</span> + i);  <span class="comment">// Blocks if full</span>
+            <span class="class-name">Thread</span>.<span class="method">sleep</span>(<span class="number">100</span>);
+        }
+    } <span class="keyword">catch</span> (<span class="class-name">InterruptedException</span> e) {
+        <span class="class-name">Thread</span>.<span class="method">currentThread</span>().<span class="method">interrupt</span>();
+    }
+}).<span class="method">start</span>();
+
+<span class="comment">// Consumer</span>
+<span class="keyword">new</span> <span class="class-name">Thread</span>(() → {
+    <span class="keyword">try</span> {
+        <span class="keyword">while</span> (<span class="keyword">true</span>) {
+            <span class="class-name">String</span> item = queue.<span class="method">take</span>();  <span class="comment">// Blocks if empty</span>
+            <span class="class-name">System</span>.<span class="keyword">out</span>.<span class="method">println</span>(<span class="string">"Processing: "</span> + item);
+        }
+    } <span class="keyword">catch</span> (<span class="class-name">InterruptedException</span> e) {
+        <span class="class-name">Thread</span>.<span class="method">currentThread</span>().<span class="method">interrupt</span>();
+    }
+}).<span class="method">start</span>();</code>
+                </div>
+
+                <h3>Pattern 2: Rate Limiter (Semaphore)</h3>
+                <div class="pattern-card">
+                    <div class="pattern-title">Problem</div>
+                    <div class="pattern-description">Limit concurrent access to a resource (e.g., max 5 concurrent DB queries, max 10 API calls/second).</div>
+                </div>
+
+                <div class="code-block">
+                    <div class="code-label">Rate Limiter with Semaphore</div>
+                    <code><span class="class-name">Semaphore</span> semaphore = <span class="keyword">new</span> <span class="class-name">Semaphore</span>(<span class="number">5</span>);  <span class="comment">// Max 5 concurrent</span>
+
+<span class="keyword">public void</span> <span class="method">queryDatabase</span>() {
+    <span class="keyword">try</span> {
+        semaphore.<span class="method">acquire</span>();  <span class="comment">// Decrement, block if 0</span>
+        <span class="class-name">System</span>.<span class="keyword">out</span>.<span class="method">println</span>(<span class="string">"Query running"</span>);
+        <span class="class-name">Thread</span>.<span class="method">sleep</span>(<span class="number">2000</span>);  <span class="comment">// Simulate work</span>
+    } <span class="keyword">catch</span> (<span class="class-name">InterruptedException</span> e) {
+        <span class="class-name">Thread</span>.<span class="method">currentThread</span>().<span class="method">interrupt</span>();
+    } <span class="keyword">finally</span> {
+        semaphore.<span class="method">release</span>();  <span class="comment">// Increment, wake waiting thread</span>
+    }
+}
+
+<span class="comment">// Usage: spawn 20 threads, only 5 run concurrently</span>
+<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">20</span>; i++) {
+    <span class="keyword">new</span> <span class="class-name">Thread</span>(this::queryDatabase).<span class="method">start</span>();
+}</code>
+                </div>
+
+                <h3>Pattern 3: Barrier (CountDownLatch / CyclicBarrier)</h3>
+                <div class="pattern-card">
+                    <div class="pattern-title">Problem</div>
+                    <div class="pattern-description">Wait for multiple threads to reach a point before continuing (e.g., all workers ready before processing starts).</div>
+                </div>
+
+                <div class="code-block">
+                    <div class="code-label">CyclicBarrier (Reusable)</div>
+                    <code><span class="class-name">CyclicBarrier</span> barrier = <span class="keyword">new</span> <span class="class-name">CyclicBarrier</span>(<span class="number">3</span>,
+    () → <span class="class-name">System</span>.<span class="keyword">out</span>.<span class="method">println</span>(<span class="string">"All workers ready! Starting..."</span>)
+);
+
+<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">3</span>; i++) {
+    <span class="keyword">new</span> <span class="class-name">Thread</span>(<span class="string">"Worker-"</span> + i) {
+        <span class="keyword">public void</span> <span class="method">run</span>() {
+            <span class="class-name">System</span>.<span class="keyword">out</span>.<span class="method">println</span>(<span class="class-name">Thread</span>.<span class="method">currentThread</span>().<span class="method">getName</span>() + <span class="string">" ready"</span>);
+            <span class="keyword">try</span> {
+                barrier.<span class="method">await</span>();  <span class="comment">// Wait for all 3</span>
+                <span class="class-name">System</span>.<span class="keyword">out</span>.<span class="method">println</span>(<span class="class-name">Thread</span>.<span class="method">currentThread</span>().<span class="method">getName</span>() + <span class="string">" processing"</span>);
+            } <span class="keyword">catch</span> (<span class="class-name">Exception</span> e) {}
+        }
+    }.<span class="method">start</span>();
+}</code>
+                </div>
+
+                <h3>Pattern 4: Safe Singleton (Double-Checked Locking)</h3>
+                <div class="code-block">
+                    <div class="code-label">Lazy Singleton (Thread-Safe)</div>
+                    <code><span class="keyword">class</span> <span class="class-name">Singleton</span> {
+    <span class="keyword">private static volatile</span> <span class="class-name">Singleton</span> instance;
+
+    <span class="keyword">private</span> <span class="class-name">Singleton</span>() {}
+
+    <span class="keyword">public static</span> <span class="class-name">Singleton</span> <span class="method">getInstance</span>() {
+        <span class="keyword">if</span> (instance == <span class="keyword">null</span>) {
+            <span class="keyword">synchronized</span> (<span class="class-name">Singleton</span>.<span class="keyword">class</span>) {
+                <span class="keyword">if</span> (instance == <span class="keyword">null</span>) {
+                    instance = <span class="keyword">new</span> <span class="class-name">Singleton</span>();  <span class="comment">// Create once</span>
+                }
+            }
+        }
+        <span class="keyword">return</span> instance;
+    }
+}
+
+<span class="comment">// Better: use eager initialization or bill Pugh</span>
+<span class="keyword">class</span> <span class="class-name">Singleton2</span> {
+    <span class="keyword">private static class</span> <span class="class-name">SingletonHelper</span> {
+        <span class="keyword">private static final</span> <span class="class-name">Singleton2</span> INSTANCE = <span class="keyword">new</span> <span class="class-name">Singleton2</span>();
+    }
+    <span class="keyword">public static</span> <span class="class-name">Singleton2</span> <span class="method">getInstance</span>() {
+        <span class="keyword">return</span> <span class="class-name">SingletonHelper</span>.INSTANCE;
+    }
+}</code>
+                </div>
+            </div>
+        </div>
+
+        <!-- ADVANCED TOPICS TAB -->
+        <div id="advanced" class="tab-content">
+            <div class="section">
+                <h2>7. Advanced Topics: Virtual Threads, Memory, & Spring</h2>
+
+                <h3>A. Virtual Threads (Java 21+)</h3>
+                <p>A game-changer for I/O-bound applications. Virtual Threads allow millions of lightweight threads instead of thousands.</p>
+
+                <div class="key-concept">
+                    <strong>What are Virtual Threads?</strong> Lightweight threads managed by the JVM, not the OS. They live on the Heap (a few hundred bytes) instead of requiring 1MB of native stack memory each.
+                </div>
+
+                <h4>Platform Threads vs Virtual Threads</h4>
+                <div class="comparison-table">
+                    <tr>
+                        <th>Aspect</th>
+                        <th>Platform Threads (Standard)</th>
+                        <th>Virtual Threads (Java 21+)</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Memory per thread</strong></td>
+                        <td>~1 MB (native stack)</td>
+                        <td>~250 bytes (on Heap)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Concurrency limit</strong></td>
+                        <td>~2,000–5,000 (RAM constraint)</td>
+                        <td>1,000,000+ (virtually unlimited)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Context switching</strong></td>
+                        <td>OS kernel involved (slow)</td>
+                        <td>JVM user-space (fast, ~1000x)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Scheduler</strong></td>
+                        <td>OS scheduler</td>
+                        <td>JVM scheduler (Project Loom)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Blocking cost</strong></td>
+                        <td>Thread idles, wastes 1MB</td>
+                        <td>Thread unmounts, core reused immediately</td>
+                    </tr>
+                </div>
+
+                <h4>How Virtual Threads Work</h4>
+                <p><strong>Carrier Threads:</strong> Virtual threads don't run directly on CPU cores. Instead, they run on top of a small number of "Carrier Threads" (typically one per CPU core).</p>
+
+                <div class="analogy">
+                    <strong>🚀 Work Analogy:</strong> Imagine a Kafka consumer group. Instead of 200 dedicated workers (Platform Threads), you have 10 workers (Carrier Threads = cores). Each worker can grab 1000s of tasks (Virtual Threads) and batch them. When a task blocks (I/O), the worker instantly grabs another ready task. The same 10 workers handle millions of tasks efficiently.
+                </div>
+
+                <div class="code-block">
+                    <div class="code-label">Creating Virtual Threads (Java 21+)</div>
+                    <code><span class="comment">// Platform Thread (old way)</span>
+<span class="class-name">Thread</span> t = <span class="keyword">new</span> <span class="class-name">Thread</span>(() → {
+    <span class="class-name">System</span>.<span class="keyword">out</span>.<span class="method">println</span>(<span class="string">"Task"</span>);
+});
+t.<span class="method">start</span>();
+
+<span class="comment">// Virtual Thread (new way)</span>
+<span class="class-name">Thread</span> vt = <span class="class-name">Thread</span>.<span class="method">ofVirtual</span>()
+    .<span class="method">name</span>(<span class="string">"worker"</span>)
+    .<span class="method">start</span>(() → {
+        <span class="class-name">System</span>.<span class="keyword">out</span>.<span class="method">println</span>(<span class="string">"Virtual task"</span>);
+    });
+
+<span class="comment">// Or use ExecutorService</span>
+<span class="class-name">ExecutorService</span> executor = <span class="class-name">Executors</span>.<span class="method">newVirtualThreadPerTaskExecutor</span>();
+executor.<span class="method">execute</span>(() → {
+    <span class="class-name">System</span>.<span class="keyword">out</span>.<span class="method">println</span>(<span class="string">"Unlimited VT tasks"</span>);
+});</code>
+                </div>
+
+                <h4>Virtual Threads in Spring Boot 3.2+</h4>
+                <div class="code-block">
+                    <div class="code-label">Enable Virtual Threads in application.properties</div>
+                    <code><span class="comment"># Spring Boot 3.2+</span>
+spring.threads.virtual.enabled=true</code>
+                </div>
+
+                <p>When enabled, Tomcat's thread pool switches to virtual threads. You can now safely increase the pool size to thousands.</p>
+
+                <h3>B. Memory & Threading Limits</h3>
+
+                <h4>Stack vs Heap Memory</h4>
+                <div class="comparison-table">
+                    <tr>
+                        <th>Memory Type</th>
+                        <th>Stack</th>
+                        <th>Heap</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Scope</strong></td>
+                        <td>One per thread (private)</td>
+                        <td>One per JVM (shared)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>What's stored</strong></td>
+                        <td>Local variables, method frames, return addresses</td>
+                        <td>Objects, class instances (from <code>new</code>)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Default size</strong></td>
+                        <td>~1 MB per thread (<code>-Xss</code> flag)</td>
+                        <td>Dynamically sized (<code>-Xmx</code> flag)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Cleanup</strong></td>
+                        <td>Instant (when method returns)</td>
+                        <td>Garbage Collection (delayed)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Error</strong></td>
+                        <td>StackOverflowError (recursion too deep)</td>
+                        <td>OutOfMemoryError (objects exceeding -Xmx)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Thread-safe?</strong></td>
+                        <td>Yes (other threads can't access)</td>
+                        <td>No (synchronization needed)</td>
+                    </tr>
+                </div>
+
+                <h4>Memory Calculation for Thread Pools</h4>
+                <div class="key-concept">
+                    <strong>Memory for Platform Threads:</strong> threads × 1 MB = native memory
+                    <br><br>
+                    200 threads × 1 MB = 200 MB <strong>just for stacks</strong> (before any objects!)
+                    <br><br>
+                    <strong>Memory for Virtual Threads:</strong> threads × 250 bytes = manageable
+                    <br><br>
+                    10,000 virtual threads × 250 bytes = ~2.5 MB (vs 10 GB for platform threads!)
+                </div>
+
+                <div class="analogy">
+                    <strong>💾 Work Analogy:</strong> Each Kafka consumer worker needs a desk (stack). 200 workers need 200 desks (200 MB). Virtual threads are digital—they don't need desks. 10,000 digital workers consume almost no space.
+                </div>
+
+                <h3>C. OS Scheduler & Context Switching</h3>
+
+                <h4>How the OS Schedules Threads</h4>
+                <p>The OS Scheduler decides which thread runs on which CPU core at any given moment. This happens automatically via time-slicing.</p>
+
+                <div class="state-diagram" style="margin: 2rem 0; flex-direction: column; align-items: flex-start;">
+                    <p style="color: var(--text-secondary); margin-bottom: 1rem;"><strong>Timeline of OS Scheduling:</strong></p>
+                </div>
+
+                <div class="code-block">
+                    <div class="code-label">OS Scheduler Flow</div>
+                    <code><span class="comment">1. Timer Interrupt (hardware timer fires every ~10ms)</span>
+   ↓
+<span class="comment">2. CPU pauses current thread (Thread A on Core 0)</span>
+   ↓
+<span class="comment">3. OS saves context (CPU registers, stack pointer, etc.)</span>
+   ↓
+<span class="comment">4. OS picks next thread from Ready Queue (e.g., Thread C)</span>
+   ↓
+<span class="comment">5. OS restores context of Thread C</span>
+   ↓
+<span class="comment">6. Thread C runs for ~10ms on Core 0</span>
+   ↓
+<span class="comment">7. Repeat...</span></code>
+                </div>
+
+                <h4>Context Switching Cost</h4>
+                <p><strong>What happens during a context switch:</strong></p>
+                <ul style="margin-left: 2rem; color: var(--text-secondary);">
+                    <li>OS enters <strong>Kernel Mode</strong> (privileged CPU state)</li>
+                    <li>CPU registers (~15-20) saved to memory</li>
+                    <li>Instruction pointer, stack pointer updated</li>
+                    <li>CPU <strong>caches flushed</strong> (loses performance data)</li>
+                    <li>New thread's context loaded into registers</li>
+                    <li>CPU exits Kernel Mode, resumes user code</li>
+                </ul>
+
+                <p>This is <strong>expensive</strong>. With Platform Threads, if you have 200 threads on 10 cores, the OS is constantly context switching (thrashing). With Virtual Threads, the JVM switches them in <strong>user-space</strong>—just a pointer move, no Kernel Mode, no cache flush. ~1000x faster.</p>
+
+                <h4>Scheduler Algorithms</h4>
+                <div class="comparison-table">
+                    <tr>
+                        <th>OS</th>
+                        <th>Scheduler Algorithm</th>
+                        <th>How it works</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Linux</strong></td>
+                        <td>CFS (Completely Fair Scheduler)</td>
+                        <td>Each thread gets a fair share of CPU time based on nice priority</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Windows</strong></td>
+                        <td>Priority-based Round Robin</td>
+                        <td>Threads run in priority order; same priority = round-robin time slices</td>
+                    </tr>
+                    <tr>
+                        <td><strong>JVM (Virtual Threads)</strong></td>
+                        <td>Work Stealing Scheduler</td>
+                        <td>Carrier threads steal work from each other's queues (load balancing)</td>
+                    </tr>
+                </div>
+
+                <h3>D. Spring Boot Threading Model</h3>
+
+                <h4>Thread-Per-Request Model (Default)</h4>
+                <p>Spring's embedded Tomcat uses a simple model:</p>
+
+                <div class="code-block">
+                    <div class="code-label">Spring Boot Request Flow (Synchronous)</div>
+                    <code><span class="comment">1. HTTP Request arrives</span>
+   ↓
+<span class="comment">2. Tomcat borrows idle thread from pool (max 200 by default)</span>
+   ↓
+<span class="comment">3. Thread executes: filters → interceptors → controller logic</span>
+   ↓
+<span class="comment">4. If database call: thread BLOCKS (idle, wastes 1MB stack)</span>
+   ↓
+<span class="comment">5. Response sent → thread returns to pool</span>
+   ↓
+<span class="comment">6. Repeat</span></code>
+                </div>
+
+                <div class="analogy">
+                    <strong>🏪 Work Analogy:</strong> You have 200 checkout cashiers (threads). Customer arrives (request), cashier is assigned. If customer goes to fetch an item (DB query), cashier waits idle. No checkout happens while waiting. If you have 500 customers but only 200 cashiers, 300 wait in line.
+                </div>
+
+                <h4>Default Configuration</h4>
+                <div class="code-block">
+                    <div class="code-label">Tomcat Thread Pool Defaults</div>
+                    <code><span class="comment">// application.properties</span>
+server.tomcat.threads.max=<span class="number">200</span>           <span class="comment">// Max worker threads</span>
+server.tomcat.threads.min-spare=<span class="number">10</span>       <span class="comment">// Min kept alive</span>
+server.tomcat.accept-count=<span class="number">100</span>           <span class="comment">// Queue size if all threads busy</span>
+server.tomcat.max-connections=<span class="number">10000</span>       <span class="comment">// Max TCP connections</span></code>
+                </div>
+
+                <h4>Non-Blocking Alternative: Spring WebFlux</h4>
+                <p>For ultra-high concurrency, use Spring WebFlux instead of Spring MVC:</p>
+
+                <div class="comparison-table">
+                    <tr>
+                        <th>Feature</th>
+                        <th>Spring MVC (Sync)</th>
+                        <th>Spring WebFlux (Async)</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Threading</strong></td>
+                        <td>Thread per request</td>
+                        <td>Event loop (small thread pool)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Max concurrent</strong></td>
+                        <td>~200 (before 21), millions (with VT)</td>
+                        <td>~10,000+ (small fixed pool)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Blocking I/O</strong></td>
+                        <td>Natural (synchronous code)</td>
+                        <td>Requires async APIs (CompletableFuture, Reactor)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Code complexity</strong></td>
+                        <td>Simple, familiar</td>
+                        <td>Steeper learning curve (reactive streams)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Best for</strong></td>
+                        <td>Most web apps</td>
+                        <td>Real-time, high-concurrency systems</td>
+                    </tr>
+                </div>
+
+                <div class="key-concept">
+                    <strong>Modern recommendation:</strong> Use Spring MVC with Virtual Threads (Java 21+) instead of WebFlux for most cases. You get async performance with synchronous, readable code.
+                </div>
+
+                <h3>E. Enhanced Thread Pool Sizing Formula</h3>
+
+                <h4>The Magic Formula</h4>
+                <div class="key-concept">
+                    <strong>Optimal Threads = CPU Cores / (1 - Blocking Ratio)</strong>
+                    <br><br>
+                    Where <strong>Blocking Ratio</strong> = (time waiting for I/O) / (total request time)
+                </div>
+
+                <h4>Real-World Example</h4>
+                <div class="code-block">
+                    <div class="code-label">Example: Service with 90% I/O Wait</div>
+                    <code><span class="comment">Request timeline:</span>
+  - CPU processing: 10ms (10%)
+  - Database I/O: 90ms (90%)
+  - Total: 100ms
+  
+blocking_ratio = 90 / 100 = 0.9
+
+<span class="comment">On 10-core machine:</span>
+optimal_threads = 10 / (1 - 0.9) = 10 / 0.1 = 100 threads
+
+<span class="comment">Why? While 1 thread waits on DB (90ms),</span>
+<span class="comment">other 99 threads can execute their own work.</span>
+<span class="comment">10 cores stay 100% utilized with 100 threads.</span></code>
+                </div>
+
+                <h4>Formula Examples</h4>
+                <div class="comparison-table">
+                    <tr>
+                        <th>Workload Type</th>
+                        <th>Blocking Ratio</th>
+                        <th>On 8 Cores</th>
+                        <th>Rationale</th>
+                    </tr>
+                    <tr>
+                        <td>CPU-bound (image processing)</td>
+                        <td>0% (no I/O)</td>
+                        <td>8 threads</td>
+                        <td>8 / (1 - 0) = 8. Adding more = context switching overhead</td>
+                    </tr>
+                    <tr>
+                        <td>Mixed (50% I/O)</td>
+                        <td>0.5</td>
+                        <td>16 threads</td>
+                        <td>8 / 0.5 = 16. Moderate I/O, moderate threads</td>
+                    </tr>
+                    <tr>
+                        <td>I/O-heavy (API calls, DB)</td>
+                        <td>0.9</td>
+                        <td>80 threads</td>
+                        <td>8 / 0.1 = 80. High I/O = many threads needed</td>
+                    </tr>
+                    <tr>
+                        <td>Kafka consumer (pure I/O)</td>
+                        <td>0.95+</td>
+                        <td>150+ threads</td>
+                        <td>Almost all time waiting for messages</td>
+                    </tr>
+                </div>
+
+                <h4>How to Measure Blocking Ratio</h4>
+                <div class="code-block">
+                    <div class="code-label">Capture Request Metrics</div>
+                    <code><span class="comment">// Use monitoring: Micrometer, Spring Cloud Sleuth, or logs</span>
+<span class="class-name">Timer</span> timer = <span class="class-name">Timer</span>.<span class="method">start</span>();
+
+<span class="comment">// CPU work</span>
+<span class="keyword">long</span> cpuStart = <span class="class-name">System</span>.<span class="method">nanoTime</span>();
+<span class="comment">// ... processing ...</span>
+<span class="keyword">long</span> cpuTime = <span class="class-name">System</span>.<span class="method">nanoTime</span>() - cpuStart;
+
+<span class="comment">// Blocking I/O</span>
+<span class="keyword">long</span> ioStart = <span class="class-name">System</span>.<span class="method">nanoTime</span>();
+response = userRepository.<span class="method">findById</span>(<span class="number">123</span>);  <span class="comment">// Database call</span>
+<span class="keyword">long</span> ioTime = <span class="class-name">System</span>.<span class="method">nanoTime</span>() - ioStart;
+
+<span class="keyword">double</span> blockingRatio = (<span class="keyword">double</span>) ioTime / (cpuTime + ioTime);
+<span class="class-name">System</span>.<span class="keyword">out</span>.<span class="method">println</span>(<span class="string">"Blocking ratio: "</span> + blockingRatio);</code>
+                </div>
+
+                <h3>Interview Tip: Mentioning Virtual Threads</h3>
+                <p>If interviewer asks about scaling, thread pools, or Spring Boot:</p>
+                <ul style="margin-left: 2rem; color: var(--text-secondary);">
+                    <li><strong>"For Java 21+, I'd use Virtual Threads to handle much higher concurrency with fewer resources."</strong></li>
+                    <li><strong>"Virtual Threads let us write synchronous code that performs like async/reactive systems."</strong></li>
+                    <li><strong>"Memory footprint drops dramatically: 250 bytes per VT vs 1MB per platform thread."</strong></li>
+                    <li><strong>"JVM handles switching in user-space, avoiding expensive OS context switches."</strong></li>
+                </ul>
+            </div>
+        </div>
+        <div id="quiz" class="tab-content">
+            <div class="quiz-container">
+                <h2>Self-Assessment Quiz</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 2rem;">Test your understanding. Answers reveal on submission.</p>
+
+                <div id="quizForm">
+                    <!-- Q1 -->
+                    <div class="quiz-question">
+                        <div class="quiz-number">Question 1 / 10</div>
+                        <p>What's the difference between calling <code>thread.start()</code> vs <code>thread.run()</code>?</p>
+                        <div class="quiz-options">
+                            <label class="quiz-option">
+                                <input type="radio" name="q1" value="a">
+                                <span><code>start()</code> creates a new thread; <code>run()</code> executes in current thread</span>
+                            </label>
+                            <label class="quiz-option">
+                                <input type="radio" name="q1" value="b">
+                                <span>They're identical, just stylistic preference</span>
+                            </label>
+                            <label class="quiz-option">
+                                <input type="radio" name="q1" value="c">
+                                <span><code>run()</code> is faster because it skips thread creation</span>
+                            </label>
+                            <label class="quiz-option">
+                                <input type="radio" name="q1" value="d">
+                                <span><code>start()</code> is deprecated in Java 8+</span>
+                            </label>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <!-- Q2 -->
+                    <div class="quiz-question">
+                        <div class="quiz-number">Question 2 / 10</div>
+                        <p>Which of these guarantees BOTH atomicity AND visibility?</p>
+                        <div class="quiz-options">
+                            <label class="quiz-option">
+                                <input type="radio" name="q2" value="a">
+                                <span><code>volatile</code></span>
+                            </label>
+                            <label class="quiz-option">
+                                <input type="radio" name="q2" value="b">
+                                <span><code>synchronized</code> blocks</span>
+                            </label>
+                            <label class="quiz-option">
+                                <input type="radio" name="q2" value="c">
+                                <span><code>AtomicInteger</code></span>
+                            </label>
+                            <label class="quiz-option">
+                                <input type="radio" name="q2" value="d">
+                                <span>Both b and c</span>
+                            </label>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <!-- Q3 -->
+                    <div class="quiz-question">
+                        <div class="quiz-number">Question 3 / 10</div>
+                        <p>In this code, how many times will <code>count++</code> typically increment before a data race is visible?</p>
+                        <div class="code-block" style="margin: 1rem 0;">
+                            <code><span class="keyword">class</span> <span class="class-name">Counter</span> {
+    <span class="keyword">private int</span> count = <span class="number">0</span>;
+    <span class="keyword">public void</span> <span class="method">increment</span>() { count++; }
+}
+<span class="keyword">new</span> <span class="class-name">Counter</span>() &lt;&lt; 10 threads call increment() 1000 times each</span>
+                        </code>
+                        </div>
+                        <div class="quiz-options">
+                            <label class="quiz-option">
+                                <input type="radio" name="q3" value="a">
+                                <span>Exactly 10,000 (count++ is atomic)</span>
+                            </label>
+                            <label class="quiz-option">
+                                <input type="radio" name="q3" value="b">
+                                <span>Between 5,000–10,000 (unpredictable)</span>
+                            </label>
+                            <label class="quiz-option">
+                                <input type="radio" name="q3" value="c">
+                                <span>10,000 on single-core, unpredictable on multi-core</span>
+                            </label>
+                            <label class="quiz-option">
+                                <input type="radio" name="q3" value="d">
+                                <span>Compiler error: can't increment non-volatile</span>
+                            </label>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <!-- Q4 -->
+                    <div class="quiz-question">
+                        <div class="quiz-number">Question 4 / 10</div>
+                        <p>What state is a thread in when it calls <code>Thread.sleep(1000)</code>?</p>
+                        <div class="quiz-options">
+                            <label class="quiz-option">
+                                <input type="radio" name="q4" value="a">
+                                <span>RUNNABLE (OS schedules it if time allows)</span>
+                            </label>
+                            <label class="quiz-option">
+                                <input type="radio" name="q4" value="b">
+                                <span>TIMED_WAITING (will resume after 1s)</span>
+                            </label>
+                            <label class="quiz-option">
+                                <input type="radio" name="q4" value="c">
+                                <span>BLOCKED (waiting for lock)</span>
+                            </label>
+                            <label class="quiz-option">
+                                <input type="radio" name="q4" value="d">
+                                <span>WAITING (indefinitely)</span>
+                            </label>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <!-- Q5 -->
+                    <div class="quiz-question">
+                        <div class="quiz-number">Question 5 / 10</div>
+                        <p>How many threads can hold a lock on the same object simultaneously?</p>
+                        <div class="quiz-options">
+                            <label class="quiz-option">
+                                <input type="radio" name="q5" value="a">
+                                <span>Unlimited (locks don't block)</span>
+                            </label>
+                            <label class="quiz-option">
+                                <input type="radio" name="q5" value="b">
+                                <span>One at a time</span>
+                            </label>
+                            <label class="quiz-option">
+                                <input type="radio" name="q5" value="c">
+                                <span>As many as there are CPU cores</span>
+                            </label>
+                            <label class="quiz-option">
+                                <input type="radio" name="q5" value="d">
+                                <span>Depends on JVM version</span>
+                            </label>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <!-- Q6 -->
+                    <div class="quiz-question">
+                        <div class="quiz-number">Question 6 / 10</div>
+                        <p>What's the primary benefit of thread pools (ExecutorService) over creating a new thread per task?</p>
+                        <div class="quiz-options">
+                            <label class="quiz-option">
+                                <input type="radio" name="q6" value="a">
+                                <span>Threads run faster</span>
+                            </label>
+                            <label class="quiz-option">
+                                <input type="radio" name="q6" value="b">
+                                <span>Reuses threads, reduces creation overhead; bounded resource usage</span>
+                            </label>
+                            <label class="quiz-option">
+                                <input type="radio" name="q6" value="c">
+                                <span>Eliminates race conditions automatically</span>
+                            </label>
+                            <label class="quiz-option">
+                                <input type="radio" name="q6" value="d">
+                                <span>Required for multi-core systems</span>
+                            </label>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <!-- Q7 -->
+                    <div class="quiz-question">
+                        <div class="quiz-number">Question 7 / 10</div>
+                        <p>When is <code>Future.get()</code> most useful in an interview context?</p>
+                        <div class="quiz-options">
+                            <label class="quiz-option">
+                                <input type="radio" name="q7" value="a">
+                                <span>To return results from asynchronous tasks with timeout handling</span>
+                            </label>
+                            <label class="quiz-option">
+                                <input type="radio" name="q7" value="b">
+                                <span>To prevent deadlocks</span>
+                            </label>
+                            <label class="quiz-option">
+                                <input type="radio" name="q7" value="c">
+                                <span>To improve lock performance</span>
+                            </label>
+                            <label class="quiz-option">
+                                <input type="radio" name="q7" value="d">
+                                <span>Only in distributed systems</span>
+                            </label>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <!-- Q8 -->
+                    <div class="quiz-question">
+                        <div class="quiz-number">Question 8 / 10</div>
+                        <p>Which Semaphore declaration limits concurrent access to 3 threads?</p>
+                        <div class="quiz-options">
+                            <label class="quiz-option">
+                                <input type="radio" name="q8" value="a">
+                                <span><code>new Semaphore(3, true)</code></span>
+                            </label>
+                            <label class="quiz-option">
+                                <input type="radio" name="q8" value="b">
+                                <span><code>new Semaphore(1, 3)</code></span>
+                            </label>
+                            <label class="quiz-option">
+                                <input type="radio" name="q8" value="c">
+                                <span><code>new Semaphore(3)</code></span>
+                            </label>
+                            <label class="quiz-option">
+                                <input type="radio" name="q8" value="d">
+                                <span><code>new Semaphore(1/3)</code></span>
+                            </label>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <!-- Q9 -->
+                    <div class="quiz-question">
+                        <div class="quiz-number">Question 9 / 10</div>
+                        <p>What happens if you call <code>lock.unlock()</code> without holding the lock?</p>
+                        <div class="quiz-options">
+                            <label class="quiz-option">
+                                <input type="radio" name="q9" value="a">
+                                <span>Silently succeeds (no-op)</span>
+                            </label>
+                            <label class="quiz-option">
+                                <input type="radio" name="q9" value="b">
+                                <span>Throws IllegalMonitorStateException</span>
+                            </label>
+                            <label class="quiz-option">
+                                <input type="radio" name="q9" value="c">
+                                <span>Wakes up any waiting thread</span>
+                            </label>
+                            <label class="quiz-option">
+                                <input type="radio" name="q9" value="d">
+                                <span>Depends on lock type</span>
+                            </label>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+
+                    <!-- Q10 -->
+                    <div class="quiz-question">
+                        <div class="quiz-number">Question 10 / 10</div>
+                        <p>Which statement about Virtual Threads (Java 21+) is TRUE?</p>
+                        <div class="quiz-options">
+                            <label class="quiz-option">
+                                <input type="radio" name="q10" value="a">
+                                <span>Virtual threads eliminate the need for thread pools</span>
+                            </label>
+                            <label class="quiz-option">
+                                <input type="radio" name="q10" value="b">
+                                <span>Virtual threads run on Carrier Threads; JVM switches them in user-space (~1000x faster than OS)</span>
+                            </label>
+                            <label class="quiz-option">
+                                <input type="radio" name="q10" value="c">
+                                <span>Virtual threads require rewriting code to be async/reactive</span>
+                            </label>
+                            <label class="quiz-option">
+                                <input type="radio" name="q10" value="d">
+                                <span>Virtual threads are only useful for CPU-bound workloads</span>
+                            </label>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+
+                <button class="quiz-submit" onclick="submitQuiz()">Submit Quiz</button>
+                <div class="quiz-results">
+                    <h3>Quiz Results</h3>
+                    <div class="score"></div>
+                    <p id="resultMessage"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- PITFALLS TAB -->
+        <div id="pitfalls" class="tab-content">
+            <div class="section">
+                <h2>Common Pitfalls & Interview Red Flags</h2>
+
+                <div class="checklist">
+                    <label class="checklist-item">
+                        <input type="checkbox">
+                        <div>
+                            <strong>❌ Pitfall: Calling run() instead of start()</strong>
+                            <p style="margin-top: 0.5rem; font-size: 0.9rem;">Executes in current thread, no parallelism. Always use <code>start()</code>.</p>
+                        </div>
+                    </label>
+
+                    <label class="checklist-item">
+                        <input type="checkbox">
+                        <div>
+                            <strong>❌ Pitfall: Unsynchronized shared mutable state</strong>
+                            <p style="margin-top: 0.5rem; font-size: 0.9rem;">Race conditions silently corrupt data. Synchronize or use thread-safe collections.</p>
+                        </div>
+                    </label>
+
+                    <label class="checklist-item">
+                        <input type="checkbox">
+                        <div>
+                            <strong>❌ Pitfall: Thinking volatile is enough for atomicity</strong>
+                            <p style="margin-top: 0.5rem; font-size: 0.9rem;"><code>volatile</code> guarantees visibility, NOT atomicity. <code>count++</code> is still unsafe.</p>
+                        </div>
+                    </label>
+
+                    <label class="checklist-item">
+                        <input type="checkbox">
+                        <div>
+                            <strong>❌ Pitfall: Forgetting to unlock in finally</strong>
+                            <p style="margin-top: 0.5rem; font-size: 0.9rem;">Lock must be released even if exception occurs. Use try-finally or try-with-resources.</p>
+                        </div>
+                    </label>
+
+                    <label class="checklist-item">
+                        <input type="checkbox">
+                        <div>
+                            <strong>❌ Pitfall: Creating unbounded thread pools</strong>
+                            <p style="margin-top: 0.5rem; font-size: 0.9rem;"><code>Executors.newCachedThreadPool()</code> can exhaust memory. Use fixed-size pools with bounded queues.</p>
+                        </div>
+                    </label>
+
+                    <label class="checklist-item">
+                        <input type="checkbox">
+                        <div>
+                            <strong>❌ Pitfall: Deadlock from poor lock ordering</strong>
+                            <p style="margin-top: 0.5rem; font-size: 0.9rem;">Thread A: lock1 → lock2. Thread B: lock2 → lock1. Infinite wait. Always acquire locks in the same order.</p>
+                        </div>
+                    </label>
+
+                    <label class="checklist-item">
+                        <input type="checkbox">
+                        <div>
+                            <strong>❌ Pitfall: Not handling InterruptedException</strong>
+                            <p style="margin-top: 0.5rem; font-size: 0.9rem;">If you catch it, restore interrupt status: <code>Thread.currentThread().interrupt()</code>. Don't swallow silently.</p>
+                        </div>
+                    </label>
+
+                    <label class="checklist-item">
+                        <input type="checkbox">
+                        <div>
+                            <strong>❌ Pitfall: Using parallelStream() in web servers</strong>
+                            <p style="margin-top: 0.5rem; font-size: 0.9rem;"><code>parallelStream()</code> uses a shared fork-join pool. In web apps, threadlocals and contention cause issues.</p>
+                        </div>
+                    </label>
+
+                    <label class="checklist-item">
+                        <input type="checkbox">
+                        <div>
+                            <strong>❌ Pitfall: Blocking the event dispatch thread (UI)</strong>
+                            <p style="margin-top: 0.5rem; font-size: 0.9rem;">Long operations on EDT freeze UI. Offload to background threads with SwingWorker or platform threading.</p>
+                        </div>
+                    </label>
+
+                    <label class="checklist-item">
+                        <input type="checkbox">
+                        <div>
+                            <strong>❌ Pitfall: False sharing in contended variables</strong>
+                            <p style="margin-top: 0.5rem; font-size: 0.9rem;">Multiple threads modifying adjacent variables in memory causes cache line invalidation. Use padding or thread-local storage.</p>
+                        </div>
+                    </label>
+                </div>
+
+                <h3 style="margin-top: 2rem;">Interview Checklist: What to Mention</h3>
+                <div class="checklist">
+                    <label class="checklist-item">
+                        <input type="checkbox">
+                        <div>
+                            <strong>✅ Understand thread states</strong> (NEW, RUNNABLE, BLOCKED, WAITING, TIMED_WAITING, TERMINATED)
+                        </div>
+                    </label>
+
+                    <label class="checklist-item">
+                        <input type="checkbox">
+                        <div>
+                            <strong>✅ Know the difference: atomicity vs visibility</strong> (and which tools provide which)
+                        </div>
+                    </label>
+
+                    <label class="checklist-item">
+                        <input type="checkbox">
+                        <div>
+                            <strong>✅ Be able to implement producer-consumer</strong> with BlockingQueue
+                        </div>
+                    </label>
+
+                    <label class="checklist-item">
+                        <input type="checkbox">
+                        <div>
+                            <strong>✅ Explain when to use synchronized vs Lock</strong> (and why Lock is more flexible)
+                        </div>
+                    </label>
+
+                    <label class="checklist-item">
+                        <input type="checkbox">
+                        <div>
+                            <strong>✅ Know thread pool sizing</strong> (CPU-bound vs I/O-bound heuristics)
+                        </div>
+                    </label>
+
+                    <label class="checklist-item">
+                        <input type="checkbox">
+                        <div>
+                            <strong>✅ Be able to write safe, non-blocking code</strong> (timeouts, cancellation, interrupt handling)
+                        </div>
+                    </label>
+
+                    <label class="checklist-item">
+                        <input type="checkbox">
+                        <div>
+                            <strong>✅ Understand happens-before relationships</strong> (at least at a high level)
+                        </div>
+                    </label>
+
+                    <label class="checklist-item">
+                        <input type="checkbox">
+                        <div>
+                            <strong>✅ Spot race conditions in code review</strong> (unprotected shared state)
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.addEventListener('click', () => {
+                // Deactivate all
+                document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+                // Activate clicked
+                button.classList.add('active');
+                document.getElementById(button.dataset.tab).classList.add('active');
+
+                // Update progress
+                updateProgress();
+            });
+        });
+
+        // Quiz logic
+        const quizAnswers = {
+            q1: 'a',
+            q2: 'd',
+            q3: 'b',
+            q4: 'b',
+            q5: 'b',
+            q6: 'b',
+            q7: 'a',
+            q8: 'c',
+            q9: 'b',
+            q10: 'b'
+        };
+
+        const quizExplanations = {
+            q1: "start() creates a new thread and calls run() in it. Calling run() directly executes in the current thread—no parallelism!",
+            q2: "volatile guarantees visibility only. synchronized (b) and AtomicInteger (c) guarantee both, so (d) is correct.",
+            q3: "count++ is three non-atomic steps (read, add, write). With 10 threads, you'll typically see 5,000–10,000 due to lost updates.",
+            q4: "sleep() puts the thread in TIMED_WAITING state. The OS doesn't schedule it until the time expires.",
+            q5: "Locks are exclusive: only one thread can hold a lock at a time. Others queue and wait.",
+            q6: "Thread pools reuse threads (avoiding creation overhead) and bound resource usage. This prevents resource exhaustion.",
+            q7: "Future.get() is used to retrieve results from async tasks, with optional timeout for handling delays.",
+            q8: "new Semaphore(3) creates a semaphore with 3 permits, allowing 3 concurrent threads.",
+            q9: "Calling unlock() without holding the lock throws IllegalMonitorStateException. Always unlock in finally.",
+            q10: "Virtual threads run on a small number of Carrier Threads (one per core). The JVM switches them in user-space without OS involvement, making it ~1000x faster."
+        };
+
+        function submitQuiz() {
+            let score = 0;
+            document.querySelectorAll('.quiz-question').forEach((question, index) => {
+                const name = 'q' + (index + 1);
+                const selected = document.querySelector(`input[name="${name}"]:checked`);
+                const feedbackEl = question.querySelector('.quiz-feedback');
+
+                if (selected) {
+                    const isCorrect = selected.value === quizAnswers[name];
+                    score += isCorrect ? 1 : 0;
+
+                    feedbackEl.className = 'quiz-feedback show ' + (isCorrect ? 'correct' : 'incorrect');
+                    feedbackEl.textContent = (isCorrect ? '✓ Correct' : '✗ Incorrect') + ': ' + quizExplanations[name];
+
+                    // Mark options
+                    question.querySelectorAll('.quiz-option').forEach(option => {
+                        option.classList.remove('selected', 'correct', 'incorrect');
+                        const input = option.querySelector('input');
+                        if (input.checked) {
+                            option.classList.add(isCorrect ? 'correct' : 'incorrect');
+                        }
+                    });
+                }
+            });
+
+            // Show results
+            const results = document.querySelector('.quiz-results');
+            results.classList.add('show');
+            results.querySelector('.score').textContent = score + '/10';
+            document.getElementById('resultMessage').textContent = 
+                score >= 8 ? '🎉 Excellent! You have a strong grasp of Java threads.' :
+                score >= 6 ? '👍 Good! Review sections on race conditions and synchronization.' :
+                '📚 Keep studying. Focus on atomicity, visibility, and thread pools.';
+        }
+
+        // Checklist persistence
+        document.querySelectorAll('.checklist-item input').forEach(checkbox => {
+            checkbox.addEventListener('change', () => {
+                checkbox.closest('.checklist-item').classList.toggle('checked');
+            });
+        });
+
+        // Progress bar
+        function updateProgress() {
+            const tabs = document.querySelectorAll('.tab-button');
+            const activeIndex = Array.from(tabs).findIndex(t => t.classList.contains('active'));
+            const progress = ((activeIndex + 1) / tabs.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        updateProgress();
+    </script>
+</body>
+</html>

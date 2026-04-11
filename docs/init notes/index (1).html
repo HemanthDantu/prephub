@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Interview Prep — Microservices, Java &amp; Spring</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{height:100%;overflow:hidden;}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f0f2f5;display:flex;flex-direction:column;}
+
+  /* ── TOP BAR ── */
+  .topbar{
+    background:linear-gradient(135deg,#1a365d 0%,#2c5282 100%);
+    color:white;padding:0 24px;height:56px;
+    display:flex;align-items:center;justify-content:space-between;
+    flex-shrink:0;z-index:100;
+    box-shadow:0 2px 8px rgba(0,0,0,.25);
+  }
+  .topbar-left{display:flex;align-items:center;gap:14px;}
+  .topbar-logo{font-size:18px;font-weight:800;letter-spacing:-.3px;}
+  .topbar-logo span{opacity:.6;font-weight:400;font-size:13px;margin-left:6px;}
+  .topbar-right{display:flex;align-items:center;gap:10px;}
+  .progress-text{font-size:12px;opacity:.75;}
+  .progress-bar-wrap{width:100px;height:5px;background:rgba(255,255,255,.2);border-radius:3px;overflow:hidden;}
+  .progress-bar-fill{height:100%;background:#68d391;border-radius:3px;transition:width .3s;}
+  .menu-btn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:white;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;display:none;}
+  .menu-btn:hover{background:rgba(255,255,255,.2);}
+
+  /* ── LAYOUT ── */
+  .layout{display:flex;flex:1;overflow:hidden;}
+
+  /* ── SIDEBAR ── */
+  .sidebar{
+    width:260px;flex-shrink:0;background:#1e2533;
+    overflow-y:auto;height:100%;
+    transition:transform .3s;
+  }
+  .sidebar-inner{padding:12px 0 40px;}
+  .sidebar-section-label{
+    font-size:9.5px;font-weight:700;letter-spacing:.1em;
+    text-transform:uppercase;color:#4a5568;
+    padding:14px 16px 5px;
+  }
+  .nav-item{
+    display:flex;align-items:center;gap:10px;
+    padding:9px 16px;cursor:pointer;
+    border-left:3px solid transparent;
+    transition:background .15s,border-color .15s;
+    text-decoration:none;
+  }
+  .nav-item:hover{background:rgba(255,255,255,.05);}
+  .nav-item.active{background:rgba(99,179,237,.1);border-left-color:#63b3ed;}
+  .nav-item.done{border-left-color:#68d391;}
+  .nav-num{
+    min-width:22px;height:22px;border-radius:50%;
+    background:#2d3748;color:#a0aec0;
+    font-size:10px;font-weight:700;
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;
+    transition:background .15s,color .15s;
+  }
+  .nav-item.active .nav-num{background:#3182ce;color:white;}
+  .nav-item.done .nav-num{background:#276749;color:#68d391;}
+  .nav-text{flex:1;}
+  .nav-title{font-size:12.5px;font-weight:600;color:#e2e8f0;line-height:1.3;}
+  .nav-sub{font-size:11px;color:#718096;margin-top:1px;}
+  .nav-item.active .nav-title{color:white;}
+  .nav-check{font-size:12px;color:#68d391;flex-shrink:0;}
+
+  /* ── MAIN CONTENT ── */
+  .main{flex:1;overflow:hidden;position:relative;}
+  .iframe-container{width:100%;height:100%;position:relative;}
+  .content-frame{
+    width:100%;height:100%;border:none;
+    display:block;background:#f8f9fa;
+  }
+  .loading-overlay{
+    position:absolute;inset:0;
+    background:#f8f9fa;
+    display:flex;flex-direction:column;
+    align-items:center;justify-content:center;
+    gap:16px;z-index:10;
+    transition:opacity .3s;
+  }
+  .loading-overlay.hidden{opacity:0;pointer-events:none;}
+  .loading-spinner{
+    width:40px;height:40px;border-radius:50%;
+    border:3px solid #e2e8f0;
+    border-top-color:#3182ce;
+    animation:spin .8s linear infinite;
+  }
+  .loading-text{font-size:14px;color:#718096;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  /* ── BOTTOM NAV ── */
+  .bottom-nav{
+    background:#1e2533;padding:12px 20px;
+    display:flex;align-items:center;justify-content:space-between;
+    flex-shrink:0;border-top:1px solid #2d3748;
+  }
+  .nav-arrow{
+    display:flex;align-items:center;gap:8px;
+    background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);
+    color:#e2e8f0;padding:8px 16px;border-radius:8px;
+    cursor:pointer;font-size:13px;font-weight:600;
+    transition:background .15s;text-decoration:none;
+  }
+  .nav-arrow:hover{background:rgba(255,255,255,.12);}
+  .nav-arrow:disabled,.nav-arrow.disabled{opacity:.35;cursor:not-allowed;pointer-events:none;}
+  .nav-arrow.primary{background:#2b6cb0;border-color:#3182ce;color:white;}
+  .nav-arrow.primary:hover{background:#2c5282;}
+  .nav-center{text-align:center;}
+  .nav-section-name{font-size:13px;font-weight:600;color:#e2e8f0;}
+  .nav-section-count{font-size:11px;color:#718096;margin-top:2px;}
+
+  /* ── WELCOME SCREEN ── */
+  .welcome{
+    width:100%;height:100%;overflow-y:auto;
+    display:flex;align-items:flex-start;justify-content:center;
+    padding:40px 24px;background:#f8f9fa;
+  }
+  .welcome-inner{max-width:740px;width:100%;}
+  .welcome-hero{
+    background:linear-gradient(135deg,#1a365d,#2c5282);
+    border-radius:16px;padding:36px 40px;color:white;margin-bottom:24px;
+  }
+  .welcome-hero h1{font-size:26px;font-weight:800;margin-bottom:8px;}
+  .welcome-hero p{font-size:15px;opacity:.85;line-height:1.6;max-width:560px;}
+  .welcome-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:24px;}
+  .stat-box{background:rgba(255,255,255,.1);border-radius:10px;padding:12px;text-align:center;}
+  .stat-num{font-size:22px;font-weight:800;}
+  .stat-label{font-size:11px;opacity:.7;margin-top:2px;}
+  .section-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px;}
+  .section-card{
+    background:white;border:1px solid #e2e8f0;border-radius:12px;
+    padding:16px 18px;cursor:pointer;
+    transition:box-shadow .15s,border-color .15s;
+    text-decoration:none;display:block;
+  }
+  .section-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.08);border-color:#bee3f8;}
+  .section-card-num{font-size:11px;font-weight:700;color:#718096;text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px;}
+  .section-card-title{font-size:14px;font-weight:700;color:#1a202c;margin-bottom:4px;}
+  .section-card-desc{font-size:12.5px;color:#718096;line-height:1.5;}
+  .section-card-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;}
+  .section-tag{font-size:10.5px;padding:2px 7px;border-radius:20px;background:#ebf8ff;color:#2b6cb0;font-weight:500;}
+  .how-to-use{background:white;border:1px solid #e2e8f0;border-radius:12px;padding:20px 22px;margin-bottom:16px;}
+  .how-title{font-size:14px;font-weight:700;color:#1a202c;margin-bottom:12px;}
+  .how-item{display:flex;gap:12px;margin-bottom:10px;align-items:flex-start;}
+  .how-item:last-child{margin-bottom:0;}
+  .how-icon{font-size:16px;flex-shrink:0;margin-top:1px;}
+  .how-text{font-size:13.5px;color:#4a5568;line-height:1.6;}
+  .how-text b{color:#1a202c;}
+  .start-btn{
+    display:block;width:100%;background:#2b6cb0;color:white;
+    border:none;border-radius:10px;padding:14px;
+    font-size:15px;font-weight:700;cursor:pointer;text-align:center;
+    transition:background .15s;
+  }
+  .start-btn:hover{background:#2c5282;}
+
+  /* ── MOBILE OVERLAY ── */
+  .overlay{
+    display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);
+    z-index:200;
+  }
+
+  /* ── MOBILE ── */
+  @media(max-width:700px){
+    .sidebar{
+      position:fixed;left:0;top:56px;bottom:0;z-index:300;
+      transform:translateX(-100%);
+    }
+    .sidebar.open{transform:translateX(0);}
+    .overlay{display:block;}
+    .overlay.visible{display:block;}
+    .menu-btn{display:block;}
+    .main{width:100%;}
+    .section-cards{grid-template-columns:1fr;}
+    .welcome-stats{grid-template-columns:repeat(2,1fr);}
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-left">
+    <button class="menu-btn" onclick="toggleSidebar()">&#9776; Menu</button>
+    <div class="topbar-logo">Interview Prep <span>Microservices · Java · Spring · K8s</span></div>
+  </div>
+  <div class="topbar-right">
+    <span class="progress-text" id="progress-text">0 / 8 sections</span>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="progress-bar" style="width:0%"></div>
+    </div>
+  </div>
+</div>
+
+<!-- LAYOUT -->
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-inner">
+      <div style="padding:10px 16px 4px;">
+        <div style="font-size:11px;color:#4a5568;font-weight:600;letter-spacing:.05em;text-transform:uppercase;">Navigation</div>
+      </div>
+
+      <a class="nav-item active" onclick="showWelcome()" href="javascript:void(0)">
+        <div class="nav-num">🏠</div>
+        <div class="nav-text">
+          <div class="nav-title">Home</div>
+          <div class="nav-sub">Overview &amp; guide</div>
+        </div>
+      </a>
+
+      <div class="sidebar-section-label">Architecture</div>
+      <a class="nav-item" onclick="loadSection(0)" href="javascript:void(0)" id="nav-0">
+        <div class="nav-num">1</div>
+        <div class="nav-text">
+          <div class="nav-title">Design Patterns</div>
+          <div class="nav-sub">Saga, CQRS, BFF, Sidecar</div>
+        </div>
+      </a>
+      <a class="nav-item" onclick="loadSection(1)" href="javascript:void(0)" id="nav-1">
+        <div class="nav-num">2</div>
+        <div class="nav-text">
+          <div class="nav-title">API Gateway</div>
+          <div class="nav-sub">Routing, auth, rate limiting</div>
+        </div>
+      </a>
+      <a class="nav-item" onclick="loadSection(2)" href="javascript:void(0)" id="nav-2">
+        <div class="nav-num">3</div>
+        <div class="nav-text">
+          <div class="nav-title">Service Communication</div>
+          <div class="nav-sub">REST, gRPC, Kafka, K8s debug</div>
+        </div>
+      </a>
+
+      <div class="sidebar-section-label">Resilience</div>
+      <a class="nav-item" onclick="loadSection(3)" href="javascript:void(0)" id="nav-3">
+        <div class="nav-num">4</div>
+        <div class="nav-text">
+          <div class="nav-title">Circuit Breaker &amp; Resilience</div>
+          <div class="nav-sub">Retry, idempotency, Outbox</div>
+        </div>
+      </a>
+
+      <div class="sidebar-section-label">Infrastructure</div>
+      <a class="nav-item" onclick="loadSection(4)" href="javascript:void(0)" id="nav-4">
+        <div class="nav-num">5</div>
+        <div class="nav-text">
+          <div class="nav-title">Kafka &amp; Deployment</div>
+          <div class="nav-sub">Partitions, CI/CD, K8s strategies</div>
+        </div>
+      </a>
+
+      <div class="sidebar-section-label">Java &amp; Spring</div>
+      <a class="nav-item" onclick="loadSection(5)" href="javascript:void(0)" id="nav-5">
+        <div class="nav-num">6</div>
+        <div class="nav-text">
+          <div class="nav-title">Java Deep Dive</div>
+          <div class="nav-sub">@Transactional, SOLID, locking</div>
+        </div>
+      </a>
+
+      <div class="sidebar-section-label">Data &amp; Excel</div>
+      <a class="nav-item" onclick="loadSection(6)" href="javascript:void(0)" id="nav-6">
+        <div class="nav-num">7</div>
+        <div class="nav-text">
+          <div class="nav-title">Data &amp; Excel Export</div>
+          <div class="nav-sub">ORM, scaling, SXSSF, GET vs POST</div>
+        </div>
+      </a>
+
+      <div class="sidebar-section-label">Coding</div>
+      <a class="nav-item" onclick="loadSection(7)" href="javascript:void(0)" id="nav-7">
+        <div class="nav-num">8</div>
+        <div class="nav-text">
+          <div class="nav-title">Coding Questions</div>
+          <div class="nav-sub">List intersection, connect sticks</div>
+        </div>
+      </a>
+
+      <div style="padding:20px 16px 0;border-top:1px solid #2d3748;margin-top:12px;">
+        <div style="font-size:11px;color:#4a5568;margin-bottom:8px;">Sections completed</div>
+        <div style="font-size:22px;font-weight:800;color:#68d391;" id="sidebar-progress">0 / 8</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main" id="main-area">
+
+    <!-- WELCOME -->
+    <div class="welcome" id="welcome-screen">
+      <div class="welcome-inner">
+        <div class="welcome-hero">
+          <h1>Interview Prep Guide</h1>
+          <p>Your complete single-source-of-truth for microservices, Java, Spring Boot, Kafka, Kubernetes, and coding questions. Everything from the very basics to production war stories.</p>
+          <div class="welcome-stats">
+            <div class="stat-box"><div class="stat-num">8</div><div class="stat-label">Sections</div></div>
+            <div class="stat-box"><div class="stat-num">48+</div><div class="stat-label">Q&amp;A pairs</div></div>
+            <div class="stat-box"><div class="stat-num">30+</div><div class="stat-label">Code examples</div></div>
+            <div class="stat-box"><div class="stat-num">100%</div><div class="stat-label">Offline</div></div>
+          </div>
+        </div>
+
+        <div class="how-to-use">
+          <div class="how-title">How to Use This Guide</div>
+          <div class="how-item">
+            <div class="how-icon">📖</div>
+            <div class="how-text"><b>Read top to bottom for each section.</b> Every section starts with zero assumptions — what the concept is, why it exists, then goes deeper with real-world examples and production scenarios.</div>
+          </div>
+          <div class="how-item">
+            <div class="how-icon">❓</div>
+            <div class="how-text"><b>Click the Q&amp;A questions at the bottom of each section.</b> These are the exact follow-up questions interviewers ask. Read the full answers — they contain the depth that separates good candidates from great ones.</div>
+          </div>
+          <div class="how-item">
+            <div class="how-icon">💡</div>
+            <div class="how-text"><b>Read the blue Interview Tip boxes.</b> Each one gives you the exact phrasing and structure of a strong answer for that topic.</div>
+          </div>
+          <div class="how-item">
+            <div class="how-icon">🔖</div>
+            <div class="how-text"><b>Place this folder anywhere.</b> All 8 section files and this index.html must stay in the same folder. Open index.html in any browser — works completely offline.</div>
+          </div>
+        </div>
+
+        <div class="section-cards">
+          <a class="section-card" onclick="loadSection(0)" href="javascript:void(0)">
+            <div class="section-card-num">Section 01 — Architecture</div>
+            <div class="section-card-title">Microservice Design Patterns</div>
+            <div class="section-card-desc">Saga, CQRS, BFF, Sidecar, Strangler Fig — with real-world examples and when to use each.</div>
+            <div class="section-card-tags"><span class="section-tag">Saga</span><span class="section-tag">CQRS</span><span class="section-tag">BFF</span></div>
+          </a>
+          <a class="section-card" onclick="loadSection(1)" href="javascript:void(0)">
+            <div class="section-card-num">Section 02 — Architecture</div>
+            <div class="section-card-title">API Gateway</div>
+            <div class="section-card-desc">What it is, routing, JWT auth, rate limiting, custom implementation from scratch.</div>
+            <div class="section-card-tags"><span class="section-tag">Routing</span><span class="section-tag">Rate Limiting</span><span class="section-tag">JWT</span></div>
+          </a>
+          <a class="section-card" onclick="loadSection(2)" href="javascript:void(0)">
+            <div class="section-card-num">Section 03 — Architecture</div>
+            <div class="section-card-title">Service Communication</div>
+            <div class="section-card-desc">REST vs gRPC vs Kafka, sync vs async decision, K8s "app not found" debugging runbook.</div>
+            <div class="section-card-tags"><span class="section-tag">REST</span><span class="section-tag">Kafka</span><span class="section-tag">K8s Debug</span></div>
+          </a>
+          <a class="section-card" onclick="loadSection(3)" href="javascript:void(0)">
+            <div class="section-card-num">Section 04 — Resilience</div>
+            <div class="section-card-title">Circuit Breaker &amp; Resilience</div>
+            <div class="section-card-desc">Circuit breaker states, fallback strategies, retry + jitter, idempotency, Outbox pattern.</div>
+            <div class="section-card-tags"><span class="section-tag">Resilience4j</span><span class="section-tag">Outbox</span><span class="section-tag">Idempotency</span></div>
+          </a>
+          <a class="section-card" onclick="loadSection(4)" href="javascript:void(0)">
+            <div class="section-card-num">Section 05 — Infrastructure</div>
+            <div class="section-card-title">Kafka &amp; Deployment</div>
+            <div class="section-card-desc">Partitions, consumer groups, acks, CI/CD pipeline, rolling update, pre-deployment checklist.</div>
+            <div class="section-card-tags"><span class="section-tag">Kafka</span><span class="section-tag">CI/CD</span><span class="section-tag">Helm</span></div>
+          </a>
+          <a class="section-card" onclick="loadSection(5)" href="javascript:void(0)">
+            <div class="section-card-num">Section 06 — Java &amp; Spring</div>
+            <div class="section-card-title">Java Deep Dive</div>
+            <div class="section-card-desc">@Transactional internals, @Autowired, SOLID with real examples, concurrent updates, variable scopes.</div>
+            <div class="section-card-tags"><span class="section-tag">@Transactional</span><span class="section-tag">SOLID</span><span class="section-tag">Locking</span></div>
+          </a>
+          <a class="section-card" onclick="loadSection(6)" href="javascript:void(0)">
+            <div class="section-card-num">Section 07 — Data &amp; Excel</div>
+            <div class="section-card-title">Data &amp; Excel Export</div>
+            <div class="section-card-desc">DB fetch design, N+1 fixes, scaling 10k to 50k, SXSSF streaming, GET vs POST download.</div>
+            <div class="section-card-tags"><span class="section-tag">JPA Stream</span><span class="section-tag">SXSSF</span><span class="section-tag">Indexes</span></div>
+          </a>
+          <a class="section-card" onclick="loadSection(7)" href="javascript:void(0)">
+            <div class="section-card-num">Section 08 — Coding</div>
+            <div class="section-card-title">Coding Questions</div>
+            <div class="section-card-desc">List intersection with Java 8 Streams, connect sticks with Priority Queue, complexity analysis.</div>
+            <div class="section-card-tags"><span class="section-tag">Streams</span><span class="section-tag">Min Heap</span><span class="section-tag">Greedy</span></div>
+          </a>
+        </div>
+
+        <button class="start-btn" onclick="loadSection(0)">Start with Section 1 — Design Patterns →</button>
+      </div>
+    </div>
+
+    <!-- IFRAME AREA -->
+    <div class="iframe-container" id="iframe-area" style="display:none;">
+      <div class="loading-overlay" id="loading">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Loading section...</div>
+      </div>
+      <iframe class="content-frame" id="content-frame" title="Section Content"></iframe>
+    </div>
+
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav" id="bottom-nav" style="display:none;">
+  <a class="nav-arrow" id="btn-prev" onclick="navigate(-1)" href="javascript:void(0)">
+    ← Previous
+  </a>
+  <div class="nav-center">
+    <div class="nav-section-name" id="nav-current-title">Section 1</div>
+    <div class="nav-section-count" id="nav-current-count">1 of 8</div>
+  </div>
+  <a class="nav-arrow primary" id="btn-next" onclick="navigate(1)" href="javascript:void(0)">
+    Next →
+  </a>
+</div>
+
+<!-- MOBILE OVERLAY -->
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+<script>
+var sections = [
+  { file: 's01-design-patterns.html',   title: 'Design Patterns',             sub: 'Saga, CQRS, BFF, Sidecar' },
+  { file: 's02-api-gateway.html',        title: 'API Gateway',                 sub: 'Routing, auth, rate limiting' },
+  { file: 's03-service-communication.html', title: 'Service Communication',    sub: 'REST, gRPC, Kafka, K8s debug' },
+  { file: 's04-resilience.html',         title: 'Circuit Breaker & Resilience',sub: 'Retry, idempotency, Outbox' },
+  { file: 's05-kafka-deployment.html',   title: 'Kafka & Deployment',          sub: 'Partitions, CI/CD, strategies' },
+  { file: 's06-java-deep-dive.html',     title: 'Java Deep Dive',              sub: '@Transactional, SOLID, locking' },
+  { file: 's07-data-excel.html',         title: 'Data & Excel Export',         sub: 'ORM, scaling, SXSSF, GET vs POST' },
+  { file: 's08-coding-questions.html',   title: 'Coding Questions',            sub: 'List intersection, connect sticks' }
+];
+
+var current = -1;
+var visited = {};
+
+function loadSection(idx) {
+  current = idx;
+  var sec = sections[idx];
+
+  // Hide welcome, show iframe area
+  document.getElementById('welcome-screen').style.display = 'none';
+  document.getElementById('iframe-area').style.display = 'block';
+  document.getElementById('bottom-nav').style.display = 'flex';
+
+  // Show loading
+  var loading = document.getElementById('loading');
+  loading.classList.remove('hidden');
+
+  // Load iframe
+  var frame = document.getElementById('content-frame');
+  frame.onload = function() {
+    loading.classList.add('hidden');
+  };
+  frame.src = sec.file;
+
+  // Mark visited
+  visited[idx] = true;
+  updateProgress();
+
+  // Update sidebar
+  document.querySelectorAll('.nav-item').forEach(function(el) { el.classList.remove('active'); });
+  var navEl = document.getElementById('nav-' + idx);
+  if (navEl) navEl.classList.add('active');
+
+  // Mark done
+  for (var i in visited) {
+    var el = document.getElementById('nav-' + i);
+    if (el && i != idx) {
+      el.classList.add('done');
+      var check = el.querySelector('.nav-check');
+      if (!check) {
+        var checkEl = document.createElement('span');
+        checkEl.className = 'nav-check';
+        checkEl.textContent = '✓';
+        el.appendChild(checkEl);
+      }
+    }
+  }
+
+  // Update bottom nav
+  document.getElementById('nav-current-title').textContent = sec.title;
+  document.getElementById('nav-current-count').textContent = (idx + 1) + ' of ' + sections.length;
+
+  var prevBtn = document.getElementById('btn-prev');
+  var nextBtn = document.getElementById('btn-next');
+
+  if (idx === 0) { prevBtn.classList.add('disabled'); }
+  else { prevBtn.classList.remove('disabled'); }
+
+  if (idx === sections.length - 1) {
+    nextBtn.textContent = '✓ Complete';
+    nextBtn.classList.remove('primary');
+  } else {
+    nextBtn.innerHTML = 'Next &rarr;';
+    nextBtn.classList.add('primary');
+  }
+
+  // Close mobile sidebar
+  closeSidebar();
+
+  // Scroll content frame to top
+  try { frame.contentWindow.scrollTo(0,0); } catch(e) {}
+}
+
+function showWelcome() {
+  current = -1;
+  document.getElementById('welcome-screen').style.display = 'flex';
+  document.getElementById('iframe-area').style.display = 'none';
+  document.getElementById('bottom-nav').style.display = 'none';
+
+  document.querySelectorAll('.nav-item').forEach(function(el) { el.classList.remove('active'); });
+  document.querySelector('.nav-item').classList.add('active'); // Home
+  closeSidebar();
+}
+
+function navigate(dir) {
+  var next = current + dir;
+  if (next >= 0 && next < sections.length) { loadSection(next); }
+}
+
+function updateProgress() {
+  var count = Object.keys(visited).length;
+  var pct = Math.round((count / sections.length) * 100);
+  document.getElementById('progress-text').textContent = count + ' / ' + sections.length + ' sections';
+  document.getElementById('progress-bar').style.width = pct + '%';
+  document.getElementById('sidebar-progress').textContent = count + ' / ' + sections.length;
+}
+
+function toggleSidebar() {
+  var sb = document.getElementById('sidebar');
+  var ov = document.getElementById('overlay');
+  if (sb.classList.contains('open')) {
+    sb.classList.remove('open');
+    ov.classList.remove('visible');
+  } else {
+    sb.classList.add('open');
+    ov.classList.add('visible');
+  }
+}
+
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('visible');
+}
+</script>
+</body>
+</html>

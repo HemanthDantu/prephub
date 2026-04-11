@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S05 — Kafka &amp; Deployment</title>
+<style>
+  :root {
+    --bg:#f8f9fa;--surface:#ffffff;--border:#e2e8f0;
+    --text-primary:#1a202c;--text-secondary:#4a5568;--text-muted:#718096;
+    --blue-light:#ebf8ff;--blue-border:#bee3f8;--blue-dark:#1a365d;
+    --green-light:#f0fff4;--green-border:#9ae6b4;
+    --red-light:#fff5f5;--red-border:#feb2b2;
+    --orange-light:#fffaf0;--orange-border:#fbd38d;
+    --purple-light:#faf5ff;--purple-border:#d6bcfa;
+    --yellow-light:#fffff0;--yellow-border:#f6e05e;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text-primary);font-size:15px;line-height:1.7;}
+  .page-header{background:linear-gradient(135deg,#1a365d 0%,#2a4a8a 100%);color:white;padding:40px 48px 36px;}
+  .page-header .section-label{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;opacity:.7;margin-bottom:8px;}
+  .page-header h1{font-size:28px;font-weight:700;margin-bottom:10px;}
+  .page-header .subtitle{font-size:15px;opacity:.8;max-width:680px;line-height:1.6;}
+  .tags{display:flex;flex-wrap:wrap;gap:7px;margin-top:18px;}
+  .tag{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);color:white;font-size:11.5px;padding:3px 10px;border-radius:20px;}
+  .container{max-width:900px;margin:0 auto;padding:40px 24px 80px;}
+  .section-heading{font-size:20px;font-weight:700;color:var(--text-primary);margin:44px 0 6px;padding-bottom:10px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:10px;}
+  .section-heading .icon{width:32px;height:32px;border-radius:8px;background:#ebf8ff;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+  .section-desc{font-size:14px;color:var(--text-muted);margin-bottom:20px;margin-top:4px;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:22px 26px;margin-bottom:16px;}
+  .card-title{font-size:14px;font-weight:700;color:var(--text-primary);margin-bottom:10px;}
+  .card p{font-size:14.5px;color:var(--text-secondary);line-height:1.75;margin-bottom:10px;}
+  .card p:last-child{margin-bottom:0;}
+  .card b{color:var(--text-primary);font-weight:600;}
+  .card code{font-family:'SF Mono',Consolas,monospace;font-size:12.5px;background:#edf2f7;padding:1px 6px;border-radius:4px;color:#c53030;}
+  .card ul,.card ol{padding-left:22px;margin:8px 0;}
+  .card li{font-size:14.5px;color:var(--text-secondary);line-height:1.75;margin-bottom:5px;}
+  .card li b{color:var(--text-primary);}
+  .card.blue{background:var(--blue-light);border-color:var(--blue-border);}
+  .card.green{background:var(--green-light);border-color:var(--green-border);}
+  .card.red{background:var(--red-light);border-color:var(--red-border);}
+  .card.orange{background:var(--orange-light);border-color:var(--orange-border);}
+  .card.purple{background:var(--purple-light);border-color:var(--purple-border);}
+  .card.yellow{background:var(--yellow-light);border-color:var(--yellow-border);}
+  .card.blue p,.card.blue li{color:#2c5282;}.card.blue b{color:var(--blue-dark);}
+  .card.green p,.card.green li{color:#22543d;}.card.green b{color:#1c4532;}
+  .card.red p,.card.red li{color:#742a2a;}.card.red b{color:#63171b;}
+  .card.orange p,.card.orange li{color:#7b341e;}.card.orange b{color:#652b19;}
+  .card.purple p,.card.purple li{color:#44337a;}.card.purple b{color:#322659;}
+  .card.yellow p,.card.yellow li{color:#744210;}.card.yellow b{color:#5f370e;}
+  .definition{background:#1a365d;color:white;border-radius:12px;padding:22px 26px;margin-bottom:16px;}
+  .definition .def-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;opacity:.7;margin-bottom:6px;}
+  .definition p{font-size:15px;line-height:1.75;opacity:.95;margin-bottom:8px;}
+  .definition p:last-child{margin-bottom:0;}
+  .definition b{font-weight:700;}
+  .analogy{border-left:4px solid #d69e2e;background:var(--yellow-light);border-radius:0 10px 10px 0;padding:16px 20px;margin-bottom:16px;}
+  .analogy .analogy-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#744210;margin-bottom:5px;}
+  .analogy p{font-size:14px;color:#744210;line-height:1.7;margin-bottom:6px;}
+  .analogy p:last-child{margin-bottom:0;}
+  .analogy b{color:#5f370e;}
+  .scenario{border-left:4px solid #38a169;background:var(--green-light);border-radius:0 10px 10px 0;padding:16px 20px;margin-bottom:16px;}
+  .scenario .scenario-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#276749;margin-bottom:5px;}
+  .scenario p{font-size:14px;color:#22543d;line-height:1.75;margin-bottom:8px;}
+  .scenario p:last-child{margin-bottom:0;}
+  .scenario b{color:#1c4532;font-weight:600;}
+  .scenario ol,.scenario ul{padding-left:20px;margin:6px 0;}
+  .scenario li{font-size:14px;color:#22543d;line-height:1.75;margin-bottom:6px;}
+  .scenario li b{color:#1c4532;}
+  .warning{border-left:4px solid #e53e3e;background:var(--red-light);border-radius:0 10px 10px 0;padding:16px 20px;margin-bottom:16px;}
+  .warning .warning-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#9b2335;margin-bottom:5px;}
+  .warning p{font-size:14px;color:#742a2a;line-height:1.7;margin-bottom:6px;}
+  .warning p:last-child{margin-bottom:0;}
+  .warning b{color:#63171b;}
+  .tip{border-left:4px solid #3182ce;background:var(--blue-light);border-radius:0 10px 10px 0;padding:16px 20px;margin-bottom:16px;}
+  .tip .tip-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#2b6cb0;margin-bottom:5px;}
+  .tip p{font-size:14px;color:#2c5282;line-height:1.7;margin-bottom:6px;}
+  .tip p:last-child{margin-bottom:0;}
+  .tip b{color:#1a365d;}
+  .pro-con{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+  .pro{background:var(--green-light);border:1px solid var(--green-border);border-radius:10px;padding:16px 18px;}
+  .con{background:var(--red-light);border:1px solid var(--red-border);border-radius:10px;padding:16px 18px;}
+  .pro-title{font-size:11px;font-weight:700;color:#1c4532;text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;}
+  .con-title{font-size:11px;font-weight:700;color:#63171b;text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;}
+  .pro ul,.con ul{padding-left:18px;}
+  .pro li{font-size:13.5px;color:#22543d;line-height:1.7;margin-bottom:4px;}
+  .con li{font-size:13.5px;color:#742a2a;line-height:1.7;margin-bottom:4px;}
+  .table-wrap{overflow-x:auto;margin-bottom:16px;border-radius:10px;border:1px solid var(--border);}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;}
+  thead th{background:#2d3748;color:white;padding:11px 14px;text-align:left;font-weight:600;font-size:12.5px;}
+  tbody tr:nth-child(even){background:#f7fafc;}
+  tbody td{padding:10px 14px;color:var(--text-secondary);border-bottom:1px solid var(--border);vertical-align:top;line-height:1.6;}
+  tbody tr:last-child td{border-bottom:none;}
+  td b{color:var(--text-primary);font-weight:600;}
+  .code-block{background:#1a202c;border-radius:10px;padding:18px 20px;font-family:'SF Mono',Consolas,monospace;font-size:12.5px;color:#e2e8f0;white-space:pre;overflow-x:auto;line-height:1.65;margin-bottom:14px;}
+  .code-block .cm{color:#718096;}
+  .code-block .kw{color:#90cdf4;}
+  .code-block .st{color:#9ae6b4;}
+  .code-block .an{color:#fbd38d;}
+  .code-block .num{color:#f6ad55;}
+  .qa-section{margin-bottom:16px;}
+  .qa-item{margin-bottom:12px;border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+  .qa-question{background:#2d3748;color:white;padding:14px 18px;font-size:14px;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none;}
+  .qa-question:hover{background:#1a202c;}
+  .qa-question .qa-icon{font-size:18px;transition:transform .25s;flex-shrink:0;margin-left:12px;}
+  .qa-question.open .qa-icon{transform:rotate(45deg);}
+  .qa-answer{padding:0 18px;max-height:0;overflow:hidden;transition:max-height .35s ease,padding .3s ease;background:var(--surface);}
+  .qa-answer.open{max-height:1800px;padding:16px 18px;}
+  .qa-answer p{font-size:14px;color:var(--text-secondary);line-height:1.75;margin-bottom:10px;}
+  .qa-answer p:last-child{margin-bottom:0;}
+  .qa-answer b{color:var(--text-primary);font-weight:600;}
+  .qa-answer ul,.qa-answer ol{padding-left:20px;margin:6px 0 10px;}
+  .qa-answer li{font-size:14px;color:var(--text-secondary);line-height:1.75;margin-bottom:4px;}
+  .qa-answer code{font-family:'SF Mono',Consolas,monospace;font-size:12px;background:#edf2f7;padding:1px 5px;border-radius:4px;color:#c53030;}
+  .divider{border:none;border-top:1px solid var(--border);margin:32px 0;}
+
+  /* KAFKA PARTITION VISUAL */
+  .kafka-visual{display:flex;flex-direction:column;gap:6px;margin-bottom:16px;}
+  .kafka-topic-label{font-size:12px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;}
+  .kafka-partition{display:flex;align-items:center;gap:0;background:white;border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+  .kafka-part-label{background:#2d3748;color:white;font-size:11px;font-weight:700;padding:8px 12px;white-space:nowrap;flex-shrink:0;}
+  .kafka-messages{display:flex;gap:4px;padding:6px 10px;flex:1;overflow-x:auto;}
+  .kafka-msg{background:#ebf8ff;border:1px solid #bee3f8;border-radius:4px;padding:4px 8px;font-size:11px;color:#2b6cb0;font-weight:600;white-space:nowrap;flex-shrink:0;}
+  .kafka-msg.consumed{background:#f0fff4;border-color:#9ae6b4;color:#276749;}
+  .kafka-consumers{display:flex;gap:10px;margin-top:4px;flex-wrap:wrap;}
+  .kafka-consumer{background:#faf5ff;border:1px solid #d6bcfa;border-radius:8px;padding:8px 12px;font-size:12px;color:#44337a;font-weight:600;}
+  .kafka-consumer span{font-size:11px;color:#718096;font-weight:400;display:block;}
+
+  /* DEPLOYMENT STRATEGY CARDS */
+  .deploy-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;}
+  .deploy-card{border-radius:12px;padding:16px;border:2px solid transparent;}
+  .deploy-card.rolling{background:#ebf8ff;border-color:#bee3f8;}
+  .deploy-card.bluegreen{background:#f0fff4;border-color:#9ae6b4;}
+  .deploy-card.canary{background:#faf5ff;border-color:#d6bcfa;}
+  .deploy-card-title{font-size:13px;font-weight:700;margin-bottom:6px;}
+  .deploy-card.rolling .deploy-card-title{color:#1a365d;}
+  .deploy-card.bluegreen .deploy-card-title{color:#1c4532;}
+  .deploy-card.canary .deploy-card-title{color:#322659;}
+  .deploy-card p{font-size:12.5px;line-height:1.6;margin-bottom:6px;}
+  .deploy-card.rolling p{color:#2c5282;}
+  .deploy-card.bluegreen p{color:#22543d;}
+  .deploy-card.canary p{color:#44337a;}
+  .deploy-badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;margin-bottom:8px;text-transform:uppercase;}
+  .deploy-card.rolling .deploy-badge{background:#bee3f8;color:#1a365d;}
+  .deploy-card.bluegreen .deploy-badge{background:#9ae6b4;color:#1c4532;}
+  .deploy-card.canary .deploy-badge{background:#d6bcfa;color:#322659;}
+
+  /* CHECKLIST */
+  .checklist{margin-bottom:16px;}
+  .check-item{display:flex;gap:12px;margin-bottom:8px;background:white;border:1px solid var(--border);border-radius:8px;padding:12px 14px;}
+  .check-icon{font-size:16px;flex-shrink:0;margin-top:1px;}
+  .check-body .check-title{font-size:13.5px;font-weight:600;color:var(--text-primary);margin-bottom:3px;}
+  .check-body .check-desc{font-size:13px;color:var(--text-secondary);line-height:1.6;}
+  .check-body .check-desc b{color:var(--text-primary);}
+
+  /* PIPELINE STEPS */
+  .pipeline-steps{display:flex;flex-direction:column;gap:0;margin-bottom:16px;}
+  .pipe-step{display:flex;gap:14px;background:white;border:1px solid var(--border);border-radius:10px;padding:14px 16px;}
+  .pipe-num{min-width:28px;height:28px;border-radius:50%;background:#1a365d;color:white;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;margin-top:1px;}
+  .pipe-body .pipe-title{font-size:13.5px;font-weight:700;color:var(--text-primary);margin-bottom:3px;}
+  .pipe-body .pipe-desc{font-size:13px;color:var(--text-secondary);line-height:1.65;}
+  .pipe-body .pipe-desc b{color:var(--text-primary);}
+  .pipe-connector{width:2px;height:12px;background:#e2e8f0;margin-left:27px;}
+
+  @media(max-width:640px){
+    .page-header{padding:28px 20px;}
+    .container{padding:24px 16px 60px;}
+    .pro-con,.deploy-grid{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <div class="section-label">Section 05 — Infrastructure &amp; Kafka</div>
+  <h1>Kafka Deep Dive &amp; Deployment Process</h1>
+  <div class="subtitle">Kafka internals — partitions, replication, consumer groups, production configuration. Then the complete deployment process for microservices — CI/CD pipeline, Kubernetes strategies, and the pre-deployment checklist.</div>
+  <div class="tags">
+    <span class="tag">Kafka Partitions</span><span class="tag">Replication Factor</span>
+    <span class="tag">Consumer Groups</span><span class="tag">Consumer Lag</span>
+    <span class="tag">Log Compaction</span><span class="tag">min.insync.replicas</span>
+    <span class="tag">Rolling Update</span><span class="tag">Blue-Green</span>
+    <span class="tag">Canary</span><span class="tag">Helm</span><span class="tag">CI/CD</span>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ══════════════════════════════
+     PART 1 — KAFKA FROM SCRATCH
+══════════════════════════════ -->
+<div class="section-heading"><div class="icon">📨</div>Kafka — From Scratch to Production</div>
+<p class="section-desc">Everything you need to know: what Kafka is, how it works internally, and how to configure it for production.</p>
+
+<div class="card">
+  <div class="card-title">🤔 Why Does Kafka Exist? What Problem Does It Solve?</div>
+  <p>Before Kafka, large systems used traditional message queues (RabbitMQ, ActiveMQ). These worked but had critical limitations at scale:</p>
+  <ul>
+    <li><b>Messages deleted after consumption:</b> Once consumed, the message was gone. If a new service was added later, it could not read historical messages.</li>
+    <li><b>One message, one consumer:</b> If two services needed the same message, you needed two separate queues with duplicate messages.</li>
+    <li><b>Limited throughput:</b> Traditional queues struggled above tens of thousands of messages per second.</li>
+    <li><b>No replay:</b> If a consumer had a bug and processed messages incorrectly, you could not re-process them — they were gone.</li>
+  </ul>
+  <p>LinkedIn built Kafka in 2011 to handle their activity stream — billions of events per day. The core innovation: treat messages as an <b>immutable, ordered log</b> rather than a queue. Messages stay in the log for a configurable retention period. Any consumer can read from any point in the log at any time.</p>
+</div>
+
+<div class="definition">
+  <div class="def-label">Formal Definition</div>
+  <p>Apache Kafka is a <b>distributed event streaming platform</b>. It stores events in an ordered, durable, replayable log. Producers append events to topics. Consumers read from topics at their own pace, tracking their position (offset) independently. Multiple consumer groups can each read the full topic independently without interfering with each other.</p>
+</div>
+
+<div class="analogy">
+  <div class="analogy-label">The Best Analogy — A Newspaper Archive</div>
+  <p>A newspaper publisher (producer) prints the daily paper. Every edition is stored in a library archive (Kafka topic). The archive keeps editions for 7 days (retention period).</p>
+  <p>Any subscriber (consumer) can come and read any edition, starting from today or going back to any day within the retention window. If a new subscriber joins today, they can still read every edition from the past week. Multiple subscribers read independently — one reading today's paper does not prevent another from reading yesterday's.</p>
+  <p>The library has multiple shelves (partitions) — the Tuesday edition is on shelf 1, Wednesday on shelf 2. You can read shelf 1 and shelf 2 simultaneously for speed. But articles in shelf 1 are always in the order they were published on that shelf.</p>
+</div>
+
+<!-- ══════════════════════════════
+     TOPICS AND PARTITIONS
+══════════════════════════════ -->
+<div class="section-heading" style="font-size:17px;margin-top:32px"><div class="icon" style="background:#f0fff4">📦</div>Topics and Partitions — The Core Structure</div>
+
+<div class="card">
+  <div class="card-title">What Is a Topic?</div>
+  <p>A <b>topic</b> is a named category of events. Think of it as a folder. <code>order-events</code> contains all events about orders. <code>payment-events</code> contains all events about payments. Services publish to topics. Services subscribe to topics.</p>
+  <p>A topic is split into one or more <b>partitions</b>. Each partition is a separate, ordered, append-only log. Messages within a partition are strictly ordered. Messages across partitions are not guaranteed to be ordered.</p>
+</div>
+
+<div class="kafka-visual">
+  <div class="kafka-topic-label">Topic: order-events (3 partitions)</div>
+  <div class="kafka-partition">
+    <div class="kafka-part-label">Partition 0</div>
+    <div class="kafka-messages">
+      <div class="kafka-msg consumed">msg-1</div>
+      <div class="kafka-msg consumed">msg-4</div>
+      <div class="kafka-msg consumed">msg-7</div>
+      <div class="kafka-msg">msg-10</div>
+      <div class="kafka-msg">msg-13</div>
+    </div>
+  </div>
+  <div class="kafka-partition">
+    <div class="kafka-part-label">Partition 1</div>
+    <div class="kafka-messages">
+      <div class="kafka-msg consumed">msg-2</div>
+      <div class="kafka-msg consumed">msg-5</div>
+      <div class="kafka-msg">msg-8</div>
+      <div class="kafka-msg">msg-11</div>
+    </div>
+  </div>
+  <div class="kafka-partition">
+    <div class="kafka-part-label">Partition 2</div>
+    <div class="kafka-messages">
+      <div class="kafka-msg consumed">msg-3</div>
+      <div class="kafka-msg consumed">msg-6</div>
+      <div class="kafka-msg consumed">msg-9</div>
+      <div class="kafka-msg">msg-12</div>
+      <div class="kafka-msg">msg-14</div>
+    </div>
+  </div>
+  <div style="margin-top:8px;">
+    <div class="kafka-topic-label">Consumer Group: shipping-service-group</div>
+    <div class="kafka-consumers">
+      <div class="kafka-consumer">Instance 1 <span>reads Partition 0</span></div>
+      <div class="kafka-consumer">Instance 2 <span>reads Partition 1</span></div>
+      <div class="kafka-consumer">Instance 3 <span>reads Partition 2</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="card blue">
+  <div class="card-title blue">🔑 Message Keys — How Kafka Routes to Partitions</div>
+  <p>When a producer sends a message, it can include a <b>message key</b>. Kafka hashes the key to determine which partition receives the message. <b>All messages with the same key always go to the same partition.</b></p>
+  <p><b>Why this matters for ordering:</b> Messages within one partition are strictly ordered. If you use <code>orderId</code> as the message key, all events for order #123 (ORDER_CREATED, PAYMENT_DONE, ORDER_SHIPPED) will always land on the same partition — in order. The ShippingService consumer processing that partition sees them in the correct sequence.</p>
+  <p><b>Without a key:</b> Messages are distributed round-robin across partitions. You get maximum throughput but no ordering guarantee — ORDER_SHIPPED might be processed before ORDER_CREATED by a consumer that only reads one partition.</p>
+  <p><b>Choosing a good key:</b> Use the entity ID (orderId, userId, productId) as the key. This ensures all events for one entity are ordered correctly, while events for different entities (different orderIds) can be processed in parallel across partitions.</p>
+</div>
+
+<!-- ══════════════════════════════
+     CONSUMER GROUPS
+══════════════════════════════ -->
+<div class="section-heading" style="font-size:17px;margin-top:32px"><div class="icon" style="background:#ebf8ff">👥</div>Consumer Groups — The Killer Feature</div>
+
+<div class="card">
+  <div class="card-title">🤔 What Is a Consumer Group and Why Does It Matter?</div>
+  <p>A <b>consumer group</b> is a set of consumers that cooperate to consume a topic. Within a group, each partition is assigned to exactly one consumer. This gives you <b>parallel processing</b> — 6 partitions processed by 6 consumers simultaneously.</p>
+  <p>The game-changing property: <b>multiple independent consumer groups can each read the full topic</b>. They do not share partitions. They do not share offsets. One group consuming messages has zero effect on another group.</p>
+</div>
+
+<div class="scenario">
+  <div class="scenario-label">Real Example — One Topic, Five Consumer Groups</div>
+  <p>Your <code>order-placed</code> topic receives every order event. Five different services each need to react:</p>
+  <ol>
+    <li><b>ShippingService</b> — consumer group <code>shipping-group</code> — schedules delivery for each order</li>
+    <li><b>EmailService</b> — consumer group <code>email-group</code> — sends confirmation email</li>
+    <li><b>InventoryService</b> — consumer group <code>inventory-group</code> — reduces stock count</li>
+    <li><b>AccountingService</b> — consumer group <code>accounting-group</code> — records the revenue</li>
+    <li><b>AnalyticsService</b> — consumer group <code>analytics-group</code> — updates sales dashboard</li>
+  </ol>
+  <p>All 5 groups independently read every order event. If AnalyticsService falls 10,000 messages behind (consumer lag), it has zero effect on any other service. Each service processes at its own speed, completely independently. <b>This is impossible with a traditional queue</b> — reading a message from a queue removes it. Kafka keeps it for all groups.</p>
+</div>
+
+<div class="card orange">
+  <div class="card-title orange">⚠️ Consumer Lag — The Most Important Kafka Metric</div>
+  <p><b>Consumer lag</b> is the difference between the latest offset in a partition and the offset your consumer has processed. It tells you how far behind your consumer is.</p>
+  <p>If the <code>order-placed</code> topic has 100,000 messages and your <code>shipping-group</code> has processed 95,000, the consumer lag is 5,000.</p>
+  <p><b>Why it matters:</b> Growing consumer lag means your consumer is falling behind the producer. This leads to:</p>
+  <ul>
+    <li>Increasing latency — orders placed now will not be processed for minutes</li>
+    <li>Risk of exceeding retention period — if messages expire before being consumed, they are lost</li>
+    <li>Memory/disk pressure on Kafka brokers</li>
+  </ul>
+  <p><b>How to fix high consumer lag:</b> Add more consumer instances (up to the number of partitions — you cannot have more active consumers than partitions in a group). Or reduce processing time per message. Or increase partition count (requires careful planning — cannot easily be reduced).</p>
+  <p><b>How to monitor:</b> Use <code>kafka-consumer-groups.sh --describe</code> CLI, or Confluent Control Center, or Burrow (LinkedIn's consumer lag monitoring tool).</p>
+</div>
+
+<!-- ══════════════════════════════
+     PRODUCTION CONFIGURATION
+══════════════════════════════ -->
+<div class="section-heading" style="font-size:17px;margin-top:32px"><div class="icon" style="background:#fff5f5">⚙️</div>Production Topic Configuration — Every Setting Explained</div>
+
+<div class="card">
+  <div class="card-title">📋 The Three Most Important Production Decisions</div>
+  <p><b>Decision 1 — Partition count:</b> Partitions determine parallelism. More partitions = more consumers can run simultaneously = higher throughput. But too many partitions have downsides: more file handles on brokers, longer leader election time if a broker fails, higher memory use by consumers tracking offsets. Rule of thumb: start with max(target_throughput / single_partition_throughput, number_of_consumer_instances). A single partition handles roughly 10MB/s or 5,000 simple messages/second.</p>
+  <p><b>Decision 2 — Replication factor:</b> How many copies of each partition exist across brokers. Production minimum is 3 — this survives 2 broker failures. One copy is the leader (handles reads and writes). Others are followers (replicate from leader). If the leader crashes, a follower is promoted automatically.</p>
+  <p><b>Decision 3 — min.insync.replicas:</b> The minimum number of replicas that must acknowledge a write for it to be considered successful. Set to 2 with replication factor 3. If only 1 replica is in sync (network issue), writes will fail rather than succeed and potentially lose data. Safety over availability.</p>
+</div>
+
+<div class="code-block"><span class="cm"># Create a production-ready topic</span>
+kafka-topics.sh \
+  --bootstrap-server kafka-broker1:9092,kafka-broker2:9092,kafka-broker3:9092 \
+  --create \
+  --topic order-events \
+  --partitions <span class="num">6</span> \
+  --replication-factor <span class="num">3</span> \
+  --config retention.ms=<span class="num">604800000</span> \   <span class="cm"># 7 days retention</span>
+  --config min.insync.replicas=<span class="num">2</span> \  <span class="cm"># at least 2 replicas must ack</span>
+  --config compression.type=snappy     <span class="cm"># compress for storage efficiency</span>
+
+<span class="cm"># Producer configuration — production settings</span>
+<span class="an">@Bean</span>
+<span class="kw">public</span> ProducerFactory&lt;String, Object&gt; producerFactory() {
+    Map&lt;String, Object&gt; config = <span class="kw">new</span> HashMap&lt;&gt;();
+
+    config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,
+        <span class="st">"broker1:9092,broker2:9092,broker3:9092"</span>);
+
+    <span class="cm">// ACKS = all: wait for ALL in-sync replicas to acknowledge</span>
+    <span class="cm">// If leader crashes right after ack, data is still on other replicas</span>
+    config.put(ProducerConfig.ACKS_CONFIG, <span class="st">"all"</span>);
+
+    <span class="cm">// Enable idempotent producer: even if producer retries,</span>
+    <span class="cm">// each message is written exactly once (no duplicates)</span>
+    config.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, <span class="kw">true</span>);
+
+    <span class="cm">// Unlimited retries — combined with idempotence = safe retrying</span>
+    config.put(ProducerConfig.RETRIES_CONFIG, Integer.MAX_VALUE);
+
+    <span class="cm">// Compress messages before sending — reduces network bandwidth</span>
+    config.put(ProducerConfig.COMPRESSION_TYPE_CONFIG, <span class="st">"snappy"</span>);
+
+    <span class="cm">// Batch messages: wait up to 10ms to accumulate a batch</span>
+    <span class="cm">// Trades a little latency for much better throughput</span>
+    config.put(ProducerConfig.LINGER_MS_CONFIG, <span class="num">10</span>);
+    config.put(ProducerConfig.BATCH_SIZE_CONFIG, <span class="num">65536</span>); <span class="cm"># 64KB batches</span>
+
+    <span class="kw">return new</span> DefaultKafkaProducerFactory&lt;&gt;(config);
+}
+
+<span class="cm"># Consumer configuration — production settings</span>
+<span class="an">@KafkaListener</span>(
+    topics = <span class="st">"order-events"</span>,
+    groupId = <span class="st">"shipping-service-group"</span>,
+    concurrency = <span class="st">"3"</span>  <span class="cm">// 3 consumer threads, one per partition (we have 6 partitions total)</span>
+)
+<span class="kw">public void</span> handleOrder(
+        ConsumerRecord&lt;String, OrderEvent&gt; record,
+        Acknowledgment ack) {
+
+    <span class="kw">try</span> {
+        shippingService.scheduleDelivery(record.value());
+        ack.acknowledge(); <span class="cm">// commit offset ONLY after successful processing</span>
+    } <span class="kw">catch</span> (NonRetryableException e) {
+        <span class="cm">// Business error — acknowledge and move on (don't retry forever)</span>
+        log.error(<span class="st">"Cannot process order {}: {}"</span>, record.key(), e.getMessage());
+        deadLetterPublisher.send(<span class="st">"order-events-dlq"</span>, record.value());
+        ack.acknowledge();
+    }
+    <span class="cm">// If exception escapes without ack — Kafka re-delivers (at-least-once)</span>
+}</div>
+
+<div class="card green">
+  <div class="card-title green">📋 Log Compaction — A Special Retention Mode</div>
+  <p>Normal retention deletes messages after a time period (7 days). <b>Log compaction</b> is different — Kafka keeps only the <b>most recent message per key</b>, regardless of age.</p>
+  <p><b>Use case — materialised views:</b> You publish a user profile update every time it changes. After 1,000 updates, you only care about the current state, not all the history. With compaction, Kafka keeps only the latest update per userId. Any consumer that joins later (or needs to rebuild its state) reads the compacted log and gets the current state of every user profile.</p>
+  <p><b>Use case — tombstone messages:</b> To delete a record from the compacted log, publish a message with the key but a null value. Kafka treats null-value messages as tombstones — they indicate "delete this key." After compaction, the entry is removed entirely.</p>
+  <p><b>When NOT to use:</b> Do not use compaction when you need full event history (event sourcing). Use compaction for current-state topics, not event-history topics.</p>
+</div>
+
+<hr class="divider">
+
+<!-- ══════════════════════════════
+     PART 2 — DEPLOYMENT
+══════════════════════════════ -->
+<div class="section-heading"><div class="icon">🚀</div>Deployment Process for Microservices</div>
+<p class="section-desc">From code push to production — the complete CI/CD pipeline and Kubernetes deployment strategies.</p>
+
+<div class="card">
+  <div class="card-title">🤔 Why Deployment Strategy Is as Important as Code Quality</div>
+  <p>You can write perfect code but deploy it badly and cause more downtime than a bug would. Facebook's 6-hour outage in 2021 was caused by a <b>configuration change pushed incorrectly</b> — not bad code. Deployment strategy determines how your system behaves during the 5-minute window when old and new versions coexist side by side.</p>
+  <p>In microservices, deployment is more complex than a monolith because:</p>
+  <ul>
+    <li>Services have independent deployment cycles — you cannot deploy everything atomically</li>
+    <li>API changes must be backward compatible during transition (old and new run simultaneously)</li>
+    <li>Database migrations must run before the new code that uses them</li>
+    <li>Service dependencies might call each other — version mismatches must be handled</li>
+  </ul>
+</div>
+
+<!-- CI/CD PIPELINE -->
+<div class="section-heading" style="font-size:17px;margin-top:32px"><div class="icon" style="background:#ebf8ff">🔄</div>The Complete CI/CD Pipeline</div>
+
+<div class="pipeline-steps">
+  <div class="pipe-step">
+    <div class="pipe-num">1</div>
+    <div class="pipe-body">
+      <div class="pipe-title">Code Push — Developer pushes to Git</div>
+      <div class="pipe-desc">Developer pushes a feature branch. Raises a pull request. Code review by team members. After approval, merged to main branch. <b>The merge triggers the CI pipeline automatically.</b></div>
+    </div>
+  </div>
+  <div class="pipe-connector"></div>
+  <div class="pipe-step">
+    <div class="pipe-num">2</div>
+    <div class="pipe-body">
+      <div class="pipe-title">CI — Build, Test, Scan</div>
+      <div class="pipe-desc">Automated pipeline runs: compile the code, run all unit and integration tests, run static analysis (SonarQube), run security vulnerability scan (Snyk/OWASP). <b>If any step fails, the pipeline stops — no artifact is produced.</b> This is the safety net that prevents bad code from progressing.</div>
+    </div>
+  </div>
+  <div class="pipe-connector"></div>
+  <div class="pipe-step">
+    <div class="pipe-num">3</div>
+    <div class="pipe-body">
+      <div class="pipe-title">Docker Image Build</div>
+      <div class="pipe-desc">Build a Docker image from the Dockerfile. Tag it with the Git commit SHA (e.g. <code>order-service:abc1234</code>). <b>Never use the :latest tag in production</b> — it makes rollbacks impossible because you cannot tell which version :latest points to.</div>
+    </div>
+  </div>
+  <div class="pipe-connector"></div>
+  <div class="pipe-step">
+    <div class="pipe-num">4</div>
+    <div class="pipe-body">
+      <div class="pipe-title">Push to Container Registry</div>
+      <div class="pipe-desc">Push the tagged image to a container registry (AWS ECR, GCP Artifact Registry, Docker Hub). Kubernetes will pull from here during deployment. <b>Scan the image for vulnerabilities before pushing</b> — use Trivy or AWS ECR native scanning.</div>
+    </div>
+  </div>
+  <div class="pipe-connector"></div>
+  <div class="pipe-step">
+    <div class="pipe-num">5</div>
+    <div class="pipe-body">
+      <div class="pipe-title">Deploy to Staging — Helm or kubectl</div>
+      <div class="pipe-desc">Update the Kubernetes Deployment manifest with the new image tag. Apply via <code>helm upgrade</code> or <code>kubectl apply</code>. <b>Helm charts</b> package all Kubernetes resources (Deployment, Service, ConfigMap, HPA) into a versioned, reusable package. Kubernetes handles the rolling update.</div>
+    </div>
+  </div>
+  <div class="pipe-connector"></div>
+  <div class="pipe-step">
+    <div class="pipe-num">6</div>
+    <div class="pipe-body">
+      <div class="pipe-title">Smoke Tests and Automated Checks</div>
+      <div class="pipe-desc">Run a suite of smoke tests against the staging environment. Check key user journeys work end-to-end. Monitor error rates and latency for 5 minutes after deployment. <b>Auto-rollback if error rate exceeds threshold.</b></div>
+    </div>
+  </div>
+  <div class="pipe-connector"></div>
+  <div class="pipe-step">
+    <div class="pipe-num">7</div>
+    <div class="pipe-body">
+      <div class="pipe-title">Production Deployment — Same Process</div>
+      <div class="pipe-desc">Same pipeline runs against production. May require manual approval gate. <b>Production deployments should be boring</b> — identical process to staging, same image tag, same automation. If production feels special and nerve-wracking, your deployment process needs improvement.</div>
+    </div>
+  </div>
+</div>
+
+<!-- DEPLOYMENT STRATEGIES -->
+<div class="section-heading" style="font-size:17px;margin-top:32px"><div class="icon" style="background:#f0fff4">🎯</div>Kubernetes Deployment Strategies</div>
+
+<div class="deploy-grid">
+  <div class="deploy-card rolling">
+    <span class="deploy-badge">Default</span>
+    <div class="deploy-card-title">Rolling Update</div>
+    <p>Replace pods one by one. Old and new run simultaneously during rollout. Zero downtime if health checks configured.</p>
+    <p><b>Best for:</b> Most deployments. Simple and safe.</p>
+    <p><b>Risk:</b> Old and new APIs coexist — must be backward compatible.</p>
+  </div>
+  <div class="deploy-card bluegreen">
+    <span class="deploy-badge">Zero Risk</span>
+    <div class="deploy-card-title">Blue-Green</div>
+    <p>Two identical environments. Switch traffic instantly. Instant rollback by switching back.</p>
+    <p><b>Best for:</b> DB schema changes. High-risk releases.</p>
+    <p><b>Risk:</b> Double infrastructure cost during transition.</p>
+  </div>
+  <div class="deploy-card canary">
+    <span class="deploy-badge">Gradual</span>
+    <div class="deploy-card-title">Canary</div>
+    <p>Route 5% of traffic to new version. Increase gradually as confidence grows. Auto-rollback on error.</p>
+    <p><b>Best for:</b> High-risk features. A/B testing in production.</p>
+    <p><b>Risk:</b> Requires traffic splitting infrastructure (Istio/Argo).</p>
+  </div>
+</div>
+
+<div class="code-block"><span class="cm"># Kubernetes Deployment — Rolling Update strategy</span>
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-service
+  namespace: production
+spec:
+  replicas: <span class="num">3</span>
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: <span class="num">1</span>          <span class="cm"># allow 1 extra pod during rollout (4 pods max)</span>
+      maxUnavailable: <span class="num">0</span>    <span class="cm"># never reduce below 3 pods (zero downtime)</span>
+  selector:
+    matchLabels:
+      app: order-service
+  template:
+    metadata:
+      labels:
+        app: order-service
+    spec:
+      containers:
+      - name: order-service
+        image: myregistry/order-service:<span class="st">abc1234</span>  <span class="cm"># pinned commit SHA</span>
+        ports:
+        - containerPort: <span class="num">8080</span>
+        resources:
+          requests:
+            cpu: <span class="st">"250m"</span>      <span class="cm"># guaranteed minimum CPU</span>
+            memory: <span class="st">"256Mi"</span>  <span class="cm"># guaranteed minimum RAM</span>
+          limits:
+            cpu: <span class="st">"500m"</span>      <span class="cm"># maximum CPU (throttled if exceeded)</span>
+            memory: <span class="st">"512Mi"</span>  <span class="cm"># maximum RAM (OOMKilled if exceeded)</span>
+        livenessProbe:
+          httpGet:
+            path: /actuator/health/liveness
+            port: <span class="num">8080</span>
+          initialDelaySeconds: <span class="num">30</span>  <span class="cm"># wait 30s before first check</span>
+          periodSeconds: <span class="num">10</span>
+          failureThreshold: <span class="num">3</span>       <span class="cm"># restart after 3 consecutive failures</span>
+        readinessProbe:
+          httpGet:
+            path: /actuator/health/readiness
+            port: <span class="num">8080</span>
+          initialDelaySeconds: <span class="num">20</span>
+          periodSeconds: <span class="num">5</span>
+          failureThreshold: <span class="num">3</span>       <span class="cm"># remove from LB after 3 failures</span>
+        lifecycle:
+          preStop:
+            exec:
+              command: [<span class="st">"/bin/sh"</span>,<span class="st">"-c"</span>,<span class="st">"sleep 10"</span>]  <span class="cm"># drain in-flight requests</span></div>
+
+<!-- PRE-DEPLOYMENT CHECKLIST -->
+<div class="section-heading" style="font-size:17px;margin-top:32px"><div class="icon" style="background:#faf5ff">📋</div>Before You Deploy — The Production Checklist</div>
+<p class="section-desc">From your notes: "Before deploying a new microservice, do we need to do something?" Yes. Here is the complete checklist.</p>
+
+<div class="checklist">
+  <div class="check-item">
+    <div class="check-icon">📝</div>
+    <div class="check-body">
+      <div class="check-title">Run Database Migrations First</div>
+      <div class="check-desc">Run Flyway or Liquibase migrations <b>before</b> deploying the new application version. Never rely on the app to run migrations on startup in production — if 3 pods start simultaneously, all 3 try to migrate at once, causing conflicts. Use Kubernetes <b>init containers</b> or a separate migration job that must complete before the Deployment starts.</div>
+    </div>
+  </div>
+  <div class="check-item">
+    <div class="check-icon">🔑</div>
+    <div class="check-body">
+      <div class="check-title">Create Secrets and ConfigMaps Before Pods Start</div>
+      <div class="check-desc">Pods that reference a Secret or ConfigMap that does not exist yet will fail to start with <code>CreateContainerConfigError</code>. Apply all Secrets (DB passwords, API keys) and ConfigMaps before applying the Deployment. Use <b>Kubernetes Secrets</b> for sensitive values — never put passwords in environment variables in the Deployment YAML.</div>
+    </div>
+  </div>
+  <div class="check-item">
+    <div class="check-icon">🏥</div>
+    <div class="check-body">
+      <div class="check-title">Configure Liveness and Readiness Probes</div>
+      <div class="check-desc">Without a readiness probe, Kubernetes sends traffic immediately when the pod starts — before Spring Boot has finished initialising (DB connection pool, caches). Add <code>initialDelaySeconds</code> appropriate for your startup time. Without a liveness probe, Kubernetes never restarts a deadlocked pod.</div>
+    </div>
+  </div>
+  <div class="check-item">
+    <div class="check-icon">📦</div>
+    <div class="check-body">
+      <div class="check-title">Set Resource Requests and Limits</div>
+      <div class="check-desc">Without <code>requests</code>, the Kubernetes scheduler cannot make good placement decisions. Without <code>limits</code>, one pod with a memory leak can consume all node memory and cause other pods to be OOMKilled. Set both on every container. A good starting point: requests = 50% of limits.</div>
+    </div>
+  </div>
+  <div class="check-item">
+    <div class="check-icon">🔄</div>
+    <div class="check-body">
+      <div class="check-title">Ensure Backward API Compatibility</div>
+      <div class="check-desc">During a rolling update, old and new pod versions run simultaneously. If you removed a field from your API response, old consumers calling the new pods will break. Follow the <b>expand-contract pattern</b>: first deploy the new version that still supports the old API (expand), then update all consumers, then remove the old API (contract).</div>
+    </div>
+  </div>
+  <div class="check-item">
+    <div class="check-icon">📊</div>
+    <div class="check-body">
+      <div class="check-title">Set Up Monitoring and Alerting First</div>
+      <div class="check-desc">Deploy the new service with dashboards and alerts configured <b>before</b> it goes live. You should be able to see error rate, latency, and pod health the moment traffic starts. Discovering problems through customer complaints 30 minutes after deployment is too late.</div>
+    </div>
+  </div>
+  <div class="check-item">
+    <div class="check-icon">🏷️</div>
+    <div class="check-body">
+      <div class="check-title">Register with Service Discovery</div>
+      <div class="check-desc">In Kubernetes, the Service object must be applied before the Deployment — otherwise pods start but have no Service routing traffic to them. Apply Service YAML first. In Eureka/Consul-based systems, verify the service registers on startup before routing traffic to it.</div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ══════════════════════════════
+     FOLLOW-UP Q&A
+══════════════════════════════ -->
+<div class="section-heading"><div class="icon">❓</div>Follow-Up Questions &amp; Full Answers</div>
+<p class="section-desc">Questions interviewers ask about Kafka and deployment. Click to expand.</p>
+
+<div class="qa-section">
+
+  <div class="qa-item">
+    <div class="qa-question" onclick="toggleQA(this)">
+      Q1: How do you decide how many partitions to create for a topic? Can you change it later?
+      <span class="qa-icon">+</span>
+    </div>
+    <div class="qa-answer">
+      <p>Partition count is one of the most consequential decisions you make for a Kafka topic and it deserves careful thought upfront.</p>
+      <p><b>How to calculate the right number:</b></p>
+      <ul>
+        <li><b>From the consumer side:</b> You cannot have more active consumers in a group than partitions. If you plan to scale ShippingService to 6 instances, you need at least 6 partitions. Start with your expected maximum consumer count.</li>
+        <li><b>From the throughput side:</b> A single partition handles roughly 10MB/s write throughput. If your topic needs 100MB/s, you need at least 10 partitions.</li>
+        <li><b>Practical rule:</b> Take the larger of these two numbers, then round up to a number that is convenient (divisible by the number of brokers for even distribution). Start slightly higher than you need — it is easier to start with 12 partitions than to increase later.</li>
+      </ul>
+      <p><b>Can you change it?</b> You can <b>increase</b> partitions but cannot <b>decrease</b> them without recreating the topic. The critical problem with increasing: if you are using a message key for ordering (e.g. orderId), adding partitions changes which partition each key maps to. A key that previously went to partition 2 might now go to partition 5. In-flight messages on partition 2 and new messages on partition 5 for the same orderId will be processed out of order. This breaks ordering guarantees. For this reason, plan partition count carefully upfront, especially for topics where message ordering matters.</p>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question" onclick="toggleQA(this)">
+      Q2: What is the difference between acks=1 and acks=all? When would you use each?
+      <span class="qa-icon">+</span>
+    </div>
+    <div class="qa-answer">
+      <p>The <code>acks</code> setting controls how many broker acknowledgements the producer waits for before considering a message successfully written.</p>
+      <p><b>acks=0 (fire and forget):</b> Producer sends the message and does not wait for any acknowledgement. Maximum throughput, but if the broker is down or the message is lost — you never know. Use only for non-critical metrics or telemetry where losing an occasional message is acceptable.</p>
+      <p><b>acks=1 (leader only):</b> Producer waits for the partition leader to acknowledge the write. The leader writes to its local log and responds immediately without waiting for followers. Faster than acks=all, but if the leader crashes after acknowledging but before followers replicate, the message is lost. The leader failover will promote a follower that does not have the message.</p>
+      <p><b>acks=all (all in-sync replicas):</b> Producer waits for ALL in-sync replicas to write the message to their local logs before acknowledging. Combined with <code>min.insync.replicas=2</code>, at least 2 replicas must have the message before success is returned. If the leader crashes now, any follower has the message and can serve it. No data loss. Slightly higher latency.</p>
+      <p><b>When to use each:</b> Use acks=0 only for truly disposable data (click tracking, approximate metrics). Use acks=1 for important but not critical data where throughput matters more than guaranteed delivery. Use acks=all (the default with enable.idempotence=true) for all financial, order, payment, and other business-critical events. The latency difference is usually under 5ms — for most use cases, always use acks=all.</p>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question" onclick="toggleQA(this)">
+      Q3: What happens during a Kafka consumer group rebalance? Why is it disruptive?
+      <span class="qa-icon">+</span>
+    </div>
+    <div class="qa-answer">
+      <p>A <b>rebalance</b> happens when the assignment of partitions to consumers in a group changes. This is triggered when: a consumer joins the group (new pod starts), a consumer leaves the group (pod stops), a consumer is considered dead (heartbeat timeout), or partition count changes.</p>
+      <p><b>During a rebalance:</b> ALL consumers in the group stop processing. The group coordinator (a Kafka broker) reassigns all partitions across the current consumers. Once assignment is complete, consumers resume processing from where they left off. This stop-the-world behaviour is what makes rebalances disruptive — during the rebalance (which can take seconds to minutes), no messages are being processed.</p>
+      <p><b>Real impact:</b> If you deploy a new version of ShippingService and do a rolling update (pods come up and down one by one), each pod start and stop triggers a rebalance. With 6 pods and 6 partitions, you might trigger 12 rebalances during a rolling deployment (6 old pods stopping + 6 new pods starting). At 10 seconds per rebalance, that is 2 minutes of zero processing.</p>
+      <p><b>Modern solution — cooperative rebalancing (Kafka 2.4+):</b> Instead of stopping all consumers during rebalance, only the partitions that are being reassigned are paused. Consumers keep their existing partitions during the rebalance. This is called incremental cooperative rebalancing. Enable it with: <code>partition.assignment.strategy=CooperativeStickyAssignor</code>. This makes rolling deployments far less disruptive to Kafka processing.</p>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question" onclick="toggleQA(this)">
+      Q4: What is a Helm chart and why is it used instead of raw YAML?
+      <span class="qa-icon">+</span>
+    </div>
+    <div class="qa-answer">
+      <p>A <b>Helm chart</b> is a package of Kubernetes YAML manifests with templating support. Think of it as npm for Kubernetes — a package manager for deploying applications.</p>
+      <p><b>The problem with raw YAML:</b> You have 5 microservices. Each needs a Deployment, Service, ConfigMap, HorizontalPodAutoscaler, and Ingress. That is 25 YAML files. Most of them are nearly identical — only the service name, image tag, port, and a few config values differ. Maintaining 25 files means updating 5 files every time you deploy a new image tag.</p>
+      <p><b>What Helm adds:</b></p>
+      <ul>
+        <li><b>Templating:</b> Use variables like <code>{{ .Values.image.tag }}</code> that are filled in at deploy time. One template file generates the correct YAML for any service.</li>
+        <li><b>Values files:</b> Separate configuration from templates. <code>values-staging.yaml</code> has staging-specific values (smaller replicas, different secrets). <code>values-prod.yaml</code> has production values. One chart, multiple environments.</li>
+        <li><b>Release management:</b> Helm tracks what was deployed, with what values, at what time. <code>helm rollback order-service 2</code> rolls back to the previous release. Atomic installs — if any resource fails to apply, Helm rolls back the entire release.</li>
+        <li><b>Dependency management:</b> A chart can declare dependencies on other charts (e.g. your app depends on a PostgreSQL chart). Helm installs them all.</li>
+      </ul>
+      <p><b>When NOT to use Helm:</b> For very simple single-service deployments, raw kubectl apply is simpler. For large teams with complex GitOps workflows, tools like ArgoCD or Flux manage Helm releases automatically from a Git repository — the Git state defines what is deployed.</p>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question" onclick="toggleQA(this)">
+      Q5: How do you do zero-downtime database schema changes during a rolling deployment?
+      <span class="qa-icon">+</span>
+    </div>
+    <div class="qa-answer">
+      <p>This is one of the hardest problems in microservice deployments. During a rolling update, old pods and new pods run simultaneously and BOTH hit the same database. A schema change must work with both old and new application code simultaneously.</p>
+      <p><b>The expand-contract pattern (the safe way):</b></p>
+      <p><b>Phase 1 — Expand (backward compatible addition):</b> Add the new column or table as nullable with no constraints. Deploy new application code that WRITES to both old and new columns/tables but only READS from old ones. All pods (old and new) work with the schema at this point.</p>
+      <p><b>Phase 2 — Migrate:</b> Run a background job to backfill data from old column to new column for existing records. This can run while the application is live.</p>
+      <p><b>Phase 3 — Switch reads:</b> Deploy application code that reads from the new column/table. Still writes to both for backward compatibility. All pods are now on this version.</p>
+      <p><b>Phase 4 — Contract (cleanup):</b> Remove the old column from writes. Deploy code that only uses the new column. Only do this once 100% of pods are on the new version.</p>
+      <p><b>Phase 5 — Drop old column:</b> The old column/table is now safe to drop from the database.</p>
+      <p>This is always multiple deployments spread over days or weeks, not one big bang. This is why database changes feel slower in microservices — correctness requires multiple steps.</p>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question" onclick="toggleQA(this)">
+      Q6: What is the difference between OOMKilled and CrashLoopBackOff in Kubernetes?
+      <span class="qa-icon">+</span>
+    </div>
+    <div class="qa-answer">
+      <p>These are two of the most common pod failure states you will encounter in production.</p>
+      <p><b>OOMKilled (Out of Memory Killed):</b> The pod exceeded its memory limit. The Linux kernel's OOM killer terminated the process. The exit code is 137 (128 + signal 9). This is Kubernetes enforcing your memory limits — the pod tried to use more memory than you allowed.</p>
+      <p><b>Common causes:</b> Your memory limit is set too low for your workload. A memory leak — the application allocates memory but never frees it, growing over time. A sudden large load — processing a large file or large query result set spikes memory use.</p>
+      <p><b>How to fix:</b> First, check if it is a genuine limit issue (increase the limit) or a leak (fix the code). Use JVM flags like <code>-XX:MaxRAMPercentage=75.0</code> to ensure the JVM heap respects container limits. Monitor memory over time — a steady upward trend is a leak.</p>
+      <p><b>CrashLoopBackOff:</b> The container keeps crashing and Kubernetes keeps restarting it. After each crash, Kubernetes waits longer before the next restart — 10s, 20s, 40s, 80s, 160s (exponential backoff). The status shows CrashLoopBackOff once the waiting time reaches 5 minutes.</p>
+      <p><b>Common causes:</b> Application exception on startup (misconfigured bean, DB not reachable, missing environment variable, bad configuration value). Missing required secret — if a required Secret does not exist, Spring Boot fails to start. Liveness probe too aggressive — K8s kills the pod before Spring Boot finishes starting. Port conflict — another process is using the same port.</p>
+      <p><b>How to diagnose:</b> <code>kubectl logs pod-name --previous</code> shows the logs from the previous (crashed) container. The stack trace there is your root cause. Also check <code>kubectl describe pod pod-name</code> for events and exit codes.</p>
+    </div>
+  </div>
+
+</div>
+
+<div class="tip" style="margin-top:24px">
+  <div class="tip-label">Interview Tip — Answering "How Do You Create a Kafka Topic in Production?"</div>
+  <p>Do not just say "kafka-topics.sh --create". Walk through the decisions:</p>
+  <p><b>Strong answer:</b> "When creating a production Kafka topic, we consider three key settings. Partition count is set based on our expected consumer count — if we plan to run 6 ShippingService instances, we create 6 partitions so each instance gets one. Replication factor is always 3 in production — one leader and two followers, survives 2 broker failures. We set min.insync.replicas to 2 and acks=all on the producer to guarantee no data loss even if the leader crashes right after acknowledging a write. We also set the retention period based on our recovery window — 7 days is standard, enough time to replay events if a consumer has a bug and needs to reprocess."</p>
+  <p>Then mention monitoring: "After creating the topic, we monitor consumer lag for each consumer group using our Kafka monitoring dashboard. A growing lag is our early warning system that a service is falling behind."</p>
+</div>
+
+</div>
+
+<script>
+function toggleQA(el) {
+  var answer = el.nextElementSibling;
+  var isOpen = answer.classList.contains('open');
+  answer.classList.toggle('open', !isOpen);
+  el.classList.toggle('open', !isOpen);
+  el.querySelector('.qa-icon').textContent = isOpen ? '+' : '×';
+}
+</script>
+</body>
+</html>

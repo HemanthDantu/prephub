@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S06 — Java Deep Dive</title>
+<style>
+  :root {
+    --bg:#f8f9fa;--surface:#ffffff;--border:#e2e8f0;
+    --text-primary:#1a202c;--text-secondary:#4a5568;--text-muted:#718096;
+    --blue-light:#ebf8ff;--blue-border:#bee3f8;--blue-dark:#1a365d;
+    --green-light:#f0fff4;--green-border:#9ae6b4;
+    --red-light:#fff5f5;--red-border:#feb2b2;
+    --orange-light:#fffaf0;--orange-border:#fbd38d;
+    --purple-light:#faf5ff;--purple-border:#d6bcfa;
+    --yellow-light:#fffff0;--yellow-border:#f6e05e;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text-primary);font-size:15px;line-height:1.7;}
+  .page-header{background:linear-gradient(135deg,#1a365d 0%,#2a4a8a 100%);color:white;padding:40px 48px 36px;}
+  .page-header .section-label{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;opacity:.7;margin-bottom:8px;}
+  .page-header h1{font-size:28px;font-weight:700;margin-bottom:10px;}
+  .page-header .subtitle{font-size:15px;opacity:.8;max-width:680px;line-height:1.6;}
+  .tags{display:flex;flex-wrap:wrap;gap:7px;margin-top:18px;}
+  .tag{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);color:white;font-size:11.5px;padding:3px 10px;border-radius:20px;}
+  .container{max-width:900px;margin:0 auto;padding:40px 24px 80px;}
+  .section-heading{font-size:20px;font-weight:700;color:var(--text-primary);margin:44px 0 6px;padding-bottom:10px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:10px;}
+  .section-heading .icon{width:32px;height:32px;border-radius:8px;background:#ebf8ff;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+  .section-desc{font-size:14px;color:var(--text-muted);margin-bottom:20px;margin-top:4px;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:22px 26px;margin-bottom:16px;}
+  .card-title{font-size:14px;font-weight:700;color:var(--text-primary);margin-bottom:10px;}
+  .card p{font-size:14.5px;color:var(--text-secondary);line-height:1.75;margin-bottom:10px;}
+  .card p:last-child{margin-bottom:0;}
+  .card b{color:var(--text-primary);font-weight:600;}
+  .card code{font-family:'SF Mono',Consolas,monospace;font-size:12.5px;background:#edf2f7;padding:1px 6px;border-radius:4px;color:#c53030;}
+  .card ul,.card ol{padding-left:22px;margin:8px 0;}
+  .card li{font-size:14.5px;color:var(--text-secondary);line-height:1.75;margin-bottom:5px;}
+  .card li b{color:var(--text-primary);}
+  .card.blue{background:var(--blue-light);border-color:var(--blue-border);}
+  .card.green{background:var(--green-light);border-color:var(--green-border);}
+  .card.red{background:var(--red-light);border-color:var(--red-border);}
+  .card.orange{background:var(--orange-light);border-color:var(--orange-border);}
+  .card.purple{background:var(--purple-light);border-color:var(--purple-border);}
+  .card.yellow{background:var(--yellow-light);border-color:var(--yellow-border);}
+  .card.blue p,.card.blue li{color:#2c5282;}.card.blue b{color:var(--blue-dark);}
+  .card.green p,.card.green li{color:#22543d;}.card.green b{color:#1c4532;}
+  .card.red p,.card.red li{color:#742a2a;}.card.red b{color:#63171b;}
+  .card.orange p,.card.orange li{color:#7b341e;}.card.orange b{color:#652b19;}
+  .card.purple p,.card.purple li{color:#44337a;}.card.purple b{color:#322659;}
+  .card.yellow p,.card.yellow li{color:#744210;}.card.yellow b{color:#5f370e;}
+  .definition{background:#1a365d;color:white;border-radius:12px;padding:22px 26px;margin-bottom:16px;}
+  .definition .def-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;opacity:.7;margin-bottom:6px;}
+  .definition p{font-size:15px;line-height:1.75;opacity:.95;margin-bottom:8px;}
+  .definition p:last-child{margin-bottom:0;}
+  .definition b{font-weight:700;}
+  .analogy{border-left:4px solid #d69e2e;background:var(--yellow-light);border-radius:0 10px 10px 0;padding:16px 20px;margin-bottom:16px;}
+  .analogy .analogy-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#744210;margin-bottom:5px;}
+  .analogy p{font-size:14px;color:#744210;line-height:1.7;margin-bottom:6px;}
+  .analogy p:last-child{margin-bottom:0;}
+  .analogy b{color:#5f370e;}
+  .scenario{border-left:4px solid #38a169;background:var(--green-light);border-radius:0 10px 10px 0;padding:16px 20px;margin-bottom:16px;}
+  .scenario .scenario-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#276749;margin-bottom:5px;}
+  .scenario p{font-size:14px;color:#22543d;line-height:1.75;margin-bottom:8px;}
+  .scenario p:last-child{margin-bottom:0;}
+  .scenario b{color:#1c4532;font-weight:600;}
+  .scenario ol,.scenario ul{padding-left:20px;margin:6px 0;}
+  .scenario li{font-size:14px;color:#22543d;line-height:1.75;margin-bottom:6px;}
+  .scenario li b{color:#1c4532;}
+  .warning{border-left:4px solid #e53e3e;background:var(--red-light);border-radius:0 10px 10px 0;padding:16px 20px;margin-bottom:16px;}
+  .warning .warning-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#9b2335;margin-bottom:5px;}
+  .warning p{font-size:14px;color:#742a2a;line-height:1.7;margin-bottom:6px;}
+  .warning p:last-child{margin-bottom:0;}
+  .warning b{color:#63171b;}
+  .warning ul{padding-left:20px;margin:6px 0;}
+  .warning li{font-size:14px;color:#742a2a;line-height:1.7;margin-bottom:4px;}
+  .tip{border-left:4px solid #3182ce;background:var(--blue-light);border-radius:0 10px 10px 0;padding:16px 20px;margin-bottom:16px;}
+  .tip .tip-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#2b6cb0;margin-bottom:5px;}
+  .tip p{font-size:14px;color:#2c5282;line-height:1.7;margin-bottom:6px;}
+  .tip p:last-child{margin-bottom:0;}
+  .tip b{color:#1a365d;}
+  .pro-con{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+  .pro{background:var(--green-light);border:1px solid var(--green-border);border-radius:10px;padding:16px 18px;}
+  .con{background:var(--red-light);border:1px solid var(--red-border);border-radius:10px;padding:16px 18px;}
+  .pro-title{font-size:11px;font-weight:700;color:#1c4532;text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;}
+  .con-title{font-size:11px;font-weight:700;color:#63171b;text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;}
+  .pro ul,.con ul{padding-left:18px;}
+  .pro li{font-size:13.5px;color:#22543d;line-height:1.7;margin-bottom:4px;}
+  .con li{font-size:13.5px;color:#742a2a;line-height:1.7;margin-bottom:4px;}
+  .table-wrap{overflow-x:auto;margin-bottom:16px;border-radius:10px;border:1px solid var(--border);}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;}
+  thead th{background:#2d3748;color:white;padding:11px 14px;text-align:left;font-weight:600;font-size:12.5px;}
+  tbody tr:nth-child(even){background:#f7fafc;}
+  tbody td{padding:10px 14px;color:var(--text-secondary);border-bottom:1px solid var(--border);vertical-align:top;line-height:1.6;}
+  tbody tr:last-child td{border-bottom:none;}
+  td b{color:var(--text-primary);font-weight:600;}
+  .code-block{background:#1a202c;border-radius:10px;padding:18px 20px;font-family:'SF Mono',Consolas,monospace;font-size:12.5px;color:#e2e8f0;white-space:pre;overflow-x:auto;line-height:1.65;margin-bottom:14px;}
+  .code-block .cm{color:#718096;}
+  .code-block .kw{color:#90cdf4;}
+  .code-block .st{color:#9ae6b4;}
+  .code-block .an{color:#fbd38d;}
+  .code-block .num{color:#f6ad55;}
+  .qa-section{margin-bottom:16px;}
+  .qa-item{margin-bottom:12px;border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+  .qa-question{background:#2d3748;color:white;padding:14px 18px;font-size:14px;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none;}
+  .qa-question:hover{background:#1a202c;}
+  .qa-question .qa-icon{font-size:18px;transition:transform .25s;flex-shrink:0;margin-left:12px;}
+  .qa-question.open .qa-icon{transform:rotate(45deg);}
+  .qa-answer{padding:0 18px;max-height:0;overflow:hidden;transition:max-height .35s ease,padding .3s ease;background:var(--surface);}
+  .qa-answer.open{max-height:2000px;padding:16px 18px;}
+  .qa-answer p{font-size:14px;color:var(--text-secondary);line-height:1.75;margin-bottom:10px;}
+  .qa-answer p:last-child{margin-bottom:0;}
+  .qa-answer b{color:var(--text-primary);font-weight:600;}
+  .qa-answer ul,.qa-answer ol{padding-left:20px;margin:6px 0 10px;}
+  .qa-answer li{font-size:14px;color:var(--text-secondary);line-height:1.75;margin-bottom:4px;}
+  .qa-answer code{font-family:'SF Mono',Consolas,monospace;font-size:12px;background:#edf2f7;padding:1px 5px;border-radius:4px;color:#c53030;}
+  .divider{border:none;border-top:1px solid var(--border);margin:32px 0;}
+
+  /* TRANSACTION PROPAGATION VISUAL */
+  .tx-visual{margin-bottom:16px;}
+  .tx-outer{background:#ebf8ff;border:2px solid #bee3f8;border-radius:12px;padding:16px;margin-bottom:10px;}
+  .tx-outer-label{font-size:11px;font-weight:700;color:#2b6cb0;text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px;}
+  .tx-inner{background:white;border:1px solid #bee3f8;border-radius:8px;padding:12px;margin-bottom:8px;}
+  .tx-inner:last-child{margin-bottom:0;}
+  .tx-inner-label{font-size:12px;font-weight:700;color:#2b6cb0;margin-bottom:4px;}
+  .tx-inner-desc{font-size:12.5px;color:#4a5568;line-height:1.6;}
+  .tx-new{background:#f0fff4;border:2px dashed #9ae6b4;border-radius:8px;padding:12px;margin-bottom:8px;}
+  .tx-new-label{font-size:11px;font-weight:700;color:#276749;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;}
+  .tx-new-desc{font-size:12.5px;color:#22543d;line-height:1.6;}
+
+  /* SPRING BEAN DIAGRAM */
+  .spring-layers{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;}
+  .spring-layer{display:flex;align-items:stretch;gap:0;border-radius:10px;overflow:hidden;border:1px solid var(--border);}
+  .spring-layer-label{background:#2d3748;color:white;padding:12px 16px;font-size:12px;font-weight:700;writing-mode:vertical-rl;text-orientation:mixed;transform:rotate(180deg);display:flex;align-items:center;justify-content:center;min-width:44px;letter-spacing:.05em;text-transform:uppercase;}
+  .spring-layer-content{padding:12px 16px;flex:1;background:white;}
+  .spring-layer-title{font-size:13.5px;font-weight:700;color:var(--text-primary);margin-bottom:4px;}
+  .spring-layer-desc{font-size:13px;color:var(--text-secondary);line-height:1.6;}
+  .spring-layer-desc b{color:var(--text-primary);}
+  .spring-layer-badge{display:inline-block;font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:20px;margin-right:5px;margin-bottom:4px;background:#edf2f7;color:#4a5568;}
+  .spring-layer-badge.blue{background:#ebf8ff;color:#2b6cb0;}
+  .spring-layer-badge.green{background:#f0fff4;color:#276749;}
+  .spring-layer-badge.orange{background:#fffaf0;color:#7b341e;}
+  .spring-layer-badge.purple{background:#faf5ff;color:#553c9a;}
+
+  /* SOLID CARDS */
+  .solid-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+  .solid-card{border-radius:10px;padding:16px 18px;border:1px solid var(--border);background:white;}
+  .solid-letter{font-size:28px;font-weight:800;line-height:1;margin-bottom:4px;}
+  .solid-name{font-size:13px;font-weight:700;color:var(--text-primary);margin-bottom:6px;}
+  .solid-one-liner{font-size:12.5px;color:var(--text-muted);margin-bottom:8px;font-style:italic;}
+  .solid-desc{font-size:13px;color:var(--text-secondary);line-height:1.6;}
+  .solid-desc b{color:var(--text-primary);}
+
+  /* MEMORY DIAGRAM */
+  .mem-diagram{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;}
+  .mem-zone{border-radius:10px;padding:16px;text-align:center;border:2px solid transparent;}
+  .mem-zone.stack{background:#f0fff4;border-color:#9ae6b4;}
+  .mem-zone.heap{background:#ebf8ff;border-color:#bee3f8;}
+  .mem-zone.meta{background:#faf5ff;border-color:#d6bcfa;}
+  .mem-zone-icon{font-size:24px;margin-bottom:8px;}
+  .mem-zone-title{font-size:13px;font-weight:700;margin-bottom:6px;}
+  .mem-zone.stack .mem-zone-title{color:#1c4532;}
+  .mem-zone.heap  .mem-zone-title{color:#1a365d;}
+  .mem-zone.meta  .mem-zone-title{color:#322659;}
+  .mem-zone-content{font-size:12px;line-height:1.65;}
+  .mem-zone.stack .mem-zone-content{color:#22543d;}
+  .mem-zone.heap  .mem-zone-content{color:#2c5282;}
+  .mem-zone.meta  .mem-zone-content{color:#44337a;}
+  .mem-tag{display:inline-block;font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:20px;margin:2px;}
+  .mem-zone.stack .mem-tag{background:#9ae6b4;color:#1c4532;}
+  .mem-zone.heap  .mem-tag{background:#bee3f8;color:#1a365d;}
+  .mem-zone.meta  .mem-tag{background:#d6bcfa;color:#322659;}
+
+  /* CONCURRENCY VISUAL */
+  .race-visual{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+  .race-col{border-radius:10px;padding:14px 16px;border:1px solid var(--border);}
+  .race-col.alice{background:#ebf8ff;border-color:#bee3f8;}
+  .race-col.bob{background:#faf5ff;border-color:#d6bcfa;}
+  .race-col-title{font-size:13px;font-weight:700;margin-bottom:10px;}
+  .race-col.alice .race-col-title{color:#1a365d;}
+  .race-col.bob .race-col-title{color:#322659;}
+  .race-step{font-size:12.5px;line-height:1.6;padding:6px 0;border-bottom:1px solid rgba(0,0,0,.06);}
+  .race-step:last-child{border-bottom:none;}
+  .race-col.alice .race-step{color:#2c5282;}
+  .race-col.bob .race-step{color:#44337a;}
+  .race-step.problem{background:rgba(229,62,62,.1);border-radius:4px;padding:6px 8px;color:#742a2a!important;font-weight:600;}
+
+  @media(max-width:640px){
+    .page-header{padding:28px 20px;}
+    .container{padding:24px 16px 60px;}
+    .pro-con,.solid-grid,.mem-diagram,.race-visual{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <div class="section-label">Section 06 — Java &amp; Spring</div>
+  <h1>Java Deep Dive: Spring, Transactions, Concurrency &amp; Design</h1>
+  <div class="subtitle">@Transactional internals, @Autowired vs @Component, SOLID principles with real examples, concurrent updates with optimistic and pessimistic locking, multithreading, and variable scopes — all explained from scratch.</div>
+  <div class="tags">
+    <span class="tag">@Transactional</span><span class="tag">Propagation</span>
+    <span class="tag">readOnly</span><span class="tag">@Autowired</span>
+    <span class="tag">@Component</span><span class="tag">Constructor Injection</span>
+    <span class="tag">SOLID</span><span class="tag">Optimistic Locking</span>
+    <span class="tag">Pessimistic Locking</span><span class="tag">@Version</span>
+    <span class="tag">CompletableFuture</span><span class="tag">Variable Scope</span>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ══════════════════════════════
+     PART 1 — @TRANSACTIONAL
+══════════════════════════════ -->
+<div class="section-heading"><div class="icon">🔒</div>@Transactional — What It Is and How It Actually Works</div>
+<p class="section-desc">Understanding @Transactional from the ground up — what a transaction is, what the annotation does, and all the ways it can go wrong.</p>
+
+<div class="card">
+  <div class="card-title">🤔 Start Here — What Is a Database Transaction?</div>
+  <p>A <b>database transaction</b> is a group of operations that are treated as a single, indivisible unit. Either ALL operations in the group succeed and are committed to the database permanently, or ALL of them fail and are rolled back — as if they never happened.</p>
+  <p>The classic example: transferring money between two bank accounts. You need to:</p>
+  <ol style="padding-left:20px;margin:8px 0;">
+    <li style="margin-bottom:4px;font-size:14.5px;color:var(--text-secondary)">Debit £100 from Account A</li>
+    <li style="margin-bottom:4px;font-size:14.5px;color:var(--text-secondary)">Credit £100 to Account B</li>
+  </ol>
+  <p>If step 1 succeeds but step 2 fails (server crash), Account A has lost £100 with nothing going to Account B. This is a disaster. A transaction groups both steps — if step 2 fails, step 1 is automatically rolled back. Account A keeps its £100.</p>
+  <p>Transactions have four properties known as <b>ACID</b>: <b>A</b>tomicity (all or nothing), <b>C</b>onsistency (data stays valid), <b>I</b>solation (transactions don't see each other's partial results), <b>D</b>urability (committed data survives crashes).</p>
+</div>
+
+<div class="definition">
+  <div class="def-label">What @Transactional Does</div>
+  <p>The <code>@Transactional</code> annotation tells Spring to wrap the method in a database transaction. Spring does this using a <b>proxy</b> — when you call the method through a Spring bean, Spring intercepts the call, begins a transaction, runs your method, and either commits (success) or rolls back (exception) the transaction when the method exits.</p>
+  <p>Without <code>@Transactional</code>, each individual repository call (each <code>save()</code>, each <code>findById()</code>) opens and closes its own tiny transaction independently. Multiple calls in the same method are NOT grouped together — if the second one fails, the first one is already committed and cannot be rolled back.</p>
+</div>
+
+<div class="scenario">
+  <div class="scenario-label">Concrete Example — Why @Transactional Matters</div>
+  <p><b>Without @Transactional — dangerous:</b></p>
+  <p>Your <code>placeOrder()</code> method: saves the order, saves the payment record, updates inventory. Each save is its own transaction. The order and payment save successfully. The inventory update fails. The order and payment are committed and cannot be undone. You have confirmed an order with no inventory reserved. Data is now inconsistent.</p>
+  <p><b>With @Transactional — safe:</b></p>
+  <p>Spring opens ONE transaction at the start of <code>placeOrder()</code>. All three saves happen inside it. When inventory update fails, Spring catches the exception and rolls back ALL three saves. Nothing is committed. Data stays consistent.</p>
+</div>
+
+<div class="card blue">
+  <div class="card-title blue">⚙️ What Triggers a Rollback?</div>
+  <p>By default, Spring rolls back the transaction when an <b>unchecked exception</b> (RuntimeException or Error) is thrown. It does NOT automatically roll back on checked exceptions (those that extend Exception but not RuntimeException).</p>
+  <p>This is a common source of bugs:</p>
+  <ul>
+    <li><code>throw new RuntimeException()</code> → transaction rolls back ✅</li>
+    <li><code>throw new NullPointerException()</code> → rolls back ✅ (it's a RuntimeException)</li>
+    <li><code>throw new IOException()</code> → does NOT roll back ❌ (it's a checked Exception)</li>
+    <li><code>throw new SQLException()</code> → does NOT roll back ❌ (checked)</li>
+  </ul>
+  <p>To roll back on a checked exception: <code>@Transactional(rollbackFor = IOException.class)</code></p>
+  <p>To NOT roll back on a specific unchecked exception: <code>@Transactional(noRollbackFor = OptimisticLockException.class)</code></p>
+</div>
+
+<!-- PROPAGATION -->
+<div class="section-heading" style="font-size:17px;margin-top:32px"><div class="icon" style="background:#ebf8ff">🔗</div>Transaction Propagation — What Happens When Transactions Call Each Other</div>
+
+<div class="card">
+  <div class="card-title">🤔 What Is Propagation?</div>
+  <p>Propagation controls what happens when a method marked <code>@Transactional</code> is called from another method that is <b>already inside a transaction</b>. Does the inner method join the outer transaction? Start a brand new one? Refuse to run without one?</p>
+</div>
+
+<div class="tx-visual">
+  <div class="tx-outer">
+    <div class="tx-outer-label">Outer Transaction (OrderService.placeOrder)</div>
+    <div class="tx-inner">
+      <div class="tx-inner-label">REQUIRED (default) — joins outer transaction</div>
+      <div class="tx-inner-desc">PaymentService.charge() also has @Transactional(REQUIRED). It joins the existing transaction. Both live and die together — if placeOrder() rolls back, the charge rolls back too. <b>Use for: normal business operations that must be atomic together.</b></div>
+    </div>
+    <div class="tx-new">
+      <div class="tx-new-label">REQUIRES_NEW — suspends outer, starts own transaction</div>
+      <div class="tx-new-desc">AuditService.log() has @Transactional(REQUIRES_NEW). Spring SUSPENDS the placeOrder() transaction, starts a fresh one for the audit log, commits it immediately, then resumes placeOrder(). If placeOrder() later rolls back — the audit log is already committed and stays. <b>Use for: audit logs, notifications — things that must persist even if the main operation fails.</b></div>
+    </div>
+    <div class="tx-inner">
+      <div class="tx-inner-label">SUPPORTS — uses outer if present, no transaction if not</div>
+      <div class="tx-inner-desc">If called within a transaction, participates. If called standalone, runs without a transaction. <b>Use for: read methods that work fine either way.</b></div>
+    </div>
+    <div class="tx-inner" style="border-color:#fed7aa;background:#fffaf0;">
+      <div class="tx-inner-label" style="color:#7b341e;">MANDATORY — must be called within an existing transaction</div>
+      <div class="tx-inner-desc" style="color:#7b341e;">Throws IllegalTransactionStateException if there is no active transaction. <b>Use for: methods that MUST never run outside a transaction — enforces calling discipline.</b></div>
+    </div>
+  </div>
+</div>
+
+<div class="code-block"><span class="cm">// REQUIRES_NEW — real use case: audit log must persist even if main tx rolls back</span>
+<span class="an">@Service</span>
+<span class="kw">public class</span> AuditService {
+
+    <span class="an">@Transactional</span>(propagation = Propagation.REQUIRES_NEW)
+    <span class="kw">public void</span> log(String action, Long entityId, String userId) {
+        <span class="cm">// This runs in its OWN transaction</span>
+        <span class="cm">// Committed immediately, independent of caller's transaction</span>
+        auditRepo.save(<span class="kw">new</span> AuditLog(action, entityId, userId, Instant.now()));
+    }
+}
+
+<span class="an">@Service</span>
+<span class="kw">public class</span> OrderService {
+
+    <span class="an">@Transactional</span>  <span class="cm">// REQUIRED (default)</span>
+    <span class="kw">public</span> Order placeOrder(OrderRequest req) {
+        Order order = orderRepo.save(<span class="kw">new</span> Order(req));
+
+        auditService.log(<span class="st">"ORDER_ATTEMPTED"</span>, order.getId(), req.getUserId());
+        <span class="cm">// Audit log committed in its own transaction — already in DB</span>
+
+        inventoryService.reserve(order); <span class="cm">// throws if out of stock</span>
+        <span class="cm">// If this throws, placeOrder tx rolls back, order is deleted</span>
+        <span class="cm">// But audit log stays — we know someone tried to place this order</span>
+
+        <span class="kw">return</span> order;
+    }
+}
+
+<span class="cm">// readOnly = true — three real benefits</span>
+<span class="an">@Transactional</span>(readOnly = <span class="kw">true</span>)
+<span class="kw">public</span> List&lt;Order&gt; getOrderHistory(Long userId) {
+    <span class="cm">// Benefit 1: Hibernate skips dirty checking (no scan for changes to save)</span>
+    <span class="cm">// Benefit 2: Routing datasource sends this to read replica automatically</span>
+    <span class="cm">// Benefit 3: DB can optimise — no write locks needed</span>
+    <span class="kw">return</span> orderRepo.findByUserId(userId);
+}</div>
+
+<div class="warning">
+  <div class="warning-label">The Most Common @Transactional Mistake — Self-Invocation</div>
+  <p><code>@Transactional</code> works through a <b>Spring proxy</b>. When you call a <code>@Transactional</code> method from OUTSIDE the class (through the injected Spring bean), the proxy intercepts the call and wraps it in a transaction.</p>
+  <p>When you call a <code>@Transactional</code> method from <b>within the same class</b> using <code>this.myMethod()</code>, you call the real object directly — <b>bypassing the proxy entirely</b>. The <code>@Transactional</code> annotation has no effect.</p>
+  <ul>
+    <li>✅ Works: <code>orderService.placeOrder()</code> called from another class through the injected bean</li>
+    <li>❌ Does NOT work: <code>this.placeOrder()</code> called from within OrderService itself</li>
+  </ul>
+  <p><b>Fix:</b> Extract the method into a separate Spring bean and inject it, or inject the service into itself using <code>@Autowired OrderService self</code> (Spring 4.3+ supports self-injection).</p>
+</div>
+
+<div class="card">
+  <div class="card-title">📋 From Your Notes: "If I Don't Use @Transactional on a GET Method — Is It a Problem?"</div>
+  <p>Direct answer: it depends on what the method does.</p>
+  <p><b>Simple single repository call (usually fine without it):</b> <code>return orderRepo.findById(id)</code> — Spring Data repository methods have their own built-in transaction per call. This works fine without an explicit <code>@Transactional</code> on the service method.</p>
+  <p><b>Multiple repository calls (potentially a problem without it):</b> If your method calls <code>orderRepo.findById(id)</code> and then accesses <code>order.getItems()</code> (a lazy-loaded collection), the JPA session closes after the first call. The second access throws <code>LazyInitializationException</code> because there is no open session.</p>
+  <p><b>Best practice:</b> Always add <code>@Transactional(readOnly = true)</code> to service methods that read data — it is free performance (no dirty checking) and prevents lazy loading exceptions. The cost of adding it is zero. The cost of missing it can be subtle bugs.</p>
+</div>
+
+<hr class="divider">
+
+<!-- ══════════════════════════════
+     PART 2 — @AUTOWIRED VS @COMPONENT
+══════════════════════════════ -->
+<div class="section-heading"><div class="icon">🔌</div>@Autowired vs @Component — Spring Dependency Injection Explained</div>
+<p class="section-desc">What each annotation does, which classes are eligible, and the right way to inject dependencies.</p>
+
+<div class="card">
+  <div class="card-title">🤔 The Big Picture — Inversion of Control (IoC)</div>
+  <p>In traditional Java, <b>you</b> create objects: <code>OrderService service = new OrderService(new OrderRepository(), new KafkaTemplate());</code>. You are in control of creating and wiring everything together.</p>
+  <p><b>Inversion of Control (IoC)</b> flips this. You declare what you need, and Spring creates and manages the objects for you. You give up control of object creation to the <b>Spring container</b> (also called the Application Context). Spring is now in control.</p>
+  <p><b>Why is this better?</b> Testing becomes trivial — inject a mock instead of a real object. Swapping implementations is easy — change which bean gets injected without changing the caller. Lifecycle management is automatic — Spring creates beans at startup, manages their scope, and cleans them up.</p>
+</div>
+
+<div class="spring-layers">
+  <div class="spring-layer">
+    <div class="spring-layer-label" style="background:#2b6cb0;">@Controller</div>
+    <div class="spring-layer-content">
+      <div class="spring-layer-title">Web Layer — HTTP Request Handlers</div>
+      <div class="spring-layer-desc">Handles incoming HTTP requests. Maps URL paths to methods. Parses request body, path variables, query params. Returns responses. <b>Specialisation of @Component</b> — adds request mapping scanning on top. Use <code>@RestController</code> (= @Controller + @ResponseBody) for REST APIs.</div>
+      <div style="margin-top:6px">
+        <span class="spring-layer-badge blue">@RestController</span>
+        <span class="spring-layer-badge blue">@RequestMapping</span>
+        <span class="spring-layer-badge blue">@GetMapping</span>
+      </div>
+    </div>
+  </div>
+  <div class="spring-layer">
+    <div class="spring-layer-label" style="background:#276749;">@Service</div>
+    <div class="spring-layer-content">
+      <div class="spring-layer-title">Business Logic Layer</div>
+      <div class="spring-layer-desc"><b>Specialisation of @Component</b> — functionally identical, but semantically signals "this class contains business logic." Orchestrates calls to repositories and other services. Applies @Transactional boundaries. Has no technical difference from @Component — it is a <b>documentation annotation</b> that makes architecture explicit.</div>
+      <div style="margin-top:6px">
+        <span class="spring-layer-badge green">@Service</span>
+        <span class="spring-layer-badge green">@Transactional</span>
+      </div>
+    </div>
+  </div>
+  <div class="spring-layer">
+    <div class="spring-layer-label" style="background:#553c9a;">@Repository</div>
+    <div class="spring-layer-content">
+      <div class="spring-layer-title">Data Access Layer</div>
+      <div class="spring-layer-desc"><b>Specialisation of @Component</b> with one technical difference: Spring adds <b>exception translation</b>. Vendor-specific exceptions (e.g. <code>HibernateException</code>, <code>SQLException</code>) are automatically translated to Spring's <code>DataAccessException</code> hierarchy. This means your service layer does not need to know about Hibernate-specific exceptions.</div>
+      <div style="margin-top:6px">
+        <span class="spring-layer-badge purple">@Repository</span>
+        <span class="spring-layer-badge purple">JpaRepository</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-title">📋 Which Classes Are Eligible for @Autowiring?</div>
+  <p>From your notes — this is a direct interview question. The answer: <b>any class that is registered as a Spring bean</b>.</p>
+  <p>A class becomes a Spring bean in two ways:</p>
+  <ul>
+    <li><b>Component scanning:</b> Annotate the class with @Component, @Service, @Repository, or @Controller. Spring scans the classpath for these annotations and registers them automatically.</li>
+    <li><b>@Bean method:</b> In a @Configuration class, write a method annotated with @Bean that returns an instance. The returned object is registered as a bean. Use this for third-party classes you cannot annotate.</li>
+  </ul>
+  <p>A plain POJO (a class with no annotations) is NOT a Spring bean and cannot be @Autowired. A third-party class (RestTemplate, ObjectMapper) is NOT a Spring bean until you create a @Bean method for it.</p>
+</div>
+
+<div class="code-block"><span class="cm">// COMPONENT SCANNING — annotate your own classes</span>
+<span class="an">@Service</span>   <span class="cm">// Registers OrderService as a Spring bean</span>
+<span class="kw">public class</span> OrderService {
+
+    <span class="cm">// CONSTRUCTOR INJECTION — the recommended way</span>
+    <span class="kw">private final</span> OrderRepository orderRepo;       <span class="cm">// final = cannot change after init</span>
+    <span class="kw">private final</span> NotificationService notifier;    <span class="cm">// depends on interface, not impl</span>
+
+    <span class="cm">// No @Autowired needed — Spring injects when there's only one constructor</span>
+    <span class="kw">public</span> OrderService(OrderRepository orderRepo,
+                        NotificationService notifier) {
+        <span class="kw">this</span>.orderRepo = orderRepo;
+        <span class="kw">this</span>.notifier  = notifier;
+    }
+}
+
+<span class="cm">// @Bean METHOD — for third-party classes you cannot annotate</span>
+<span class="an">@Configuration</span>
+<span class="kw">public class</span> AppConfig {
+
+    <span class="an">@Bean</span>
+    <span class="kw">public</span> RestTemplate restTemplate(RestTemplateBuilder builder) {
+        <span class="cm">// RestTemplate is not your class — you can't put @Component on it</span>
+        <span class="cm">// @Bean method makes it available for @Autowiring everywhere</span>
+        <span class="kw">return</span> builder
+            .setConnectTimeout(Duration.ofSeconds(<span class="num">3</span>))
+            .setReadTimeout(Duration.ofSeconds(<span class="num">10</span>))
+            .build();
+    }
+
+    <span class="an">@Bean</span>
+    <span class="an">@Primary</span>  <span class="cm">// This bean wins when multiple of same type exist</span>
+    <span class="kw">public</span> ObjectMapper objectMapper() {
+        <span class="kw">return</span> JsonMapper.builder()
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, <span class="kw">false</span>)
+            .build();
+    }
+}
+
+<span class="cm">// FIELD INJECTION — works but avoid it (hard to test, hides dependencies)</span>
+<span class="an">@Service</span>
+<span class="kw">public class</span> BadExample {
+    <span class="an">@Autowired</span>
+    <span class="kw">private</span> OrderRepository orderRepo; <span class="cm">// Can't make final. Hides that this dep exists.</span>
+    <span class="cm">// To test: must start Spring context. Can't do: new BadExample(mockRepo)</span>
+}</div>
+
+<div class="pro-con">
+  <div class="pro">
+    <div class="pro-title">✅ Constructor Injection — Why It Is Best</div>
+    <ul>
+      <li>Dependencies are explicit — visible in the constructor signature</li>
+      <li>Fields can be <code>final</code> — immutable, safer</li>
+      <li>Testable without Spring — <code>new OrderService(mockRepo)</code></li>
+      <li>Forces you to think about too many dependencies (large constructor = design smell)</li>
+      <li>No @Autowired annotation needed in modern Spring</li>
+    </ul>
+  </div>
+  <div class="con">
+    <div class="con-title">❌ Field Injection — Why to Avoid It</div>
+    <ul>
+      <li>Cannot make fields final</li>
+      <li>Dependencies are hidden — not obvious from the API</li>
+      <li>Cannot test without starting Spring context</li>
+      <li>Allows creating objects in an invalid state</li>
+      <li>Harder to detect circular dependencies at compile time</li>
+    </ul>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ══════════════════════════════
+     PART 3 — SOLID PRINCIPLES
+══════════════════════════════ -->
+<div class="section-heading"><div class="icon">🏗️</div>SOLID Principles — With Real Code Examples</div>
+<p class="section-desc">Each principle explained, what it prevents, and a concrete before/after code example.</p>
+
+<div class="solid-grid">
+  <div class="solid-card">
+    <div class="solid-letter" style="color:#3182ce;">S</div>
+    <div class="solid-name">Single Responsibility Principle</div>
+    <div class="solid-one-liner">"A class should have only one reason to change."</div>
+    <div class="solid-desc"><b>What it prevents:</b> The "God class" — one enormous class that does validation, database access, email sending, and event publishing. When the email template changes, you edit the same class that handles DB logic. Any change risks breaking something else.<br><br><b>In microservices:</b> Each service should own one business domain. OrderService should not also handle shipping logic.</div>
+  </div>
+  <div class="solid-card">
+    <div class="solid-letter" style="color:#38a169;">O</div>
+    <div class="solid-name">Open/Closed Principle</div>
+    <div class="solid-one-liner">"Open for extension, closed for modification."</div>
+    <div class="solid-desc"><b>What it prevents:</b> Endless if-else chains that grow with every new requirement. Adding a new payment provider means editing existing code — risking regressions in CreditCard and PayPal processing you already tested.<br><br><b>The fix:</b> Interface + implementations. New providers add a new class — existing code untouched.</div>
+  </div>
+  <div class="solid-card">
+    <div class="solid-letter" style="color:#dd6b20;">L</div>
+    <div class="solid-name">Liskov Substitution Principle</div>
+    <div class="solid-one-liner">"Subtypes must be substitutable for their base type."</div>
+    <div class="solid-desc"><b>What it prevents:</b> Surprises when you use a subclass. If Square extends Rectangle but breaks the contract (setting width changes height), code that works with Rectangle breaks when given a Square. Classic LSP violation.<br><br><b>Rule of thumb:</b> If you find yourself checking <code>instanceof</code> to handle subclass behaviour differently, LSP is violated.</div>
+  </div>
+  <div class="solid-card">
+    <div class="solid-letter" style="color:#9f7aea;">I</div>
+    <div class="solid-name">Interface Segregation Principle</div>
+    <div class="solid-one-liner">"Clients should not depend on methods they do not use."</div>
+    <div class="solid-desc"><b>What it prevents:</b> Fat interfaces that force implementors to provide dummy implementations for methods they do not need. A ReadOnlyOrderService forced to implement <code>delete()</code> from a general OrderService interface.<br><br><b>The fix:</b> Split into <code>OrderReader</code>, <code>OrderWriter</code>, <code>OrderDeleter</code>. Clients depend only on what they use.</div>
+  </div>
+</div>
+<div class="solid-card" style="margin-bottom:16px;border:1px solid var(--border);border-radius:10px;padding:16px 18px;background:white;">
+  <div class="solid-letter" style="color:#e53e3e;">D</div>
+  <div class="solid-name">Dependency Inversion Principle</div>
+  <div class="solid-one-liner">"Depend on abstractions, not concretions."</div>
+  <div class="solid-desc" style="font-size:13px;color:var(--text-secondary);line-height:1.6;"><b>What it prevents:</b> High-level business logic depending on low-level implementation details. If OrderService directly instantiates <code>new EmailNotificationService()</code>, you cannot swap it for SMS without editing OrderService. You also cannot test OrderService without a real email server running.<br><br><b>The fix:</b> OrderService depends on a <code>NotificationService</code> interface. Spring injects the implementation at runtime. To test: inject a mock. To swap: change the bean configuration. OrderService code never changes.</div>
+</div>
+
+<div class="code-block"><span class="cm">// ── SRP Violation ──────────────────────────────────</span>
+<span class="kw">class</span> OrderProcessor {           <span class="cm">// 6 reasons to change!</span>
+    <span class="kw">void</span> process(Order o) {
+        validate(o);              <span class="cm">// reason 1: validation rules change</span>
+        save(o);                  <span class="cm">// reason 2: DB schema changes</span>
+        sendEmail(o);             <span class="cm">// reason 3: email template changes</span>
+        publishEvent(o);          <span class="cm">// reason 4: Kafka topic changes</span>
+        updateInventory(o);       <span class="cm">// reason 5: inventory logic changes</span>
+        calculateLoyaltyPoints(o);<span class="cm">// reason 6: points formula changes</span>
+    }
+}
+
+<span class="cm">// ── SRP Fix ────────────────────────────────────────</span>
+<span class="kw">class</span> OrderValidator      { <span class="kw">void</span> validate(Order o) {...} }  <span class="cm">// 1 reason</span>
+<span class="kw">class</span> OrderRepository     { <span class="kw">void</span> save(Order o)     {...} }  <span class="cm">// 1 reason</span>
+<span class="kw">class</span> OrderNotifier       { <span class="kw">void</span> notify(Order o)   {...} }  <span class="cm">// 1 reason</span>
+<span class="kw">class</span> OrderEventPublisher { <span class="kw">void</span> publish(Order o)  {...} }  <span class="cm">// 1 reason</span>
+
+<span class="cm">// ── OCP Violation ──────────────────────────────────</span>
+<span class="kw">class</span> PaymentService {
+    <span class="kw">void</span> charge(Payment p) {
+        <span class="kw">if</span> (p.getMethod().equals(<span class="st">"CREDIT_CARD"</span>)) { chargeCard(p); }
+        <span class="kw">else if</span> (p.getMethod().equals(<span class="st">"PAYPAL"</span>)) { chargePayPal(p); }
+        <span class="cm">// Adding Bitcoin? Must EDIT this class — risk of breaking existing code</span>
+    }
+}
+
+<span class="cm">// ── OCP Fix: interface + implementations ───────────</span>
+<span class="kw">interface</span> PaymentProcessor { <span class="kw">void</span> charge(Payment p); }
+
+<span class="kw">class</span> CreditCardProcessor <span class="kw">implements</span> PaymentProcessor { ... }
+<span class="kw">class</span> PayPalProcessor     <span class="kw">implements</span> PaymentProcessor { ... }
+<span class="kw">class</span> BitcoinProcessor    <span class="kw">implements</span> PaymentProcessor { ... } <span class="cm">// NEW: no edits needed</span>
+
+<span class="cm">// Spring selects the right one at runtime via @Qualifier or strategy map</span>
+
+<span class="cm">// ── DIP: depend on interface not implementation ─────</span>
+<span class="an">@Service</span>
+<span class="kw">public class</span> OrderService {
+    <span class="kw">private final</span> NotificationService notifier; <span class="cm">// interface</span>
+
+    <span class="kw">public</span> OrderService(NotificationService notifier) {
+        <span class="kw">this</span>.notifier = notifier;
+        <span class="cm">// Spring injects EmailNotificationService at runtime</span>
+        <span class="cm">// To test: inject MockNotificationService</span>
+        <span class="cm">// To swap to SMS: change the bean, never touch OrderService</span>
+    }
+}</div>
+
+<hr class="divider">
+
+<!-- ══════════════════════════════
+     PART 4 — CONCURRENT UPDATES
+══════════════════════════════ -->
+<div class="section-heading"><div class="icon">⚔️</div>Concurrent Updates — "Two Users Updating the Same Object"</div>
+<p class="section-desc">From your notes: "I have a user 1 object, you are also updating it, I am also trying to update the same object." Here is the complete solution.</p>
+
+<div class="card">
+  <div class="card-title">🤔 The Lost Update Problem</div>
+  <p>Two users open the same record simultaneously. Both read it. Both modify it. Both save it. The second save overwrites the first — silently, with no error. The first user's changes are gone forever. This is called the <b>lost update problem</b>.</p>
+</div>
+
+<div class="race-visual">
+  <div class="race-col alice">
+    <div class="race-col-title">👩 Alice (Thread 1)</div>
+    <div class="race-step">1. Reads order: status=PENDING, items=5</div>
+    <div class="race-step">2. Changes status to SHIPPED</div>
+    <div class="race-step">3. Saves: status=SHIPPED, items=5 ✅</div>
+    <div class="race-step">&nbsp;</div>
+    <div class="race-step problem">😱 Her SHIPPED status is GONE — Bob's save overwrote it</div>
+  </div>
+  <div class="race-col bob">
+    <div class="race-col-title">👨 Bob (Thread 2)</div>
+    <div class="race-step">1. Reads order: status=PENDING, items=5</div>
+    <div class="race-step">&nbsp;</div>
+    <div class="race-step">&nbsp;</div>
+    <div class="race-step">2. Changes items to 3</div>
+    <div class="race-step">3. Saves: status=PENDING, items=3 ← overwrites Alice!</div>
+  </div>
+</div>
+
+<div class="card blue">
+  <div class="card-title blue">🛡️ Solution 1 — Optimistic Locking (@Version)</div>
+  <p>Add a <code>@Version</code> field to your entity. Hibernate automatically manages this field. Every time the entity is saved, the version number increments. When you try to save, Hibernate adds the version to the WHERE clause: <code>UPDATE orders SET status=? WHERE id=? AND version=?</code>.</p>
+  <p>If Alice read version=1 and Bob also read version=1, Alice saves first (version becomes 2). When Bob tries to save with version=1, the WHERE clause matches zero rows. Hibernate detects this and throws <code>OptimisticLockingFailureException</code>. Bob must re-read the data (now at version=2) and retry his change.</p>
+  <p><b>Best for:</b> User-facing edits where conflicts are rare. Low-contention scenarios. Financial read-and-display workflows.</p>
+</div>
+
+<div class="card green">
+  <div class="card-title green">🔐 Solution 2 — Pessimistic Locking (SELECT FOR UPDATE)</div>
+  <p>Lock the database row the moment you read it. Other transactions trying to read the same row are <b>blocked</b> until you release the lock. This prevents any other transaction from even reading the data while you are working with it.</p>
+  <p>Uses SQL <code>SELECT ... FOR UPDATE</code> under the hood. The lock is released when your transaction commits or rolls back.</p>
+  <p><b>Best for:</b> Inventory decrement on Black Friday (cannot afford a single oversell), financial account balance updates (absolutely cannot lose a debit/credit), any scenario where concurrent modification is likely and the cost of conflict is high.</p>
+</div>
+
+<div class="code-block"><span class="cm">// ── Optimistic Locking — @Version ──────────────────</span>
+<span class="an">@Entity</span>
+<span class="kw">public class</span> Order {
+    <span class="an">@Id</span>
+    <span class="kw">private</span> Long id;
+    <span class="kw">private</span> String status;
+    <span class="kw">private int</span> itemCount;
+
+    <span class="an">@Version</span>
+    <span class="kw">private</span> Long version;  <span class="cm">// Hibernate manages this — do not set manually</span>
+    <span class="cm">// Hibernate generates: UPDATE orders SET status=?, version=2</span>
+    <span class="cm">//                     WHERE id=? AND version=1</span>
+    <span class="cm">// If version=1 row doesn't exist → OptimisticLockingFailureException</span>
+}
+
+<span class="cm">// Handle conflict — retry with fresh data</span>
+<span class="kw">public void</span> updateStatus(Long orderId, String newStatus) {
+    <span class="kw">int</span> maxRetries = <span class="num">3</span>;
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; i &lt; maxRetries; i++) {
+        <span class="kw">try</span> {
+            Order order = orderRepo.findById(orderId).orElseThrow();
+            order.setStatus(newStatus);
+            orderRepo.save(order);
+            <span class="kw">return</span>;  <span class="cm">// success</span>
+        } <span class="kw">catch</span> (OptimisticLockingFailureException e) {
+            <span class="kw">if</span> (i == maxRetries - <span class="num">1</span>) <span class="kw">throw</span> e;  <span class="cm">// give up after 3 attempts</span>
+            <span class="cm">// Retry: re-read fresh data and try again</span>
+        }
+    }
+}
+
+<span class="cm">// ── Pessimistic Locking — SELECT FOR UPDATE ────────</span>
+<span class="an">@Repository</span>
+<span class="kw">public interface</span> ProductRepository <span class="kw">extends</span> JpaRepository&lt;Product, Long&gt; {
+
+    <span class="an">@Lock</span>(LockModeType.PESSIMISTIC_WRITE)  <span class="cm">// SELECT ... FOR UPDATE</span>
+    <span class="an">@Query</span>(<span class="st">"SELECT p FROM Product p WHERE p.id = :id"</span>)
+    Product findByIdForUpdate(<span class="an">@Param</span>(<span class="st">"id"</span>) Long id);
+}
+
+<span class="an">@Transactional</span>
+<span class="kw">public void</span> decrementStock(Long productId, <span class="kw">int</span> qty) {
+    <span class="cm">// Row is LOCKED — other transactions wait here until we commit</span>
+    Product product = productRepo.findByIdForUpdate(productId);
+
+    <span class="kw">if</span> (product.getStock() &lt; qty) {
+        <span class="kw">throw new</span> InsufficientStockException(<span class="st">"Cannot sell more than available"</span>);
+    }
+
+    product.setStock(product.getStock() - qty);
+    productRepo.save(product);
+    <span class="cm">// Lock released when @Transactional method exits</span>
+}
+
+<span class="cm">// ── Redis Distributed Lock — for cross-instance coordination ──</span>
+<span class="cm">// When you have multiple application instances and need locking across all</span>
+RLock lock = redissonClient.getLock(<span class="st">"product-lock:"</span> + productId);
+<span class="kw">try</span> {
+    lock.lock(<span class="num">5</span>, TimeUnit.SECONDS);  <span class="cm">// auto-release after 5s (prevents deadlock)</span>
+    <span class="cm">// ... update product ...</span>
+} <span class="kw">finally</span> {
+    lock.unlock();  <span class="cm">// always release in finally</span>
+}</div>
+
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>Aspect</th><th>Optimistic Locking</th><th>Pessimistic Locking</th></tr></thead>
+    <tbody>
+      <tr><td><b>How it works</b></td><td>Version check at save time — fail if changed</td><td>Lock the row at read time — block others</td></tr>
+      <tr><td><b>Performance</b></td><td>Better — no blocking, high concurrency</td><td>Worse under contention — others wait</td></tr>
+      <tr><td><b>Conflict handling</b></td><td>Exception on save — must retry</td><td>Blocks until lock is released — then proceeds</td></tr>
+      <tr><td><b>Deadlock risk</b></td><td>None</td><td>Yes — two transactions can wait for each other</td></tr>
+      <tr><td><b>Best for</b></td><td>Low-contention edits, user profile updates</td><td>High-contention writes, inventory, financial</td></tr>
+      <tr><td><b>Real example</b></td><td>Two admins editing a product description</td><td>1000 users buying the last item on Black Friday</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<hr class="divider">
+
+<!-- ══════════════════════════════
+     PART 5 — MULTITHREADING
+══════════════════════════════ -->
+<div class="section-heading"><div class="icon">⚡</div>Multithreading &amp; Async — Which Process Did You Use?</div>
+<p class="section-desc">From your notes: "Multithreading — which multithreading process are you used in your project?"</p>
+
+<div class="card">
+  <div class="card-title">🤔 The Core Decision: CPU-Bound vs I/O-Bound Work</div>
+  <p>Before choosing an async approach, identify what kind of work you are parallelising:</p>
+  <ul>
+    <li><b>I/O-bound work</b> (waiting for DB, HTTP calls, file reads): The thread spends most time waiting, not computing. Many threads are fine because they mostly sleep. Virtual threads (Java 21) excel here.</li>
+    <li><b>CPU-bound work</b> (calculations, data transformation, image processing): Threads actively use the CPU. Too many threads = context switching overhead slows everything down. Rule: threads ≈ CPU core count.</li>
+  </ul>
+</div>
+
+<div class="code-block"><span class="cm">// ── @Async — background task execution ─────────────</span>
+<span class="an">@Configuration</span>
+<span class="an">@EnableAsync</span>
+<span class="kw">public class</span> AsyncConfig {
+
+    <span class="an">@Bean</span>(<span class="st">"exportTaskExecutor"</span>)
+    <span class="kw">public</span> Executor exportExecutor() {
+        ThreadPoolTaskExecutor exec = <span class="kw">new</span> ThreadPoolTaskExecutor();
+        exec.setCorePoolSize(<span class="num">4</span>);       <span class="cm">// always-alive threads</span>
+        exec.setMaxPoolSize(<span class="num">8</span>);        <span class="cm">// max threads under load</span>
+        exec.setQueueCapacity(<span class="num">50</span>);     <span class="cm">// queue before spawning new threads</span>
+        exec.setThreadNamePrefix(<span class="st">"export-"</span>); <span class="cm">// visible in thread dumps</span>
+        exec.setRejectedExecutionHandler(<span class="kw">new</span> CallerRunsPolicy()); <span class="cm">// backpressure</span>
+        exec.initialize();
+        <span class="kw">return</span> exec;
+    }
+}
+
+<span class="an">@Service</span>
+<span class="kw">public class</span> ReportService {
+
+    <span class="an">@Async</span>(<span class="st">"exportTaskExecutor"</span>)  <span class="cm">// runs in a separate thread</span>
+    <span class="kw">public</span> CompletableFuture&lt;Report&gt; generateReport(ReportRequest req) {
+        Report result = expensiveReportGeneration(req); <span class="cm">// runs in background</span>
+        <span class="kw">return</span> CompletableFuture.completedFuture(result);
+    }
+}
+
+<span class="cm">// Caller: fire and continue</span>
+CompletableFuture&lt;Report&gt; future = reportService.generateReport(req);
+<span class="cm">// ... do other work ...</span>
+Report report = future.get(); <span class="cm">// blocks only when you actually need the result</span>
+
+<span class="cm">// ── CompletableFuture.allOf — parallel service calls ─</span>
+<span class="kw">public</span> ProductDetailPage buildProductPage(Long productId) {
+    <span class="cm">// Call 4 services simultaneously instead of sequentially</span>
+    CompletableFuture&lt;Product&gt;    productFuture = getProduct(productId);     <span class="cm">// 100ms</span>
+    CompletableFuture&lt;List&lt;Review&gt;&gt; reviewFuture = getReviews(productId);   <span class="cm">// 200ms</span>
+    CompletableFuture&lt;Stock&gt;      stockFuture   = getStock(productId);      <span class="cm">// 150ms</span>
+    CompletableFuture&lt;List&lt;Product&gt;&gt; recFuture  = getRecommendations(productId); <span class="cm">// 300ms</span>
+
+    <span class="cm">// Sequential total: 100+200+150+300 = 750ms</span>
+    <span class="cm">// Parallel total: max(100,200,150,300) = 300ms  ← 2.5x faster</span>
+
+    CompletableFuture.allOf(productFuture, reviewFuture, stockFuture, recFuture)
+        .join(); <span class="cm">// wait for ALL to complete</span>
+
+    <span class="kw">return new</span> ProductDetailPage(
+        productFuture.join(),
+        reviewFuture.join(),
+        stockFuture.join(),
+        recFuture.join()
+    );
+}
+
+<span class="cm">// ── Virtual Threads (Java 21+) — enable in Spring Boot 3.2 ──</span>
+<span class="cm"># application.properties</span>
+spring.threads.virtual.enabled=<span class="kw">true</span>
+<span class="cm"># That's it! Spring Boot creates a virtual-thread executor for all tasks</span>
+<span class="cm"># Millions of lightweight threads — no thread pool tuning needed for I/O tasks</span></div>
+
+<hr class="divider">
+
+<!-- ══════════════════════════════
+     PART 6 — VARIABLE SCOPES
+══════════════════════════════ -->
+<div class="section-heading"><div class="icon">📦</div>Local vs Static vs Instance Variables — Print Them</div>
+<p class="section-desc">From your notes: "Local variable, static variable, non-static variable — print them." Here is the complete explanation with memory locations.</p>
+
+<div class="mem-diagram">
+  <div class="mem-zone stack">
+    <div class="mem-zone-icon">📋</div>
+    <div class="mem-zone-title">Stack Memory</div>
+    <div class="mem-zone-content">
+      <span class="mem-tag">Local variables</span>
+      <span class="mem-tag">Method parameters</span>
+      <span class="mem-tag">Return addresses</span>
+      <br><br>
+      Created when method starts. Destroyed when method returns. Each thread has its own stack — inherently thread-safe. Very fast (just a pointer move).
+    </div>
+  </div>
+  <div class="mem-zone heap">
+    <div class="mem-zone-icon">🏗️</div>
+    <div class="mem-zone-title">Heap Memory</div>
+    <div class="mem-zone-content">
+      <span class="mem-tag">Instance variables</span>
+      <span class="mem-tag">Objects (new X())</span>
+      <span class="mem-tag">Arrays</span>
+      <br><br>
+      Lives inside each object on the heap. Exists as long as the object exists. Shared between threads that hold a reference to the same object. Garbage collected when no references remain.
+    </div>
+  </div>
+  <div class="mem-zone meta">
+    <div class="mem-zone-icon">🏛️</div>
+    <div class="mem-zone-title">Metaspace</div>
+    <div class="mem-zone-content">
+      <span class="mem-tag">Static variables</span>
+      <span class="mem-tag">Class metadata</span>
+      <span class="mem-tag">Static methods</span>
+      <br><br>
+      ONE copy per class. Loaded when class loads, unloaded when class is unloaded. Shared by ALL instances of the class and ALL threads. Not garbage collected in the normal way.
+    </div>
+  </div>
+</div>
+
+<div class="code-block"><span class="kw">public class</span> VariableDemo {
+
+    <span class="cm">// ── STATIC VARIABLE ─────────────────────────────────</span>
+    <span class="cm">// ONE copy shared across ALL instances of this class</span>
+    <span class="cm">// Lives in: Metaspace (Method Area)</span>
+    <span class="cm">// Thread safety: NOT safe — shared, needs synchronisation</span>
+    <span class="kw">private static int</span> totalCreated = <span class="num">0</span>;
+    <span class="kw">public static final</span> String CURRENCY = <span class="st">"AUD"</span>; <span class="cm">// constant — safe (immutable)</span>
+
+    <span class="cm">// Thread-safe counter: use AtomicInteger for static mutable state</span>
+    <span class="kw">private static</span> AtomicInteger safeCounter = <span class="kw">new</span> AtomicInteger(<span class="num">0</span>);
+
+    <span class="cm">// ── INSTANCE VARIABLE (non-static) ──────────────────</span>
+    <span class="cm">// Each OBJECT has its OWN copy</span>
+    <span class="cm">// Lives in: Heap (inside the object)</span>
+    <span class="cm">// Thread safety: NOT safe if multiple threads share the same object</span>
+    <span class="kw">private</span> String name;
+    <span class="kw">private double</span> balance;
+
+    <span class="kw">public</span> VariableDemo(String name, <span class="kw">double</span> initialBalance) {
+        <span class="kw">this</span>.name    = name;           <span class="cm">// 'this' = this object's instance variable</span>
+        <span class="kw">this</span>.balance = initialBalance;
+        totalCreated++;                <span class="cm">// shared counter increments for all objects</span>
+        safeCounter.incrementAndGet(); <span class="cm">// thread-safe increment</span>
+    }
+
+    <span class="kw">public void</span> deposit(<span class="kw">double</span> amount) {
+
+        <span class="cm">// ── LOCAL VARIABLES ──────────────────────────────────</span>
+        <span class="cm">// Live ONLY inside this method call</span>
+        <span class="cm">// Lives in: Stack (this thread's frame)</span>
+        <span class="cm">// Thread safety: ALWAYS safe — each thread has its own stack</span>
+        <span class="kw">double</span> newBalance   = <span class="kw">this</span>.balance + amount;  <span class="cm">// local</span>
+        String confirmation = <span class="st">"Deposited: "</span> + amount;  <span class="cm">// local</span>
+
+        <span class="kw">this</span>.balance = newBalance;  <span class="cm">// update the instance variable</span>
+        System.out.println(confirmation);
+        <span class="cm">// newBalance and confirmation are destroyed here — method ends</span>
+    }
+
+    <span class="kw">public static void</span> main(String[] args) {
+        VariableDemo a = <span class="kw">new</span> VariableDemo(<span class="st">"Alice"</span>, <span class="num">1000</span>);
+        VariableDemo b = <span class="kw">new</span> VariableDemo(<span class="st">"Bob"</span>,   <span class="num">500</span>);
+
+        <span class="cm">// STATIC: same value for all — both objects incremented it</span>
+        System.out.println(<span class="st">"Total created: "</span> + totalCreated);  <span class="cm">// 2</span>
+        System.out.println(<span class="st">"Currency: "</span>      + CURRENCY);       <span class="cm">// AUD</span>
+
+        <span class="cm">// INSTANCE: each object has its own value</span>
+        System.out.println(<span class="st">"A balance: "</span> + a.balance);  <span class="cm">// 1000.0</span>
+        System.out.println(<span class="st">"B balance: "</span> + b.balance);  <span class="cm">// 500.0  — different!</span>
+
+        a.deposit(<span class="num">200</span>);
+        System.out.println(<span class="st">"A after deposit: "</span> + a.balance); <span class="cm">// 1200.0</span>
+        System.out.println(<span class="st">"B unchanged:     "</span> + b.balance); <span class="cm">// 500.0 — unaffected</span>
+    }
+}
+
+<span class="cm">// ── ThreadLocal — the fourth type ───────────────────</span>
+<span class="cm">// Each THREAD gets its OWN independent copy</span>
+<span class="cm">// Not shared between threads — no synchronisation needed</span>
+<span class="kw">private static</span> ThreadLocal&lt;String&gt; currentUser = <span class="kw">new</span> ThreadLocal&lt;&gt;();
+
+<span class="cm">// Spring Security uses this internally:</span>
+<span class="cm">// Thread-42 handles request for Alice → currentUser = "alice"</span>
+<span class="cm">// Thread-43 handles request for Bob   → currentUser = "bob"</span>
+<span class="cm">// They never interfere — each thread has its own copy</span>
+<span class="cm">// WARNING: always call threadLocal.remove() when done — thread pool reuse!</span></div>
+
+<hr class="divider">
+
+<!-- ══════════════════════════════
+     FOLLOW-UP Q&A
+══════════════════════════════ -->
+<div class="section-heading"><div class="icon">❓</div>Follow-Up Questions &amp; Full Answers</div>
+
+<div class="qa-section">
+
+  <div class="qa-item">
+    <div class="qa-question" onclick="toggleQA(this)">
+      Q1: What are the transaction isolation levels and when would you use each?
+      <span class="qa-icon">+</span>
+    </div>
+    <div class="qa-answer">
+      <p>Isolation levels control how much one transaction can see the uncommitted changes of other concurrent transactions. From weakest (most concurrency but most anomalies) to strongest (least concurrency but no anomalies):</p>
+      <p><b>READ UNCOMMITTED:</b> You can read another transaction's uncommitted data (dirty reads). If that transaction rolls back, you read data that never actually existed. Almost never used in production — the risk is too high. Only useful for approximate reporting where accuracy does not matter.</p>
+      <p><b>READ COMMITTED (PostgreSQL default):</b> You only see data that has been committed. No dirty reads. But two reads of the same row in the same transaction might return different values if another transaction commits between them (non-repeatable read). Good for most OLTP applications.</p>
+      <p><b>REPEATABLE READ (MySQL default):</b> Within a transaction, the same row always returns the same value even if another transaction commits a change. Prevents non-repeatable reads. But two queries with different WHERE clauses might return different row counts if another transaction inserts rows matching your criteria (phantom read). Good for financial report generation within a single transaction.</p>
+      <p><b>SERIALIZABLE:</b> Transactions behave as if they ran one after another, not concurrently. No dirty reads, no non-repeatable reads, no phantom reads. But very poor performance — extensive locking. Use only when absolute correctness is required: bank account balances, inventory that absolutely cannot oversell.</p>
+      <p>In Spring: <code>@Transactional(isolation = Isolation.REPEATABLE_READ)</code>. In practice, most applications use the database default (READ COMMITTED) and handle edge cases with optimistic or pessimistic locking on specific operations rather than blanket SERIALIZABLE isolation.</p>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question" onclick="toggleQA(this)">
+      Q2: What is circular dependency in Spring and how do you fix it?
+      <span class="qa-icon">+</span>
+    </div>
+    <div class="qa-answer">
+      <p>A circular dependency is when Bean A depends on Bean B, and Bean B depends on Bean A (directly or through a chain). Spring cannot create either bean because each one requires the other to already exist.</p>
+      <p><b>Example:</b> OrderService has a constructor parameter of type PaymentService. PaymentService has a constructor parameter of type OrderService. Spring tries to create OrderService first, but needs PaymentService. It tries to create PaymentService, but needs OrderService. Infinite loop. Spring throws BeanCurrentlyInCreationException at startup.</p>
+      <p><b>Fix 1 — Refactor to remove the circular dependency (best):</b> A circular dependency almost always means your design has a problem. OrderService and PaymentService probably share some responsibility that should be extracted into a third service. Extract the shared logic into OrderPaymentCoordinator or similar. Both services depend on it but not on each other.</p>
+      <p><b>Fix 2 — Use @Lazy on one injection point:</b> <code>@Autowired public OrderService(@Lazy PaymentService paymentService)</code>. Spring injects a lazy proxy instead of the real bean. The real bean is only created when a method is first called. This breaks the circular startup dependency.</p>
+      <p><b>Fix 3 — Use setter injection instead of constructor injection for one:</b> Spring creates both beans without their circular dependency, then injects them via setter after creation. Works, but setters cannot be final and this is a code smell.</p>
+      <p><b>Important note:</b> In Spring Boot 2.6+, circular dependencies are detected and throw an error by default. In older versions, they could silently work with field injection (using proxies) which hid the design problem. The strict detection in modern Spring is a feature — it forces you to fix the design.</p>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question" onclick="toggleQA(this)">
+      Q3: What is dirty checking in Hibernate and when does it cause unexpected UPDATE statements?
+      <span class="qa-icon">+</span>
+    </div>
+    <div class="qa-answer">
+      <p>Dirty checking is Hibernate's mechanism for detecting which entities have been modified within a transaction and need to be saved. When a transaction commits, Hibernate compares every managed entity's current state against the snapshot it took when it was loaded. If anything changed, Hibernate generates and executes an UPDATE statement — automatically, without you calling save().</p>
+      <p><b>Why this is surprising:</b> You load an entity to read it. Your code accidentally modifies a field (common with getters that have side effects, or collections that get populated). You never call save(). But Hibernate detects the change and issues an UPDATE anyway when the transaction commits.</p>
+      <p><b>Common unexpected UPDATE scenario:</b></p>
+      <ul>
+        <li>You load a User entity to check their email for a notification</li>
+        <li>Your code calls user.getLastAccessTime() — and that getter updates the lastAccessTime field as a side effect</li>
+        <li>You never call save()</li>
+        <li>Transaction commits — Hibernate dirty check detects lastAccessTime changed — issues UPDATE</li>
+        <li>In logs, you see unexpected UPDATE statements for read operations</li>
+      </ul>
+      <p><b>Fix 1 — Use @Transactional(readOnly = true):</b> Hibernate skips dirty checking entirely for read-only transactions. No matter what you accidentally modify, no UPDATE is generated. This is why readOnly=true is not just a hint — it has real behaviour effects.</p>
+      <p><b>Fix 2 — Use DTO projections:</b> Instead of loading a full entity (which becomes managed by Hibernate), load a DTO using a constructor expression. DTOs are not managed by Hibernate — no dirty checking, no unexpected updates.</p>
+      <p><b>Fix 3 — Use @Immutable on entities that should never be updated:</b> Tells Hibernate to never issue UPDATE for this entity, even if it detects changes.</p>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question" onclick="toggleQA(this)">
+      Q4: What is the difference between a race condition and a deadlock?
+      <span class="qa-icon">+</span>
+    </div>
+    <div class="qa-answer">
+      <p>These are two different types of concurrency problems and they require different solutions.</p>
+      <p><b>Race condition:</b> Two or more threads access shared data concurrently, and the final result depends on the timing and order of execution. The outcome is non-deterministic — it "races" to see which thread finishes first.</p>
+      <p>Example: Two threads both read a counter value (10), both increment it, both write back (11). The counter should be 12 but is 11 — one increment was lost. The "lost update" problem is a race condition.</p>
+      <p>Fix: synchronisation (synchronized block, ReentrantLock), atomic operations (AtomicInteger), or database locking (optimistic/pessimistic).</p>
+      <p><b>Deadlock:</b> Two or more threads are each waiting for a resource held by the other — neither can proceed. Both threads are stuck forever (or until a timeout kills them).</p>
+      <p>Example: Thread 1 holds lock on Table A and needs Table B. Thread 2 holds lock on Table B and needs Table A. Thread 1 waits for Thread 2 to release B. Thread 2 waits for Thread 1 to release A. Neither ever releases. The database detects this and kills one transaction (the "deadlock victim") with an error.</p>
+      <p>Fix: always acquire locks in the same order across all code paths (Thread 1 and Thread 2 should both lock A then B). Use short transactions to reduce the window for deadlocks. Use optimistic locking where possible to avoid holding DB locks at all.</p>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question" onclick="toggleQA(this)">
+      Q5: Give a real example of an LSP violation and how to fix it.
+      <span class="qa-icon">+</span>
+    </div>
+    <div class="qa-answer">
+      <p>The classic example is the Square-Rectangle problem, but here is a more realistic Java example:</p>
+      <p><b>The violation:</b> You have a <code>Bird</code> base class with a <code>fly()</code> method. You create an <code>Ostrich</code> subclass (it is a bird). But ostriches cannot fly. Your <code>Ostrich.fly()</code> throws <code>UnsupportedOperationException</code>. Any code that works with Bird objects and calls fly() will now break when given an Ostrich. The subtype is not substitutable for the base type without surprises.</p>
+      <p><b>The fix — Interface Segregation instead of deep inheritance:</b> Remove fly() from the Bird base class. Create a <code>Flyable</code> interface with fly(). Make Eagle, Parrot, Sparrow implement Flyable. Ostrich does not implement Flyable. Code that needs flying behaviour depends on <code>Flyable</code>, not <code>Bird</code>. Ostriches can safely be Birds without breaking anything.</p>
+      <p><b>A Spring-specific example:</b> You have a <code>Repository</code> base that includes a <code>delete()</code> method. You create a <code>ReadOnlyRepository</code> subclass for audit tables that should never be deleted. Your ReadOnlyRepository.delete() throws <code>UnsupportedOperationException</code>. Code that accepts a Repository and calls delete() will break when given a ReadOnlyRepository — LSP violation.</p>
+      <p><b>Fix:</b> Separate the interfaces. <code>ReadableRepository</code> only has find methods. <code>WritableRepository extends ReadableRepository</code> and adds save and delete. The audit table repository only implements ReadableRepository. Code that needs delete depends on WritableRepository — it can never accidentally receive a ReadableRepository.</p>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question" onclick="toggleQA(this)">
+      Q6: What is a memory leak in Java and what are the common causes?
+      <span class="qa-icon">+</span>
+    </div>
+    <div class="qa-answer">
+      <p>Java has garbage collection — objects are automatically freed when there are no more references to them. A memory leak in Java is when objects accumulate in memory and are never collected because references to them are inadvertently kept alive — even though they will never be used again.</p>
+      <p><b>Common cause 1 — Static collections that grow unboundedly:</b> <code>static Map cache = new HashMap()</code> in a long-running application. Entries are added on every request but never removed. The map grows indefinitely. Fix: use a bounded cache with eviction (Caffeine, Guava Cache) with a max size and TTL.</p>
+      <p><b>Common cause 2 — ThreadLocal not cleaned up:</b> ThreadLocal stores per-thread data. In a thread pool, threads are reused. If you set a ThreadLocal value and the thread is returned to the pool without clearing it, the value persists for the next request that reuses the thread. Over time, each thread's ThreadLocal grows. Fix: always call <code>threadLocal.remove()</code> in a finally block or servlet filter after each request.</p>
+      <p><b>Common cause 3 — Listeners not deregistered:</b> You register an event listener or callback. The object holding the listener is garbage collected but the listener registration keeps a reference to it. The object cannot be collected. Fix: deregister listeners when they are no longer needed.</p>
+      <p><b>Common cause 4 — JPA entities held in memory:</b> Loading large numbers of entities into a List in a long-running service method. The entire result set sits in heap until the method returns. Fix: use streaming (Stream&lt;Entity&gt;) and process row by row instead of loading all at once.</p>
+      <p><b>How to detect:</b> Monitor heap usage over time with JVM metrics (Micrometer + Prometheus). A slow, steady upward trend that never decreases is the signature of a memory leak. Use heap dumps (jmap, VisualVM, or Java Flight Recorder) to identify which object types are accumulating.</p>
+    </div>
+  </div>
+
+</div>
+
+<div class="tip" style="margin-top:24px">
+  <div class="tip-label">Interview Tip — Answering Java Deep-Dive Questions</div>
+  <p>When asked about @Transactional, never just say "it wraps the method in a transaction." Show you understand the proxy mechanism: <b>"@Transactional works through a Spring AOP proxy. When another bean calls a @Transactional method on my service, Spring intercepts the call through the proxy, begins a JDBC transaction, executes my method, and commits or rolls back based on whether an exception was thrown. One important subtlety: if I call a @Transactional method from within the same class, it bypasses the proxy and has no effect — this is a common source of bugs."</b></p>
+  <p>For concurrent updates: <b>"We use optimistic locking via @Version for user-facing edits where conflicts are rare. For inventory operations during high-traffic events, we use pessimistic locking with SELECT FOR UPDATE because the cost of overselling is much higher than the performance cost of blocking. For distributed locking across multiple application instances, we use a Redis Redlock."</b></p>
+</div>
+
+</div>
+
+<script>
+function toggleQA(el) {
+  var answer = el.nextElementSibling;
+  var isOpen = answer.classList.contains('open');
+  answer.classList.toggle('open', !isOpen);
+  el.classList.toggle('open', !isOpen);
+  el.querySelector('.qa-icon').textContent = isOpen ? '+' : '×';
+}
+</script>
+</body>
+</html>

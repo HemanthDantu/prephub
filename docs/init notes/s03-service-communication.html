@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S03 — Service Communication</title>
+<style>
+  :root {
+    --bg: #f8f9fa;
+    --surface: #ffffff;
+    --border: #e2e8f0;
+    --text-primary: #1a202c;
+    --text-secondary: #4a5568;
+    --text-muted: #718096;
+    --blue-light: #ebf8ff;
+    --blue-border: #bee3f8;
+    --blue-dark: #1a365d;
+    --green-light: #f0fff4;
+    --green-border: #9ae6b4;
+    --red-light: #fff5f5;
+    --red-border: #feb2b2;
+    --orange-light: #fffaf0;
+    --orange-border: #fbd38d;
+    --purple-light: #faf5ff;
+    --purple-border: #d6bcfa;
+    --yellow-light: #fffff0;
+    --yellow-border: #f6e05e;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg); color: var(--text-primary); font-size: 15px; line-height: 1.7;
+  }
+  .page-header {
+    background: linear-gradient(135deg, #1a365d 0%, #2a4a8a 100%);
+    color: white; padding: 40px 48px 36px;
+  }
+  .page-header .section-label { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; opacity: .7; margin-bottom: 8px; }
+  .page-header h1 { font-size: 28px; font-weight: 700; margin-bottom: 10px; }
+  .page-header .subtitle { font-size: 15px; opacity: .8; max-width: 680px; line-height: 1.6; }
+  .tags { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 18px; }
+  .tag { background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.25); color: white; font-size: 11.5px; padding: 3px 10px; border-radius: 20px; }
+  .container { max-width: 900px; margin: 0 auto; padding: 40px 24px 80px; }
+  .section-heading { font-size: 20px; font-weight: 700; color: var(--text-primary); margin: 44px 0 6px; padding-bottom: 10px; border-bottom: 2px solid var(--border); display: flex; align-items: center; gap: 10px; }
+  .section-heading .icon { width: 32px; height: 32px; border-radius: 8px; background: #ebf8ff; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
+  .section-desc { font-size: 14px; color: var(--text-muted); margin-bottom: 20px; margin-top: 4px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 22px 26px; margin-bottom: 16px; }
+  .card-title { font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 10px; }
+  .card p { font-size: 14.5px; color: var(--text-secondary); line-height: 1.75; margin-bottom: 10px; }
+  .card p:last-child { margin-bottom: 0; }
+  .card b { color: var(--text-primary); font-weight: 600; }
+  .card code { font-family: 'SF Mono', Consolas, monospace; font-size: 12.5px; background: #edf2f7; padding: 1px 6px; border-radius: 4px; color: #c53030; }
+  .card ul, .card ol { padding-left: 22px; margin: 8px 0; }
+  .card li { font-size: 14.5px; color: var(--text-secondary); line-height: 1.75; margin-bottom: 5px; }
+  .card li b { color: var(--text-primary); }
+  .card.blue   { background: var(--blue-light);   border-color: var(--blue-border); }
+  .card.green  { background: var(--green-light);  border-color: var(--green-border); }
+  .card.red    { background: var(--red-light);    border-color: var(--red-border); }
+  .card.orange { background: var(--orange-light); border-color: var(--orange-border); }
+  .card.purple { background: var(--purple-light); border-color: var(--purple-border); }
+  .card.yellow { background: var(--yellow-light); border-color: var(--yellow-border); }
+  .card.blue   p, .card.blue   li { color: #2c5282; } .card.blue   b { color: var(--blue-dark); }
+  .card.green  p, .card.green  li { color: #22543d; } .card.green  b { color: #1c4532; }
+  .card.red    p, .card.red    li { color: #742a2a; } .card.red    b { color: #63171b; }
+  .card.orange p, .card.orange li { color: #7b341e; } .card.orange b { color: #652b19; }
+  .card.purple p, .card.purple li { color: #44337a; } .card.purple b { color: #322659; }
+  .card.yellow p, .card.yellow li { color: #744210; } .card.yellow b { color: #5f370e; }
+  .definition { background: #1a365d; color: white; border-radius: 12px; padding: 22px 26px; margin-bottom: 16px; }
+  .definition .def-label { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; opacity: .7; margin-bottom: 6px; }
+  .definition p { font-size: 15px; line-height: 1.75; opacity: .95; margin-bottom: 8px; }
+  .definition p:last-child { margin-bottom: 0; }
+  .definition b { font-weight: 700; }
+  .analogy { border-left: 4px solid #d69e2e; background: var(--yellow-light); border-radius: 0 10px 10px 0; padding: 16px 20px; margin-bottom: 16px; }
+  .analogy .analogy-label { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #744210; margin-bottom: 5px; }
+  .analogy p { font-size: 14px; color: #744210; line-height: 1.7; margin-bottom: 6px; }
+  .analogy p:last-child { margin-bottom: 0; }
+  .analogy b { color: #5f370e; }
+  .scenario { border-left: 4px solid #38a169; background: var(--green-light); border-radius: 0 10px 10px 0; padding: 16px 20px; margin-bottom: 16px; }
+  .scenario .scenario-label { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #276749; margin-bottom: 5px; }
+  .scenario p { font-size: 14px; color: #22543d; line-height: 1.75; margin-bottom: 8px; }
+  .scenario p:last-child { margin-bottom: 0; }
+  .scenario b { color: #1c4532; font-weight: 600; }
+  .scenario ol, .scenario ul { padding-left: 20px; margin: 6px 0; }
+  .scenario li { font-size: 14px; color: #22543d; line-height: 1.75; margin-bottom: 6px; }
+  .scenario li b { color: #1c4532; }
+  .warning { border-left: 4px solid #e53e3e; background: var(--red-light); border-radius: 0 10px 10px 0; padding: 16px 20px; margin-bottom: 16px; }
+  .warning .warning-label { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #9b2335; margin-bottom: 5px; }
+  .warning p { font-size: 14px; color: #742a2a; line-height: 1.7; margin-bottom: 6px; }
+  .warning p:last-child { margin-bottom: 0; }
+  .warning b { color: #63171b; }
+  .warning ul { padding-left: 20px; margin: 6px 0; }
+  .warning li { font-size: 14px; color: #742a2a; line-height: 1.7; margin-bottom: 4px; }
+  .tip { border-left: 4px solid #3182ce; background: var(--blue-light); border-radius: 0 10px 10px 0; padding: 16px 20px; margin-bottom: 16px; }
+  .tip .tip-label { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #2b6cb0; margin-bottom: 5px; }
+  .tip p { font-size: 14px; color: #2c5282; line-height: 1.7; margin-bottom: 6px; }
+  .tip p:last-child { margin-bottom: 0; }
+  .tip b { color: #1a365d; }
+  .pro-con { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+  .pro { background: var(--green-light); border: 1px solid var(--green-border); border-radius: 10px; padding: 16px 18px; }
+  .con { background: var(--red-light); border: 1px solid var(--red-border); border-radius: 10px; padding: 16px 18px; }
+  .pro-title { font-size: 11px; font-weight: 700; color: #1c4532; text-transform: uppercase; letter-spacing: .07em; margin-bottom: 8px; }
+  .con-title { font-size: 11px; font-weight: 700; color: #63171b; text-transform: uppercase; letter-spacing: .07em; margin-bottom: 8px; }
+  .pro ul, .con ul { padding-left: 18px; }
+  .pro li { font-size: 13.5px; color: #22543d; line-height: 1.7; margin-bottom: 4px; }
+  .con li { font-size: 13.5px; color: #742a2a; line-height: 1.7; margin-bottom: 4px; }
+  .table-wrap { overflow-x: auto; margin-bottom: 16px; border-radius: 10px; border: 1px solid var(--border); }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  thead th { background: #2d3748; color: white; padding: 11px 14px; text-align: left; font-weight: 600; font-size: 12.5px; }
+  tbody tr:nth-child(even) { background: #f7fafc; }
+  tbody td { padding: 10px 14px; color: var(--text-secondary); border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.6; }
+  tbody tr:last-child td { border-bottom: none; }
+  td b { color: var(--text-primary); font-weight: 600; }
+  .flow { display: flex; flex-direction: column; gap: 0; margin-bottom: 16px; }
+  .flow-step { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; }
+  .flow-step .step-num { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; background: #2b6cb0; color: white; font-size: 12px; font-weight: 700; margin-right: 10px; flex-shrink: 0; float: left; margin-top: 1px; }
+  .flow-step .step-content { margin-left: 36px; }
+  .flow-step .step-title { font-size: 14px; font-weight: 600; color: var(--text-primary); margin-bottom: 3px; }
+  .flow-step .step-desc { font-size: 13.5px; color: var(--text-secondary); line-height: 1.65; }
+  .flow-step .step-desc b { color: var(--text-primary); }
+  .flow-step.green-step { border-color: var(--green-border); background: var(--green-light); }
+  .flow-step.green-step .step-title { color: #1c4532; }
+  .flow-step.green-step .step-desc { color: #22543d; }
+  .flow-step.red-step { border-color: var(--red-border); background: var(--red-light); }
+  .flow-step.red-step .step-title { color: #63171b; }
+  .flow-step.red-step .step-desc { color: #742a2a; }
+  .flow-step.orange-step { border-color: var(--orange-border); background: var(--orange-light); }
+  .flow-step.orange-step .step-title { color: #652b19; }
+  .flow-step.orange-step .step-desc { color: #7b341e; }
+  .flow-arrow { text-align: center; color: #a0aec0; font-size: 20px; line-height: 1; margin: 4px 0; }
+  .code-block { background: #1a202c; border-radius: 10px; padding: 18px 20px; font-family: 'SF Mono', Consolas, monospace; font-size: 12.5px; color: #e2e8f0; white-space: pre; overflow-x: auto; line-height: 1.65; margin-bottom: 14px; }
+  .code-block .cm { color: #718096; }
+  .code-block .kw { color: #90cdf4; }
+  .code-block .st { color: #9ae6b4; }
+  .code-block .an { color: #fbd38d; }
+  .code-block .num { color: #f6ad55; }
+  .qa-section { margin-bottom: 16px; }
+  .qa-item { margin-bottom: 12px; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  .qa-question { background: #2d3748; color: white; padding: 14px 18px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; align-items: center; user-select: none; }
+  .qa-question:hover { background: #1a202c; }
+  .qa-question .qa-icon { font-size: 18px; transition: transform .25s; flex-shrink: 0; margin-left: 12px; }
+  .qa-question.open .qa-icon { transform: rotate(45deg); }
+  .qa-answer { padding: 0 18px; max-height: 0; overflow: hidden; transition: max-height .35s ease, padding .3s ease; background: var(--surface); }
+  .qa-answer.open { max-height: 1600px; padding: 16px 18px; }
+  .qa-answer p { font-size: 14px; color: var(--text-secondary); line-height: 1.75; margin-bottom: 10px; }
+  .qa-answer p:last-child { margin-bottom: 0; }
+  .qa-answer b { color: var(--text-primary); font-weight: 600; }
+  .qa-answer ul, .qa-answer ol { padding-left: 20px; margin: 6px 0 10px; }
+  .qa-answer li { font-size: 14px; color: var(--text-secondary); line-height: 1.75; margin-bottom: 4px; }
+  .qa-answer code { font-family: 'SF Mono', Consolas, monospace; font-size: 12px; background: #edf2f7; padding: 1px 5px; border-radius: 4px; color: #c53030; }
+  .divider { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+
+  /* COMMUNICATION COMPARISON CARDS */
+  .comm-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 20px; }
+  .comm-card { border-radius: 12px; padding: 18px; border: 2px solid transparent; }
+  .comm-card.rest   { background: #ebf8ff; border-color: #bee3f8; }
+  .comm-card.grpc   { background: var(--purple-light); border-color: var(--purple-border); }
+  .comm-card.kafka  { background: var(--green-light); border-color: var(--green-border); }
+  .comm-card-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  .comm-card-icon   { font-size: 22px; }
+  .comm-card-title  { font-size: 14px; font-weight: 700; }
+  .comm-card.rest  .comm-card-title { color: #1a365d; }
+  .comm-card.grpc  .comm-card-title { color: #322659; }
+  .comm-card.kafka .comm-card-title { color: #1c4532; }
+  .comm-badge { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: .05em; }
+  .comm-card.rest  .comm-badge { background: #bee3f8; color: #1a365d; }
+  .comm-card.grpc  .comm-badge { background: var(--purple-border); color: #322659; }
+  .comm-card.kafka .comm-badge { background: var(--green-border); color: #1c4532; }
+  .comm-card ul { padding-left: 16px; }
+  .comm-card li { font-size: 13px; line-height: 1.7; margin-bottom: 3px; }
+  .comm-card.rest  li { color: #2c5282; }
+  .comm-card.grpc  li { color: #44337a; }
+  .comm-card.kafka li { color: #22543d; }
+
+  /* DEBUG STEPS */
+  .debug-step { display: flex; gap: 14px; margin-bottom: 10px; }
+  .debug-num { min-width: 32px; height: 32px; border-radius: 8px; background: #2d3748; color: white; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+  .debug-body { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; flex: 1; }
+  .debug-title { font-size: 13.5px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
+  .debug-desc  { font-size: 13px; color: var(--text-secondary); line-height: 1.65; }
+  .debug-desc b { color: var(--text-primary); }
+  .debug-cmd  { display: block; background: #1a202c; color: #9ae6b4; font-family: 'SF Mono', Consolas, monospace; font-size: 12px; padding: 8px 12px; border-radius: 6px; margin-top: 6px; }
+  .debug-cause { background: var(--red-light); border: 1px solid var(--red-border); border-radius: 6px; padding: 6px 10px; margin-top: 6px; font-size: 12.5px; color: #742a2a; }
+  .debug-fix   { background: var(--green-light); border: 1px solid var(--green-border); border-radius: 6px; padding: 6px 10px; margin-top: 4px; font-size: 12.5px; color: #22543d; }
+
+  /* TIMELINE */
+  .timeline { position: relative; padding-left: 32px; margin-bottom: 16px; }
+  .timeline::before { content: ''; position: absolute; left: 10px; top: 0; bottom: 0; width: 2px; background: #e2e8f0; }
+  .tl-item { position: relative; margin-bottom: 16px; }
+  .tl-dot { position: absolute; left: -26px; top: 4px; width: 14px; height: 14px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 0 2px #cbd5e0; }
+  .tl-dot.blue   { background: #3182ce; box-shadow: 0 0 0 2px #bee3f8; }
+  .tl-dot.green  { background: #38a169; box-shadow: 0 0 0 2px #9ae6b4; }
+  .tl-dot.red    { background: #e53e3e; box-shadow: 0 0 0 2px #feb2b2; }
+  .tl-dot.orange { background: #dd6b20; box-shadow: 0 0 0 2px #fbd38d; }
+  .tl-content { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; }
+  .tl-title { font-size: 13.5px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
+  .tl-desc  { font-size: 13px; color: var(--text-secondary); line-height: 1.65; }
+  .tl-desc b { color: var(--text-primary); }
+
+  @media(max-width:640px){
+    .page-header { padding: 28px 20px; }
+    .container { padding: 24px 16px 60px; }
+    .pro-con, .comm-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <div class="section-label">Section 03 — Architecture</div>
+  <h1>How Services Communicate</h1>
+  <div class="subtitle">REST, gRPC, Kafka — what they are, how they work, when to use each, the sync vs async decision, and how to debug when services cannot reach each other in Kubernetes.</div>
+  <div class="tags">
+    <span class="tag">REST</span><span class="tag">gRPC</span><span class="tag">Kafka</span>
+    <span class="tag">Synchronous</span><span class="tag">Asynchronous</span>
+    <span class="tag">WebClient</span><span class="tag">Event-Driven</span>
+    <span class="tag">K8s DNS</span><span class="tag">Service Mesh</span>
+    <span class="tag">K8s Debugging</span>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ══════════════════════════════════════
+     PART 1 — THE CORE QUESTION
+══════════════════════════════════════ -->
+<div class="section-heading"><div class="icon">💡</div>Start Here — The Most Important Question</div>
+<p class="section-desc">Before choosing REST, gRPC, or Kafka — you must answer one question first.</p>
+
+<div class="definition">
+  <div class="def-label">The Fundamental Decision</div>
+  <p>When Service A needs to talk to Service B, you must first decide: <b>does Service A need an answer before it can continue?</b></p>
+  <p>If YES — use <b>synchronous</b> communication. Service A sends a request and WAITS for the response. Nothing happens until the answer comes back.</p>
+  <p>If NO — use <b>asynchronous</b> communication. Service A sends a message and IMMEDIATELY moves on. Service B processes it in its own time. Service A does not wait.</p>
+  <p>Getting this decision wrong is one of the most common architectural mistakes. Choosing synchronous when you should be async creates tight coupling and cascading failures. Choosing async when you need sync creates data consistency problems.</p>
+</div>
+
+<div class="analogy">
+  <div class="analogy-label">The Phone Call vs Text Message Analogy</div>
+  <p><b>Synchronous = Phone call.</b> You call someone, you wait on the line while they find the answer, you get it instantly. If they do not pick up — you are stuck. Your whole conversation is blocked until they respond.</p>
+  <p><b>Asynchronous = Text message.</b> You send the message and put your phone away. You do other things. They read it and reply when they are ready. If their phone is off — the message sits in their inbox and gets delivered when they come back online. You were never blocked.</p>
+</div>
+
+<div class="card">
+  <div class="card-title">🛒 Real Example — An E-Commerce Order Flow</div>
+  <p>When a customer clicks "Place Order", here is what must happen <b>synchronously</b> (customer is waiting, needs an answer):</p>
+  <ul>
+    <li><b>Check stock</b> — is the item actually available? Must know before confirming.</li>
+    <li><b>Validate payment method</b> — does this card exist? Must know before charging.</li>
+    <li><b>Charge the card</b> — must succeed before showing "order confirmed".</li>
+    <li><b>Reserve inventory</b> — lock the stock so nobody else buys it simultaneously.</li>
+  </ul>
+  <p>And what happens <b>asynchronously</b> (customer does NOT need to wait for these):</p>
+  <ul>
+    <li><b>Send confirmation email</b> — can arrive 2 seconds later, nobody minds.</li>
+    <li><b>Notify the warehouse</b> — they have minutes to start picking the order.</li>
+    <li><b>Update recommendation engine</b> — "user bought X" can be processed later.</li>
+    <li><b>Update loyalty points</b> — can calculate in the background.</li>
+    <li><b>Log to analytics</b> — real-time analytics can afford a few seconds lag.</li>
+  </ul>
+  <p>This is why Amazon shows "Order Confirmed!" instantly — the async events happen in the background. The checkout only waits for the 4 synchronous steps.</p>
+</div>
+
+<!-- ══════════════════════════════════════
+     PART 2 — THREE WAYS TO COMMUNICATE
+══════════════════════════════════════ -->
+<div class="section-heading"><div class="icon">🔌</div>The Three Ways Services Talk to Each Other</div>
+<p class="section-desc">REST, gRPC, and Kafka — what each one is, from scratch.</p>
+
+<div class="comm-grid">
+  <div class="comm-card rest">
+    <div class="comm-card-header"><span class="comm-card-icon">🌐</span><span class="comm-card-title">REST over HTTP</span></div>
+    <span class="comm-badge">Synchronous</span>
+    <ul>
+      <li>Text-based (JSON)</li>
+      <li>Human readable</li>
+      <li>Works everywhere</li>
+      <li>Easy to test with curl</li>
+      <li>Caller waits for response</li>
+      <li>Standard HTTP methods</li>
+    </ul>
+  </div>
+  <div class="comm-card grpc">
+    <div class="comm-card-header"><span class="comm-card-icon">⚡</span><span class="comm-card-title">gRPC</span></div>
+    <span class="comm-badge">Synchronous</span>
+    <ul>
+      <li>Binary (Protobuf)</li>
+      <li>5–10x faster than REST</li>
+      <li>Strongly typed contracts</li>
+      <li>Hard to debug manually</li>
+      <li>Internal services only</li>
+      <li>Streaming supported</li>
+    </ul>
+  </div>
+  <div class="comm-card kafka">
+    <div class="comm-card-header"><span class="comm-card-icon">📨</span><span class="comm-card-title">Kafka / Message Queue</span></div>
+    <span class="comm-badge">Asynchronous</span>
+    <ul>
+      <li>Events / messages</li>
+      <li>Sender does not wait</li>
+      <li>Durable — survives crashes</li>
+      <li>Multiple consumers</li>
+      <li>Decouples services</li>
+      <li>Replay capability</li>
+    </ul>
+  </div>
+</div>
+
+<!-- REST -->
+<div class="section-heading" style="font-size:17px; margin-top:32px"><div class="icon" style="background:#ebf8ff">🌐</div>REST over HTTP — The Most Common</div>
+
+<div class="card">
+  <div class="card-title">What Is REST?</div>
+  <p>REST (Representational State Transfer) is a style of building APIs over HTTP. It uses standard HTTP methods to describe what action you want to perform on a resource.</p>
+  <ul>
+    <li><b>GET /orders/123</b> — retrieve order 123. Reading, no side effects.</li>
+    <li><b>POST /orders</b> — create a new order. Body contains order data.</li>
+    <li><b>PUT /orders/123</b> — replace order 123 entirely with new data.</li>
+    <li><b>PATCH /orders/123</b> — update part of order 123 (e.g. just the status).</li>
+    <li><b>DELETE /orders/123</b> — delete order 123.</li>
+  </ul>
+  <p>Responses come back as JSON. Every developer, every framework, every language understands JSON. That universality is REST's biggest strength.</p>
+</div>
+
+<div class="card blue">
+  <div class="card-title blue">How Service A Calls Service B via REST in Spring Boot</div>
+  <p>Spring Boot provides <b>WebClient</b> (reactive, non-blocking — modern) and <b>RestTemplate</b> (blocking — older but simpler). WebClient is the current recommendation.</p>
+</div>
+
+<div class="code-block"><span class="cm">// WebClient — the modern way (reactive, non-blocking)</span>
+<span class="an">@Service</span>
+<span class="kw">public class</span> OrderService {
+
+    <span class="kw">private final</span> WebClient webClient;
+
+    <span class="kw">public</span> OrderService(WebClient.Builder builder) {
+        <span class="cm">// base URL — in production this comes from config, not hardcoded</span>
+        <span class="kw">this</span>.webClient = builder.baseUrl(<span class="st">"http://inventory-service"</span>).build();
+    }
+
+    <span class="kw">public</span> StockResponse checkStock(String productId) {
+        <span class="kw">return</span> webClient
+            .get()
+            .uri(<span class="st">"/api/stock/{id}"</span>, productId)      <span class="cm">// path variable</span>
+            .retrieve()
+            .bodyToMono(StockResponse.<span class="kw">class</span>)       <span class="cm">// deserialise JSON to object</span>
+            .timeout(Duration.ofSeconds(<span class="num">3</span>))          <span class="cm">// ALWAYS set a timeout</span>
+            .block();                                  <span class="cm">// wait for response (blocking)</span>
+    }
+}
+
+<span class="cm">// Inventory Service — the endpoint being called</span>
+<span class="an">@RestController</span>
+<span class="an">@RequestMapping</span>(<span class="st">"/api/stock"</span>)
+<span class="kw">public class</span> StockController {
+
+    <span class="an">@GetMapping</span>(<span class="st">"/{productId}"</span>)
+    <span class="kw">public</span> StockResponse getStock(<span class="an">@PathVariable</span> String productId) {
+        <span class="kw">return</span> stockService.getStock(productId);
+    }
+}</div>
+
+<div class="pro-con">
+  <div class="pro">
+    <div class="pro-title">✅ REST — Advantages</div>
+    <ul>
+      <li>Universal — every language and framework supports it</li>
+      <li>Human readable — easy to debug with curl or Postman</li>
+      <li>Stateless — each call is self-contained</li>
+      <li>Easy to document (Swagger/OpenAPI)</li>
+      <li>Works through firewalls and proxies</li>
+      <li>Simple mental model — request, response</li>
+    </ul>
+  </div>
+  <div class="con">
+    <div class="con-title">❌ REST — Disadvantages</div>
+    <ul>
+      <li>JSON serialisation overhead on every call</li>
+      <li>No strict contract — clients can break silently</li>
+      <li>Chattier than binary protocols</li>
+      <li>No native streaming support</li>
+      <li>Caller is blocked waiting for response</li>
+      <li>Creates runtime coupling — if Service B is down, Service A fails</li>
+    </ul>
+  </div>
+</div>
+
+<!-- gRPC -->
+<div class="section-heading" style="font-size:17px; margin-top:32px"><div class="icon" style="background:#faf5ff">⚡</div>gRPC — When Speed Matters Internally</div>
+
+<div class="card">
+  <div class="card-title">What Is gRPC?</div>
+  <p>gRPC (Google Remote Procedure Call) is a high-performance communication framework created by Google. Instead of sending JSON text, it uses <b>Protocol Buffers (Protobuf)</b> — a binary format that is much smaller and faster to serialise and deserialise than JSON.</p>
+  <p>You define your API in a <code>.proto</code> file — a schema that both the client and server must follow. The protobuf compiler generates code for both sides. If the schema changes in a breaking way, compilation fails — you cannot silently break the contract like you can with REST.</p>
+  <p><b>How much faster?</b> A typical JSON payload of 1KB serialises in ~50 microseconds. The same data as Protobuf serialises in ~5 microseconds and is typically 3-5x smaller. At 100,000 requests per second internally, this adds up to significant CPU and bandwidth savings.</p>
+</div>
+
+<div class="card purple">
+  <div class="card-title purple">When to Use gRPC vs REST</div>
+  <ul>
+    <li><b>External-facing API (mobile app, web app, 3rd party):</b> Use REST. Everyone understands JSON. Clients do not want to manage .proto files.</li>
+    <li><b>Internal service-to-service with high throughput:</b> Use gRPC. Your payment service calling your fraud service 10,000 times per second — binary protocol pays off.</li>
+    <li><b>Real-time streaming:</b> gRPC supports server streaming, client streaming, and bidirectional streaming. REST does not natively. Use gRPC for live dashboards, real-time price feeds, log tailing.</li>
+    <li><b>Polyglot teams:</b> gRPC has code generators for Java, Go, Python, Node, C++, C#, Ruby. One .proto file generates consistent client/server code in all languages.</li>
+  </ul>
+</div>
+
+<!-- KAFKA -->
+<div class="section-heading" style="font-size:17px; margin-top:32px"><div class="icon" style="background:#f0fff4">📨</div>Kafka — Asynchronous Event-Driven Communication</div>
+
+<div class="card">
+  <div class="card-title">What Is Kafka and How Does It Work?</div>
+  <p>Apache Kafka is a <b>distributed event streaming platform</b>. Think of it as a highly durable, ordered, replayable message bus. Services publish events to Kafka <b>topics</b>. Other services subscribe to those topics and process the events at their own pace.</p>
+  <p><b>Key concept — the Producer:</b> The service that creates and publishes the event. It sends the event to Kafka and immediately moves on. It does not know or care who reads the event.</p>
+  <p><b>Key concept — the Topic:</b> A named channel in Kafka. Like a folder. "order-events" topic contains all events related to orders. Topics are split into partitions for parallelism.</p>
+  <p><b>Key concept — the Consumer:</b> A service that subscribes to a topic and processes events. Multiple services can subscribe to the same topic independently. Each gets every event — they do not share events.</p>
+  <p><b>Key concept — Consumer Group:</b> Multiple instances of the same service form a consumer group. Kafka distributes partitions across the group — each instance gets a subset of partitions. This is how you scale consumers horizontally.</p>
+</div>
+
+<div class="analogy">
+  <div class="analogy-label">The Newspaper Publisher Analogy</div>
+  <p>A newspaper publisher (producer) prints the daily paper and puts it on newsstands (the Kafka topic). Anyone who wants to read it (consumers) buys a copy. The publisher does not know who reads it. Subscribers (multiple consumer groups) can each independently subscribe — the morning paper subscriber, the archive library, the recycling company — each gets their own copy and does their own thing with it.</p>
+  <p>If a subscriber misses yesterday's paper — Kafka can replay it. The newspaper remains on the shelf for 7 days (retention period). You can always go back and read what you missed.</p>
+</div>
+
+<div class="code-block"><span class="cm">// PRODUCER — OrderService publishes an event when order is placed</span>
+<span class="an">@Service</span>
+<span class="kw">public class</span> OrderService {
+
+    <span class="kw">private final</span> KafkaTemplate&lt;String, OrderEvent&gt; kafkaTemplate;
+
+    <span class="kw">public</span> Order placeOrder(OrderRequest request) {
+        Order order = orderRepository.save(<span class="kw">new</span> Order(request));
+
+        <span class="cm">// Publish event — fire and forget, no waiting</span>
+        OrderEvent event = <span class="kw">new</span> OrderEvent(order.getId(), order.getUserId(), order.getItems());
+        kafkaTemplate.send(<span class="st">"order-placed"</span>, order.getId().toString(), event);
+        <span class="cm">// execution continues immediately — we do NOT wait for consumers</span>
+
+        <span class="kw">return</span> order;
+    }
+}
+
+<span class="cm">// CONSUMER — EmailService listens for ORDER_PLACED and sends confirmation</span>
+<span class="an">@Service</span>
+<span class="kw">public class</span> EmailNotificationConsumer {
+
+    <span class="an">@KafkaListener</span>(topics = <span class="st">"order-placed"</span>, groupId = <span class="st">"email-service-group"</span>)
+    <span class="kw">public void</span> handleOrderPlaced(OrderEvent event, Acknowledgment ack) {
+        <span class="kw">try</span> {
+            emailService.sendConfirmation(event.getUserId(), event.getOrderId());
+            ack.acknowledge(); <span class="cm">// commit offset ONLY after successful processing</span>
+        } <span class="kw">catch</span> (Exception e) {
+            <span class="cm">// do NOT acknowledge — Kafka will re-deliver this message</span>
+            log.error(<span class="st">"Failed to send email for order {}"</span>, event.getOrderId(), e);
+        }
+    }
+}
+
+<span class="cm">// ANOTHER CONSUMER — WarehouseService also listens to the SAME topic</span>
+<span class="an">@KafkaListener</span>(topics = <span class="st">"order-placed"</span>, groupId = <span class="st">"warehouse-service-group"</span>)
+<span class="kw">public void</span> handleOrderForWarehouse(OrderEvent event, Acknowledgment ack) {
+    warehouseService.prepareShipment(event);
+    ack.acknowledge();
+}</div>
+
+<div class="card green">
+  <div class="card-title green">Why Does Manual Offset Commit Matter?</div>
+  <p>Kafka tracks which messages each consumer group has processed using an <b>offset</b> — a number indicating how far through the topic the consumer has read. When you commit an offset, you tell Kafka "I have successfully processed up to this message."</p>
+  <p><b>Auto-commit (dangerous):</b> Kafka auto-commits the offset a few seconds after the message was received — BEFORE your processing code has finished. If your service crashes after the commit but before processing completes, the message is considered processed but never actually was. <b>Silent data loss.</b></p>
+  <p><b>Manual commit (safe):</b> You call <code>ack.acknowledge()</code> ONLY after your processing code has successfully completed. If your service crashes before acknowledging, Kafka re-delivers the message to another consumer instance. You might process it twice (at-least-once) but you will never lose it. Handle duplicates with idempotency keys.</p>
+</div>
+
+<div class="pro-con">
+  <div class="pro">
+    <div class="pro-title">✅ Kafka — Advantages</div>
+    <ul>
+      <li>Producer and consumer are completely decoupled</li>
+      <li>If consumer is down, messages wait durably — nothing is lost</li>
+      <li>Multiple independent consumers can read the same events</li>
+      <li>Messages can be replayed — reprocess old events with a new service</li>
+      <li>Scales horizontally — add more partitions, add more consumers</li>
+      <li>Absorbs traffic spikes — consumers process at their own pace</li>
+    </ul>
+  </div>
+  <div class="con">
+    <div class="con-title">❌ Kafka — Disadvantages</div>
+    <ul>
+      <li>Eventual consistency — consumers lag behind producers</li>
+      <li>No direct response — harder to know if processing succeeded</li>
+      <li>More infrastructure to operate (Kafka cluster, Zookeeper/KRaft)</li>
+      <li>Harder to debug — must trace events across services</li>
+      <li>Schema changes require careful coordination</li>
+      <li>Overkill for simple point-to-point messaging</li>
+    </ul>
+  </div>
+</div>
+
+<!-- DECISION TABLE -->
+<div class="section-heading"><div class="icon">🎯</div>Decision Guide — Which Communication to Use When</div>
+
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr><th>Scenario</th><th>Use</th><th>Why</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><b>Check stock before confirming order</b></td><td>REST (sync)</td><td>User is waiting. Must know the answer NOW before proceeding.</td></tr>
+      <tr><td><b>Send order confirmation email</b></td><td>Kafka (async)</td><td>User does not wait for email. Email can arrive 2 seconds later.</td></tr>
+      <tr><td><b>Pricing service called 50,000 times/second internally</b></td><td>gRPC (sync)</td><td>Very high throughput internal call. Binary protocol saves CPU and bandwidth.</td></tr>
+      <tr><td><b>Payment processed — notify shipping, accounting, analytics</b></td><td>Kafka (async)</td><td>Multiple independent consumers. Each processes at their own pace.</td></tr>
+      <tr><td><b>User requests their data export</b></td><td>Kafka (async)</td><td>Long-running job. Return a job ID immediately, notify when done.</td></tr>
+      <tr><td><b>Validate a coupon code at checkout</b></td><td>REST (sync)</td><td>Customer is on the checkout page waiting for validation result.</td></tr>
+      <tr><td><b>Propagate a product price change to 10 services</b></td><td>Kafka (async)</td><td>Fan-out to many services. Each updates their own cache independently.</td></tr>
+      <tr><td><b>Internal fraud check — 500ms acceptable</b></td><td>REST or gRPC (sync)</td><td>Needs a decision before completing the transaction.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<hr class="divider">
+
+<!-- ══════════════════════════════════════
+     PART 3 — K8S DEBUGGING
+══════════════════════════════════════ -->
+<div class="section-heading"><div class="icon">🔍</div>K8s Service-to-Service Debugging — The "App Not Found" Problem</div>
+<p class="section-desc">From your notes: "Deployed to Kubernetes, all pods are up and running, but another service calling yours gets App Not Found or URL Not Found." Here is the complete systematic debug guide.</p>
+
+<div class="card">
+  <div class="card-title">🏗️ How K8s Service Discovery Works — The Foundation</div>
+  <p>In Kubernetes, services talk to each other using <b>internal DNS</b> — not IP addresses. When you create a Kubernetes <code>Service</code> object, the cluster DNS automatically registers a hostname.</p>
+  <p>The format is: <code>service-name.namespace.svc.cluster.local</code></p>
+  <ul>
+    <li><b>Within the same namespace:</b> just use <code>order-service</code> — DNS resolves it automatically.</li>
+    <li><b>Across namespaces:</b> must use the full name <code>order-service.orders.svc.cluster.local</code></li>
+  </ul>
+  <p>A Kubernetes <code>Service</code> is NOT the same as your application. It is a <b>virtual load balancer</b> inside the cluster. It has a <b>selector</b> that matches pod labels. When a pod matches the selector, the Service adds it to its endpoint list and starts sending traffic to it.</p>
+</div>
+
+<div class="warning">
+  <div class="warning-label">The Most Important Concept — Service vs Pod</div>
+  <p>Your pod can be <b>Running</b> but your Service has <b>no endpoints</b>. This is the most common cause of "app not found". The pod is alive but the Service cannot find it because <b>the selector does not match the pod's labels</b>. They must match exactly, including case sensitivity.</p>
+  <p>Service selector: <code>app: order-service</code><br>
+  Pod label: <code>app: orderservice</code> (missing the dash) ← Service cannot find this pod!</p>
+</div>
+
+<p style="font-size:14px;color:var(--text-secondary);margin-bottom:16px;margin-top:8px">Follow this exact sequence when debugging. Do not skip steps — they build on each other.</p>
+
+<div class="debug-step">
+  <div class="debug-num">1</div>
+  <div class="debug-body">
+    <div class="debug-title">Check Pod Status</div>
+    <div class="debug-desc">First verify the pod is actually running AND ready. STATUS=Running is not enough — READY must show 1/1 (or 2/2 if you have a sidecar).</div>
+    <code class="debug-cmd">kubectl get pods -n your-namespace -o wide</code>
+    <div class="debug-cause">🔴 If STATUS is CrashLoopBackOff → your app is crashing on startup. Check logs with <code>kubectl logs pod-name --previous</code></div>
+    <div class="debug-cause">🔴 If READY is 0/1 → pod is running but readiness probe is failing. Your app started but is not healthy yet.</div>
+    <div class="debug-fix">✅ Expected: STATUS=Running, READY=1/1, RESTARTS=0 (or low)</div>
+  </div>
+</div>
+
+<div class="debug-step">
+  <div class="debug-num">2</div>
+  <div class="debug-body">
+    <div class="debug-title">Check if the Service Exists</div>
+    <div class="debug-desc">Verify the Service object itself exists in the right namespace. Sometimes the Service YAML was never applied, or was applied to the wrong namespace.</div>
+    <code class="debug-cmd">kubectl get svc -n your-namespace</code>
+    <div class="debug-cause">🔴 If service does not appear → the Service was never deployed. Apply the Service YAML first.</div>
+    <div class="debug-fix">✅ Expected: your service name appears with a ClusterIP assigned and the correct port.</div>
+  </div>
+</div>
+
+<div class="debug-step">
+  <div class="debug-num">3</div>
+  <div class="debug-body">
+    <div class="debug-title">Check Endpoints — THE MOST REVEALING STEP</div>
+    <div class="debug-desc">Endpoints show which pod IPs the Service is currently routing to. If this shows <b>&lt;none&gt;</b>, the Service has no healthy pods matching its selector. This is the most common root cause.</div>
+    <code class="debug-cmd">kubectl get endpoints order-service -n your-namespace</code>
+    <div class="debug-cause">🔴 If output shows &lt;none&gt; → selector mismatch or pods are not ready. Go to step 4.</div>
+    <div class="debug-fix">✅ Expected: shows pod IPs like 10.244.1.5:8080,10.244.2.3:8080</div>
+  </div>
+</div>
+
+<div class="debug-step">
+  <div class="debug-num">4</div>
+  <div class="debug-body">
+    <div class="debug-title">Check Label Mismatch — If Endpoints Shows &lt;none&gt;</div>
+    <div class="debug-desc">Compare the Service's selector with the pod's actual labels. They must match exactly.</div>
+    <code class="debug-cmd">kubectl describe svc order-service -n your-namespace | grep Selector</code>
+    <code class="debug-cmd">kubectl get pods -n your-namespace --show-labels</code>
+    <div class="debug-cause">🔴 If Selector shows <b>app=order-service</b> but pod labels show <b>app=orderservice</b> → fix the mismatch in either the Service YAML or the Deployment YAML.</div>
+    <div class="debug-fix">✅ The selector key=value must exactly match one or more labels on the pod.</div>
+  </div>
+</div>
+
+<div class="debug-step">
+  <div class="debug-num">5</div>
+  <div class="debug-body">
+    <div class="debug-title">Check Readiness Probe — If Pod is Running but Endpoints is Still &lt;none&gt;</div>
+    <div class="debug-desc">Kubernetes only adds a pod to Service endpoints when the readiness probe passes. If your Spring Boot app takes 30 seconds to start but the readiness probe checks every 10 seconds with no initialDelaySeconds — K8s marks the pod as not ready before it finishes starting.</div>
+    <code class="debug-cmd">kubectl describe pod order-service-abc -n your-namespace</code>
+    <div class="debug-desc" style="margin-top:6px">Look in the <b>Events</b> section at the bottom for "Readiness probe failed". Look at the Conditions section for <b>Ready: False</b>.</div>
+    <div class="debug-cause">🔴 Readiness probe failing → check your /actuator/health/readiness endpoint. Is your DB connected? Is your app still starting up?</div>
+    <div class="debug-fix">✅ Fix: add <code>initialDelaySeconds: 30</code> to your readiness probe to give Spring Boot time to start.</div>
+  </div>
+</div>
+
+<div class="debug-step">
+  <div class="debug-num">6</div>
+  <div class="debug-body">
+    <div class="debug-title">Test DNS Resolution from Inside the Cluster</div>
+    <div class="debug-desc">Run a debug pod inside the cluster and test if DNS resolves correctly. This eliminates whether the issue is DNS or the service itself.</div>
+    <code class="debug-cmd">kubectl run debug --image=busybox --restart=Never -n your-namespace -- sleep 3600</code>
+    <code class="debug-cmd">kubectl exec -it debug -n your-namespace -- nslookup order-service</code>
+    <div class="debug-cause">🔴 nslookup fails → DNS resolution is broken. The Service may not exist or may be in a different namespace.</div>
+    <div class="debug-cause">🔴 Calling from a different namespace → use full DNS: <code>nslookup order-service.orders.svc.cluster.local</code></div>
+    <div class="debug-fix">✅ nslookup returns an IP → DNS is working. Test the actual HTTP endpoint next.</div>
+  </div>
+</div>
+
+<div class="debug-step">
+  <div class="debug-num">7</div>
+  <div class="debug-body">
+    <div class="debug-title">Test HTTP Connectivity</div>
+    <div class="debug-desc">From the debug pod, actually call the service endpoint.</div>
+    <code class="debug-cmd">kubectl exec -it debug -n your-namespace -- wget -qO- http://order-service/actuator/health</code>
+    <div class="debug-cause">🔴 Connection refused → pod is running but not listening on the expected port. Check your spring.server.port matches the Service's targetPort.</div>
+    <div class="debug-cause">🔴 404 Not Found → the endpoint path is wrong. Your app may have a context path configured.</div>
+    <div class="debug-fix">✅ Returns {"status":"UP"} → the service is reachable. The problem is in the calling service's URL configuration.</div>
+  </div>
+</div>
+
+<div class="debug-step">
+  <div class="debug-num">8</div>
+  <div class="debug-body">
+    <div class="debug-title">Check NetworkPolicy — Often Overlooked</div>
+    <div class="debug-desc">In clusters with network policies enabled, traffic between namespaces or even between pods in the same namespace may be blocked by default. A NetworkPolicy that says "only allow ingress from pods with label app=frontend" will silently block your new service.</div>
+    <code class="debug-cmd">kubectl get networkpolicies -n your-namespace</code>
+    <code class="debug-cmd">kubectl describe networkpolicy policy-name -n your-namespace</code>
+    <div class="debug-cause">🔴 A NetworkPolicy exists with restrictive ingress rules → add a rule to allow traffic from your calling service.</div>
+    <div class="debug-fix">✅ No NetworkPolicies or a permissive policy → network is not the issue.</div>
+  </div>
+</div>
+
+<!-- KUBERNETES SERVICE YAML -->
+<div class="card blue" style="margin-top:16px">
+  <div class="card-title blue">📋 Correct Kubernetes Service + Deployment YAML</div>
+  <p>The most important thing: the Service <code>selector</code> must exactly match the Deployment's pod <code>labels</code>.</p>
+</div>
+
+<div class="code-block"><span class="cm"># Service — the virtual load balancer inside the cluster</span>
+apiVersion: v1
+kind: Service
+metadata:
+  name: order-service          <span class="cm"># this becomes the DNS name</span>
+  namespace: orders
+spec:
+  selector:
+    app: order-service         <span class="cm"># MUST match pod labels below exactly</span>
+  ports:
+  - protocol: TCP
+    port: <span class="num">80</span>               <span class="cm"># port other services call (http://order-service:80)</span>
+    targetPort: <span class="num">8080</span>        <span class="cm"># port your Spring Boot app listens on</span>
+  type: ClusterIP              <span class="cm"># internal only — no external access</span>
+---
+<span class="cm"># Deployment — creates the pods</span>
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-service
+  namespace: orders
+spec:
+  replicas: <span class="num">3</span>
+  selector:
+    matchLabels:
+      app: order-service
+  template:
+    metadata:
+      labels:
+        app: order-service     <span class="cm"># MUST match Service selector above</span>
+    spec:
+      containers:
+      - name: order-service
+        image: myregistry/order-service:<span class="st">v1.2.0</span>
+        ports:
+        - containerPort: <span class="num">8080</span>
+        readinessProbe:
+          httpGet:
+            path: /actuator/health/readiness
+            port: <span class="num">8080</span>
+          initialDelaySeconds: <span class="num">20</span>  <span class="cm"># give Spring Boot time to start</span>
+          periodSeconds: <span class="num">10</span></div>
+
+<hr class="divider">
+
+<!-- ══════════════════════════════════════
+     PART 4 — CASCADING FAILURES
+══════════════════════════════════════ -->
+<div class="section-heading"><div class="icon">⚠️</div>The Cascading Failure Problem — Why Sync Is Dangerous at Scale</div>
+<p class="section-desc">Understanding why synchronous communication can bring down your entire system.</p>
+
+<div class="card">
+  <div class="card-title">What Is a Cascading Failure?</div>
+  <p>Service A calls Service B synchronously. Service B is slow — it takes 10 seconds instead of 200ms. Service A's thread is blocked for 10 seconds waiting. Service A has 20 threads in its pool. After 20 simultaneous slow calls to B, all 20 threads are blocked. Service A now cannot process any new requests. Other services calling Service A get timeouts. THEY run out of threads too. Within minutes, services that had nothing to do with the original slowness are all down.</p>
+  <p>This is a <b>cascading failure</b> — one slow service brings down the entire system, like dominoes.</p>
+</div>
+
+<div class="scenario">
+  <div class="scenario-label">Real War Story — Amazon 2013</div>
+  <p>A single service experienced a memory leak. It started responding slowly. Services that depended on it kept waiting for responses with no timeout. Their thread pools filled up. They became slow. Services depending on THEM became slow. Within 20 minutes, dozens of services that had nothing to do with the original memory leak were also timing out.</p>
+  <p><b>The fix that came from this:</b> Strict timeouts on every external call (never wait more than X seconds), circuit breakers (stop calling a slow service after N failures), and bulkheads (separate thread pools per downstream dependency — if one is full, others are unaffected).</p>
+  <p>Netflix built Hystrix specifically because of cascading failure events. Today Resilience4j is the modern replacement. These tools exist because of real production disasters like this.</p>
+</div>
+
+<div class="tip">
+  <div class="tip-label">The Rule — Always Set Timeouts</div>
+  <p>Every synchronous call to another service MUST have a timeout. Without a timeout, your thread waits forever. "Forever" is how cascading failures start.</p>
+  <p><b>Good timeout values:</b> connect timeout = 1-2 seconds (how long to wait for the connection to be established). Read timeout = 3-10 seconds (how long to wait for the response once connected). These values depend on your SLA — if your API must respond in under 500ms, your internal calls must time out in under 400ms.</p>
+</div>
+
+<hr class="divider">
+
+<!-- ══════════════════════════════════════
+     FOLLOW-UP Q&A
+══════════════════════════════════════ -->
+<div class="section-heading"><div class="icon">❓</div>Follow-Up Questions &amp; Full Answers</div>
+<p class="section-desc">Questions interviewers ask about service communication. Click to expand.</p>
+
+<div class="qa-section">
+
+  <div class="qa-item">
+    <div class="qa-question" onclick="toggleQA(this)">
+      Q1: If ServiceA calls ServiceB synchronously and ServiceB is slow — what happens to ServiceA?
+      <span class="qa-icon">+</span>
+    </div>
+    <div class="qa-answer">
+      <p>This is the cascading failure question. Here is the exact sequence of what happens:</p>
+      <p><b>Step 1:</b> ServiceB becomes slow (GC pause, DB slowdown, traffic spike, memory leak). Instead of responding in 200ms, it takes 10 seconds.</p>
+      <p><b>Step 2:</b> ServiceA's thread is blocked for 10 seconds per call. Each slow call holds a thread for 10 seconds instead of 200ms — that is 50x more threads consumed for the same traffic.</p>
+      <p><b>Step 3:</b> ServiceA has a thread pool of 20 threads. With normal 200ms response times, each thread handles 5 requests/second = 100 requests/second total. With 10-second response times, each thread handles 0.1 requests/second = 2 requests/second total. 50x less throughput from the same thread pool.</p>
+      <p><b>Step 4:</b> All 20 threads are now blocked waiting for ServiceB. New requests to ServiceA queue up. After a few seconds, the queue is full. New requests get rejected with connection timeout.</p>
+      <p><b>Step 5:</b> ServiceA appears to be down. Services that call ServiceA have the same problem. The failure cascades.</p>
+      <p><b>The prevention:</b> Set a timeout of 2 seconds on calls to ServiceB. After 2 seconds with no response, release the thread. Add a circuit breaker — after 50% of calls timeout, stop calling ServiceB entirely and return a fallback. Add a bulkhead — put ServiceB calls in a dedicated thread pool of 5 threads, separate from the main pool. Even if all 5 are blocked waiting for ServiceB, the other 15 threads keep serving other requests.</p>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question" onclick="toggleQA(this)">
+      Q2: How do you handle a schema change in a Kafka event without breaking consumers?
+      <span class="qa-icon">+</span>
+    </div>
+    <div class="qa-answer">
+      <p>Schema changes in Kafka events are one of the trickiest operational challenges in event-driven systems. The problem is that producers and consumers deploy independently. When the producer adds a new field, some consumers may still be running old code that does not know about it.</p>
+      <p><b>Strategy 1 — Backward-compatible changes only:</b> Only ever ADD new optional fields to events. Never remove fields. Never rename fields. Never change a field's type. Old consumers simply ignore unknown fields (if using JSON with Jackson, this is the default behaviour with <code>DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES = false</code>). New consumers use the new fields. Both coexist safely.</p>
+      <p><b>Strategy 2 — Schema Registry (Confluent Schema Registry):</b> A central registry stores all event schemas and their versions. Producers register their schema before publishing. Consumers validate incoming events against the registered schema. The registry enforces compatibility rules — it rejects a new schema if it breaks backward compatibility. This is the production-grade approach used by large Kafka deployments.</p>
+      <p><b>Strategy 3 — Event versioning:</b> Include a version field in every event: <code>{"version": "2", "data": {...}}</code>. Consumers check the version and use version-specific deserialisers. This allows completely different event shapes across versions but requires maintaining multiple deserialisers.</p>
+      <p><b>Strategy 4 — Consumer-driven contracts:</b> Before changing an event schema, check which consumers depend on it. Update all consumers to handle both old and new formats (making consumers backward compatible). Then update the producer. Then remove the old format handling from consumers. This "expand-contract" migration is the safest but most labour-intensive approach.</p>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question" onclick="toggleQA(this)">
+      Q3: What is the difference between Kafka and RabbitMQ? When would you choose each?
+      <span class="qa-icon">+</span>
+    </div>
+    <div class="qa-answer">
+      <p>This is a very common interview question. They are both messaging systems but with fundamentally different designs and trade-offs.</p>
+      <p><b>Kafka — Log-based, pull model:</b> Kafka stores messages in an immutable, ordered log. Messages are retained for a configurable period (days to weeks) regardless of whether they have been consumed. Consumers pull messages at their own pace. Multiple independent consumer groups can each read the full topic independently. Messages can be replayed — if you add a new service, it can read events from the beginning of time.</p>
+      <p><b>RabbitMQ — Queue-based, push model:</b> RabbitMQ pushes messages to consumers. Once a consumer acknowledges a message, it is deleted (by default). No replay capability. Better suited to task queues where each message is consumed once by exactly one consumer. More complex routing options (exchanges, bindings, routing keys).</p>
+      <p><b>Choose Kafka when:</b> High throughput (millions of messages/day), multiple independent consumers need the same events, you need replay capability (audit logs, event sourcing, rebuilding read models), you need long retention, or you want to decouple producers and consumers completely.</p>
+      <p><b>Choose RabbitMQ when:</b> Task distribution (one job processed by one worker), complex routing rules (route based on message content), lower volume with simpler setup, priority queues (process urgent tasks first), or you need request-reply patterns.</p>
+      <p><b>Simple rule of thumb:</b> If you are building event streaming where multiple services react to the same events — Kafka. If you are building a task queue where jobs are distributed to workers — RabbitMQ.</p>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question" onclick="toggleQA(this)">
+      Q4: What is a Service Mesh and how does it differ from the application handling communication?
+      <span class="qa-icon">+</span>
+    </div>
+    <div class="qa-answer">
+      <p>A service mesh is an infrastructure layer that handles service-to-service communication transparently, without any application code changes. The most popular is Istio.</p>
+      <p>Without a service mesh, your application code handles retries, timeouts, circuit breaking, TLS, and distributed tracing. Each service implements these separately, leading to inconsistency across services.</p>
+      <p>With a service mesh, a sidecar proxy (Envoy) is automatically injected into every pod. All inbound and outbound network traffic is intercepted by the sidecar. The sidecar handles retries, timeouts, circuit breaking, mTLS encryption, and tracing — without your application code knowing it exists.</p>
+      <p><b>Concrete difference:</b> With application-level resilience (Resilience4j), each service must add the dependency, write annotations, configure retry policies, and maintain the configuration. If you want to change the retry policy for all services, you must update every service. With Istio, you update one Kubernetes CRD (VirtualService) and the change applies to all services instantly.</p>
+      <p><b>Trade-off:</b> A service mesh adds operational complexity (Istio is notoriously complex to configure and debug), adds memory and CPU overhead (Envoy sidecar per pod), and adds latency (extra network hop through the proxy). Use it when you have many services and the consistency benefit outweighs the complexity cost. For teams with fewer than 10 microservices, application-level resilience is usually simpler and sufficient.</p>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question" onclick="toggleQA(this)">
+      Q5: What is the liveness probe vs readiness probe in Kubernetes? Why do both exist?
+      <span class="qa-icon">+</span>
+    </div>
+    <div class="qa-answer">
+      <p>These are two separate health checks that serve completely different purposes. Confusing them is one of the most common Kubernetes mistakes.</p>
+      <p><b>Liveness probe — "Is this pod still alive? Should Kubernetes kill and restart it?"</b></p>
+      <p>The liveness probe checks whether the application is still functioning at a basic level. If it fails, Kubernetes kills the pod and restarts it. Use it to detect: deadlocks (the JVM is running but no threads can make progress), infinite loops consuming 100% CPU with no output, or any state where restarting would fix the problem.</p>
+      <p>Example: check if the JVM is responsive to a basic HTTP ping at <code>/actuator/health/liveness</code>.</p>
+      <p><b>Readiness probe — "Is this pod ready to receive traffic? Should Kubernetes include it in load balancing?"</b></p>
+      <p>The readiness probe checks whether the application is ready to handle requests. If it fails, Kubernetes removes the pod from the Service's endpoint list — no new requests are routed to it, but the pod is NOT killed. Use it to detect: the application is still starting up (DB connection pool not yet established, caches not yet warmed up), the application is temporarily overloaded and needs to shed load, or a dependency is temporarily unavailable.</p>
+      <p><b>Why both exist — the key scenario:</b> Imagine your pod is running but its database connection pool is temporarily exhausted. The pod is alive (liveness passes) but it cannot handle new requests (readiness fails). Kubernetes should NOT kill and restart it — that would not fix the DB connection issue. It should just stop sending new requests to it until it recovers. Readiness handles this. Liveness would restart it unnecessarily.</p>
+      <p>In Spring Boot: <code>/actuator/health/liveness</code> returns UP as long as the JVM is running normally. <code>/actuator/health/readiness</code> returns UP only when all dependencies are connected and the app is ready to serve traffic.</p>
+    </div>
+  </div>
+
+  <div class="qa-item">
+    <div class="qa-question" onclick="toggleQA(this)">
+      Q6: How does service discovery work in Kubernetes? How does one service find another?
+      <span class="qa-icon">+</span>
+    </div>
+    <div class="qa-answer">
+      <p>Service discovery in Kubernetes is built into the platform via DNS. Unlike traditional systems where you maintain a service registry (Eureka, Consul), Kubernetes handles discovery automatically.</p>
+      <p><b>How it works step by step:</b></p>
+      <ul>
+        <li>You create a Kubernetes <code>Service</code> object for your microservice.</li>
+        <li>The cluster's internal DNS server (CoreDNS) automatically creates a DNS record: <code>service-name.namespace.svc.cluster.local</code></li>
+        <li>Any pod in the cluster can resolve this DNS name to the Service's ClusterIP.</li>
+        <li>The Service's ClusterIP is a virtual IP (not a real server). kube-proxy translates it to one of the matching pod IPs using iptables or IPVS rules.</li>
+        <li>The request is load-balanced across all healthy pods that match the Service selector.</li>
+      </ul>
+      <p><b>Within the same namespace:</b> Just use the service name. <code>http://order-service/api/orders</code>. DNS resolves <code>order-service</code> to the ClusterIP.</p>
+      <p><b>Across namespaces:</b> Must include the namespace: <code>http://order-service.orders.svc.cluster.local/api/orders</code></p>
+      <p><b>Client-side load balancing (Spring Cloud LoadBalancer):</b> If you use Spring Cloud with Eureka or Consul, client-side load balancing is done in the application. The service registry tells the caller about all available instances, and the caller chooses one. In Kubernetes, server-side load balancing via the Service's kube-proxy rules is typically sufficient and simpler.</p>
+    </div>
+  </div>
+
+</div>
+
+<div class="tip" style="margin-top:24px">
+  <div class="tip-label">Interview Tip — How to Answer "How Do Services Communicate?"</div>
+  <p>Do not just say "we used REST". Walk through the decision:</p>
+  <p><b>Strong answer:</b> "Our services communicate using a combination of approaches. For synchronous calls where the caller needs an immediate answer — like checking stock availability before confirming an order — we use REST via WebClient with a 3-second timeout and Resilience4j circuit breaker. For operations where the caller does not need to wait — like sending confirmation emails or notifying the warehouse — we publish events to Kafka topics. Each downstream service consumes events at its own pace, independently. This means if the email service is slow, it does not affect the checkout flow at all."</p>
+  <p>Then be ready for: "What happens if Kafka is down?" Answer: the producer call to send the event will fail. We handle this with the Outbox pattern — we first write the event to a DB table in the same transaction as the business data, then a relay process publishes to Kafka when it recovers. We never lose events.</p>
+</div>
+
+</div>
+
+<script>
+function toggleQA(el) {
+  var answer = el.nextElementSibling;
+  var isOpen = answer.classList.contains('open');
+  answer.classList.toggle('open', !isOpen);
+  el.classList.toggle('open', !isOpen);
+  el.querySelector('.qa-icon').textContent = isOpen ? '+' : '×';
+}
+</script>
+</body>
+</html>
