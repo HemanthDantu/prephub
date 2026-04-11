@@ -570,7 +570,7 @@ const SITE_DATA = {
               difficulty: 'beginner',
               time:       '20 min',
               tags:       ['overview', 'notes'],
-              file:       '../init%20notes/index%20(1).html',
+              file:       'notes/index.html',
               status:     'available',
               featured:   true
             },
@@ -580,7 +580,7 @@ const SITE_DATA = {
               difficulty: 'intermediate',
               time:       '35 min',
               tags:       ['microservices', 'architecture'],
-              file:       '../init%20notes/microservices-interview-prep-imp.html',
+              file:       'notes/microservices-interview-prep.html',
               status:     'available'
             },
             {
@@ -589,7 +589,7 @@ const SITE_DATA = {
               difficulty: 'intermediate',
               time:       '30 min',
               tags:       ['design', 'patterns'],
-              file:       '../init%20notes/s01-design-patterns.html',
+              file:       'notes/design-patterns.html',
               status:     'available'
             },
             {
@@ -598,7 +598,7 @@ const SITE_DATA = {
               difficulty: 'intermediate',
               time:       '30 min',
               tags:       ['api', 'gateway'],
-              file:       '../init%20notes/s02-api-gateway.html',
+              file:       'notes/api-gateway.html',
               status:     'available'
             },
             {
@@ -607,7 +607,7 @@ const SITE_DATA = {
               difficulty: 'intermediate',
               time:       '30 min',
               tags:       ['communication', 'reliability'],
-              file:       '../init%20notes/s03-service-communication.html',
+              file:       'notes/service-communication.html',
               status:     'available'
             },
             {
@@ -616,7 +616,7 @@ const SITE_DATA = {
               difficulty: 'advanced',
               time:       '35 min',
               tags:       ['resilience', 'reliability'],
-              file:       '../init%20notes/s04-resilience.html',
+              file:       'notes/resilience.html',
               status:     'available'
             },
             {
@@ -625,7 +625,7 @@ const SITE_DATA = {
               difficulty: 'advanced',
               time:       '30 min',
               tags:       ['kafka', 'messaging'],
-              file:       '../init%20notes/s05-kafka-deployment.html',
+              file:       'notes/kafka-deployment.html',
               status:     'available'
             },
             {
@@ -634,7 +634,7 @@ const SITE_DATA = {
               difficulty: 'advanced',
               time:       '35 min',
               tags:       ['java', 'performance'],
-              file:       '../init%20notes/s06-java-deep-dive.html',
+              file:       'notes/java-deep-dive.html',
               status:     'available'
             },
             {
@@ -643,7 +643,7 @@ const SITE_DATA = {
               difficulty: 'intermediate',
               time:       '25 min',
               tags:       ['data', 'analytics'],
-              file:       '../init%20notes/s07-data-excel.html',
+              file:       'notes/data-excel.html',
               status:     'available'
             },
             {
@@ -652,8 +652,23 @@ const SITE_DATA = {
               difficulty: 'intermediate',
               time:       '30 min',
               tags:       ['coding', 'practice'],
-              file:       '../init%20notes/s08-coding-questions.html',
+              file:       'notes/coding-questions.html',
               status:     'available'
+            }
+          ]
+        },
+        {
+          name: 'Reference',
+          concepts: [
+            {
+              title:      'Important Backend Topics Study Plan',
+              subtitle:   'Pomodoro-based path to complete the module',
+              difficulty: 'beginner',
+              time:       '15 min',
+              tags:       ['plan', 'schedule', 'study'],
+              file:       'study-plan.html',
+              status:     'available',
+              featured:   true
             }
           ]
         }
