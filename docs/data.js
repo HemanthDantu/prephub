@@ -522,6 +522,15 @@ const SITE_DATA = {
           name: 'Reference',
           concepts: [
             {
+              title:      'OAuth2/OIDC Reference',
+              subtitle:   'Grant flows, token validation, scopes, and common pitfalls',
+              difficulty: 'advanced',
+              time:       '30 min',
+              tags:       ['security', 'oauth2', 'oidc', 'reference'],
+              file:       'oauth2-oidc-reference.html',
+              status:     'available'
+            },
+            {
               title:      'Spring Boot 8-Hour Study Plan',
               subtitle:   'Pomodoro-based path to complete the entire module',
               difficulty: 'beginner',

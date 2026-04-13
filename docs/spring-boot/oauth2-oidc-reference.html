@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OAuth2 / OIDC — Learning Reference</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #13161e;
+    --surface2: #1a1e2a;
+    --border: #252a38;
+    --cyan: #00e5ff;
+    --purple: #b57bee;
+    --green: #39d98a;
+    --orange: #ff9f43;
+    --red: #ff6b6b;
+    --text: #e2e8f0;
+    --muted: #6b7a99;
+    --font-display: 'Syne', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-display);
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  /* Noise texture overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  .hero {
+    padding: 80px 40px 60px;
+    max-width: 960px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  .hero-tag {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--cyan);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    opacity: 0;
+    animation: fadeUp 0.6s forwards 0.1s;
+  }
+
+  h1 {
+    font-size: clamp(2.5rem, 6vw, 4rem);
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 20px;
+    opacity: 0;
+    animation: fadeUp 0.6s forwards 0.2s;
+  }
+
+  h1 span.cyan { color: var(--cyan); }
+  h1 span.purple { color: var(--purple); }
+
+  .hero-sub {
+    color: var(--muted);
+    font-size: 1rem;
+    max-width: 560px;
+    opacity: 0;
+    animation: fadeUp 0.6s forwards 0.3s;
+  }
+
+  /* Nav */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(13,15,20,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 40px;
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  nav::-webkit-scrollbar { display: none; }
+
+  nav a {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--muted);
+    text-decoration: none;
+    padding: 16px 20px;
+    letter-spacing: 1px;
+    white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+  }
+
+  nav a:hover {
+    color: var(--cyan);
+    border-bottom-color: var(--cyan);
+  }
+
+  /* Main layout */
+  main {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 60px 40px 120px;
+    display: flex;
+    flex-direction: column;
+    gap: 80px;
+  }
+
+  /* Section */
+  section {
+    opacity: 0;
+    transform: translateY(24px);
+    animation: fadeUp 0.7s forwards;
+  }
+
+  section:nth-child(1) { animation-delay: 0.1s; }
+  section:nth-child(2) { animation-delay: 0.2s; }
+  section:nth-child(3) { animation-delay: 0.3s; }
+  section:nth-child(4) { animation-delay: 0.4s; }
+  section:nth-child(5) { animation-delay: 0.5s; }
+  section:nth-child(6) { animation-delay: 0.6s; }
+  section:nth-child(7) { animation-delay: 0.7s; }
+
+  .section-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--purple);
+    margin-bottom: 12px;
+  }
+
+  h2 {
+    font-size: 1.7rem;
+    font-weight: 700;
+    margin-bottom: 28px;
+    border-left: 3px solid var(--cyan);
+    padding-left: 16px;
+  }
+
+  h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--cyan);
+    margin-bottom: 10px;
+    margin-top: 28px;
+  }
+
+  p {
+    color: #a8b3cc;
+    margin-bottom: 14px;
+    font-size: 0.95rem;
+  }
+
+  /* Cards grid */
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-top: 8px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+
+  .card:hover {
+    border-color: var(--cyan);
+    transform: translateY(-2px);
+  }
+
+  .card-icon {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+  }
+
+  .card-title {
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--cyan);
+    margin-bottom: 6px;
+  }
+
+  .card-desc {
+    font-size: 0.82rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* Flow steps */
+  .flow {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-top: 8px;
+  }
+
+  .flow-step {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    position: relative;
+  }
+
+  .flow-step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 18px;
+    top: 40px;
+    width: 2px;
+    height: calc(100% - 12px);
+    background: linear-gradient(to bottom, var(--cyan), transparent);
+  }
+
+  .step-num {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--surface2);
+    border: 2px solid var(--cyan);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--cyan);
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .step-content {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 12px;
+    flex: 1;
+  }
+
+  .step-title {
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .step-desc {
+    font-size: 0.83rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* Token comparison */
+  .token-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 8px;
+  }
+
+  .token-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+  }
+
+  .token-card.access { border-top: 3px solid var(--cyan); }
+  .token-card.refresh { border-top: 3px solid var(--purple); }
+  .token-card.id { border-top: 3px solid var(--green); }
+  .token-card.auth { border-top: 3px solid var(--orange); }
+
+  .token-name {
+    font-weight: 700;
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+  }
+
+  .token-card.access .token-name { color: var(--cyan); }
+  .token-card.refresh .token-name { color: var(--purple); }
+  .token-card.id .token-name { color: var(--green); }
+  .token-card.auth .token-name { color: var(--orange); }
+
+  .token-prop {
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-bottom: 5px;
+    display: flex;
+    gap: 8px;
+  }
+
+  .token-prop strong {
+    color: var(--text);
+    min-width: 60px;
+    font-weight: 500;
+  }
+
+  /* Code block */
+  .code-block {
+    background: #0a0c12;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    color: #a8b3cc;
+    overflow-x: auto;
+    margin-top: 12px;
+    line-height: 1.8;
+  }
+
+  .code-block .key { color: var(--purple); }
+  .code-block .val { color: var(--green); }
+  .code-block .comment { color: var(--muted); }
+  .code-block .annotation { color: var(--cyan); }
+
+  /* Pill badges */
+  .badge {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    letter-spacing: 1px;
+    margin-right: 6px;
+    margin-bottom: 6px;
+  }
+
+  .badge-cyan { background: rgba(0,229,255,0.1); color: var(--cyan); border: 1px solid rgba(0,229,255,0.2); }
+  .badge-purple { background: rgba(181,123,238,0.1); color: var(--purple); border: 1px solid rgba(181,123,238,0.2); }
+  .badge-green { background: rgba(57,217,138,0.1); color: var(--green); border: 1px solid rgba(57,217,138,0.2); }
+  .badge-orange { background: rgba(255,159,67,0.1); color: var(--orange); border: 1px solid rgba(255,159,67,0.2); }
+
+  /* Highlight box */
+  .highlight {
+    background: var(--surface);
+    border-left: 3px solid var(--green);
+    border-radius: 0 10px 10px 0;
+    padding: 16px 20px;
+    margin: 16px 0;
+    font-size: 0.9rem;
+    color: #a8b3cc;
+  }
+
+  .highlight.warning { border-left-color: var(--orange); }
+  .highlight.tip { border-left-color: var(--cyan); }
+
+  /* Interview Q&A */
+  .qa-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 16px;
+    overflow: hidden;
+  }
+
+  .qa-question {
+    padding: 16px 20px;
+    background: var(--surface2);
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--cyan);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+  }
+
+  .qa-question::after {
+    content: '▾';
+    font-size: 14px;
+    transition: transform 0.2s;
+    color: var(--muted);
+  }
+
+  .qa-item.open .qa-question::after {
+    transform: rotate(180deg);
+  }
+
+  .qa-answer {
+    padding: 0 20px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s ease, padding 0.2s;
+    font-size: 0.88rem;
+    color: #a8b3cc;
+    line-height: 1.7;
+  }
+
+  .qa-item.open .qa-answer {
+    max-height: 600px;
+    padding: 16px 20px;
+  }
+
+  /* Stack diagram */
+  .stack {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-width: 400px;
+    margin-top: 12px;
+  }
+
+  .stack-layer {
+    padding: 14px 20px;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    text-align: center;
+  }
+
+  .stack-layer:nth-child(1) { background: rgba(0,229,255,0.15); color: var(--cyan); border: 1px solid rgba(0,229,255,0.3); }
+  .stack-layer:nth-child(2) { background: rgba(181,123,238,0.15); color: var(--purple); border: 1px solid rgba(181,123,238,0.3); }
+  .stack-layer:nth-child(3) { background: rgba(57,217,138,0.15); color: var(--green); border: 1px solid rgba(57,217,138,0.3); }
+  .stack-layer:nth-child(4) { background: rgba(255,159,67,0.15); color: var(--orange); border: 1px solid rgba(255,159,67,0.3); }
+
+  .stack-arrow {
+    text-align: center;
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  /* DB table */
+  .db-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-top: 12px;
+  }
+
+  .db-table {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .db-table-header {
+    background: var(--surface2);
+    padding: 10px 16px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--cyan);
+    letter-spacing: 1px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .db-table-row {
+    padding: 8px 16px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--muted);
+    border-bottom: 1px solid rgba(37,42,56,0.5);
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .db-table-row:last-child { border-bottom: none; }
+  .db-table-row .col-name { color: var(--text); }
+  .db-table-row .col-type { color: var(--purple); }
+  .db-table-row .col-pk { color: var(--green); font-size: 9px; }
+
+  /* Angi section */
+  .angi-box {
+    background: linear-gradient(135deg, rgba(255,59,48,0.08), rgba(13,15,20,0));
+    border: 1px solid rgba(255,59,48,0.2);
+    border-radius: 12px;
+    padding: 24px;
+    margin-top: 12px;
+  }
+
+  .angi-logo {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: #ff3b30;
+    margin-bottom: 16px;
+    letter-spacing: -0.5px;
+  }
+
+  /* Animations */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .hero { padding: 60px 20px 40px; }
+    main { padding: 40px 20px 80px; }
+    nav { padding: 0 20px; }
+    .token-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-tag">// study reference — oauth2 & oidc</div>
+  <h1>OAuth2, OIDC<br><span class="cyan">& JWT</span> <span class="purple">Deep Dive</span></h1>
+  <p class="hero-sub">A complete reference from our learning session — concepts, flows, tokens, Spring Boot config, DB design, and Angi-specific implementation.</p>
+</div>
+
+<nav>
+  <a href="#actors">Actors</a>
+  <a href="#flow">Auth Flow</a>
+  <a href="#tokens">Tokens</a>
+  <a href="#jwt">JWT</a>
+  <a href="#oidc">OIDC</a>
+  <a href="#stack">Tech Stack</a>
+  <a href="#spring">Spring Boot</a>
+  <a href="#db">DB Design</a>
+  <a href="#angi">Angi Impl</a>
+  <a href="#interview">Interview Q&A</a>
+</nav>
+
+<main>
+
+  <!-- ACTORS -->
+  <section id="actors">
+    <div class="section-label">// 01 — foundations</div>
+    <h2>What is OAuth2?</h2>
+    <p>OAuth2 is a way to let third-party apps access your data without sharing your actual password. Think "Sign in with Google" — the website never sees your Google password. Google verifies who you are and gives the website permission to access specific things about you.</p>
+
+    <h3>The Four Actors</h3>
+    <div class="cards">
+      <div class="card">
+        <div class="card-icon">👤</div>
+        <div class="card-title">Resource Owner</div>
+        <div class="card-desc">You — the person whose data is being protected. You grant permission.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">🔐</div>
+        <div class="card-title">Authorization Server</div>
+        <div class="card-desc">Google (or Keycloak). Verifies your identity and issues tokens.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">💻</div>
+        <div class="card-title">Client</div>
+        <div class="card-desc">The app trying to access your data. Never sees your password.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">🗄️</div>
+        <div class="card-title">Resource Server</div>
+        <div class="card-desc">Holds your actual data (email, profile). Validates tokens on each request.</div>
+      </div>
+    </div>
+
+    <div class="highlight tip">
+      <strong>Note:</strong> Authorization Server and Resource Server can be the same (Google) or different entities. In enterprise setups like Angi, Keycloak is the Authorization Server while Angi's own APIs are the Resource Servers.
+    </div>
+  </section>
+
+  <!-- FLOW -->
+  <section id="flow">
+    <div class="section-label">// 02 — the flow</div>
+    <h2>Authorization Code Flow</h2>
+    <p>This is the most common and secure OAuth2 flow. Here's exactly what happens when you click "Sign in with Google":</p>
+
+    <div class="flow">
+      <div class="flow-step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <div class="step-title">User clicks "Sign in with Google"</div>
+          <div class="step-desc">The client app redirects you to Google with its client_id in the URL, telling Google which app is asking for access.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <div class="step-title">Google verifies your identity</div>
+          <div class="step-desc">If you're not logged in, Google asks you to. Then shows a consent screen: "This app wants access to your email and profile."</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <div class="step-title">You click Yes — Google sends Authorization Code</div>
+          <div class="step-desc">Google redirects you back to the client app with a temporary authorization code in the URL. NOT the token — just a short-lived code.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <div class="step-title">Client exchanges code for token (backend)</div>
+          <div class="step-desc">The client's backend secretly sends the auth code + client secret to Google's backend. This happens server-to-server, invisible to you. URLs can be logged/intercepted — so the valuable token stays out of the URL.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="step-num">5</div>
+        <div class="step-content">
+          <div class="step-title">Google returns Access Token + Refresh Token</div>
+          <div class="step-desc">Client stores these securely. The access token is used for all subsequent API calls. The refresh token is used to get new access tokens when they expire.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TOKENS -->
+  <section id="tokens">
+    <div class="section-label">// 03 — tokens</div>
+    <h2>Types of Tokens</h2>
+    <p>OAuth2 gives you multiple tokens, each with a specific purpose and lifetime:</p>
+
+    <div class="token-grid">
+      <div class="token-card access">
+        <div class="token-name">Access Token</div>
+        <div class="token-prop"><strong>Purpose:</strong> Authorize API calls</div>
+        <div class="token-prop"><strong>Lifetime:</strong> Short (minutes–1 hour)</div>
+        <div class="token-prop"><strong>Stored:</strong> Client backend / memory</div>
+        <div class="token-prop"><strong>Used by:</strong> Client on every API request</div>
+      </div>
+      <div class="token-card refresh">
+        <div class="token-name">Refresh Token</div>
+        <div class="token-prop"><strong>Purpose:</strong> Get new access tokens</div>
+        <div class="token-prop"><strong>Lifetime:</strong> Long (days–weeks)</div>
+        <div class="token-prop"><strong>Stored:</strong> Client backend only (secret)</div>
+        <div class="token-prop"><strong>Used by:</strong> Client when access token expires</div>
+      </div>
+      <div class="token-card id">
+        <div class="token-name">ID Token (OIDC)</div>
+        <div class="token-prop"><strong>Purpose:</strong> Prove who the user is</div>
+        <div class="token-prop"><strong>Lifetime:</strong> Short</div>
+        <div class="token-prop"><strong>Format:</strong> Always a JWT</div>
+        <div class="token-prop"><strong>Used by:</strong> Client to know user identity</div>
+      </div>
+      <div class="token-card auth">
+        <div class="token-name">Authorization Code</div>
+        <div class="token-prop"><strong>Purpose:</strong> Temporary exchange voucher</div>
+        <div class="token-prop"><strong>Lifetime:</strong> Very short (seconds)</div>
+        <div class="token-prop"><strong>Used:</strong> Once only, then discarded</div>
+        <div class="token-prop"><strong>Travels via:</strong> URL redirect</div>
+      </div>
+    </div>
+
+    <div class="highlight">
+      <strong>Token Refresh Flow:</strong> When access token expires → client uses refresh token → asks auth server for new access token → user doesn't notice anything. You only re-login when the refresh token itself expires.
+    </div>
+
+    <div class="highlight warning">
+      <strong>Revoking Access:</strong> Go to Google settings → disconnect the app → Google deletes the refresh token → client can't get new access tokens. Old access tokens may still work until they expire naturally.
+    </div>
+  </section>
+
+  <!-- JWT -->
+  <section id="jwt">
+    <div class="section-label">// 04 — jwt</div>
+    <h2>JSON Web Tokens (JWT)</h2>
+    <p>JWT is the <em>format</em> of the token — not a protocol. It's a structured, self-contained token with three base64-encoded parts separated by dots:</p>
+
+    <div class="code-block">
+      <span class="comment">// JWT structure: header.payload.signature</span><br>
+      eyJhbGciOiJSUzI1NiJ9  <span class="comment">← Header (algorithm used)</span><br>
+      .eyJ1c2VySWQiOiIxMjM0In0  <span class="comment">← Payload (your data/claims)</span><br>
+      .SflKxwRJSMeKKF2QT4fw  <span class="comment">← Signature (proves it's real)</span>
+    </div>
+
+    <h3>Why JWTs are powerful</h3>
+    <p>The resource server can verify a JWT <strong>without calling the auth server</strong>. The signature proves Google issued it. The payload contains user info. Any service with Google's public key can verify it independently — this is why it's scalable.</p>
+
+    <div class="cards">
+      <div class="card">
+        <div class="card-title">Self-contained</div>
+        <div class="card-desc">User ID, email, roles — all inside the token. No database lookup needed.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Signed</div>
+        <div class="card-desc">Cryptographically signed. Tamper-proof. Anyone can verify but only the issuer can create.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Stateless</div>
+        <div class="card-desc">Server doesn't need to store tokens. Just verify the signature on each request.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- OIDC -->
+  <section id="oidc">
+    <div class="section-label">// 05 — oidc</div>
+    <h2>OpenID Connect (OIDC)</h2>
+    <p>OIDC is built on top of OAuth2. OAuth2 handles <em>authorization</em> (can this app access your data?). OIDC adds <em>authentication</em> (who is this person?). Most "Sign in with" flows use OIDC.</p>
+
+    <h3>Key Difference</h3>
+    <div class="cards">
+      <div class="card">
+        <div class="card-title">OAuth2</div>
+        <div class="card-desc">Authorization. "This app has permission to access Hemanth's email." Doesn't confirm identity.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">OIDC</div>
+        <div class="card-desc">Authentication + Authorization. "I've verified this is actually Hemanth, AND the app has permission."</div>
+      </div>
+    </div>
+
+    <div class="highlight tip">
+      OIDC gives you an extra <strong>ID Token</strong> (always a JWT) on top of the access token. This ID token is specifically for proving identity — who the user is.
+    </div>
+  </section>
+
+  <!-- TECH STACK -->
+  <section id="stack">
+    <div class="section-label">// 06 — relationships</div>
+    <h2>How OAuth2, OIDC, Keycloak & JWT Relate</h2>
+    <p>Think of it as layers — each builds on the one below:</p>
+
+    <div class="stack">
+      <div class="stack-layer">JWT — the token format (the currency)</div>
+      <div class="stack-arrow">↑ uses</div>
+      <div class="stack-layer">Keycloak — software that implements the specs (the building)</div>
+      <div class="stack-arrow">↑ implements</div>
+      <div class="stack-layer">OIDC — authentication layer on top of OAuth2 (blueprint + identity)</div>
+      <div class="stack-arrow">↑ extends</div>
+      <div class="stack-layer">OAuth2 — the authorization framework (the foundation blueprint)</div>
+    </div>
+
+    <p style="margin-top: 20px;">When you log in: Keycloak runs the OIDC flow → which uses OAuth2 underneath → and issues you a JWT token that proves who you are and what you can access.</p>
+
+    <h3>What is Keycloak?</h3>
+    <p>Keycloak is an open-source identity provider maintained by Red Hat and the community. Companies like Angi self-host it instead of paying for Auth0 or Okta. They get full control over their auth infrastructure but take on the responsibility of maintaining it.</p>
+  </section>
+
+  <!-- SPRING BOOT -->
+  <section id="spring">
+    <div class="section-label">// 07 — spring boot config</div>
+    <h2>Spring Boot OAuth2 Setup</h2>
+
+    <h3>Dependencies (pom.xml)</h3>
+    <div class="code-block">
+      <span class="comment">&lt;!-- Turn on Spring Security --&gt;</span><br>
+      &lt;<span class="key">dependency</span>&gt;<br>
+      &nbsp;&nbsp;&lt;<span class="key">groupId</span>&gt;<span class="val">org.springframework.boot</span>&lt;/<span class="key">groupId</span>&gt;<br>
+      &nbsp;&nbsp;&lt;<span class="key">artifactId</span>&gt;<span class="val">spring-boot-starter-security</span>&lt;/<span class="key">artifactId</span>&gt;<br>
+      &lt;/<span class="key">dependency</span>&gt;<br><br>
+      <span class="comment">&lt;!-- OAuth2 client support --&gt;</span><br>
+      &lt;<span class="key">dependency</span>&gt;<br>
+      &nbsp;&nbsp;&lt;<span class="key">groupId</span>&gt;<span class="val">org.springframework.boot</span>&lt;/<span class="key">groupId</span>&gt;<br>
+      &nbsp;&nbsp;&lt;<span class="key">artifactId</span>&gt;<span class="val">spring-boot-starter-oauth2-client</span>&lt;/<span class="key">artifactId</span>&gt;<br>
+      &lt;/<span class="key">dependency</span>&gt;<br><br>
+      <span class="comment">&lt;!-- For resource servers validating JWTs --&gt;</span><br>
+      &lt;<span class="key">dependency</span>&gt;<br>
+      &nbsp;&nbsp;&lt;<span class="key">groupId</span>&gt;<span class="val">org.springframework.boot</span>&lt;/<span class="key">groupId</span>&gt;<br>
+      &nbsp;&nbsp;&lt;<span class="key">artifactId</span>&gt;<span class="val">spring-boot-starter-oauth2-resource-server</span>&lt;/<span class="key">artifactId</span>&gt;<br>
+      &lt;/<span class="key">dependency</span>&gt;
+    </div>
+
+    <h3>application.yml config</h3>
+    <div class="code-block">
+      <span class="key">spring</span>:<br>
+      &nbsp;&nbsp;<span class="key">security</span>:<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;<span class="key">oauth2</span>:<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">client</span>:<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">registration</span>:<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">google</span>:<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">client-id</span>: <span class="val">${GOOGLE_CLIENT_ID}</span>  <span class="comment"># from Secrets Manager</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">client-secret</span>: <span class="val">${GOOGLE_CLIENT_SECRET}</span>  <span class="comment"># never hardcode!</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">scope</span>: <span class="val">openid, email, profile</span>
+    </div>
+
+    <h3>Security Config Class</h3>
+    <div class="code-block">
+      <span class="annotation">@Configuration</span><br>
+      <span class="annotation">@EnableWebSecurity</span><br>
+      <span class="key">public class</span> SecurityConfig {<br><br>
+      &nbsp;&nbsp;<span class="annotation">@Bean</span><br>
+      &nbsp;&nbsp;<span class="key">public</span> SecurityFilterChain filterChain(HttpSecurity http) <span class="key">throws</span> Exception {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;http<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.authorizeHttpRequests(auth -> auth<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.requestMatchers(<span class="val">"/login"</span>, <span class="val">"/public/**"</span>).permitAll()<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.anyRequest().authenticated()  <span class="comment">// all others need auth</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.oauth2Login();  <span class="comment">// Spring handles redirect + callback</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;<span class="key">return</span> http.build();<br>
+      &nbsp;&nbsp;}<br>
+      }
+    </div>
+
+    <div class="highlight tip">
+      <strong>@EnableWebSecurity</strong> turns on Spring Security globally. The <strong>SecurityFilterChain</strong> bean defines which endpoints are public and which need authentication. Spring handles all redirect and token exchange logic automatically.
+    </div>
+
+    <div class="highlight warning">
+      <strong>Never hardcode client ID or secret.</strong> Always pull from environment variables or AWS Secrets Manager / HashiCorp Vault. Spring reads these automatically at startup.
+    </div>
+  </section>
+
+  <!-- DB DESIGN -->
+  <section id="db">
+    <div class="section-label">// 08 — database design</div>
+    <h2>DB Design: Building Your Own OAuth Server</h2>
+    <p>If you're building the authorization server itself (like Google or Keycloak), here are the tables you need:</p>
+
+    <div class="db-grid">
+      <div class="db-table">
+        <div class="db-table-header">USERS</div>
+        <div class="db-table-row"><span class="col-name">user_id</span><span class="col-type">UUID</span><span class="col-pk">PK</span></div>
+        <div class="db-table-row"><span class="col-name">name</span><span class="col-type">VARCHAR</span></div>
+        <div class="db-table-row"><span class="col-name">email</span><span class="col-type">VARCHAR</span></div>
+      </div>
+
+      <div class="db-table">
+        <div class="db-table-header">LOGIN_INFO</div>
+        <div class="db-table-row"><span class="col-name">id</span><span class="col-type">INT</span><span class="col-pk">PK</span></div>
+        <div class="db-table-row"><span class="col-name">user_id</span><span class="col-type">UUID</span><span class="col-pk">FK</span></div>
+        <div class="db-table-row"><span class="col-name">pass_hash</span><span class="col-type">HASH</span></div>
+        <div class="db-table-row"><span class="col-name">salt</span><span class="col-type">VARCHAR</span></div>
+      </div>
+
+      <div class="db-table">
+        <div class="db-table-header">CLIENT_DETAILS</div>
+        <div class="db-table-row"><span class="col-name">client_id</span><span class="col-type">UUID</span><span class="col-pk">PK</span></div>
+        <div class="db-table-row"><span class="col-name">client_secret</span><span class="col-type">HASH</span></div>
+        <div class="db-table-row"><span class="col-name">company_name</span><span class="col-type">VARCHAR</span></div>
+        <div class="db-table-row"><span class="col-name">ttl_default</span><span class="col-type">INT</span></div>
+        <div class="db-table-row"><span class="col-name">redirect_uri</span><span class="col-type">VARCHAR</span></div>
+      </div>
+
+      <div class="db-table">
+        <div class="db-table-header">USER_SESSIONS (Tokens)</div>
+        <div class="db-table-row"><span class="col-name">token_id</span><span class="col-type">INT</span><span class="col-pk">PK</span></div>
+        <div class="db-table-row"><span class="col-name">token</span><span class="col-type">VARCHAR</span></div>
+        <div class="db-table-row"><span class="col-name">user_id</span><span class="col-type">UUID</span><span class="col-pk">FK</span></div>
+        <div class="db-table-row"><span class="col-name">expires_at</span><span class="col-type">DATETIME</span></div>
+      </div>
+
+      <div class="db-table">
+        <div class="db-table-header">CLIENT_TOKEN_INFO</div>
+        <div class="db-table-row"><span class="col-name">ct_id</span><span class="col-type">INT</span><span class="col-pk">PK</span></div>
+        <div class="db-table-row"><span class="col-name">user_id</span><span class="col-type">UUID</span><span class="col-pk">FK</span></div>
+        <div class="db-table-row"><span class="col-name">client_id</span><span class="col-type">UUID</span><span class="col-pk">FK</span></div>
+        <div class="db-table-row"><span class="col-name">access_token</span><span class="col-type">VARCHAR</span></div>
+        <div class="db-table-row"><span class="col-name">refresh_token</span><span class="col-type">VARCHAR</span></div>
+        <div class="db-table-row"><span class="col-name">access_expires_at</span><span class="col-type">DATETIME</span></div>
+        <div class="db-table-row"><span class="col-name">refresh_expires_at</span><span class="col-type">DATETIME</span></div>
+      </div>
+
+      <div class="db-table">
+        <div class="db-table-header">AUTH_CODES ⚠️ missing</div>
+        <div class="db-table-row"><span class="col-name">code</span><span class="col-type">VARCHAR</span><span class="col-pk">PK</span></div>
+        <div class="db-table-row"><span class="col-name">client_id</span><span class="col-type">UUID</span><span class="col-pk">FK</span></div>
+        <div class="db-table-row"><span class="col-name">user_id</span><span class="col-type">UUID</span><span class="col-pk">FK</span></div>
+        <div class="db-table-row"><span class="col-name">expires_at</span><span class="col-type">DATETIME</span></div>
+        <div class="db-table-row"><span class="col-name">used</span><span class="col-type">BOOLEAN</span></div>
+      </div>
+
+      <div class="db-table">
+        <div class="db-table-header">SCOPES ⚠️ missing</div>
+        <div class="db-table-row"><span class="col-name">scope_id</span><span class="col-type">INT</span><span class="col-pk">PK</span></div>
+        <div class="db-table-row"><span class="col-name">scope_name</span><span class="col-type">VARCHAR</span></div>
+        <div class="db-table-row"><span class="col-name">description</span><span class="col-type">VARCHAR</span></div>
+      </div>
+    </div>
+
+    <div class="highlight warning" style="margin-top:20px;">
+      <strong>Use expires_at (DATETIME) not TTL (duration)</strong> — Store the actual expiry timestamp so you can query <code>WHERE expires_at &gt; NOW()</code> without doing math on every check.
+    </div>
+  </section>
+
+  <!-- ANGI -->
+  <section id="angi">
+    <div class="section-label">// 09 — real world</div>
+    <h2>Angi's OAuth Implementation</h2>
+
+    <div class="angi-box">
+      <div class="angi-logo">Angi</div>
+      <p>From inspecting the browser dev tools on <code>id.angi.com</code>, here's what Angi's auth stack looks like:</p>
+
+      <div class="cards" style="margin-top: 16px;">
+        <div class="card">
+          <div class="card-title">Identity Provider</div>
+          <div class="card-desc">Keycloak, self-hosted at id.angi.com. Evidence: /realms/ads-user/ in the URL — "realms" is a Keycloak-specific concept.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Protocol</div>
+          <div class="card-desc">OIDC on top of OAuth2. client_id=web-consumer visible in the auth URL.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">MFA</div>
+          <div class="card-desc">OTP (6-digit email code) layered on top of the OIDC flow for extra security.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Keycloak Cookies</div>
+          <div class="card-desc">KC_RESTART, AUTH_SESSION_ID, AUTH_SESSION_ID_LEGACY — KC_ prefix = Keycloak session management cookies.</div>
+        </div>
+      </div>
+
+      <h3>How Angi APIs are protected</h3>
+      <p>Keycloak issues JWTs on login. Angi's Spring Boot backend services are configured as OAuth2 Resource Servers using <code>spring-boot-starter-oauth2-resource-server</code>. They validate the JWT on every incoming request — checking the signature and expiry — without calling Keycloak on each call. Keycloak's job is issuing tokens. APIs' job is validating them.</p>
+
+      <div class="highlight tip">
+        <strong>Concert wristband analogy:</strong> Security checks your wristband at the gate (login). After that, staff inside just glance at it (JWT validation) — they don't call the ticket company every time.
+      </div>
+    </div>
+  </section>
+
+  <!-- INTERVIEW -->
+  <section id="interview">
+    <div class="section-label">// 10 — interview prep</div>
+    <h2>Interview Q&A</h2>
+    <p>Click each question to reveal a natural, experience-grounded answer:</p>
+
+    <div class="qa-item">
+      <div class="qa-question">How was authentication and authorization handled at Angi?</div>
+      <div class="qa-answer">
+        "Angi used Keycloak as their identity provider, running on id.angi.com. It implemented OIDC on top of OAuth2, so when users logged in, Keycloak handled the authentication and issued JWT access tokens and refresh tokens. Our backend Spring Boot services were configured as OAuth2 resource servers using spring-boot-starter-oauth2-resource-server, so they'd validate incoming JWTs on every request — verifying the signature and checking expiry — without hitting Keycloak on each call. Keycloak's job was issuing tokens, and our services' job was validating them independently."
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="qa-question">Have you worked with JWT tokens directly?</div>
+      <div class="qa-answer">
+        "Yes — in my analytics instrumentation work, I needed to extract user identity from JWT claims to associate Segment events with specific users. So I was reading claims like user ID and email directly from the token to enrich our analytics events with user context."
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="qa-question">How did you protect API endpoints in Spring Boot?</div>
+      <div class="qa-answer">
+        "We used Spring Security's security filter chain to define which endpoints required authentication and which are public. Protected endpoints would automatically validate the JWT token from the Authorization header. If the token was missing, expired, or invalid, Spring Security rejected the request before it even hit the controller."
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="qa-question">What is the difference between OAuth2 and OIDC?</div>
+      <div class="qa-answer">
+        "OAuth2 is the authorization framework — it defines how to securely grant access without sharing passwords. OIDC is built on top of OAuth2 and adds identity verification — so you know not just that someone has permission, but who they actually are. Angi used OIDC via Keycloak, which gave us both authentication and authorization in one flow."
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="qa-question">What is PKCE and when would you use it?</div>
+      <div class="qa-answer">
+        "PKCE — Proof Key for Code Exchange — is an extra security layer for OAuth2 flows where you can't safely store a client secret, like mobile apps or React SPAs. Before redirecting to the auth server, the app generates a random code verifier and sends a hashed version (the code challenge) to the auth server. When exchanging the authorization code for a token, the app sends the original verifier. The auth server hashes it and checks it matches — proving it's really the same app, even without a secret. For Spring Boot backends where we have a client secret, PKCE is less critical, but for frontend apps it's essential."
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="qa-question">What is Keycloak and why do enterprises use it?</div>
+      <div class="qa-answer">
+        "Keycloak is an open-source identity and access management solution maintained by Red Hat. Enterprises use it as a self-hosted alternative to managed services like Auth0 or Okta. At Angi, Keycloak ran at id.angi.com and handled all authentication — including OIDC flows, session management, and MFA via OTP codes. The benefit is full control over your auth infrastructure and user data without depending on a third party. The tradeoff is you own the responsibility of running and maintaining it."
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="qa-question">What are the main advantages of OAuth2 over building your own auth?</div>
+      <div class="qa-answer">
+        "A few big ones. First, you don't store passwords — huge security win since you can't leak what you don't have. Second, you skip building login forms, password reset flows, hashing logic — all that plumbing is handled for you. Third, you get single sign-on — if a user is already logged into Google they don't need to re-enter credentials. Fourth, users trust it more — 'Sign in with Google' feels safer than creating yet another account. And fifth, you delegate security responsibility to a battle-tested system that's way more resourced than most apps can afford."
+      </div>
+    </div>
+
+  </section>
+
+</main>
+
+<script>
+  // Accordion for Q&A
+  document.querySelectorAll('.qa-question').forEach(q => {
+    q.addEventListener('click', () => {
+      const item = q.parentElement;
+      const wasOpen = item.classList.contains('open');
+      document.querySelectorAll('.qa-item').forEach(i => i.classList.remove('open'));
+      if (!wasOpen) item.classList.add('open');
+    });
+  });
+</script>
+
+</body>
+</html>
