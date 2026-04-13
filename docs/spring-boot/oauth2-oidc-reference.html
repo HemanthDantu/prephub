@@ -919,54 +919,89 @@
   <section id="interview">
     <div class="section-label">// 10 — interview prep</div>
     <h2>Interview Q&A</h2>
-    <p>Click each question to reveal a natural, experience-grounded answer:</p>
+    <p>Click each question to reveal a natural, experience-grounded answer. Follow-up questions are what a senior interviewer would dig into next.</p>
 
     <div class="qa-item">
       <div class="qa-question">How was authentication and authorization handled at Angi?</div>
       <div class="qa-answer">
-        "Angi used Keycloak as their identity provider, running on id.angi.com. It implemented OIDC on top of OAuth2, so when users logged in, Keycloak handled the authentication and issued JWT access tokens and refresh tokens. Our backend Spring Boot services were configured as OAuth2 resource servers using spring-boot-starter-oauth2-resource-server, so they'd validate incoming JWTs on every request — verifying the signature and checking expiry — without hitting Keycloak on each call. Keycloak's job was issuing tokens, and our services' job was validating them independently."
+        "Angi used Keycloak as their self-hosted identity provider, running at id.angi.com. The auth flow was OIDC on top of OAuth2 — so when a user logged in, they'd get redirected to Keycloak, authenticate there including an OTP step for MFA, and Keycloak would issue a JWT access token and refresh token. Our Spring Boot backend services were configured as OAuth2 resource servers — they'd intercept every incoming request, extract the JWT from the Authorization header, verify the signature against Keycloak's public key, and check expiry. If valid, the request went through. If not, Spring Security rejected it before it even hit the controller layer. The key thing is our services never called Keycloak on each request — the JWT was self-contained and self-verifiable, which kept things performant at scale."
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="qa-question">↳ Follow-up: How did the resource server know Keycloak's public key to verify JWTs?</div>
+      <div class="qa-answer">
+        "Spring Boot's oauth2-resource-server can be configured with a JWK Set URI — that's a URL endpoint Keycloak exposes with its public keys. On startup, Spring fetches those keys and caches them. When a JWT comes in, Spring uses the cached public key to verify the signature. If Keycloak rotates its keys, Spring periodically refreshes them from that endpoint automatically — so you don't have to manage key rotation manually."
       </div>
     </div>
 
     <div class="qa-item">
       <div class="qa-question">Have you worked with JWT tokens directly?</div>
       <div class="qa-answer">
-        "Yes — in my analytics instrumentation work, I needed to extract user identity from JWT claims to associate Segment events with specific users. So I was reading claims like user ID and email directly from the token to enrich our analytics events with user context."
+        "Yes — in my analytics instrumentation work at Angi, I was working on PII-safe Segment event tracking across the SR Path consumer funnel. To associate events with specific users, I needed to extract user identity from the JWT claims — things like user ID and email. I'd read those claims from the security context that Spring Security populates after validating the token, and use that to enrich analytics events. I was also careful about what we logged — since some claims contain PII, we had instrumentation rules around which fields we could include in Segment events and which had to be hashed or omitted entirely."
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="qa-question">↳ Follow-up: What's in a JWT payload and what claims did you typically use?</div>
+      <div class="qa-answer">
+        "A JWT payload contains claims — key-value pairs. Standard ones include 'sub' which is the subject or user ID, 'iat' for issued-at timestamp, 'exp' for expiry, 'email', and custom ones Keycloak adds like roles or realm information. At Angi, I'd typically use the 'sub' claim as the stable user identifier to associate analytics events with a specific user across sessions — it's more reliable than email since emails can change."
       </div>
     </div>
 
     <div class="qa-item">
       <div class="qa-question">How did you protect API endpoints in Spring Boot?</div>
       <div class="qa-answer">
-        "We used Spring Security's security filter chain to define which endpoints required authentication and which are public. Protected endpoints would automatically validate the JWT token from the Authorization header. If the token was missing, expired, or invalid, Spring Security rejected the request before it even hit the controller."
+        "We used Spring Security's security filter chain. In the configuration class annotated with @Configuration and @EnableWebSecurity, we defined a SecurityFilterChain bean where we'd call authorizeHttpRequests to specify which endpoints were public — like the login endpoint or health checks — and everything else required authentication. Then we configured it as an OAuth2 resource server with JWT validation. Spring automatically intercepts every request, validates the JWT before it reaches the controller, and populates the security context with the user's identity and roles. If the token was missing, malformed, or expired, Spring returned a 401 before our business logic even ran. Security was centralized and declarative — we weren't checking tokens manually in every controller."
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="qa-question">↳ Follow-up: What happens if the access token expires mid-session?</div>
+      <div class="qa-answer">
+        "The client — in Angi's case the React frontend — is responsible for token refresh. Typically you'd use an HTTP interceptor that catches 401 responses, uses the refresh token to silently get a new access token from Keycloak, and then retries the original request. The user never notices. If the refresh token itself is expired, the user gets redirected to login again. On the Spring Boot side, we didn't need to handle this — our services just validate whatever token comes in. Token refresh is purely a client-side concern."
       </div>
     </div>
 
     <div class="qa-item">
       <div class="qa-question">What is the difference between OAuth2 and OIDC?</div>
       <div class="qa-answer">
-        "OAuth2 is the authorization framework — it defines how to securely grant access without sharing passwords. OIDC is built on top of OAuth2 and adds identity verification — so you know not just that someone has permission, but who they actually are. Angi used OIDC via Keycloak, which gave us both authentication and authorization in one flow."
+        "OAuth2 is the authorization protocol — it answers 'does this app have permission to access this user's data?' It handles the flow of granting access, exchanging codes for tokens, and scoping permissions. But OAuth2 alone doesn't tell you who the user is — it just gives you an access token. OIDC is built on top of OAuth2 and adds the identity layer — it answers 'who is this person?' It introduces the ID token, which is always a JWT and contains claims about the user's identity like name, email, and user ID. So when Angi used OIDC via Keycloak, a successful login gave us both an access token for authorizing API calls and an ID token for knowing who the logged-in user actually is."
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="qa-question">↳ Follow-up: What are OAuth2 scopes and how did they work at Angi?</div>
+      <div class="qa-answer">
+        "Scopes define what permissions the client is requesting. In the initial authorization request, the client says 'I want access to openid, email, profile' — those are scope names. The user approves them on the consent screen. The issued access token then only carries those permissions. On the resource server side, you can restrict endpoints further by requiring specific scopes — so even a valid token gets rejected if it doesn't have the right scope for that endpoint. At Angi, since Keycloak was internal and the clients were Angi's own apps, scopes were configured at the realm level in Keycloak rather than going through a user-facing consent screen."
       </div>
     </div>
 
     <div class="qa-item">
       <div class="qa-question">What is PKCE and when would you use it?</div>
       <div class="qa-answer">
-        "PKCE — Proof Key for Code Exchange — is an extra security layer for OAuth2 flows where you can't safely store a client secret, like mobile apps or React SPAs. Before redirecting to the auth server, the app generates a random code verifier and sends a hashed version (the code challenge) to the auth server. When exchanging the authorization code for a token, the app sends the original verifier. The auth server hashes it and checks it matches — proving it's really the same app, even without a secret. For Spring Boot backends where we have a client secret, PKCE is less critical, but for frontend apps it's essential."
+        "PKCE — Proof Key for Code Exchange — solves a specific attack: what if someone intercepts the authorization code from the URL redirect? Without PKCE, they could exchange that code for tokens. PKCE prevents this by having the client generate a random code_verifier before starting the flow, hash it into a code_challenge, and send that challenge to the auth server upfront. When exchanging the code for tokens, the client sends the original verifier. The auth server hashes it and checks it matches what it stored — proving it's the same client that started the flow. An interceptor who only grabbed the code has no idea what the original verifier was. For Spring Boot backends with a client secret, PKCE adds less value since the secret already proves client identity. But for SPAs or mobile apps that can't safely store secrets, PKCE is essential."
       </div>
     </div>
 
     <div class="qa-item">
-      <div class="qa-question">What is Keycloak and why do enterprises use it?</div>
+      <div class="qa-question">What is Keycloak and why do enterprises use it over Auth0 or Okta?</div>
       <div class="qa-answer">
-        "Keycloak is an open-source identity and access management solution maintained by Red Hat. Enterprises use it as a self-hosted alternative to managed services like Auth0 or Okta. At Angi, Keycloak ran at id.angi.com and handled all authentication — including OIDC flows, session management, and MFA via OTP codes. The benefit is full control over your auth infrastructure and user data without depending on a third party. The tradeoff is you own the responsibility of running and maintaining it."
+        "Keycloak is an open-source identity and access management solution maintained by Red Hat and the community. Enterprises use it as a self-hosted alternative to managed services like Auth0 or Okta. At Angi, Keycloak ran at id.angi.com and handled everything — OIDC flows, MFA via OTP, session management, realm-based multi-tenancy. The benefit is full control over your auth infrastructure and user data without depending on a third party or paying per-user SaaS pricing. The tradeoff is you own the ops burden — patching, scaling, uptime. That's why you typically see it at larger engineering orgs that have the infrastructure team to support it."
       </div>
     </div>
 
     <div class="qa-item">
-      <div class="qa-question">What are the main advantages of OAuth2 over building your own auth?</div>
+      <div class="qa-question">What are the main advantages of OAuth2 over building custom auth?</div>
       <div class="qa-answer">
-        "A few big ones. First, you don't store passwords — huge security win since you can't leak what you don't have. Second, you skip building login forms, password reset flows, hashing logic — all that plumbing is handled for you. Third, you get single sign-on — if a user is already logged into Google they don't need to re-enter credentials. Fourth, users trust it more — 'Sign in with Google' feels safer than creating yet another account. And fifth, you delegate security responsibility to a battle-tested system that's way more resourced than most apps can afford."
+        "A few big ones. First, you don't store passwords — huge security win since you can't leak what you don't have. Second, you skip building login forms, password reset flows, hashing logic — all that plumbing is handled. Third, you get single sign-on — if a user is already logged into Google they don't need to re-enter credentials. Fourth, users trust it more — 'Sign in with Google' feels safer than creating yet another account. Fifth, you get token expiry and revocation built in — fine-grained access control without touching your own DB. And sixth, you delegate security responsibility to a battle-tested system that's way more resourced than most teams can match."
+      </div>
+    </div>
+
+    <div class="qa-item">
+      <div class="qa-question">↳ Follow-up: What's the difference between authentication and authorization?</div>
+      <div class="qa-answer">
+        "Authentication is proving who you are — 'I am Hemanth, here's my password or token.' Authorization is proving what you're allowed to do — 'Hemanth is allowed to access the admin panel.' OAuth2 handles authorization. OIDC adds authentication on top. In Spring Security, authentication happens when the JWT is validated and the user's identity is loaded into the security context. Authorization happens when Spring checks whether that identity has the required role or scope to access a specific endpoint."
       </div>
     </div>
 
