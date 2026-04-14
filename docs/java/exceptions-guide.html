@@ -1,0 +1,2294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Java Exceptions — Complete Guide</title>
+<style>
+  :root {
+    --bg: #0f1117; --bg2: #161b27; --bg3: #1e2535; --bg4: #252d3d;
+    --border: #2a3347; --border2: #374159;
+    --text: #e2e8f0; --text2: #94a3b8; --text3: #64748b;
+    --blue: #3b82f6; --blue-bg: #1e3a5f; --blue-light: #93c5fd;
+    --green: #22c55e; --green-bg: #14532d; --green-light: #86efac;
+    --red: #ef4444; --red-bg: #450a0a; --red-light: #fca5a5;
+    --yellow: #f59e0b; --yellow-bg: #451a03; --yellow-light: #fcd34d;
+    --purple: #a855f7; --purple-bg: #2e1065; --purple-light: #d8b4fe;
+    --teal: #14b8a6; --teal-bg: #042f2e; --teal-light: #5eead4;
+    --orange: #f97316; --orange-bg: #431407; --orange-light: #fdba74;
+    --radius: 8px; --radius-lg: 12px;
+    --font-mono: 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 14px; line-height: 1.7; }
+  .layout { display: flex; min-height: 100vh; }
+
+  /* Sidebar */
+  .sidebar { width: 260px; min-width: 260px; background: var(--bg2); border-right: 1px solid var(--border); padding: 20px 0; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+  .sidebar-title { font-size: 11px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; padding: 0 20px 10px; }
+  .nav-group { margin-bottom: 6px; }
+  .nav-group-label { font-size: 10px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.8px; padding: 10px 20px 4px; }
+  .nav-item { display: flex; align-items: center; gap: 8px; padding: 7px 20px; cursor: pointer; font-size: 13px; color: var(--text2); transition: all .15s; border-left: 3px solid transparent; }
+  .nav-item:hover { background: var(--bg3); color: var(--text); }
+  .nav-item.active { background: var(--bg3); color: var(--blue-light); border-left-color: var(--blue); }
+  .nav-badge { font-size: 10px; padding: 1px 6px; border-radius: 10px; background: var(--bg4); color: var(--text3); margin-left: auto; }
+  .nav-item.active .nav-badge { background: var(--blue-bg); color: var(--blue-light); }
+
+  /* Main */
+  .main { flex: 1; padding: 40px 48px; max-width: 960px; }
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* Typography */
+  h1 { font-size: 28px; font-weight: 700; margin-bottom: 6px; }
+  h2 { font-size: 20px; font-weight: 600; margin: 32px 0 14px; color: var(--text); }
+  h3 { font-size: 16px; font-weight: 600; margin: 24px 0 10px; color: var(--text); }
+  h4 { font-size: 14px; font-weight: 600; margin: 16px 0 8px; color: var(--text2); }
+  p { color: var(--text2); margin-bottom: 12px; }
+  strong { color: var(--text); font-weight: 600; }
+  .subtitle { color: var(--text3); font-size: 15px; margin-bottom: 28px; }
+
+  /* Code */
+  pre { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 18px 20px; font-family: var(--font-mono); font-size: 12.5px; line-height: 1.7; overflow-x: auto; margin: 14px 0; }
+  code { font-family: var(--font-mono); font-size: 12px; background: var(--bg3); padding: 2px 6px; border-radius: 4px; color: var(--blue-light); }
+  .comment { color: var(--text3); }
+  .kw { color: var(--purple-light); }
+  .str { color: var(--green-light); }
+  .type { color: var(--blue-light); }
+  .ann { color: var(--yellow-light); }
+  .num { color: var(--orange-light); }
+  .method { color: var(--teal-light); }
+
+  /* Cards */
+  .card { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 18px 20px; margin-bottom: 14px; }
+  .card-title { font-size: 14px; font-weight: 600; margin-bottom: 8px; }
+  .card-body { font-size: 13px; color: var(--text2); line-height: 1.7; }
+
+  /* Pros/Cons */
+  .pros-cons { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 14px 0; }
+  .pros { background: #0a2416; border: 1px solid #14532d; border-radius: var(--radius-lg); padding: 16px; }
+  .cons { background: #1a0a0a; border: 1px solid #450a0a; border-radius: var(--radius-lg); padding: 16px; }
+  .pros-title { color: var(--green); font-weight: 600; font-size: 13px; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+  .cons-title { color: var(--red); font-weight: 600; font-size: 13px; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+  .pros ul, .cons ul { padding-left: 16px; }
+  .pros li, .cons li { font-size: 12.5px; color: var(--text2); margin-bottom: 5px; line-height: 1.6; }
+
+  /* Badges */
+  .badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 20px; margin: 2px; }
+  .badge-blue { background: var(--blue-bg); color: var(--blue-light); }
+  .badge-green { background: var(--green-bg); color: var(--green-light); }
+  .badge-red { background: var(--red-bg); color: var(--red-light); }
+  .badge-yellow { background: var(--yellow-bg); color: var(--yellow-light); }
+  .badge-purple { background: var(--purple-bg); color: var(--purple-light); }
+  .badge-teal { background: var(--teal-bg); color: var(--teal-light); }
+  .badge-orange { background: var(--orange-bg); color: var(--orange-light); }
+
+  /* Alert boxes */
+  .alert { border-radius: var(--radius); padding: 12px 16px; margin: 14px 0; font-size: 13px; border-left: 3px solid; }
+  .alert-blue { background: var(--blue-bg); border-color: var(--blue); color: var(--blue-light); }
+  .alert-green { background: var(--green-bg); border-color: var(--green); color: var(--green-light); }
+  .alert-red { background: var(--red-bg); border-color: var(--red); color: var(--red-light); }
+  .alert-yellow { background: var(--yellow-bg); border-color: var(--yellow); color: var(--yellow-light); }
+  .alert strong { color: inherit; }
+
+  /* Table */
+  table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 13px; }
+  th { background: var(--bg3); color: var(--text); font-weight: 600; padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border2); }
+  td { padding: 9px 14px; border-bottom: 1px solid var(--border); color: var(--text2); vertical-align: top; }
+  tr:hover td { background: var(--bg3); }
+
+  /* QA */
+  .qa { border: 1px solid var(--border); border-radius: var(--radius-lg); margin-bottom: 10px; overflow: hidden; }
+  .qa-q { padding: 14px 18px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; background: var(--bg3); font-size: 13px; font-weight: 500; transition: background .15s; user-select: none; }
+  .qa-q:hover { background: var(--bg4); }
+  .qa-a { display: none; padding: 16px 18px; font-size: 13px; color: var(--text2); line-height: 1.8; background: var(--bg2); border-top: 1px solid var(--border); }
+  .qa-a.open { display: block; }
+  .qa-arrow { transition: transform .2s; color: var(--text3); font-size: 12px; }
+  .qa-arrow.open { transform: rotate(180deg); }
+
+  /* Hierarchy */
+  .tree { font-family: var(--font-mono); font-size: 13px; line-height: 2; }
+  .tree .node { cursor: pointer; }
+  .tree .node:hover { color: var(--blue-light); }
+  .t-gray { color: var(--text3); }
+  .t-red { color: var(--red-light); }
+  .t-blue { color: var(--blue-light); }
+  .t-green { color: var(--green-light); }
+  .t-yellow { color: var(--yellow-light); }
+  .t-purple { color: var(--purple-light); }
+
+  /* Real-world scenario box */
+  .scenario { background: var(--bg2); border: 1px solid var(--border2); border-radius: var(--radius-lg); padding: 18px 20px; margin: 16px 0; }
+  .scenario-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--teal); margin-bottom: 8px; }
+  .scenario-title { font-size: 15px; font-weight: 600; margin-bottom: 10px; }
+
+  /* Steps */
+  .steps { counter-reset: step; }
+  .step { display: flex; gap: 14px; margin-bottom: 16px; }
+  .step-num { counter-increment: step; width: 26px; height: 26px; min-width: 26px; background: var(--blue-bg); color: var(--blue-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; margin-top: 2px; }
+  .step-content { flex: 1; }
+  .step-title { font-weight: 600; font-size: 13px; margin-bottom: 4px; }
+  .step-body { font-size: 13px; color: var(--text2); line-height: 1.6; }
+
+  /* Grid */
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 14px 0; }
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin: 14px 0; }
+
+  /* Comparison */
+  .compare-row { display: flex; gap: 0; margin: 14px 0; border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+  .compare-bad { flex: 1; background: #1a0a0a; padding: 16px; border-right: 1px solid var(--border); }
+  .compare-good { flex: 1; background: #0a2416; padding: 16px; }
+  .compare-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; }
+  .compare-bad .compare-label { color: var(--red); }
+  .compare-good .compare-label { color: var(--green); }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg2); }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+  /* Breadcrumb */
+  .breadcrumb { font-size: 12px; color: var(--text3); margin-bottom: 20px; }
+  .breadcrumb span { color: var(--text2); }
+
+  /* Section header */
+  .section-header { padding-bottom: 20px; border-bottom: 1px solid var(--border); margin-bottom: 28px; }
+  .level-badge { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; display: inline-block; margin-bottom: 10px; }
+  .level-beginner { background: var(--green-bg); color: var(--green-light); }
+  .level-intermediate { background: var(--yellow-bg); color: var(--yellow-light); }
+  .level-advanced { background: var(--red-bg); color: var(--red-light); }
+  .level-expert { background: var(--purple-bg); color: var(--purple-light); }
+</style>
+</head>
+<body>
+<div class="layout">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-title">Java Exceptions</div>
+
+  <div class="nav-group">
+    <div class="nav-group-label">Foundations</div>
+    <div class="nav-item active" onclick="show('s1')">What is an Exception? <span class="nav-badge">Beginner</span></div>
+    <div class="nav-item" onclick="show('s2')">Exception Hierarchy <span class="nav-badge">Core</span></div>
+    <div class="nav-item" onclick="show('s3')">Checked vs Unchecked <span class="nav-badge">Core</span></div>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-group-label">Mechanics</div>
+    <div class="nav-item" onclick="show('s4')">try-catch-finally <span class="nav-badge">Core</span></div>
+    <div class="nav-item" onclick="show('s5')">throw vs throws <span class="nav-badge">Core</span></div>
+    <div class="nav-item" onclick="show('s6')">try-with-resources <span class="nav-badge">Java 7+</span></div>
+    <div class="nav-item" onclick="show('s7')">Multi-catch <span class="nav-badge">Java 7+</span></div>
+    <div class="nav-item" onclick="show('s8')">Exception Chaining <span class="nav-badge">Inter</span></div>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-group-label">Design</div>
+    <div class="nav-item" onclick="show('s9')">Custom Exceptions <span class="nav-badge">Inter</span></div>
+    <div class="nav-item" onclick="show('s10')">Exception Hierarchies <span class="nav-badge">Advanced</span></div>
+    <div class="nav-item" onclick="show('s11')">Anti-Patterns <span class="nav-badge">Advanced</span></div>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-group-label">Concurrency</div>
+    <div class="nav-item" onclick="show('s12')">Threads & Executors <span class="nav-badge">Advanced</span></div>
+    <div class="nav-item" onclick="show('s13')">Streams & Lambdas <span class="nav-badge">Advanced</span></div>
+    <div class="nav-item" onclick="show('s14')">CompletableFuture <span class="nav-badge">Advanced</span></div>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-group-label">Spring / Web</div>
+    <div class="nav-item" onclick="show('s15')">Global Exception Handling <span class="nav-badge">Spring</span></div>
+    <div class="nav-item" onclick="show('s16')">REST Error Responses <span class="nav-badge">Spring</span></div>
+    <div class="nav-item" onclick="show('s17')">JPA / Hibernate <span class="nav-badge">Spring</span></div>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-group-label">Production</div>
+    <div class="nav-item" onclick="show('s18')">Logging Best Practices <span class="nav-badge">Expert</span></div>
+    <div class="nav-item" onclick="show('s19')">Microservices Patterns <span class="nav-badge">Expert</span></div>
+    <div class="nav-item" onclick="show('s20')">Performance Impact <span class="nav-badge">Expert</span></div>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-group-label">Interview</div>
+    <div class="nav-item" onclick="show('s21')">Q&A — All Levels <span class="nav-badge">50 Q's</span></div>
+  </div>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main class="main">
+
+<!-- ============================================================ -->
+<!-- SECTION 1: WHAT IS AN EXCEPTION -->
+<!-- ============================================================ -->
+<div id="s1" class="section active">
+  <div class="section-header">
+    <span class="level-badge level-beginner">Beginner</span>
+    <h1>What is an Exception?</h1>
+    <p class="subtitle">Understanding the fundamentals — what goes wrong, when, and why Java needs a dedicated mechanism for it.</p>
+  </div>
+
+  <h2>The Simple Definition</h2>
+  <p>An <strong>exception</strong> is an unexpected event that occurs during the execution of a program and disrupts the normal flow of instructions. Think of it as Java's way of saying: <em>"Something went wrong — here's all the information about what happened and where."</em></p>
+
+  <div class="scenario">
+    <div class="scenario-label">Real World Analogy</div>
+    <div class="scenario-title">ATM Machine</div>
+    <p>You insert your card and try to withdraw £500. Several things could go wrong:
+      the network is down (IOException), your balance is only £200 (InsufficientFundsException), you entered the wrong PIN 3 times (AccountLockedException).
+      Each of these is a different "exception" — the machine stops the normal flow (dispensing cash) and handles each problem differently.</p>
+  </div>
+
+  <h2>Without Exception Handling — What Would Happen?</h2>
+<pre><span class="comment">// Without exception handling, the JVM just CRASHES the entire program</span>
+<span class="kw">int</span>[] arr = <span class="kw">new int</span>[<span class="num">5</span>];
+arr[<span class="num">10</span>] = <span class="num">42</span>;  <span class="comment">// Index 10 doesn't exist!</span>
+<span class="comment">// Result: Program terminates, user sees a cryptic error, data may be lost</span></pre>
+
+  <h2>With Exception Handling — Graceful Recovery</h2>
+<pre><span class="kw">try</span> {
+    <span class="kw">int</span>[] arr = <span class="kw">new int</span>[<span class="num">5</span>];
+    arr[<span class="num">10</span>] = <span class="num">42</span>;
+} <span class="kw">catch</span> (<span class="type">ArrayIndexOutOfBoundsException</span> e) {
+    <span class="comment">// We caught it! Now we can:</span>
+    System.out.<span class="method">println</span>(<span class="str">"Invalid index: "</span> + e.<span class="method">getMessage</span>());
+    <span class="comment">// Log it, show a user-friendly message, retry, etc.</span>
+}
+<span class="comment">// Program continues running normally after this block</span></pre>
+
+  <h2>The Three Types of Problems in Java</h2>
+  <div class="grid3">
+    <div class="card">
+      <div class="card-title" style="color:var(--yellow-light)">Syntax Errors</div>
+      <div class="card-body">Caught at <strong>compile time</strong>. Missing semicolons, wrong types. The code won't even run.</div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="color:var(--orange-light)">Exceptions</div>
+      <div class="card-body">Occur at <strong>runtime</strong>. The code compiled fine but something went wrong during execution. Recoverable.</div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="color:var(--red-light)">Errors</div>
+      <div class="card-body">Serious JVM problems like <code>OutOfMemoryError</code>. Usually <strong>unrecoverable</strong>. Don't catch these.</div>
+    </div>
+  </div>
+
+  <h2>What Information Does an Exception Carry?</h2>
+<pre><span class="kw">try</span> {
+    String s = <span class="kw">null</span>;
+    s.<span class="method">length</span>();
+} <span class="kw">catch</span> (<span class="type">NullPointerException</span> e) {
+    e.<span class="method">getMessage</span>();      <span class="comment">// "Cannot invoke String.length() because s is null"</span>
+    e.<span class="method">getClass</span>();        <span class="comment">// class java.lang.NullPointerException</span>
+    e.<span class="method">getStackTrace</span>();   <span class="comment">// Array of StackTraceElement showing exact line numbers</span>
+    e.<span class="method">getCause</span>();        <span class="comment">// The exception that caused THIS exception (null if root cause)</span>
+    e.<span class="method">toString</span>();        <span class="comment">// "java.lang.NullPointerException: ..."</span>
+    e.<span class="method">printStackTrace</span>(); <span class="comment">// Prints full stack trace to stderr (avoid in production)</span>
+}</pre>
+
+  <h2>The Exception Lifecycle</h2>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <div class="step-title">Something goes wrong</div>
+        <div class="step-body">e.g. You try to parse "abc" as an integer — <code>Integer.parseInt("abc")</code></div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <div class="step-title">JVM creates an Exception object</div>
+        <div class="step-body">A <code>NumberFormatException</code> object is instantiated with the message, stack trace, and cause.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <div class="step-title">Exception is "thrown"</div>
+        <div class="step-body">Java unwinds the call stack, looking for a matching <code>catch</code> block. It checks the current method first, then the caller, then the caller's caller, etc.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <div class="step-title">Caught or propagated</div>
+        <div class="step-body">If a matching <code>catch</code> is found, it handles it. If no <code>catch</code> is found all the way up to <code>main()</code>, the JVM prints the stack trace and terminates the thread.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="alert alert-blue">
+    <strong>Key insight:</strong> Exceptions don't crash programs — <em>unhandled</em> exceptions crash programs. The whole point of exception handling is to give you a chance to respond gracefully.
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 2: EXCEPTION HIERARCHY -->
+<!-- ============================================================ -->
+<div id="s2" class="section">
+  <div class="section-header">
+    <span class="level-badge level-beginner">Core</span>
+    <h1>Exception Hierarchy</h1>
+    <p class="subtitle">The full class tree — understanding what inherits from what, and why it matters for catch blocks.</p>
+  </div>
+
+  <div class="card">
+    <div class="tree">
+<span class="t-blue">java.lang.Object</span>
+└── <span class="t-blue">java.lang.Throwable</span>
+    ├── <span class="t-red">java.lang.Error</span>                     <span class="t-gray">← JVM-level, DO NOT catch</span>
+    │   ├── <span class="t-red">OutOfMemoryError</span>
+    │   ├── <span class="t-red">StackOverflowError</span>
+    │   ├── <span class="t-red">VirtualMachineError</span>
+    │   └── <span class="t-red">AssertionError</span>
+    └── <span class="t-green">java.lang.Exception</span>                 <span class="t-gray">← Application-level</span>
+        ├── <span class="t-yellow">IOException</span>                        <span class="t-gray">← CHECKED</span>
+        │   ├── <span class="t-yellow">FileNotFoundException</span>
+        │   ├── <span class="t-yellow">SocketException</span>
+        │   └── <span class="t-yellow">MalformedURLException</span>
+        ├── <span class="t-yellow">SQLException</span>                       <span class="t-gray">← CHECKED</span>
+        ├── <span class="t-yellow">ClassNotFoundException</span>             <span class="t-gray">← CHECKED</span>
+        ├── <span class="t-yellow">CloneNotSupportedException</span>        <span class="t-gray">← CHECKED</span>
+        └── <span class="t-blue">RuntimeException</span>                  <span class="t-gray">← UNCHECKED</span>
+            ├── <span class="t-blue">NullPointerException</span>
+            ├── <span class="t-blue">ArrayIndexOutOfBoundsException</span>
+            ├── <span class="t-blue">StringIndexOutOfBoundsException</span>
+            ├── <span class="t-blue">ClassCastException</span>
+            ├── <span class="t-blue">ArithmeticException</span>
+            ├── <span class="t-blue">NumberFormatException</span>
+            ├── <span class="t-blue">IllegalArgumentException</span>
+            ├── <span class="t-blue">IllegalStateException</span>
+            ├── <span class="t-blue">UnsupportedOperationException</span>
+            └── <span class="t-blue">ConcurrentModificationException</span>
+    </div>
+  </div>
+
+  <h2>Why Does the Hierarchy Matter?</h2>
+  <p>Java's catch block uses <strong>polymorphism</strong>. When you catch <code>Exception</code>, you catch everything that inherits from it — which means ALL checked exceptions AND all RuntimeExceptions. This is why catch-block order matters.</p>
+
+<pre><span class="comment">// Catch order MATTERS — most specific FIRST, most general LAST</span>
+<span class="kw">try</span> {
+    readFile(<span class="str">"data.csv"</span>);
+} <span class="kw">catch</span> (<span class="type">FileNotFoundException</span> e) {
+    <span class="comment">// Specific — file doesn't exist</span>
+    <span class="method">createDefaultFile</span>();
+} <span class="kw">catch</span> (<span class="type">IOException</span> e) {
+    <span class="comment">// Broader — any other IO problem</span>
+    log.<span class="method">error</span>(<span class="str">"IO failed"</span>, e);
+} <span class="kw">catch</span> (<span class="type">Exception</span> e) {
+    <span class="comment">// Widest net — catches everything else</span>
+    log.<span class="method">error</span>(<span class="str">"Unexpected error"</span>, e);
+}
+
+<span class="comment">// ❌ This WON'T COMPILE — IOException is parent of FileNotFoundException
+// The FileNotFoundException catch is unreachable:</span>
+<span class="kw">catch</span> (<span class="type">IOException</span> e) { }
+<span class="kw">catch</span> (<span class="type">FileNotFoundException</span> e) { }  <span class="comment">// Compile error!</span></pre>
+
+  <h2>Key Classes Explained</h2>
+  <table>
+    <tr><th>Class</th><th>Type</th><th>Common Cause</th><th>Should You Catch It?</th></tr>
+    <tr><td><code>NullPointerException</code></td><td><span class="badge badge-blue">Unchecked</span></td><td>Calling a method on a null reference</td><td>Fix the bug instead</td></tr>
+    <tr><td><code>IllegalArgumentException</code></td><td><span class="badge badge-blue">Unchecked</span></td><td>Invalid method argument passed</td><td>Usually fix the caller</td></tr>
+    <tr><td><code>IllegalStateException</code></td><td><span class="badge badge-blue">Unchecked</span></td><td>Object in wrong state for the operation</td><td>Fix state management</td></tr>
+    <tr><td><code>IOException</code></td><td><span class="badge badge-yellow">Checked</span></td><td>File/network/stream problems</td><td>Yes — always</td></tr>
+    <tr><td><code>SQLException</code></td><td><span class="badge badge-yellow">Checked</span></td><td>Database errors</td><td>Yes — wrap and translate</td></tr>
+    <tr><td><code>OutOfMemoryError</code></td><td><span class="badge badge-red">Error</span></td><td>Heap is full</td><td>No — let JVM handle it</td></tr>
+    <tr><td><code>StackOverflowError</code></td><td><span class="badge badge-red">Error</span></td><td>Infinite recursion</td><td>No — fix the recursion</td></tr>
+    <tr><td><code>AssertionError</code></td><td><span class="badge badge-red">Error</span></td><td>assert statement failed</td><td>Only in test frameworks</td></tr>
+  </table>
+
+  <div class="alert alert-yellow">
+    <strong>Tricky interview question:</strong> <code>AssertionError</code> extends <code>Error</code>, NOT <code>Exception</code>. This is why JUnit must catch <code>Throwable</code> — to capture failed assertions in tests.
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 3: CHECKED VS UNCHECKED -->
+<!-- ============================================================ -->
+<div id="s3" class="section">
+  <div class="section-header">
+    <span class="level-badge level-beginner">Core</span>
+    <h1>Checked vs Unchecked Exceptions</h1>
+    <p class="subtitle">One of Java's most debated design decisions — understanding when to use each and why.</p>
+  </div>
+
+  <h2>The Core Difference</h2>
+  <table>
+    <tr><th>Feature</th><th>Checked</th><th>Unchecked (RuntimeException)</th></tr>
+    <tr><td>Verified at</td><td>Compile time</td><td>Runtime only</td></tr>
+    <tr><td>Must handle or declare?</td><td>Yes (compiler enforces)</td><td>No (optional)</td></tr>
+    <tr><td>Extends</td><td><code>Exception</code></td><td><code>RuntimeException</code></td></tr>
+    <tr><td>Signals</td><td>External/recoverable failure</td><td>Programming bug / unrecoverable state</td></tr>
+    <tr><td>Examples</td><td>IOException, SQLException</td><td>NPE, IllegalArgumentException</td></tr>
+    <tr><td>Caller awareness</td><td>Forced — caller MUST know</td><td>Optional — caller may ignore</td></tr>
+  </table>
+
+  <h2>Checked Exceptions — Deep Dive</h2>
+<pre><span class="comment">// The compiler FORCES you to handle or declare checked exceptions</span>
+<span class="kw">public</span> <span class="type">String</span> <span class="method">readFile</span>(<span class="type">String</span> path) <span class="kw">throws</span> <span class="type">IOException</span> {
+    <span class="comment">// IOException is checked — you must either:</span>
+    <span class="comment">// 1. Catch it here (handle it)</span>
+    <span class="comment">// 2. Declare 'throws IOException' (propagate it)</span>
+    <span class="kw">return</span> <span class="type">Files</span>.<span class="method">readString</span>(<span class="type">Path</span>.<span class="method">of</span>(path)); <span class="comment">// throws IOException</span>
+}
+
+<span class="comment">// Real-world: Reading a config file at startup</span>
+<span class="kw">public class</span> <span class="type">AppConfig</span> {
+    <span class="kw">public void</span> <span class="method">load</span>() {
+        <span class="kw">try</span> {
+            <span class="type">Properties</span> props = <span class="kw">new</span> <span class="type">Properties</span>();
+            props.<span class="method">load</span>(<span class="kw">new</span> <span class="type">FileInputStream</span>(<span class="str">"app.properties"</span>)); <span class="comment">// throws FileNotFoundException (checked)</span>
+        } <span class="kw">catch</span> (<span class="type">FileNotFoundException</span> e) {
+            <span class="comment">// Meaningful recovery: use defaults</span>
+            log.<span class="method">warn</span>(<span class="str">"Config not found, using defaults"</span>);
+            <span class="method">loadDefaults</span>();
+        } <span class="kw">catch</span> (<span class="type">IOException</span> e) {
+            <span class="comment">// Can't recover from corrupt config — rethrow</span>
+            <span class="kw">throw new</span> <span class="type">RuntimeException</span>(<span class="str">"Failed to load config"</span>, e);
+        }
+    }
+}</pre>
+
+  <h2>Unchecked Exceptions — Deep Dive</h2>
+<pre><span class="comment">// Unchecked — compiler doesn't force you to handle it</span>
+<span class="kw">public</span> <span class="type">User</span> <span class="method">findUser</span>(<span class="type">Long</span> id) {
+    <span class="kw">if</span> (id == <span class="kw">null</span>) {
+        <span class="kw">throw new</span> <span class="type">IllegalArgumentException</span>(<span class="str">"User ID cannot be null"</span>);
+        <span class="comment">// No 'throws' needed in signature
+        // This is a PROGRAMMING ERROR — caller passed null</span>
+    }
+    <span class="kw">if</span> (id &lt;= <span class="num">0</span>) {
+        <span class="kw">throw new</span> <span class="type">IllegalArgumentException</span>(<span class="str">"User ID must be positive, got: "</span> + id);
+    }
+    <span class="kw">return</span> userRepository.<span class="method">findById</span>(id)
+        .<span class="method">orElseThrow</span>(() -> <span class="kw">new</span> <span class="type">NoSuchElementException</span>(<span class="str">"User not found: "</span> + id));
+}
+
+<span class="comment">// Real-world: Service validation</span>
+<span class="kw">public</span> <span class="type">Order</span> <span class="method">createOrder</span>(<span class="type">Cart</span> cart) {
+    <span class="type">Objects</span>.<span class="method">requireNonNull</span>(cart, <span class="str">"Cart cannot be null"</span>); <span class="comment">// throws NPE if null</span>
+    <span class="kw">if</span> (cart.<span class="method">isEmpty</span>()) {
+        <span class="kw">throw new</span> <span class="type">IllegalStateException</span>(<span class="str">"Cannot create order from empty cart"</span>);
+    }
+    <span class="kw">return</span> orderRepository.<span class="method">save</span>(<span class="kw">new</span> <span class="type">Order</span>(cart));
+}</pre>
+
+  <div class="pros-cons">
+    <div class="pros">
+      <div class="pros-title">✓ Checked Exceptions — Pros</div>
+      <ul>
+        <li>Compiler enforces handling — you can't forget</li>
+        <li>Self-documenting API — callers know what can fail</li>
+        <li>Forces you to think about failure scenarios upfront</li>
+        <li>Great for external dependencies (files, network, DB)</li>
+        <li>Easier to audit error handling in code review</li>
+      </ul>
+    </div>
+    <div class="cons">
+      <div class="cons-title">✗ Checked Exceptions — Cons</div>
+      <ul>
+        <li>Verbose — forces try-catch or throws everywhere</li>
+        <li>Pollutes method signatures up the call chain</li>
+        <li>Can lead to exception swallowing: <code>catch(e) {}</code></li>
+        <li>Doesn't work with lambdas/streams natively</li>
+        <li>Tightly couples callers to implementation details</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="pros-cons">
+    <div class="pros">
+      <div class="pros-title">✓ Unchecked Exceptions — Pros</div>
+      <ul>
+        <li>Cleaner code — no forced try-catch boilerplate</li>
+        <li>Works naturally with lambdas and streams</li>
+        <li>Used by most modern frameworks (Spring, Hibernate)</li>
+        <li>Doesn't pollute method signatures</li>
+        <li>Preferred by Effective Java (Joshua Bloch)</li>
+      </ul>
+    </div>
+    <div class="cons">
+      <div class="cons-title">✗ Unchecked Exceptions — Cons</div>
+      <ul>
+        <li>Easy to forget to handle them</li>
+        <li>No compiler safety net</li>
+        <li>Callers can't tell from the signature what might fail</li>
+        <li>Requires good Javadoc discipline</li>
+        <li>Can silently bubble up to the top if missed</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>The Golden Rule — When to Use Which</h2>
+  <table>
+    <tr><th>Situation</th><th>Use</th><th>Why</th></tr>
+    <tr><td>External resource fails (file, network, DB)</td><td><span class="badge badge-yellow">Checked</span></td><td>Caller can realistically recover</td></tr>
+    <tr><td>Invalid method argument passed</td><td><span class="badge badge-blue">Unchecked</span></td><td>Caller made a programming error</td></tr>
+    <tr><td>Business rule violated</td><td><span class="badge badge-blue">Unchecked</span></td><td>Modern approach — Spring style</td></tr>
+    <tr><td>Object in invalid state</td><td><span class="badge badge-blue">Unchecked</span></td><td><code>IllegalStateException</code> pattern</td></tr>
+    <tr><td>Method not implemented</td><td><span class="badge badge-blue">Unchecked</span></td><td><code>UnsupportedOperationException</code></td></tr>
+    <tr><td>Wrapping checked exceptions</td><td><span class="badge badge-blue">Unchecked</span></td><td>At service boundaries, translate lower-level exceptions</td></tr>
+  </table>
+
+  <div class="alert alert-green">
+    <strong>Industry trend:</strong> Modern Java (Spring, Jakarta EE) overwhelmingly uses <strong>unchecked exceptions</strong>. Checked exceptions are mostly used in low-level I/O. If in doubt, go unchecked and document with <code>@throws</code> Javadoc.
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 4: TRY-CATCH-FINALLY -->
+<!-- ============================================================ -->
+<div id="s4" class="section">
+  <div class="section-header">
+    <span class="level-badge level-beginner">Core</span>
+    <h1>try-catch-finally</h1>
+    <p class="subtitle">The backbone of exception handling — every edge case, gotcha, and best practice you need to know.</p>
+  </div>
+
+  <h2>Basic Structure</h2>
+<pre><span class="kw">try</span> {
+    <span class="comment">// Code that might throw an exception</span>
+    <span class="type">String</span> result = riskyOperation();
+    processResult(result);
+
+} <span class="kw">catch</span> (<span class="type">SpecificException</span> e) {
+    <span class="comment">// Handles SpecificException AND its subclasses</span>
+    <span class="comment">// 'e' gives you full exception info</span>
+    log.<span class="method">error</span>(<span class="str">"Specific failure: {}"</span>, e.<span class="method">getMessage</span>(), e);
+
+} <span class="kw">catch</span> (<span class="type">AnotherException</span> e) {
+    <span class="comment">// Multiple catch blocks — order matters! Most specific first!</span>
+    handleAnotherCase(e);
+
+} <span class="kw">finally</span> {
+    <span class="comment">// ALWAYS executes — success, exception, or even return</span>
+    <span class="comment">// Perfect for cleanup: close connections, release locks, etc.</span>
+    cleanup();
+}</pre>
+
+  <h2>The finally Block — All the Tricky Cases</h2>
+<pre><span class="comment">// Case 1: finally ALWAYS runs — even when there's a return in try</span>
+<span class="kw">static int</span> <span class="method">test1</span>() {
+    <span class="kw">try</span> {
+        <span class="kw">return</span> <span class="num">1</span>;       <span class="comment">// Return is "prepared" but finally runs first</span>
+    } <span class="kw">finally</span> {
+        System.out.<span class="method">println</span>(<span class="str">"finally ran!"</span>); <span class="comment">// This prints</span>
+    }
+}  <span class="comment">// Returns 1 — finally ran before the actual return</span>
+
+<span class="comment">// Case 2: finally return OVERRIDES try return</span>
+<span class="kw">static int</span> <span class="method">test2</span>() {
+    <span class="kw">try</span> {
+        <span class="kw">return</span> <span class="num">1</span>;
+    } <span class="kw">finally</span> {
+        <span class="kw">return</span> <span class="num">2</span>;  <span class="comment">// ⚠️ This OVERRIDES the try's return — returns 2!</span>
+    }
+}  <span class="comment">// Returns 2 — NEVER do this, very confusing</span>
+
+<span class="comment">// Case 3: finally SUPPRESSES try's exception if it throws</span>
+<span class="kw">static void</span> <span class="method">test3</span>() {
+    <span class="kw">try</span> {
+        <span class="kw">throw new</span> <span class="type">RuntimeException</span>(<span class="str">"from try"</span>);
+    } <span class="kw">finally</span> {
+        <span class="kw">throw new</span> <span class="type">RuntimeException</span>(<span class="str">"from finally"</span>); <span class="comment">// "from try" is LOST!</span>
+    }
+}
+
+<span class="comment">// Case 4: Only way to skip finally — System.exit()</span>
+<span class="kw">static void</span> <span class="method">test4</span>() {
+    <span class="kw">try</span> {
+        System.<span class="method">exit</span>(<span class="num">0</span>); <span class="comment">// JVM shutdown — finally never runs</span>
+    } <span class="kw">finally</span> {
+        System.out.<span class="method">println</span>(<span class="str">"This NEVER prints"</span>);
+    }
+}</pre>
+
+  <h2>Real-World: Database Connection Handling</h2>
+<pre><span class="comment">// BEFORE try-with-resources — classic finally pattern</span>
+<span class="kw">public</span> <span class="type">User</span> <span class="method">findUserById</span>(<span class="kw">long</span> id) {
+    <span class="type">Connection</span> conn = <span class="kw">null</span>;
+    <span class="type">PreparedStatement</span> ps = <span class="kw">null</span>;
+    <span class="type">ResultSet</span> rs = <span class="kw">null</span>;
+    <span class="kw">try</span> {
+        conn = dataSource.<span class="method">getConnection</span>();
+        ps = conn.<span class="method">prepareStatement</span>(<span class="str">"SELECT * FROM users WHERE id = ?"</span>);
+        ps.<span class="method">setLong</span>(<span class="num">1</span>, id);
+        rs = ps.<span class="method">executeQuery</span>();
+        <span class="kw">if</span> (rs.<span class="method">next</span>()) {
+            <span class="kw">return</span> <span class="method">mapToUser</span>(rs);
+        }
+        <span class="kw">return null</span>;
+    } <span class="kw">catch</span> (<span class="type">SQLException</span> e) {
+        <span class="kw">throw new</span> <span class="type">DataAccessException</span>(<span class="str">"Failed to find user: "</span> + id, e);
+    } <span class="kw">finally</span> {
+        <span class="comment">// Must close in reverse order, each in its own try-catch</span>
+        <span class="kw">if</span> (rs   != <span class="kw">null</span>) <span class="kw">try</span> { rs.<span class="method">close</span>();   } <span class="kw">catch</span> (<span class="type">SQLException</span> ignored) {}
+        <span class="kw">if</span> (ps   != <span class="kw">null</span>) <span class="kw">try</span> { ps.<span class="method">close</span>();   } <span class="kw">catch</span> (<span class="type">SQLException</span> ignored) {}
+        <span class="kw">if</span> (conn != <span class="kw">null</span>) <span class="kw">try</span> { conn.<span class="method">close</span>(); } <span class="kw">catch</span> (<span class="type">SQLException</span> ignored) {}
+    }
+}</pre>
+
+  <div class="alert alert-blue">
+    <strong>Why is cleanup so complex?</strong> If <code>rs.close()</code> throws, without the individual try-catch, <code>ps</code> and <code>conn</code> would never be closed — causing a resource leak. This is exactly why <code>try-with-resources</code> was invented in Java 7.
+  </div>
+
+  <h2>try Without catch — Valid!</h2>
+<pre><span class="comment">// try + finally without catch — let exceptions propagate, but guarantee cleanup</span>
+<span class="kw">public void</span> <span class="method">transfer</span>(<span class="type">Account</span> from, <span class="type">Account</span> to, <span class="kw">double</span> amount) {
+    lock.<span class="method">lock</span>();
+    <span class="kw">try</span> {
+        <span class="comment">// Don't catch — if transfer fails, caller should handle it</span>
+        <span class="comment">// But we MUST release the lock no matter what happens</span>
+        from.<span class="method">debit</span>(amount);
+        to.<span class="method">credit</span>(amount);
+    } <span class="kw">finally</span> {
+        lock.<span class="method">unlock</span>(); <span class="comment">// GUARANTEED to run</span>
+    }
+}</pre>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 5: THROW VS THROWS -->
+<!-- ============================================================ -->
+<div id="s5" class="section">
+  <div class="section-header">
+    <span class="level-badge level-beginner">Core</span>
+    <h1>throw vs throws</h1>
+    <p class="subtitle">Two keywords, completely different purposes — a common source of confusion for beginners.</p>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <div class="card-title" style="color:var(--blue-light)">throw — The Action</div>
+      <div class="card-body">
+        Used <strong>inside a method body</strong> to explicitly throw an exception instance.<br><br>
+        Think of it as: <em>"I am now throwing this exception."</em><br><br>
+        Always followed by an exception instance.
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="color:var(--purple-light)">throws — The Declaration</div>
+      <div class="card-body">
+        Used in a <strong>method signature</strong> to declare what checked exceptions a method might propagate.<br><br>
+        Think of it as: <em>"Caller, be aware — I might throw these."</em><br><br>
+        Always followed by exception class names.
+      </div>
+    </div>
+  </div>
+
+<pre><span class="comment">// 'throws' in the METHOD SIGNATURE — just a warning to callers</span>
+<span class="kw">public</span> <span class="type">Order</span> <span class="method">processPayment</span>(<span class="type">Payment</span> payment)
+        <span class="kw">throws</span> <span class="type">PaymentException</span>, <span class="type">InsufficientFundsException</span> {
+
+    <span class="comment">// Validate input</span>
+    <span class="kw">if</span> (payment == <span class="kw">null</span>) {
+        <span class="kw">throw new</span> <span class="type">IllegalArgumentException</span>(<span class="str">"Payment cannot be null"</span>); <span class="comment">// 'throw' the action</span>
+    }
+
+    <span class="kw">if</span> (payment.<span class="method">getAmount</span>() &lt;= <span class="num">0</span>) {
+        <span class="kw">throw new</span> <span class="type">IllegalArgumentException</span>(
+            <span class="str">"Payment amount must be positive: "</span> + payment.<span class="method">getAmount</span>());
+    }
+
+    <span class="type">Account</span> account = accountRepo.<span class="method">find</span>(payment.<span class="method">getAccountId</span>());
+    <span class="kw">if</span> (account.<span class="method">getBalance</span>() &lt; payment.<span class="method">getAmount</span>()) {
+        <span class="kw">throw new</span> <span class="type">InsufficientFundsException</span>(        <span class="comment">// 'throw' the action</span>
+            <span class="str">"Balance: "</span> + account.<span class="method">getBalance</span>() +
+            <span class="str">", Required: "</span> + payment.<span class="method">getAmount</span>()
+        );
+    }
+
+    <span class="kw">try</span> {
+        <span class="kw">return</span> paymentGateway.<span class="method">charge</span>(payment);
+    } <span class="kw">catch</span> (<span class="type">GatewayException</span> e) {
+        <span class="kw">throw new</span> <span class="type">PaymentException</span>(<span class="str">"Gateway rejected payment"</span>, e); <span class="comment">// wrap and rethrow</span>
+    }
+}</pre>
+
+  <h2>throws With Multiple Exceptions</h2>
+<pre><span class="comment">// Declaring multiple checked exceptions</span>
+<span class="kw">public void</span> <span class="method">importData</span>(<span class="type">String</span> filePath)
+        <span class="kw">throws</span> <span class="type">IOException</span>, <span class="type">ParseException</span>, <span class="type">ValidationException</span> {
+    <span class="comment">// Each exception signals a different failure mode</span>
+    <span class="type">String</span> content = <span class="type">Files</span>.<span class="method">readString</span>(<span class="type">Path</span>.<span class="method">of</span>(filePath));  <span class="comment">// throws IOException</span>
+    <span class="type">List</span>&lt;<span class="type">Record</span>&gt; records = parser.<span class="method">parse</span>(content);         <span class="comment">// throws ParseException</span>
+    validator.<span class="method">validate</span>(records);                          <span class="comment">// throws ValidationException</span>
+}</pre>
+
+  <h2>throws Exception — The Nuclear Option</h2>
+<pre><span class="comment">// ❌ BAD — 'throws Exception' tells callers NOTHING useful</span>
+<span class="kw">public</span> <span class="type">User</span> <span class="method">getUser</span>(<span class="kw">long</span> id) <span class="kw">throws</span> <span class="type">Exception</span> {
+    <span class="comment">// Laziness — caller has no idea what might go wrong</span>
+}
+
+<span class="comment">// ✅ GOOD — specific and informative</span>
+<span class="kw">public</span> <span class="type">User</span> <span class="method">getUser</span>(<span class="kw">long</span> id) <span class="kw">throws</span> <span class="type">UserNotFoundException</span>, <span class="type">DataAccessException</span> {
+    <span class="comment">// Caller knows exactly what to handle</span>
+}</pre>
+
+  <div class="alert alert-yellow">
+    <strong>throws does NOT mean the exception will be thrown!</strong> It's a declaration of possibility. A method that declares <code>throws IOException</code> might never actually throw it — it's just telling callers to be prepared.
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 6: TRY-WITH-RESOURCES -->
+<!-- ============================================================ -->
+<div id="s6" class="section">
+  <div class="section-header">
+    <span class="level-badge level-intermediate">Java 7+</span>
+    <h1>try-with-resources</h1>
+    <p class="subtitle">Automatic resource management — Java's answer to resource leaks. Cleaner, safer, and handles suppressed exceptions.</p>
+  </div>
+
+  <h2>The Problem It Solves</h2>
+  <p>Before Java 7, properly closing resources required complex, nested finally blocks. Any exception during close would swallow the original exception. Resources would leak if you forgot a single null check.</p>
+
+  <div class="compare-row">
+    <div class="compare-bad">
+      <div class="compare-label">❌ Before Java 7 — Error Prone</div>
+<pre style="background:transparent;border:none;padding:0;font-size:11.5px"><span class="type">InputStream</span> in = <span class="kw">null</span>;
+<span class="kw">try</span> {
+    in = <span class="kw">new</span> <span class="type">FileInputStream</span>(file);
+    <span class="comment">// use stream...</span>
+} <span class="kw">finally</span> {
+    <span class="kw">if</span> (in != <span class="kw">null</span>) {
+        <span class="kw">try</span> { in.<span class="method">close</span>(); }
+        <span class="kw">catch</span> (<span class="type">IOException</span> ignored) {}
+    }
+}</pre>
+    </div>
+    <div class="compare-good">
+      <div class="compare-label">✅ Java 7+ — Clean</div>
+<pre style="background:transparent;border:none;padding:0;font-size:11.5px"><span class="kw">try</span> (<span class="type">InputStream</span> in =
+    <span class="kw">new</span> <span class="type">FileInputStream</span>(file)) {
+
+    <span class="comment">// use stream...</span>
+
+} <span class="comment">// auto-closed here, always</span>
+<span class="comment">// even on exception</span>
+</pre>
+    </div>
+  </div>
+
+  <h2>How It Works Internally</h2>
+  <p>The resource must implement <code>AutoCloseable</code> (or its subinterface <code>Closeable</code>). The compiler generates the try-finally code for you, including the suppressed exception handling.</p>
+
+<pre><span class="comment">// Multiple resources — closed in REVERSE order of declaration</span>
+<span class="kw">try</span> (
+    <span class="type">Connection</span> conn = dataSource.<span class="method">getConnection</span>();         <span class="comment">// closed 3rd</span>
+    <span class="type">PreparedStatement</span> ps = conn.<span class="method">prepareStatement</span>(sql);   <span class="comment">// closed 2nd</span>
+    <span class="type">ResultSet</span> rs = ps.<span class="method">executeQuery</span>()                     <span class="comment">// closed 1st</span>
+) {
+    <span class="kw">while</span> (rs.<span class="method">next</span>()) {
+        <span class="comment">// process rows</span>
+    }
+} <span class="kw">catch</span> (<span class="type">SQLException</span> e) {
+    <span class="kw">throw new</span> <span class="type">DataAccessException</span>(<span class="str">"Query failed"</span>, e);
+}
+<span class="comment">// All three resources guaranteed closed, even if processRows() throws</span></pre>
+
+  <h2>Suppressed Exceptions — The Hidden Gem</h2>
+<pre><span class="comment">// What if BOTH the body AND close() throw?</span>
+<span class="comment">// The body exception is PRIMARY, close() exception is SUPPRESSED</span>
+<span class="kw">try</span> (<span class="type">Connection</span> conn = dataSource.<span class="method">getConnection</span>()) {
+    conn.<span class="method">execute</span>(<span class="str">"bad SQL"</span>); <span class="comment">// throws SQLException A (primary)</span>
+    <span class="comment">// conn.close() also throws SQLException B (suppressed)</span>
+} <span class="kw">catch</span> (<span class="type">SQLException</span> e) {
+    <span class="comment">// e = SQLException A (the original body exception)</span>
+    <span class="type">Throwable</span>[] suppressed = e.<span class="method">getSuppressed</span>(); <span class="comment">// [SQLException B]</span>
+    <span class="kw">for</span> (<span class="type">Throwable</span> s : suppressed) {
+        log.<span class="method">warn</span>(<span class="str">"Suppressed during close: {}"</span>, s.<span class="method">getMessage</span>());
+    }
+}</pre>
+
+  <h2>Creating Your Own AutoCloseable Resources</h2>
+<pre><span class="comment">// Real-world: Connection pool wrapper, lock, timer, etc.</span>
+<span class="kw">public class</span> <span class="type">DatabaseTransaction</span> <span class="kw">implements</span> <span class="type">AutoCloseable</span> {
+    <span class="kw">private final</span> <span class="type">Connection</span> conn;
+    <span class="kw">private boolean</span> committed = <span class="kw">false</span>;
+
+    <span class="kw">public</span> <span class="type">DatabaseTransaction</span>(<span class="type">DataSource</span> ds) <span class="kw">throws</span> <span class="type">SQLException</span> {
+        conn = ds.<span class="method">getConnection</span>();
+        conn.<span class="method">setAutoCommit</span>(<span class="kw">false</span>);
+    }
+
+    <span class="kw">public</span> <span class="type">Connection</span> <span class="method">getConnection</span>() { <span class="kw">return</span> conn; }
+
+    <span class="kw">public void</span> <span class="method">commit</span>() <span class="kw">throws</span> <span class="type">SQLException</span> {
+        conn.<span class="method">commit</span>();
+        committed = <span class="kw">true</span>;
+    }
+
+    <span class="ann">@Override</span>
+    <span class="kw">public void</span> <span class="method">close</span>() <span class="kw">throws</span> <span class="type">SQLException</span> {
+        <span class="kw">try</span> {
+            <span class="kw">if</span> (!committed) conn.<span class="method">rollback</span>(); <span class="comment">// auto-rollback if not committed</span>
+        } <span class="kw">finally</span> {
+            conn.<span class="method">close</span>();
+        }
+    }
+}
+
+<span class="comment">// Usage — clean, safe, guaranteed rollback on exception</span>
+<span class="kw">try</span> (<span class="type">DatabaseTransaction</span> tx = <span class="kw">new</span> <span class="type">DatabaseTransaction</span>(dataSource)) {
+    userRepo.<span class="method">save</span>(tx.<span class="method">getConnection</span>(), user);
+    auditLog.<span class="method">write</span>(tx.<span class="method">getConnection</span>(), event);
+    tx.<span class="method">commit</span>(); <span class="comment">// only committed if BOTH succeed</span>
+} <span class="comment">// auto-rollback if any exception thrown before commit</span></pre>
+
+  <h2>AutoCloseable vs Closeable</h2>
+  <table>
+    <tr><th>Interface</th><th>Method</th><th>Throws</th><th>Use For</th></tr>
+    <tr><td><code>AutoCloseable</code></td><td><code>close()</code></td><td><code>throws Exception</code></td><td>General resources — broadest contract</td></tr>
+    <tr><td><code>Closeable</code></td><td><code>close()</code></td><td><code>throws IOException</code></td><td>I/O resources — extends AutoCloseable</td></tr>
+  </table>
+
+  <div class="alert alert-green">
+    <strong>Best practice:</strong> If implementing <code>AutoCloseable</code>, prefer making <code>close()</code> idempotent (safe to call multiple times) and document whether it can throw.
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 7: MULTI-CATCH -->
+<!-- ============================================================ -->
+<div id="s7" class="section">
+  <div class="section-header">
+    <span class="level-badge level-intermediate">Java 7+</span>
+    <h1>Multi-catch &amp; Precise Rethrow</h1>
+    <p class="subtitle">Catching multiple exceptions in one block, and how Java 7 improved rethrow semantics.</p>
+  </div>
+
+  <h2>Multi-catch Syntax</h2>
+<pre><span class="comment">// Before Java 7 — repetitive code</span>
+<span class="kw">try</span> {
+    processRequest(req);
+} <span class="kw">catch</span> (<span class="type">IOException</span> e) {
+    log.<span class="method">error</span>(<span class="str">"Request failed"</span>, e);
+    <span class="kw">throw new</span> <span class="type">ServiceException</span>(<span class="str">"Request failed"</span>, e);
+} <span class="kw">catch</span> (<span class="type">ParseException</span> e) {
+    log.<span class="method">error</span>(<span class="str">"Request failed"</span>, e);  <span class="comment">// duplicate!</span>
+    <span class="kw">throw new</span> <span class="type">ServiceException</span>(<span class="str">"Request failed"</span>, e);
+}
+
+<span class="comment">// Java 7+ multi-catch — clean and DRY</span>
+<span class="kw">try</span> {
+    processRequest(req);
+} <span class="kw">catch</span> (<span class="type">IOException</span> | <span class="type">ParseException</span> e) {
+    <span class="comment">// 'e' is effectively final — cannot be reassigned</span>
+    log.<span class="method">error</span>(<span class="str">"Request failed"</span>, e);
+    <span class="kw">throw new</span> <span class="type">ServiceException</span>(<span class="str">"Request failed"</span>, e);
+}</pre>
+
+  <h2>Rules and Gotchas</h2>
+<pre><span class="comment">// ❌ Cannot catch related types (parent + child) in multi-catch
+// IOException is parent of FileNotFoundException — compile error</span>
+<span class="kw">catch</span> (<span class="type">IOException</span> | <span class="type">FileNotFoundException</span> e) { } <span class="comment">// COMPILE ERROR</span>
+
+<span class="comment">// ❌ Cannot reassign 'e' in multi-catch — it's effectively final</span>
+<span class="kw">catch</span> (<span class="type">IOException</span> | <span class="type">ParseException</span> e) {
+    e = <span class="kw">new</span> <span class="type">IOException</span>(<span class="str">"replaced"</span>); <span class="comment">// COMPILE ERROR</span>
+}
+
+<span class="comment">// ✅ Can call common methods since both types share Throwable methods</span>
+<span class="kw">catch</span> (<span class="type">IOException</span> | <span class="type">ParseException</span> e) {
+    e.<span class="method">getMessage</span>();     <span class="comment">// OK — from Throwable</span>
+    e.<span class="method">getClass</span>();       <span class="comment">// OK — from Object</span>
+    e.<span class="method">printStackTrace</span>(); <span class="comment">// OK — from Throwable</span>
+}</pre>
+
+  <h2>Real-World: API Client with Multiple Failure Modes</h2>
+<pre><span class="kw">public</span> <span class="type">UserProfile</span> <span class="method">fetchProfile</span>(<span class="type">String</span> userId) {
+    <span class="kw">try</span> {
+        <span class="type">HttpResponse</span> response = httpClient.<span class="method">get</span>(<span class="str">"/api/users/"</span> + userId);
+        <span class="kw">return</span> objectMapper.<span class="method">readValue</span>(response.<span class="method">getBody</span>(), <span class="type">UserProfile</span>.<span class="kw">class</span>);
+
+    } <span class="kw">catch</span> (<span class="type">ConnectTimeoutException</span> | <span class="type">SocketTimeoutException</span> e) {
+        <span class="comment">// Network timeout — retryable</span>
+        <span class="kw">throw new</span> <span class="type">RetryableException</span>(<span class="str">"Network timeout fetching user: "</span> + userId, e);
+
+    } <span class="kw">catch</span> (<span class="type">JsonParseException</span> | <span class="type">JsonMappingException</span> e) {
+        <span class="comment">// Bad response format — not retryable</span>
+        <span class="kw">throw new</span> <span class="type">DataFormatException</span>(<span class="str">"Invalid user profile response"</span>, e);
+
+    } <span class="kw">catch</span> (<span class="type">IOException</span> e) {
+        <span class="comment">// Any other IO problem</span>
+        <span class="kw">throw new</span> <span class="type">ServiceException</span>(<span class="str">"Failed to fetch user profile"</span>, e);
+    }
+}</pre>
+
+  <h2>Precise Rethrow (Java 7)</h2>
+<pre><span class="comment">// Before Java 7 — had to declare 'throws Exception' which is too broad</span>
+<span class="kw">public void</span> <span class="method">rethrowOld</span>() <span class="kw">throws</span> <span class="type">Exception</span> {
+    <span class="kw">try</span> {
+        <span class="method">operationThatThrowsAOrB</span>();
+    } <span class="kw">catch</span> (<span class="type">Exception</span> e) {
+        log.<span class="method">error</span>(<span class="str">"Failed"</span>, e);
+        <span class="kw">throw</span> e; <span class="comment">// Before Java 7: inferred as 'Exception', too broad</span>
+    }
+}
+
+<span class="comment">// Java 7+ Precise Rethrow — compiler infers the actual thrown types</span>
+<span class="kw">public void</span> <span class="method">rethrowNew</span>() <span class="kw">throws</span> <span class="type">IOException</span>, <span class="type">ParseException</span> {
+    <span class="kw">try</span> {
+        <span class="method">operationThatThrowsIOOrParse</span>(); <span class="comment">// throws IOException or ParseException</span>
+    } <span class="kw">catch</span> (<span class="type">Exception</span> e) {
+        log.<span class="method">error</span>(<span class="str">"Failed"</span>, e);
+        <span class="kw">throw</span> e; <span class="comment">// Java 7+: precisely inferred as IOException | ParseException</span>
+    }
+    <span class="comment">// Can declare precise types in throws clause despite catching 'Exception'!</span>
+}</pre>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 8: EXCEPTION CHAINING -->
+<!-- ============================================================ -->
+<div id="s8" class="section">
+  <div class="section-header">
+    <span class="level-badge level-intermediate">Intermediate</span>
+    <h1>Exception Chaining</h1>
+    <p class="subtitle">Preserving the root cause through layers — essential for debugging production issues.</p>
+  </div>
+
+  <h2>Why It Matters</h2>
+  <p>In a layered architecture (Controller → Service → Repository → DB), exceptions cross multiple layers. Without chaining, you lose the original cause — making it nearly impossible to debug production issues.</p>
+
+  <div class="compare-row">
+    <div class="compare-bad">
+      <div class="compare-label">❌ Root Cause Lost</div>
+<pre style="background:transparent;border:none;padding:0;font-size:11.5px"><span class="kw">catch</span> (<span class="type">SQLException</span> e) {
+  <span class="kw">throw new</span> <span class="type">ServiceException</span>(
+    <span class="str">"Failed"</span>
+    <span class="comment">// e is GONE! No cause!</span>
+  );
+}
+<span class="comment">// Log shows:
+// ServiceException: Failed
+// (no idea WHY it failed)</span></pre>
+    </div>
+    <div class="compare-good">
+      <div class="compare-label">✅ Full Chain Preserved</div>
+<pre style="background:transparent;border:none;padding:0;font-size:11.5px"><span class="kw">catch</span> (<span class="type">SQLException</span> e) {
+  <span class="kw">throw new</span> <span class="type">ServiceException</span>(
+    <span class="str">"Failed"</span>, e <span class="comment">// chain it!</span>
+  );
+}
+<span class="comment">// Log shows:
+// ServiceException: Failed
+//   Caused by: SQLException: ...
+//   Caused by: Connection reset</span></pre>
+    </div>
+  </div>
+
+  <h2>Complete Real-World Example — E-Commerce</h2>
+<pre><span class="comment">// Layer 1: Repository</span>
+<span class="kw">public class</span> <span class="type">OrderRepository</span> {
+    <span class="kw">public</span> <span class="type">Order</span> <span class="method">save</span>(<span class="type">Order</span> order) {
+        <span class="kw">try</span> {
+            <span class="kw">return</span> em.<span class="method">persist</span>(order);
+        } <span class="kw">catch</span> (<span class="type">PersistenceException</span> e) {
+            <span class="comment">// Translate JPA exception to domain exception, preserve cause</span>
+            <span class="kw">if</span> (isDuplicateKey(e)) {
+                <span class="kw">throw new</span> <span class="type">DuplicateOrderException</span>(<span class="str">"Order already exists: "</span> + order.<span class="method">getId</span>(), e);
+            }
+            <span class="kw">throw new</span> <span class="type">DataAccessException</span>(<span class="str">"Failed to persist order"</span>, e);
+        }
+    }
+}
+
+<span class="comment">// Layer 2: Service</span>
+<span class="kw">public class</span> <span class="type">OrderService</span> {
+    <span class="kw">public</span> <span class="type">OrderConfirmation</span> <span class="method">placeOrder</span>(<span class="type">Cart</span> cart) {
+        <span class="kw">try</span> {
+            <span class="type">Order</span> order = <span class="method">buildOrder</span>(cart);
+            orderRepository.<span class="method">save</span>(order);
+            paymentService.<span class="method">charge</span>(cart.<span class="method">getPaymentMethod</span>(), order.<span class="method">getTotal</span>());
+            <span class="kw">return</span> <span class="kw">new</span> <span class="type">OrderConfirmation</span>(order);
+        } <span class="kw">catch</span> (<span class="type">DuplicateOrderException</span> e) {
+            <span class="kw">throw</span> e; <span class="comment">// let it propagate as-is</span>
+        } <span class="kw">catch</span> (<span class="type">DataAccessException</span> | <span class="type">PaymentException</span> e) {
+            <span class="kw">throw new</span> <span class="type">OrderPlacementException</span>(
+                <span class="str">"Failed to place order for cart: "</span> + cart.<span class="method">getId</span>(), e); <span class="comment">// chain</span>
+        }
+    }
+}
+
+<span class="comment">// The stack trace you see in production logs:</span>
+<span class="comment">// OrderPlacementException: Failed to place order for cart: abc123</span>
+<span class="comment">//   at OrderService.placeOrder(OrderService.java:45)</span>
+<span class="comment">// Caused by: DataAccessException: Failed to persist order</span>
+<span class="comment">//   at OrderRepository.save(OrderRepository.java:23)</span>
+<span class="comment">// Caused by: PersistenceException: could not execute statement</span>
+<span class="comment">//   at ...</span>
+<span class="comment">// Caused by: SQLIntegrityConstraintViolationException: Duplicate entry</span>
+<span class="comment">// The full story — exactly what happened and where</span></pre>
+
+  <h2>Navigating the Chain Programmatically</h2>
+<pre><span class="kw">public static</span> &lt;<span class="type">T</span> <span class="kw">extends</span> <span class="type">Throwable</span>&gt; <span class="type">Optional</span>&lt;<span class="type">T</span>&gt; <span class="method">findCause</span>(
+        <span class="type">Throwable</span> ex, <span class="type">Class</span>&lt;<span class="type">T</span>&gt; type) {
+    <span class="type">Throwable</span> current = ex;
+    <span class="kw">while</span> (current != <span class="kw">null</span>) {
+        <span class="kw">if</span> (type.<span class="method">isInstance</span>(current)) {
+            <span class="kw">return</span> <span class="type">Optional</span>.<span class="method">of</span>(type.<span class="method">cast</span>(current));
+        }
+        current = current.<span class="method">getCause</span>();
+    }
+    <span class="kw">return</span> <span class="type">Optional</span>.<span class="method">empty</span>();
+}
+
+<span class="comment">// Usage: check if a DataAccessException was caused by a constraint violation</span>
+findCause(ex, <span class="type">SQLIntegrityConstraintViolationException</span>.<span class="kw">class</span>)
+    .<span class="method">ifPresent</span>(e -> log.<span class="method">warn</span>(<span class="str">"Constraint violation: {}"</span>, e.<span class="method">getMessage</span>()));</pre>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 9: CUSTOM EXCEPTIONS -->
+<!-- ============================================================ -->
+<div id="s9" class="section">
+  <div class="section-header">
+    <span class="level-badge level-intermediate">Intermediate</span>
+    <h1>Custom Exceptions</h1>
+    <p class="subtitle">Building meaningful, informative exceptions that make your domain model expressive and debugging easy.</p>
+  </div>
+
+  <h2>Why Create Custom Exceptions?</h2>
+  <div class="grid3">
+    <div class="card">
+      <div class="card-title" style="color:var(--blue-light)">Semantic Clarity</div>
+      <div class="card-body"><code>InsufficientFundsException</code> tells you exactly what happened. <code>RuntimeException</code> tells you nothing.</div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="color:var(--green-light)">Carry Domain Data</div>
+      <div class="card-body">A custom exception can carry structured fields: error code, accountId, required amount — not just a string message.</div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="color:var(--purple-light)">Targeted Handling</div>
+      <div class="card-body">Callers can catch <code>UserNotFoundException</code> specifically without catching all RuntimeExceptions.</div>
+    </div>
+  </div>
+
+  <h2>The Full Template — Production-Grade Custom Exception</h2>
+<pre><span class="kw">public class</span> <span class="type">InsufficientFundsException</span> <span class="kw">extends</span> <span class="type">RuntimeException</span> {
+
+    <span class="comment">// Required for serialization</span>
+    <span class="kw">private static final long</span> serialVersionUID = <span class="num">1L</span>;
+
+    <span class="comment">// Domain-specific fields — carry context, not just a message</span>
+    <span class="kw">private final</span> <span class="type">String</span> accountId;
+    <span class="kw">private final</span> <span class="type">BigDecimal</span> available;
+    <span class="kw">private final</span> <span class="type">BigDecimal</span> required;
+    <span class="kw">private final</span> <span class="type">ErrorCode</span> errorCode;
+
+    <span class="comment">// Constructor with domain data</span>
+    <span class="kw">public</span> <span class="type">InsufficientFundsException</span>(
+            <span class="type">String</span> accountId, <span class="type">BigDecimal</span> available, <span class="type">BigDecimal</span> required) {
+        <span class="kw">super</span>(<span class="type">String</span>.<span class="method">format</span>(
+            <span class="str">"Account %s: available=%.2f, required=%.2f"</span>,
+            accountId, available, required));
+        <span class="kw">this</span>.accountId = accountId;
+        <span class="kw">this</span>.available = available;
+        <span class="kw">this</span>.required = required;
+        <span class="kw">this</span>.errorCode = <span class="type">ErrorCode</span>.INSUFFICIENT_FUNDS;
+    }
+
+    <span class="comment">// Constructor with cause (for chaining)</span>
+    <span class="kw">public</span> <span class="type">InsufficientFundsException</span>(
+            <span class="type">String</span> accountId, <span class="type">BigDecimal</span> available,
+            <span class="type">BigDecimal</span> required, <span class="type">Throwable</span> cause) {
+        <span class="kw">super</span>(<span class="type">String</span>.<span class="method">format</span>(
+            <span class="str">"Account %s: available=%.2f, required=%.2f"</span>,
+            accountId, available, required), cause);
+        <span class="kw">this</span>.accountId = accountId;
+        <span class="kw">this</span>.available = available;
+        <span class="kw">this</span>.required = required;
+        <span class="kw">this</span>.errorCode = <span class="type">ErrorCode</span>.INSUFFICIENT_FUNDS;
+    }
+
+    <span class="comment">// Getters — immutable, no setters</span>
+    <span class="kw">public</span> <span class="type">String</span>     <span class="method">getAccountId</span>() { <span class="kw">return</span> accountId; }
+    <span class="kw">public</span> <span class="type">BigDecimal</span> <span class="method">getAvailable</span>()  { <span class="kw">return</span> available; }
+    <span class="kw">public</span> <span class="type">BigDecimal</span> <span class="method">getRequired</span>()   { <span class="kw">return</span> required; }
+    <span class="kw">public</span> <span class="type">ErrorCode</span>  <span class="method">getErrorCode</span>()  { <span class="kw">return</span> errorCode; }
+}
+
+<span class="comment">// Usage — informative and type-safe</span>
+<span class="kw">throw new</span> <span class="type">InsufficientFundsException</span>(account.<span class="method">getId</span>(), balance, amount);
+
+<span class="comment">// Catching — access domain data directly</span>
+<span class="kw">catch</span> (<span class="type">InsufficientFundsException</span> e) {
+    <span class="kw">return</span> <span class="type">ApiResponse</span>.<span class="method">error</span>(<span class="num">422</span>,
+        <span class="str">"Insufficient funds"</span>,
+        Map.<span class="method">of</span>(<span class="str">"available"</span>, e.<span class="method">getAvailable</span>(), <span class="str">"required"</span>, e.<span class="method">getRequired</span>())
+    );
+}</pre>
+
+  <h2>Checked vs Unchecked — Which for Custom?</h2>
+  <table>
+    <tr><th>Situation</th><th>Extend</th><th>Example</th></tr>
+    <tr><td>Caller can meaningfully recover</td><td><code>Exception</code> (checked)</td><td><code>ResourceUnavailableException</code></td></tr>
+    <tr><td>Programming/validation error</td><td><code>RuntimeException</code></td><td><code>InvalidOrderStateException</code></td></tr>
+    <tr><td>Business rule violation</td><td><code>RuntimeException</code></td><td><code>InsufficientFundsException</code></td></tr>
+    <tr><td>Resource not found</td><td><code>RuntimeException</code></td><td><code>UserNotFoundException</code></td></tr>
+    <tr><td>Spring/JPA ecosystem</td><td><code>RuntimeException</code></td><td>Always — Spring uses unchecked</td></tr>
+  </table>
+
+  <div class="alert alert-blue">
+    <strong>Modern best practice:</strong> In Spring/microservice applications, prefer unchecked custom exceptions. Spring's <code>@ExceptionHandler</code> catches them globally, so there's no benefit to checked exceptions — only the verbosity cost.
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 10: EXCEPTION HIERARCHIES -->
+<!-- ============================================================ -->
+<div id="s10" class="section">
+  <div class="section-header">
+    <span class="level-badge level-advanced">Advanced</span>
+    <h1>Enterprise Exception Hierarchies</h1>
+    <p class="subtitle">Designing a full exception taxonomy for large applications — structured, consistent, and API-friendly.</p>
+  </div>
+
+  <h2>A Production-Grade Exception Tree</h2>
+<pre><span class="kw">public abstract class</span> <span class="type">AppException</span> <span class="kw">extends</span> <span class="type">RuntimeException</span> {
+    <span class="kw">private final</span> <span class="type">ErrorCode</span> code;
+    <span class="kw">private final</span> <span class="type">String</span> userMessage;  <span class="comment">// safe to show users</span>
+    <span class="kw">private final</span> <span class="type">Map</span>&lt;<span class="type">String</span>, <span class="type">Object</span>&gt; context; <span class="comment">// structured debug data</span>
+
+    <span class="kw">protected</span> <span class="type">AppException</span>(<span class="type">ErrorCode</span> code, <span class="type">String</span> message,
+                             <span class="type">String</span> userMessage, <span class="type">Throwable</span> cause) {
+        <span class="kw">super</span>(message, cause);
+        <span class="kw">this</span>.code = code;
+        <span class="kw">this</span>.userMessage = userMessage;
+        <span class="kw">this</span>.context = <span class="kw">new</span> <span class="type">HashMap</span>&lt;&gt;();
+    }
+
+    <span class="kw">public</span> <span class="type">AppException</span> <span class="method">withContext</span>(<span class="type">String</span> key, <span class="type">Object</span> value) {
+        context.<span class="method">put</span>(key, value);
+        <span class="kw">return this</span>;
+    }
+    <span class="comment">// getters...</span>
+}
+
+<span class="comment">// Domain Layer Exceptions</span>
+<span class="kw">public class</span> <span class="type">ResourceNotFoundException</span> <span class="kw">extends</span> <span class="type">AppException</span> {
+    <span class="kw">public</span> <span class="type">ResourceNotFoundException</span>(<span class="type">String</span> resourceType, <span class="type">Object</span> id) {
+        <span class="kw">super</span>(<span class="type">ErrorCode</span>.NOT_FOUND,
+            resourceType + <span class="str">" not found: "</span> + id,
+            <span class="str">"The requested resource does not exist"</span>, <span class="kw">null</span>);
+    }
+}
+
+<span class="kw">public class</span> <span class="type">UserNotFoundException</span> <span class="kw">extends</span> <span class="type">ResourceNotFoundException</span> {
+    <span class="kw">public</span> <span class="type">UserNotFoundException</span>(<span class="type">Long</span> userId) {
+        <span class="kw">super</span>(<span class="str">"User"</span>, userId);
+    }
+}
+
+<span class="kw">public class</span> <span class="type">OrderNotFoundException</span> <span class="kw">extends</span> <span class="type">ResourceNotFoundException</span> {
+    <span class="kw">public</span> <span class="type">OrderNotFoundException</span>(<span class="type">String</span> orderId) {
+        <span class="kw">super</span>(<span class="str">"Order"</span>, orderId);
+    }
+}
+
+<span class="kw">public class</span> <span class="type">ValidationException</span> <span class="kw">extends</span> <span class="type">AppException</span> {
+    <span class="kw">private final</span> <span class="type">List</span>&lt;<span class="type">FieldError</span>&gt; errors;
+
+    <span class="kw">public</span> <span class="type">ValidationException</span>(<span class="type">List</span>&lt;<span class="type">FieldError</span>&gt; errors) {
+        <span class="kw">super</span>(<span class="type">ErrorCode</span>.VALIDATION_FAILED,
+            <span class="str">"Validation failed: "</span> + errors,
+            <span class="str">"Please check your input"</span>, <span class="kw">null</span>);
+        <span class="kw">this</span>.errors = errors;
+    }
+}
+
+<span class="kw">public class</span> <span class="type">BusinessRuleException</span> <span class="kw">extends</span> <span class="type">AppException</span> { <span class="comment">/* ... */</span> }
+<span class="kw">public class</span> <span class="type">InsufficientFundsException</span> <span class="kw">extends</span> <span class="type">BusinessRuleException</span> { <span class="comment">/* ... */</span> }
+<span class="kw">public class</span> <span class="type">AccountFrozenException</span> <span class="kw">extends</span> <span class="type">BusinessRuleException</span> { <span class="comment">/* ... */</span> }
+
+<span class="kw">public class</span> <span class="type">ExternalServiceException</span> <span class="kw">extends</span> <span class="type">AppException</span> { <span class="comment">/* network failures */</span> }
+<span class="kw">public class</span> <span class="type">DataAccessException</span> <span class="kw">extends</span> <span class="type">AppException</span> { <span class="comment">/* DB failures */</span> }
+</pre>
+
+  <h2>Error Code Enum</h2>
+<pre><span class="kw">public enum</span> <span class="type">ErrorCode</span> {
+    <span class="comment">// 4xx - Client errors</span>
+    NOT_FOUND(<span class="num">404</span>, <span class="str">"RESOURCE_NOT_FOUND"</span>),
+    VALIDATION_FAILED(<span class="num">422</span>, <span class="str">"VALIDATION_FAILED"</span>),
+    INSUFFICIENT_FUNDS(<span class="num">422</span>, <span class="str">"INSUFFICIENT_FUNDS"</span>),
+    UNAUTHORIZED(<span class="num">401</span>, <span class="str">"UNAUTHORIZED"</span>),
+    FORBIDDEN(<span class="num">403</span>, <span class="str">"FORBIDDEN"</span>),
+    CONFLICT(<span class="num">409</span>, <span class="str">"CONFLICT"</span>),
+
+    <span class="comment">// 5xx - Server errors</span>
+    INTERNAL_ERROR(<span class="num">500</span>, <span class="str">"INTERNAL_ERROR"</span>),
+    SERVICE_UNAVAILABLE(<span class="num">503</span>, <span class="str">"SERVICE_UNAVAILABLE"</span>),
+    DATA_ACCESS_ERROR(<span class="num">500</span>, <span class="str">"DATA_ACCESS_ERROR"</span>);
+
+    <span class="kw">private final int</span> httpStatus;
+    <span class="kw">private final</span> <span class="type">String</span> code;
+
+    <span class="type">ErrorCode</span>(<span class="kw">int</span> httpStatus, <span class="type">String</span> code) {
+        <span class="kw">this</span>.httpStatus = httpStatus;
+        <span class="kw">this</span>.code = code;
+    }
+    <span class="comment">// getters...</span>
+}</pre>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 11: ANTI-PATTERNS -->
+<!-- ============================================================ -->
+<div id="s11" class="section">
+  <div class="section-header">
+    <span class="level-badge level-advanced">Advanced</span>
+    <h1>Exception Anti-Patterns</h1>
+    <p class="subtitle">The most common mistakes — what not to do and why, with real-world consequences.</p>
+  </div>
+
+  <h2>1. Swallowing Exceptions (The Worst)</h2>
+<pre><span class="comment">// ❌ TERRIBLE — exception is silently swallowed</span>
+<span class="kw">try</span> {
+    processPayment(order);
+} <span class="kw">catch</span> (<span class="type">Exception</span> e) {
+    <span class="comment">// Do nothing — "it'll probably be fine"</span>
+}
+<span class="comment">// Payment failed. Nobody knows. Customer charged but order not placed.
+// This causes data corruption, financial loss, and silent failures in production.</span>
+
+<span class="comment">// ✅ Minimum acceptable — at least log it</span>
+<span class="kw">catch</span> (<span class="type">Exception</span> e) {
+    log.<span class="method">error</span>(<span class="str">"Payment processing failed for order {}"</span>, order.<span class="method">getId</span>(), e);
+    <span class="kw">throw new</span> <span class="type">PaymentException</span>(<span class="str">"Payment failed"</span>, e);
+}</pre>
+
+  <h2>2. Catching Exception Too Broadly</h2>
+<pre><span class="comment">// ❌ Catches EVERYTHING including NullPointerException, bugs, etc.</span>
+<span class="kw">catch</span> (<span class="type">Exception</span> e) {
+    <span class="kw">return</span> <span class="str">"Something went wrong"</span>;
+}
+<span class="comment">// A NullPointerException caused by YOUR BUG will silently become
+// "Something went wrong" — impossible to debug!</span>
+
+<span class="comment">// ✅ Catch what you expect, let others propagate</span>
+<span class="kw">catch</span> (<span class="type">UserNotFoundException</span> e) {
+    <span class="kw">return</span> <span class="type">ResponseEntity</span>.<span class="method">notFound</span>().<span class="method">build</span>();
+} <span class="kw">catch</span> (<span class="type">ValidationException</span> e) {
+    <span class="kw">return</span> <span class="type">ResponseEntity</span>.<span class="method">badRequest</span>().<span class="method">body</span>(e.<span class="method">getErrors</span>());
+}
+<span class="comment">// NullPointerExceptions will now surface properly</span></pre>
+
+  <h2>3. Using Exceptions for Flow Control</h2>
+<pre><span class="comment">// ❌ BAD — exceptions are expensive; this is a logic problem</span>
+<span class="kw">public boolean</span> <span class="method">userExists</span>(<span class="type">Long</span> id) {
+    <span class="kw">try</span> {
+        userRepository.<span class="method">findById</span>(id); <span class="comment">// throws if not found</span>
+        <span class="kw">return true</span>;
+    } <span class="kw">catch</span> (<span class="type">UserNotFoundException</span> e) {
+        <span class="kw">return false</span>; <span class="comment">// exception as if-else — terrible!</span>
+    }
+}
+
+<span class="comment">// ✅ GOOD — use Optional or boolean return</span>
+<span class="kw">public boolean</span> <span class="method">userExists</span>(<span class="type">Long</span> id) {
+    <span class="kw">return</span> userRepository.<span class="method">existsById</span>(id);
+}
+<span class="comment">// Or:
+// return userRepository.findById(id).isPresent();</span></pre>
+
+  <h2>4. Losing Stack Trace on Rethrow</h2>
+<pre><span class="comment">// ❌ Stack trace is RESET — you lose the original location</span>
+<span class="kw">catch</span> (<span class="type">SQLException</span> e) {
+    <span class="kw">throw new</span> <span class="type">DataException</span>(e.<span class="method">getMessage</span>()); <span class="comment">// Message only, no cause!</span>
+}
+
+<span class="comment">// ✅ Chain it — preserve the original stack trace</span>
+<span class="kw">catch</span> (<span class="type">SQLException</span> e) {
+    <span class="kw">throw new</span> <span class="type">DataException</span>(<span class="str">"Query failed"</span>, e); <span class="comment">// e is the cause</span>
+}</pre>
+
+  <h2>5. Throwing Exception or Throwable</h2>
+<pre><span class="comment">// ❌ Forces every caller to handle the broadest possible thing</span>
+<span class="kw">public void</span> <span class="method">processData</span>() <span class="kw">throws</span> <span class="type">Exception</span> { }
+<span class="kw">public void</span> <span class="method">doWork</span>() <span class="kw">throws</span> <span class="type">Throwable</span> { }
+
+<span class="comment">// ✅ Be specific</span>
+<span class="kw">public void</span> <span class="method">processData</span>() <span class="kw">throws</span> <span class="type">DataProcessingException</span> { }</pre>
+
+  <h2>6. Not Closing Resources (Resource Leaks)</h2>
+<pre><span class="comment">// ❌ If readLine() throws, stream is never closed — CONNECTION LEAK</span>
+<span class="type">BufferedReader</span> reader = <span class="kw">new</span> <span class="type">BufferedReader</span>(<span class="kw">new</span> <span class="type">FileReader</span>(file));
+<span class="type">String</span> line = reader.<span class="method">readLine</span>();
+reader.<span class="method">close</span>();
+
+<span class="comment">// ✅ Always use try-with-resources</span>
+<span class="kw">try</span> (<span class="type">BufferedReader</span> reader = <span class="kw">new</span> <span class="type">BufferedReader</span>(<span class="kw">new</span> <span class="type">FileReader</span>(file))) {
+    <span class="type">String</span> line = reader.<span class="method">readLine</span>();
+}</pre>
+
+  <h2>7. Logging AND Rethrowing</h2>
+<pre><span class="comment">// ❌ Logs the same exception multiple times — pollutes logs</span>
+<span class="kw">catch</span> (<span class="type">SQLException</span> e) {
+    log.<span class="method">error</span>(<span class="str">"DB error"</span>, e);          <span class="comment">// logged here</span>
+    <span class="kw">throw new</span> <span class="type">DataException</span>(<span class="str">"DB error"</span>, e); <span class="comment">// AND will be logged upstream too!</span>
+}
+
+<span class="comment">// ✅ Log OR rethrow — not both
+// Rethrow without logging — let the top-level handler log it once</span>
+<span class="kw">catch</span> (<span class="type">SQLException</span> e) {
+    <span class="kw">throw new</span> <span class="type">DataException</span>(<span class="str">"DB error"</span>, e); <span class="comment">// logged once at the top</span>
+}
+
+<span class="comment">// OR log and recover without rethrowing</span>
+<span class="kw">catch</span> (<span class="type">SQLException</span> e) {
+    log.<span class="method">error</span>(<span class="str">"DB error, returning empty list"</span>, e);
+    <span class="kw">return</span> <span class="type">Collections</span>.<span class="method">emptyList</span>(); <span class="comment">// handled — not rethrown</span>
+}</pre>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 12: THREADS & EXECUTORS -->
+<!-- ============================================================ -->
+<div id="s12" class="section">
+  <div class="section-header">
+    <span class="level-badge level-advanced">Advanced</span>
+    <h1>Exceptions in Threads &amp; Executors</h1>
+    <p class="subtitle">Exceptions behave differently in multi-threaded code — uncaught exceptions silently kill threads without telling you.</p>
+  </div>
+
+  <h2>The Silent Thread Death Problem</h2>
+<pre><span class="comment">// ❌ Exceptions in threads are SILENT by default!</span>
+<span class="type">Thread</span> t = <span class="kw">new</span> <span class="type">Thread</span>(() -> {
+    <span class="kw">throw new</span> <span class="type">RuntimeException</span>(<span class="str">"Something failed in thread!"</span>);
+});
+t.<span class="method">start</span>();
+<span class="comment">// Thread silently dies. No crash. No log. The exception is gone.
+// In a thread pool, the pool replaces the dead thread silently!</span></pre>
+
+  <h2>Thread.UncaughtExceptionHandler</h2>
+<pre><span class="comment">// Global handler for ALL uncaught exceptions in ALL threads</span>
+<span class="type">Thread</span>.<span class="method">setDefaultUncaughtExceptionHandler</span>((thread, throwable) -> {
+    log.<span class="method">error</span>(<span class="str">"Uncaught exception in thread '{}'"</span>, thread.<span class="method">getName</span>(), throwable);
+    alertOpsTeam(thread, throwable); <span class="comment">// PagerDuty, Sentry, etc.</span>
+});
+
+<span class="comment">// Per-thread handler</span>
+<span class="type">Thread</span> worker = <span class="kw">new</span> <span class="type">Thread</span>(task);
+worker.<span class="method">setUncaughtExceptionHandler</span>((t, e) -> {
+    log.<span class="method">error</span>(<span class="str">"Worker '{}' died unexpectedly"</span>, t.<span class="method">getName</span>(), e);
+    scheduleRestart();
+});
+worker.<span class="method">start</span>();</pre>
+
+  <h2>ExecutorService — Exceptions with Future</h2>
+<pre><span class="type">ExecutorService</span> executor = <span class="type">Executors</span>.<span class="method">newFixedThreadPool</span>(<span class="num">4</span>);
+
+<span class="comment">// submit() wraps result in Future — exception is CAPTURED</span>
+<span class="type">Future</span>&lt;<span class="type">String</span>&gt; future = executor.<span class="method">submit</span>(() -> {
+    <span class="kw">if</span> (someCondition) <span class="kw">throw new</span> <span class="type">RuntimeException</span>(<span class="str">"Task failed"</span>);
+    <span class="kw">return</span> <span class="str">"result"</span>;
+});
+
+<span class="kw">try</span> {
+    <span class="type">String</span> result = future.<span class="method">get</span>(); <span class="comment">// BLOCKS and unwraps</span>
+} <span class="kw">catch</span> (<span class="type">ExecutionException</span> e) {
+    <span class="comment">// The REAL exception is wrapped inside ExecutionException</span>
+    <span class="type">Throwable</span> realCause = e.<span class="method">getCause</span>(); <span class="comment">// RuntimeException("Task failed")</span>
+    log.<span class="method">error</span>(<span class="str">"Task failed: {}"</span>, realCause.<span class="method">getMessage</span>(), realCause);
+} <span class="kw">catch</span> (<span class="type">InterruptedException</span> e) {
+    <span class="comment">// Thread was interrupted while waiting — ALWAYS restore interrupt status</span>
+    <span class="type">Thread</span>.<span class="method">currentThread</span>().<span class="method">interrupt</span>();
+    log.<span class="method">warn</span>(<span class="str">"Interrupted waiting for task"</span>);
+}
+
+<span class="comment">// execute() does NOT capture exceptions — uses UncaughtExceptionHandler</span>
+executor.<span class="method">execute</span>(() -> {
+    <span class="kw">throw new</span> <span class="type">RuntimeException</span>(<span class="str">"This goes to UncaughtExceptionHandler"</span>);
+});</pre>
+
+  <h2>Custom ThreadPoolExecutor with Exception Handling</h2>
+<pre><span class="kw">public class</span> <span class="type">SafeThreadPoolExecutor</span> <span class="kw">extends</span> <span class="type">ThreadPoolExecutor</span> {
+
+    <span class="kw">public</span> <span class="type">SafeThreadPoolExecutor</span>(<span class="kw">int</span> coreSize, <span class="kw">int</span> maxSize) {
+        <span class="kw">super</span>(coreSize, maxSize, <span class="num">60L</span>, <span class="type">TimeUnit</span>.SECONDS,
+              <span class="kw">new</span> <span class="type">LinkedBlockingQueue</span>&lt;&gt;(),
+              <span class="kw">new</span> <span class="type">ThreadFactoryBuilder</span>()
+                  .<span class="method">setNameFormat</span>(<span class="str">"safe-worker-%d"</span>)
+                  .<span class="method">setUncaughtExceptionHandler</span>((t, e) ->
+                      log.<span class="method">error</span>(<span class="str">"Worker {} died"</span>, t.<span class="method">getName</span>(), e))
+                  .<span class="method">build</span>());
+    }
+
+    <span class="ann">@Override</span>
+    <span class="kw">protected void</span> <span class="method">afterExecute</span>(<span class="type">Runnable</span> r, <span class="type">Throwable</span> t) {
+        <span class="kw">super</span>.<span class="method">afterExecute</span>(r, t);
+        <span class="comment">// If task was submitted via submit(), t is null but exception is in Future</span>
+        <span class="kw">if</span> (t == <span class="kw">null</span> && r <span class="kw">instanceof</span> <span class="type">Future</span>&lt;?&gt; f) {
+            <span class="kw">try</span> {
+                <span class="kw">if</span> (f.<span class="method">isDone</span>()) f.<span class="method">get</span>();
+            } <span class="kw">catch</span> (<span class="type">ExecutionException</span> e) {
+                t = e.<span class="method">getCause</span>();
+            } <span class="kw">catch</span> (<span class="type">InterruptedException</span> e) {
+                <span class="type">Thread</span>.<span class="method">currentThread</span>().<span class="method">interrupt</span>();
+            }
+        }
+        <span class="kw">if</span> (t != <span class="kw">null</span>) {
+            log.<span class="method">error</span>(<span class="str">"Task failed with exception"</span>, t);
+            metrics.<span class="method">increment</span>(<span class="str">"thread_pool.task_failures"</span>);
+        }
+    }
+}</pre>
+
+  <div class="alert alert-red">
+    <strong>Critical rule:</strong> Never swallow <code>InterruptedException</code>. Always either re-throw it or restore the interrupt flag with <code>Thread.currentThread().interrupt()</code>. Swallowing it breaks thread pool shutdown mechanisms.
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 13: STREAMS & LAMBDAS -->
+<!-- ============================================================ -->
+<div id="s13" class="section">
+  <div class="section-header">
+    <span class="level-badge level-advanced">Advanced</span>
+    <h1>Exceptions in Streams &amp; Lambdas</h1>
+    <p class="subtitle">One of Java 8's biggest pain points — checked exceptions and functional interfaces don't mix. Here's every solution.</p>
+  </div>
+
+  <h2>The Core Problem</h2>
+<pre><span class="comment">// ❌ This WON'T COMPILE — Files.readString() throws checked IOException
+// but Function<T,R> doesn't declare any checked exceptions</span>
+<span class="type">List</span>&lt;<span class="type">String</span>&gt; contents = paths.<span class="method">stream</span>()
+    .<span class="method">map</span>(p -> <span class="type">Files</span>.<span class="method">readString</span>(p))  <span class="comment">// COMPILE ERROR: Unhandled IOException</span>
+    .<span class="method">collect</span>(<span class="type">Collectors</span>.<span class="method">toList</span>());</pre>
+
+  <h2>Solution 1: Wrap in Unchecked (Quick & Dirty)</h2>
+<pre><span class="comment">// Wrap the checked exception at the point of use</span>
+<span class="type">List</span>&lt;<span class="type">String</span>&gt; contents = paths.<span class="method">stream</span>()
+    .<span class="method">map</span>(p -> {
+        <span class="kw">try</span> {
+            <span class="kw">return</span> <span class="type">Files</span>.<span class="method">readString</span>(p);
+        } <span class="kw">catch</span> (<span class="type">IOException</span> e) {
+            <span class="kw">throw new</span> <span class="type">UncheckedIOException</span>(e); <span class="comment">// wrap in unchecked</span>
+        }
+    })
+    .<span class="method">collect</span>(<span class="type">Collectors</span>.<span class="method">toList</span>());
+<span class="comment">// Problem: ONE bad file aborts the ENTIRE stream</span></pre>
+
+  <h2>Solution 2: Throwing Function Wrapper (Reusable)</h2>
+<pre><span class="comment">// Generic utility that wraps any throwing function</span>
+<span class="ann">@FunctionalInterface</span>
+<span class="kw">public interface</span> <span class="type">ThrowingFunction</span>&lt;<span class="type">T</span>, <span class="type">R</span>&gt; {
+    <span class="type">R</span> <span class="method">apply</span>(<span class="type">T</span> t) <span class="kw">throws</span> <span class="type">Exception</span>;
+
+    <span class="kw">static</span> &lt;<span class="type">T</span>, <span class="type">R</span>&gt; <span class="type">Function</span>&lt;<span class="type">T</span>, <span class="type">R</span>&gt; <span class="method">wrap</span>(<span class="type">ThrowingFunction</span>&lt;<span class="type">T</span>, <span class="type">R</span>&gt; fn) {
+        <span class="kw">return</span> t -> {
+            <span class="kw">try</span> { <span class="kw">return</span> fn.<span class="method">apply</span>(t); }
+            <span class="kw">catch</span> (<span class="type">Exception</span> e) { <span class="kw">throw new</span> <span class="type">RuntimeException</span>(e); }
+        };
+    }
+}
+
+<span class="comment">// Clean usage</span>
+<span class="type">List</span>&lt;<span class="type">String</span>&gt; contents = paths.<span class="method">stream</span>()
+    .<span class="method">map</span>(<span class="type">ThrowingFunction</span>.<span class="method">wrap</span>(<span class="type">Files</span>::readString))
+    .<span class="method">collect</span>(<span class="type">Collectors</span>.<span class="method">toList</span>());
+<span class="comment">// Compiles! Checked exception wrapped automatically.</span></pre>
+
+  <h2>Solution 3: Try-Result Pattern (Best for Production)</h2>
+<pre><span class="comment">// Process ALL files, collect successes and failures separately</span>
+<span class="kw">public record</span> <span class="type">Try</span>&lt;<span class="type">T</span>&gt;(<span class="type">T</span> value, <span class="type">Throwable</span> error) {
+    <span class="kw">public boolean</span> <span class="method">isSuccess</span>() { <span class="kw">return</span> error == <span class="kw">null</span>; }
+    <span class="kw">public boolean</span> <span class="method">isFailure</span>() { <span class="kw">return</span> error != <span class="kw">null</span>; }
+
+    <span class="kw">public static</span> &lt;<span class="type">T</span>&gt; <span class="type">Try</span>&lt;<span class="type">T</span>&gt; <span class="method">of</span>(<span class="type">Callable</span>&lt;<span class="type">T</span>&gt; supplier) {
+        <span class="kw">try</span> { <span class="kw">return new</span> <span class="type">Try</span>&lt;&gt;(supplier.<span class="method">call</span>(), <span class="kw">null</span>); }
+        <span class="kw">catch</span> (<span class="type">Exception</span> e) { <span class="kw">return new</span> <span class="type">Try</span>&lt;&gt;(<span class="kw">null</span>, e); }
+    }
+}
+
+<span class="comment">// Map each path, capturing success OR failure</span>
+<span class="type">List</span>&lt;<span class="type">Try</span>&lt;<span class="type">String</span>&gt;&gt; results = paths.<span class="method">stream</span>()
+    .<span class="method">map</span>(p -> <span class="type">Try</span>.<span class="method">of</span>(() -> <span class="type">Files</span>.<span class="method">readString</span>(p)))
+    .<span class="method">collect</span>(<span class="type">Collectors</span>.<span class="method">toList</span>());
+
+<span class="comment">// Process results</span>
+<span class="type">List</span>&lt;<span class="type">String</span>&gt; successes = results.<span class="method">stream</span>()
+    .<span class="method">filter</span>(<span class="type">Try</span>::isSuccess)
+    .<span class="method">map</span>(<span class="type">Try</span>::value)
+    .<span class="method">collect</span>(<span class="type">Collectors</span>.<span class="method">toList</span>());
+
+results.<span class="method">stream</span>()
+    .<span class="method">filter</span>(<span class="type">Try</span>::isFailure)
+    .<span class="method">forEach</span>(t -> log.<span class="method">error</span>(<span class="str">"Failed to read file"</span>, t.<span class="method">error</span>()));
+
+<span class="comment">// No files are skipped silently — all failures are captured and logged</span></pre>
+
+  <div class="alert alert-blue">
+    <strong>Best choice depends on context:</strong> If ANY failure should abort the entire operation, use Solution 1. If failures are expected and you want partial results, use Solution 3. If you're writing reusable library code, use Solution 2.
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 14: COMPLETABLE FUTURE -->
+<!-- ============================================================ -->
+<div id="s14" class="section">
+  <div class="section-header">
+    <span class="level-badge level-advanced">Advanced</span>
+    <h1>Exceptions in CompletableFuture</h1>
+    <p class="subtitle">Async exception handling — the most complex scenario in modern Java code.</p>
+  </div>
+
+  <h2>How CompletableFuture Wraps Exceptions</h2>
+<pre><span class="type">CompletableFuture</span>&lt;<span class="type">User</span>&gt; future = <span class="type">CompletableFuture</span>
+    .<span class="method">supplyAsync</span>(() -> userService.<span class="method">findById</span>(<span class="num">42L</span>));
+
+<span class="comment">// Method 1: get() — throws checked ExecutionException</span>
+<span class="kw">try</span> {
+    <span class="type">User</span> user = future.<span class="method">get</span>();
+} <span class="kw">catch</span> (<span class="type">ExecutionException</span> e) {
+    <span class="type">Throwable</span> cause = e.<span class="method">getCause</span>(); <span class="comment">// the real exception</span>
+} <span class="kw">catch</span> (<span class="type">InterruptedException</span> e) {
+    <span class="type">Thread</span>.<span class="method">currentThread</span>().<span class="method">interrupt</span>();
+}
+
+<span class="comment">// Method 2: join() — throws unchecked CompletionException</span>
+<span class="kw">try</span> {
+    <span class="type">User</span> user = future.<span class="method">join</span>();
+} <span class="kw">catch</span> (<span class="type">CompletionException</span> e) {
+    <span class="type">Throwable</span> cause = e.<span class="method">getCause</span>(); <span class="comment">// the real exception</span>
+}</pre>
+
+  <h2>exceptionally() — Default on Failure</h2>
+<pre><span class="type">CompletableFuture</span>&lt;<span class="type">User</span>&gt; future = fetchUserAsync(userId)
+    .<span class="method">exceptionally</span>(ex -> {
+        <span class="comment">// Called if fetchUserAsync fails — provide a fallback</span>
+        log.<span class="method">warn</span>(<span class="str">"User fetch failed, using guest user: {}"</span>, ex.<span class="method">getMessage</span>());
+        <span class="kw">return</span> <span class="type">User</span>.<span class="method">guestUser</span>(); <span class="comment">// fallback value</span>
+    });</pre>
+
+  <h2>handle() — Process Both Success and Failure</h2>
+<pre><span class="type">CompletableFuture</span>&lt;<span class="type">ApiResponse</span>&gt; response = fetchOrderAsync(orderId)
+    .<span class="method">handle</span>((order, ex) -> {
+        <span class="comment">// Called regardless — either has value OR exception (not both)</span>
+        <span class="kw">if</span> (ex != <span class="kw">null</span>) {
+            <span class="type">Throwable</span> cause = ex <span class="kw">instanceof</span> <span class="type">CompletionException</span>
+                ? ex.<span class="method">getCause</span>() : ex;
+            <span class="kw">if</span> (cause <span class="kw">instanceof</span> <span class="type">OrderNotFoundException</span>) {
+                <span class="kw">return</span> <span class="type">ApiResponse</span>.<span class="method">notFound</span>(<span class="str">"Order not found"</span>);
+            }
+            <span class="kw">return</span> <span class="type">ApiResponse</span>.<span class="method">serverError</span>(<span class="str">"Unexpected error"</span>);
+        }
+        <span class="kw">return</span> <span class="type">ApiResponse</span>.<span class="method">ok</span>(order);
+    });</pre>
+
+  <h2>whenComplete() — Side Effects Only</h2>
+<pre><span class="type">CompletableFuture</span>&lt;<span class="type">Order</span>&gt; orderFuture = processOrderAsync(cart)
+    .<span class="method">whenComplete</span>((order, ex) -> {
+        <span class="comment">// Perfect for metrics/logging — doesn't change the result</span>
+        <span class="kw">if</span> (ex != <span class="kw">null</span>) {
+            metrics.<span class="method">increment</span>(<span class="str">"order.failure"</span>);
+            log.<span class="method">error</span>(<span class="str">"Order processing failed"</span>, ex);
+        } <span class="kw">else</span> {
+            metrics.<span class="method">increment</span>(<span class="str">"order.success"</span>);
+            log.<span class="method">info</span>(<span class="str">"Order placed: {}"</span>, order.<span class="method">getId</span>());
+        }
+    }); <span class="comment">// Returns the SAME future — result/exception unchanged</span></pre>
+
+  <h2>Full Real-World Pipeline</h2>
+<pre><span class="kw">public</span> <span class="type">CompletableFuture</span>&lt;<span class="type">OrderConfirmation</span>&gt; <span class="method">placeOrderAsync</span>(<span class="type">Cart</span> cart) {
+    <span class="kw">return</span> <span class="type">CompletableFuture</span>
+        .<span class="method">supplyAsync</span>(() -> inventoryService.<span class="method">checkStock</span>(cart), executor)
+        .<span class="method">thenApplyAsync</span>(stock -> paymentService.<span class="method">charge</span>(cart.<span class="method">getPayment</span>()), executor)
+        .<span class="method">thenApplyAsync</span>(payment -> orderService.<span class="method">createOrder</span>(cart, payment), executor)
+        .<span class="method">exceptionally</span>(ex -> {
+            <span class="type">Throwable</span> cause = ex.<span class="method">getCause</span>() != <span class="kw">null</span> ? ex.<span class="method">getCause</span>() : ex;
+            <span class="kw">if</span> (cause <span class="kw">instanceof</span> <span class="type">OutOfStockException</span> e) {
+                <span class="kw">throw new</span> <span class="type">CompletionException</span>(
+                    <span class="kw">new</span> <span class="type">OrderException</span>(<span class="str">"Out of stock: "</span> + e.<span class="method">getItemId</span>(), cause));
+            }
+            <span class="kw">if</span> (cause <span class="kw">instanceof</span> <span class="type">PaymentDeclinedException</span>) {
+                <span class="kw">throw new</span> <span class="type">CompletionException</span>(
+                    <span class="kw">new</span> <span class="type">OrderException</span>(<span class="str">"Payment declined"</span>, cause));
+            }
+            <span class="kw">throw new</span> <span class="type">CompletionException</span>(
+                <span class="kw">new</span> <span class="type">OrderException</span>(<span class="str">"Order placement failed"</span>, cause));
+        })
+        .<span class="method">whenComplete</span>((result, ex) -> {
+            <span class="kw">if</span> (ex != <span class="kw">null</span>) metrics.<span class="method">increment</span>(<span class="str">"orders.failed"</span>);
+            <span class="kw">else</span> metrics.<span class="method">increment</span>(<span class="str">"orders.placed"</span>);
+        });
+}</pre>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 15: GLOBAL EXCEPTION HANDLING -->
+<!-- ============================================================ -->
+<div id="s15" class="section">
+  <div class="section-header">
+    <span class="level-badge level-advanced">Spring</span>
+    <h1>Global Exception Handling in Spring</h1>
+    <p class="subtitle">Centralising all exception handling — the @ControllerAdvice pattern, RFC 7807 ProblemDetail, and production-grade setup.</p>
+  </div>
+
+  <h2>The Problem Without Global Handling</h2>
+  <p>Without a central handler, every controller must catch every exception type, leading to massive code duplication, inconsistent error responses, and missed exceptions leaking raw stack traces to clients.</p>
+
+  <h2>@RestControllerAdvice — The Complete Setup</h2>
+<pre><span class="ann">@RestControllerAdvice</span>
+<span class="ann">@Slf4j</span>
+<span class="kw">public class</span> <span class="type">GlobalExceptionHandler</span> {
+
+    <span class="comment">// ========================</span>
+    <span class="comment">// DOMAIN EXCEPTIONS</span>
+    <span class="comment">// ========================</span>
+
+    <span class="ann">@ExceptionHandler</span>(<span class="type">ResourceNotFoundException</span>.<span class="kw">class</span>)
+    <span class="ann">@ResponseStatus</span>(<span class="type">HttpStatus</span>.NOT_FOUND)
+    <span class="kw">public</span> <span class="type">ErrorResponse</span> <span class="method">handleNotFound</span>(<span class="type">ResourceNotFoundException</span> ex,
+                                              <span class="type">HttpServletRequest</span> req) {
+        log.<span class="method">info</span>(<span class="str">"Resource not found: {} at {}"</span>, ex.<span class="method">getMessage</span>(), req.<span class="method">getRequestURI</span>());
+        <span class="kw">return</span> <span class="type">ErrorResponse</span>.<span class="method">of</span>(<span class="num">404</span>, ex.<span class="method">getErrorCode</span>(), ex.<span class="method">getUserMessage</span>(), req);
+    }
+
+    <span class="ann">@ExceptionHandler</span>(<span class="type">ValidationException</span>.<span class="kw">class</span>)
+    <span class="ann">@ResponseStatus</span>(<span class="type">HttpStatus</span>.UNPROCESSABLE_ENTITY)
+    <span class="kw">public</span> <span class="type">ErrorResponse</span> <span class="method">handleValidation</span>(<span class="type">ValidationException</span> ex,
+                                               <span class="type">HttpServletRequest</span> req) {
+        log.<span class="method">info</span>(<span class="str">"Validation failed: {}"</span>, ex.<span class="method">getMessage</span>());
+        <span class="kw">return</span> <span class="type">ErrorResponse</span>.<span class="method">withErrors</span>(<span class="num">422</span>, ex.<span class="method">getErrors</span>(), req);
+    }
+
+    <span class="ann">@ExceptionHandler</span>(<span class="type">BusinessRuleException</span>.<span class="kw">class</span>)
+    <span class="ann">@ResponseStatus</span>(<span class="type">HttpStatus</span>.UNPROCESSABLE_ENTITY)
+    <span class="kw">public</span> <span class="type">ErrorResponse</span> <span class="method">handleBusinessRule</span>(<span class="type">BusinessRuleException</span> ex,
+                                                <span class="type">HttpServletRequest</span> req) {
+        log.<span class="method">warn</span>(<span class="str">"Business rule violation: {}"</span>, ex.<span class="method">getMessage</span>());
+        <span class="kw">return</span> <span class="type">ErrorResponse</span>.<span class="method">of</span>(<span class="num">422</span>, ex.<span class="method">getErrorCode</span>(), ex.<span class="method">getUserMessage</span>(), req);
+    }
+
+    <span class="comment">// ========================</span>
+    <span class="comment">// SPRING MVC EXCEPTIONS</span>
+    <span class="comment">// ========================</span>
+
+    <span class="ann">@ExceptionHandler</span>(<span class="type">MethodArgumentNotValidException</span>.<span class="kw">class</span>)
+    <span class="ann">@ResponseStatus</span>(<span class="type">HttpStatus</span>.BAD_REQUEST)
+    <span class="kw">public</span> <span class="type">ErrorResponse</span> <span class="method">handleBeanValidation</span>(<span class="type">MethodArgumentNotValidException</span> ex,
+                                                   <span class="type">HttpServletRequest</span> req) {
+        <span class="type">List</span>&lt;<span class="type">FieldError</span>&gt; errors = ex.<span class="method">getBindingResult</span>().<span class="method">getFieldErrors</span>()
+            .<span class="method">stream</span>()
+            .<span class="method">map</span>(fe -> <span class="kw">new</span> <span class="type">FieldError</span>(fe.<span class="method">getField</span>(), fe.<span class="method">getDefaultMessage</span>()))
+            .<span class="method">collect</span>(<span class="type">Collectors</span>.<span class="method">toList</span>());
+        log.<span class="method">info</span>(<span class="str">"Bean validation failed: {}"</span>, errors);
+        <span class="kw">return</span> <span class="type">ErrorResponse</span>.<span class="method">withErrors</span>(<span class="num">400</span>, errors, req);
+    }
+
+    <span class="ann">@ExceptionHandler</span>(<span class="type">HttpMessageNotReadableException</span>.<span class="kw">class</span>)
+    <span class="ann">@ResponseStatus</span>(<span class="type">HttpStatus</span>.BAD_REQUEST)
+    <span class="kw">public</span> <span class="type">ErrorResponse</span> <span class="method">handleBadJson</span>(<span class="type">HttpMessageNotReadableException</span> ex,
+                                            <span class="type">HttpServletRequest</span> req) {
+        log.<span class="method">info</span>(<span class="str">"Malformed JSON: {}"</span>, ex.<span class="method">getMessage</span>());
+        <span class="kw">return</span> <span class="type">ErrorResponse</span>.<span class="method">of</span>(<span class="num">400</span>, <span class="str">"MALFORMED_REQUEST"</span>, <span class="str">"Invalid JSON in request body"</span>, req);
+    }
+
+    <span class="ann">@ExceptionHandler</span>(<span class="type">MethodNotAllowedException</span>.<span class="kw">class</span>)
+    <span class="ann">@ResponseStatus</span>(<span class="type">HttpStatus</span>.METHOD_NOT_ALLOWED)
+    <span class="kw">public</span> <span class="type">ErrorResponse</span> <span class="method">handleMethodNotAllowed</span>(<span class="type">MethodNotAllowedException</span> ex,
+                                                    <span class="type">HttpServletRequest</span> req) {
+        <span class="kw">return</span> <span class="type">ErrorResponse</span>.<span class="method">of</span>(<span class="num">405</span>, <span class="str">"METHOD_NOT_ALLOWED"</span>, ex.<span class="method">getMessage</span>(), req);
+    }
+
+    <span class="comment">// ========================</span>
+    <span class="comment">// SECURITY EXCEPTIONS</span>
+    <span class="comment">// ========================</span>
+
+    <span class="ann">@ExceptionHandler</span>(<span class="type">AccessDeniedException</span>.<span class="kw">class</span>)
+    <span class="ann">@ResponseStatus</span>(<span class="type">HttpStatus</span>.FORBIDDEN)
+    <span class="kw">public</span> <span class="type">ErrorResponse</span> <span class="method">handleAccessDenied</span>(<span class="type">AccessDeniedException</span> ex,
+                                                <span class="type">HttpServletRequest</span> req) {
+        log.<span class="method">warn</span>(<span class="str">"Access denied: {} for {}"</span>, ex.<span class="method">getMessage</span>(), req.<span class="method">getRequestURI</span>());
+        <span class="kw">return</span> <span class="type">ErrorResponse</span>.<span class="method">of</span>(<span class="num">403</span>, <span class="str">"ACCESS_DENIED"</span>, <span class="str">"Access denied"</span>, req);
+    }
+
+    <span class="comment">// ========================</span>
+    <span class="comment">// CATCH-ALL (last resort)</span>
+    <span class="comment">// ========================</span>
+
+    <span class="ann">@ExceptionHandler</span>(<span class="type">Exception</span>.<span class="kw">class</span>)
+    <span class="ann">@ResponseStatus</span>(<span class="type">HttpStatus</span>.INTERNAL_SERVER_ERROR)
+    <span class="kw">public</span> <span class="type">ErrorResponse</span> <span class="method">handleAll</span>(<span class="type">Exception</span> ex, <span class="type">HttpServletRequest</span> req) {
+        <span class="comment">// Log with FULL stack trace — this is unexpected!</span>
+        log.<span class="method">error</span>(<span class="str">"Unexpected exception at {}: {}"</span>,
+            req.<span class="method">getRequestURI</span>(), ex.<span class="method">getMessage</span>(), ex);
+        <span class="comment">// NEVER expose exception details to client in production</span>
+        <span class="kw">return</span> <span class="type">ErrorResponse</span>.<span class="method">of</span>(<span class="num">500</span>, <span class="str">"INTERNAL_ERROR"</span>,
+            <span class="str">"An unexpected error occurred. Please try again later."</span>, req);
+    }
+}</pre>
+
+  <h2>@ResponseStatus on Exception Class</h2>
+<pre><span class="comment">// Simplest approach — maps exception directly to HTTP status</span>
+<span class="ann">@ResponseStatus</span>(
+    value = <span class="type">HttpStatus</span>.NOT_FOUND,
+    reason = <span class="str">"The requested resource does not exist"</span>
+)
+<span class="kw">public class</span> <span class="type">UserNotFoundException</span> <span class="kw">extends</span> <span class="type">RuntimeException</span> {
+    <span class="kw">public</span> <span class="type">UserNotFoundException</span>(<span class="type">Long</span> id) {
+        <span class="kw">super</span>(<span class="str">"User not found: "</span> + id);
+    }
+}
+<span class="comment">// ⚠️ Warning: @ResponseStatus loses exception details in logs
+// Prefer @ExceptionHandler for production — more control</span></pre>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 16: REST ERROR RESPONSES -->
+<!-- ============================================================ -->
+<div id="s16" class="section">
+  <div class="section-header">
+    <span class="level-badge level-advanced">Spring</span>
+    <h1>REST Error Response Design</h1>
+    <p class="subtitle">Consistent, informative error bodies that help clients — RFC 7807 ProblemDetail and custom patterns.</p>
+  </div>
+
+  <h2>The ErrorResponse DTO</h2>
+<pre><span class="ann">@JsonInclude</span>(<span class="type">JsonInclude</span>.<span class="type">Include</span>.NON_NULL)
+<span class="kw">public class</span> <span class="type">ErrorResponse</span> {
+
+    <span class="kw">private final int</span> status;                    <span class="comment">// HTTP status code</span>
+    <span class="kw">private final</span> <span class="type">String</span> code;                  <span class="comment">// machine-readable error code</span>
+    <span class="kw">private final</span> <span class="type">String</span> message;               <span class="comment">// human-readable message</span>
+    <span class="kw">private final</span> <span class="type">String</span> path;                  <span class="comment">// request path</span>
+    <span class="kw">private final</span> <span class="type">Instant</span> timestamp;            <span class="comment">// when it happened</span>
+    <span class="kw">private final</span> <span class="type">String</span> traceId;              <span class="comment">// correlation ID for log tracing</span>
+    <span class="kw">private final</span> <span class="type">List</span>&lt;<span class="type">FieldError</span>&gt; errors;     <span class="comment">// validation errors (nullable)</span>
+
+    <span class="kw">public static</span> <span class="type">ErrorResponse</span> <span class="method">of</span>(<span class="kw">int</span> status, <span class="type">String</span> code,
+                                       <span class="type">String</span> message, <span class="type">HttpServletRequest</span> req) {
+        <span class="kw">return new</span> <span class="type">ErrorResponse</span>(status, code, message,
+            req.<span class="method">getRequestURI</span>(), <span class="type">Instant</span>.<span class="method">now</span>(),
+            <span class="type">MDC</span>.<span class="method">get</span>(<span class="str">"traceId"</span>), <span class="kw">null</span>);
+    }
+
+    <span class="comment">// Serializes to:</span>
+    <span class="comment">// {</span>
+    <span class="comment">//   "status": 404,</span>
+    <span class="comment">//   "code": "USER_NOT_FOUND",</span>
+    <span class="comment">//   "message": "User not found: 42",</span>
+    <span class="comment">//   "path": "/api/users/42",</span>
+    <span class="comment">//   "timestamp": "2024-01-15T10:30:00Z",</span>
+    <span class="comment">//   "traceId": "abc123"</span>
+    <span class="comment">// }</span>
+}</pre>
+
+  <h2>Spring 6 — RFC 7807 ProblemDetail (Built-in)</h2>
+<pre><span class="comment">// Spring 6 / Spring Boot 3 has built-in RFC 7807 support</span>
+<span class="ann">@ExceptionHandler</span>(<span class="type">UserNotFoundException</span>.<span class="kw">class</span>)
+<span class="kw">public</span> <span class="type">ProblemDetail</span> <span class="method">handleNotFound</span>(<span class="type">UserNotFoundException</span> ex,
+                                        <span class="type">HttpServletRequest</span> req) {
+    <span class="type">ProblemDetail</span> problem = <span class="type">ProblemDetail</span>
+        .<span class="method">forStatusAndDetail</span>(<span class="type">HttpStatus</span>.NOT_FOUND, ex.<span class="method">getMessage</span>());
+    problem.<span class="method">setTitle</span>(<span class="str">"User Not Found"</span>);
+    problem.<span class="method">setType</span>(<span class="type">URI</span>.<span class="method">create</span>(<span class="str">"https://api.myapp.com/errors/user-not-found"</span>));
+    problem.<span class="method">setProperty</span>(<span class="str">"userId"</span>, ex.<span class="method">getUserId</span>());
+    problem.<span class="method">setProperty</span>(<span class="str">"traceId"</span>, <span class="type">MDC</span>.<span class="method">get</span>(<span class="str">"traceId"</span>));
+    <span class="kw">return</span> problem;
+}
+<span class="comment">// Produces RFC 7807 compliant response:
+// Content-Type: application/problem+json
+// {
+//   "type": "https://api.myapp.com/errors/user-not-found",
+//   "title": "User Not Found",
+//   "status": 404,
+//   "detail": "User not found: 42",
+//   "userId": 42,
+//   "traceId": "abc123"
+// }</span></pre>
+
+  <h2>Error Response HTTP Status Guide</h2>
+  <table>
+    <tr><th>Status</th><th>Use For</th><th>Exception Type</th></tr>
+    <tr><td>400 Bad Request</td><td>Malformed request, invalid JSON</td><td>MethodArgumentNotValidException</td></tr>
+    <tr><td>401 Unauthorized</td><td>No/invalid authentication</td><td>AuthenticationException</td></tr>
+    <tr><td>403 Forbidden</td><td>Authenticated but no permission</td><td>AccessDeniedException</td></tr>
+    <tr><td>404 Not Found</td><td>Resource doesn't exist</td><td>ResourceNotFoundException</td></tr>
+    <tr><td>405 Method Not Allowed</td><td>POST to a GET-only endpoint</td><td>HttpRequestMethodNotSupportedException</td></tr>
+    <tr><td>409 Conflict</td><td>Duplicate resource</td><td>DuplicateResourceException</td></tr>
+    <tr><td>422 Unprocessable</td><td>Semantic validation failure</td><td>BusinessRuleException</td></tr>
+    <tr><td>429 Too Many Requests</td><td>Rate limit exceeded</td><td>RateLimitException</td></tr>
+    <tr><td>500 Internal Error</td><td>Unexpected server failure</td><td>Exception (catch-all)</td></tr>
+    <tr><td>503 Unavailable</td><td>Downstream service down</td><td>ServiceUnavailableException</td></tr>
+  </table>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 17: JPA / HIBERNATE -->
+<!-- ============================================================ -->
+<div id="s17" class="section">
+  <div class="section-header">
+    <span class="level-badge level-advanced">Spring</span>
+    <h1>JPA / Hibernate Exception Handling</h1>
+    <p class="subtitle">Spring translates JPA/JDBC exceptions — understanding the translation chain and how to detect specific DB errors.</p>
+  </div>
+
+  <h2>Spring's Exception Translation</h2>
+  <p>Spring's <code>@Repository</code> annotation activates exception translation. Raw JPA/JDBC exceptions are automatically translated to Spring's <code>DataAccessException</code> hierarchy.</p>
+
+<pre><span class="comment">// Raw JPA exception hierarchy (ugly, vendor-specific)</span>
+<span class="comment">// PersistenceException → ConstraintViolationException (Hibernate-specific)</span>
+
+<span class="comment">// Spring's translated hierarchy (clean, vendor-neutral)</span>
+<span class="comment">// DataAccessException</span>
+<span class="comment">// ├── NonTransientDataAccessException</span>
+<span class="comment">// │   ├── DataIntegrityViolationException   ← constraint violations, duplicates</span>
+<span class="comment">// │   ├── DuplicateKeyException             ← unique constraint violations</span>
+<span class="comment">// │   └── DataRetrievalFailureException     ← wrong number of results</span>
+<span class="comment">// ├── TransientDataAccessException</span>
+<span class="comment">// │   ├── TransientDataAccessResourceException</span>
+<span class="comment">// │   └── LockAcquisitionException          ← deadlock</span>
+<span class="comment">// └── RecoverableDataAccessException</span></pre>
+
+  <h2>Detecting Specific DB Errors</h2>
+<pre><span class="ann">@Repository</span>
+<span class="kw">public class</span> <span class="type">UserRepository</span> {
+
+    <span class="kw">public</span> <span class="type">User</span> <span class="method">save</span>(<span class="type">User</span> user) {
+        <span class="kw">try</span> {
+            <span class="kw">return</span> em.<span class="method">merge</span>(user);
+        } <span class="kw">catch</span> (<span class="type">DataIntegrityViolationException</span> e) {
+            <span class="comment">// Spring already translated it — inspect to be specific</span>
+            <span class="kw">if</span> (e.<span class="method">getMessage</span>().<span class="method">contains</span>(<span class="str">"users_email_unique"</span>)) {
+                <span class="kw">throw new</span> <span class="type">DuplicateEmailException</span>(user.<span class="method">getEmail</span>(), e);
+            }
+            <span class="kw">if</span> (e.<span class="method">getMessage</span>().<span class="method">contains</span>(<span class="str">"users_username_unique"</span>)) {
+                <span class="kw">throw new</span> <span class="type">DuplicateUsernameException</span>(user.<span class="method">getUsername</span>(), e);
+            }
+            <span class="kw">throw new</span> <span class="type">DataSaveException</span>(<span class="str">"Failed to save user"</span>, e);
+        }
+    }
+}
+
+<span class="comment">// In the service layer — handle domain exceptions cleanly</span>
+<span class="ann">@Service</span>
+<span class="kw">public class</span> <span class="type">UserService</span> {
+    <span class="kw">public</span> <span class="type">User</span> <span class="method">registerUser</span>(<span class="type">RegisterRequest</span> req) {
+        <span class="kw">try</span> {
+            <span class="type">User</span> user = <span class="kw">new</span> <span class="type">User</span>(req.<span class="method">getEmail</span>(), req.<span class="method">getUsername</span>());
+            <span class="kw">return</span> userRepository.<span class="method">save</span>(user);
+        } <span class="kw">catch</span> (<span class="type">DuplicateEmailException</span> e) {
+            <span class="kw">throw new</span> <span class="type">ValidationException</span>(<span class="str">"email"</span>, <span class="str">"Email already registered"</span>);
+        } <span class="kw">catch</span> (<span class="type">DuplicateUsernameException</span> e) {
+            <span class="kw">throw new</span> <span class="type">ValidationException</span>(<span class="str">"username"</span>, <span class="str">"Username already taken"</span>);
+        }
+    }
+}</pre>
+
+  <h2>OptimisticLocking — Concurrency Exception</h2>
+<pre><span class="ann">@Entity</span>
+<span class="kw">public class</span> <span class="type">BankAccount</span> {
+    <span class="ann">@Version</span>
+    <span class="kw">private</span> <span class="type">Long</span> version; <span class="comment">// JPA manages this field</span>
+}
+
+<span class="comment">// Two threads update same account simultaneously</span>
+<span class="kw">try</span> {
+    account.<span class="method">debit</span>(amount);
+    accountRepo.<span class="method">save</span>(account); <span class="comment">// throws if version mismatch</span>
+} <span class="kw">catch</span> (<span class="type">OptimisticLockException</span> | <span class="type">ObjectOptimisticLockingFailureException</span> e) {
+    <span class="comment">// Reload and retry — standard pattern</span>
+    account = accountRepo.<span class="method">findById</span>(account.<span class="method">getId</span>()).<span class="method">orElseThrow</span>();
+    account.<span class="method">debit</span>(amount);
+    accountRepo.<span class="method">save</span>(account);
+}</pre>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 18: LOGGING BEST PRACTICES -->
+<!-- ============================================================ -->
+<div id="s18" class="section">
+  <div class="section-header">
+    <span class="level-badge level-expert">Expert</span>
+    <h1>Exception Logging Best Practices</h1>
+    <p class="subtitle">Production-grade logging — what to log, what level, what to include, and what never to expose.</p>
+  </div>
+
+  <h2>Log Levels for Exceptions</h2>
+  <table>
+    <tr><th>Level</th><th>Use For</th><th>Example</th></tr>
+    <tr><td><code>ERROR</code></td><td>Unexpected failures requiring investigation</td><td>DB is down, NullPointerException, catch-all handler</td></tr>
+    <tr><td><code>WARN</code></td><td>Expected failures worth monitoring</td><td>Business rule violation, retry happening</td></tr>
+    <tr><td><code>INFO</code></td><td>Normal business flow events</td><td>User not found (expected in search), validation failed</td></tr>
+    <tr><td><code>DEBUG</code></td><td>Detailed diagnostics for dev/test</td><td>Request/response details, internal state</td></tr>
+  </table>
+
+  <h2>The Golden Rules of Exception Logging</h2>
+<pre><span class="comment">// ✅ RULE 1: Include the exception object as the LAST argument to SLF4J
+// SLF4J will automatically append the full stack trace</span>
+log.<span class="method">error</span>(<span class="str">"Payment failed for order {}"</span>, orderId, ex); <span class="comment">// ✅ Stack trace included</span>
+log.<span class="method">error</span>(<span class="str">"Payment failed: {}"</span>, ex.<span class="method">getMessage</span>());    <span class="comment">// ❌ Stack trace LOST</span>
+
+<span class="comment">// ✅ RULE 2: Include context — what were you DOING, with WHAT data?</span>
+log.<span class="method">error</span>(<span class="str">"Failed to process payment: orderId={}, amount={}, userId={}"</span>,
+    order.<span class="method">getId</span>(), amount, userId, ex);
+
+<span class="comment">// ❌ BAD — no context, useless in production</span>
+log.<span class="method">error</span>(<span class="str">"Error occurred"</span>, ex);
+
+<span class="comment">// ✅ RULE 3: Log OR rethrow — not both</span>
+<span class="kw">catch</span> (<span class="type">SQLException</span> e) {
+    log.<span class="method">error</span>(<span class="str">"DB error for query: {}"</span>, query, e); <span class="comment">// logged here</span>
+    <span class="kw">return</span> <span class="type">Collections</span>.<span class="method">emptyList</span>(); <span class="comment">// handled — don't also rethrow</span>
+}
+
+<span class="comment">// ✅ RULE 4: Use MDC for correlation IDs — traceable across microservices</span>
+<span class="type">MDC</span>.<span class="method">put</span>(<span class="str">"traceId"</span>, UUID.<span class="method">randomUUID</span>().<span class="method">toString</span>());
+<span class="type">MDC</span>.<span class="method">put</span>(<span class="str">"userId"</span>, currentUser.<span class="method">getId</span>());
+<span class="kw">try</span> {
+    processOrder(order);
+} <span class="kw">finally</span> {
+    <span class="type">MDC</span>.<span class="method">clear</span>(); <span class="comment">// ALWAYS clear MDC after request</span>
+}
+<span class="comment">// Now every log line for this request includes traceId and userId automatically</span></pre>
+
+  <h2>Structured Logging — Production Standard</h2>
+<pre><span class="comment">// Using Logback with structured JSON output (for ELK/Splunk/DataDog)</span>
+<span class="kw">try</span> {
+    processPayment(payment);
+} <span class="kw">catch</span> (<span class="type">PaymentException</span> e) {
+    log.<span class="method">error</span>(<span class="str">"Payment processing failed"</span>,
+        <span class="type">StructuredArguments</span>.<span class="method">kv</span>(<span class="str">"orderId"</span>, payment.<span class="method">getOrderId</span>()),
+        <span class="type">StructuredArguments</span>.<span class="method">kv</span>(<span class="str">"amount"</span>, payment.<span class="method">getAmount</span>()),
+        <span class="type">StructuredArguments</span>.<span class="method">kv</span>(<span class="str">"errorCode"</span>, e.<span class="method">getErrorCode</span>()),
+        e);
+}
+<span class="comment">// Produces JSON log:
+// {
+//   "level": "ERROR",
+//   "message": "Payment processing failed",
+//   "traceId": "abc123",
+//   "orderId": "ord-456",
+//   "amount": 99.99,
+//   "errorCode": "PAYMENT_DECLINED",
+//   "stack_trace": "...",
+//   "@timestamp": "2024-01-15T10:30:00Z"
+// }
+// Searchable, filterable, alertable in your log platform</span></pre>
+
+  <h2>What Never to Log</h2>
+<pre><span class="comment">// ❌ NEVER log sensitive data — GDPR, PCI-DSS violations</span>
+log.<span class="method">error</span>(<span class="str">"Auth failed for password: {}"</span>, password);      <span class="comment">// ILLEGAL</span>
+log.<span class="method">error</span>(<span class="str">"Card declined: card={}"</span>, cardNumber);         <span class="comment">// ILLEGAL</span>
+log.<span class="method">error</span>(<span class="str">"Token invalid: token={}"</span>, authToken);         <span class="comment">// Security breach</span>
+
+<span class="comment">// ✅ Log references only — never the sensitive value itself</span>
+log.<span class="method">error</span>(<span class="str">"Auth failed for userId={}"</span>, user.<span class="method">getId</span>());
+log.<span class="method">error</span>(<span class="str">"Card declined: last4={}"</span>, card.<span class="method">getLast4Digits</span>());
+log.<span class="method">error</span>(<span class="str">"Invalid token for subject={}"</span>, token.<span class="method">getSubject</span>());</pre>
+
+  <h2>Log Configuration for Exceptions — Logback</h2>
+<pre><span class="comment">&lt;!-- logback-spring.xml -- production setup --&gt;</span>
+&lt;configuration&gt;
+  &lt;appender name=<span class="str">"CONSOLE"</span> class=<span class="str">"ch.qos.logback.core.ConsoleAppender"</span>&gt;
+    &lt;encoder class=<span class="str">"net.logstash.logback.encoder.LogstashEncoder"</span>&gt;
+      &lt;includeMdc&gt;true&lt;/includeMdc&gt;
+      &lt;includeCallerData&gt;false&lt;/includeCallerData&gt; <span class="comment">&lt;!-- perf --&gt;</span>
+      &lt;throwableConverter class=<span class="str">"net.logstash.logback.stacktrace.ShortenedThrowableConverter"</span>&gt;
+        &lt;maxDepthPerThrowable&gt;20&lt;/maxDepthPerThrowable&gt;
+        &lt;maxLength&gt;8192&lt;/maxLength&gt;
+        &lt;shortenedClassNameLength&gt;20&lt;/shortenedClassNameLength&gt;
+        &lt;exclude&gt;sun\.reflect\..*&lt;/exclude&gt;
+        &lt;exclude&gt;java\.lang\.reflect\..*&lt;/exclude&gt;
+        &lt;rootCauseFirst&gt;true&lt;/rootCauseFirst&gt; <span class="comment">&lt;!-- root cause first!</span>
+      &lt;/throwableConverter&gt;
+    &lt;/encoder&gt;
+  &lt;/appender&gt;
+&lt;/configuration&gt;</pre>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 19: MICROSERVICES PATTERNS -->
+<!-- ============================================================ -->
+<div id="s19" class="section">
+  <div class="section-header">
+    <span class="level-badge level-expert">Expert</span>
+    <h1>Exception Handling in Microservices</h1>
+    <p class="subtitle">Distributed systems add new failure modes — network partitions, partial failures, and cascading failures.</p>
+  </div>
+
+  <h2>Circuit Breaker Pattern</h2>
+<pre><span class="comment">// Using Resilience4j — prevents cascading failures</span>
+<span class="ann">@CircuitBreaker</span>(name = <span class="str">"paymentService"</span>, fallbackMethod = <span class="str">"paymentFallback"</span>)
+<span class="ann">@Retry</span>(name = <span class="str">"paymentService"</span>)
+<span class="ann">@TimeLimiter</span>(name = <span class="str">"paymentService"</span>)
+<span class="kw">public</span> <span class="type">CompletableFuture</span>&lt;<span class="type">PaymentResult</span>&gt; <span class="method">processPayment</span>(<span class="type">Payment</span> p) {
+    <span class="kw">return</span> <span class="type">CompletableFuture</span>.<span class="method">supplyAsync</span>(() ->
+        paymentGateway.<span class="method">charge</span>(p));
+}
+
+<span class="comment">// Fallback method — called when circuit is open</span>
+<span class="kw">public</span> <span class="type">CompletableFuture</span>&lt;<span class="type">PaymentResult</span>&gt; <span class="method">paymentFallback</span>(<span class="type">Payment</span> p, <span class="type">Exception</span> ex) {
+    log.<span class="method">warn</span>(<span class="str">"Payment service unavailable, queuing for retry"</span>, ex);
+    paymentQueue.<span class="method">enqueue</span>(p); <span class="comment">// async retry via message queue</span>
+    <span class="kw">return</span> <span class="type">CompletableFuture</span>.<span class="method">completedFuture</span>(
+        <span class="type">PaymentResult</span>.<span class="method">pending</span>(<span class="str">"Payment queued for processing"</span>));
+}</pre>
+
+  <h2>Retryable vs Non-Retryable Exceptions</h2>
+<pre><span class="comment">// application.yml — Resilience4j config</span>
+resilience4j:
+  retry:
+    instances:
+      paymentService:
+        maxAttempts: <span class="num">3</span>
+        waitDuration: 500ms
+        retryExceptions:
+          - <span class="type">ConnectTimeoutException</span>   <span class="comment"># transient — retry</span>
+          - <span class="type">ServiceUnavailableException</span> <span class="comment"># transient — retry</span>
+        ignoreExceptions:
+          - <span class="type">PaymentDeclinedException</span>   <span class="comment"># permanent — don't retry</span>
+          - <span class="type">InvalidCardException</span>        <span class="comment"># permanent — don't retry</span>
+          - <span class="type">FraudDetectedException</span>      <span class="comment"># permanent — don't retry</span></pre>
+
+  <h2>Propagating Errors Across Services</h2>
+<pre><span class="comment">// Problem: How does Service A know what went wrong in Service B?</span>
+<span class="comment">// Solution: Structured error response that maps back to exceptions</span>
+
+<span class="comment">// Service B produces (via @ControllerAdvice):</span>
+<span class="comment">// {</span>
+<span class="comment">//   "status": 422,</span>
+<span class="comment">//   "code": "INSUFFICIENT_FUNDS",</span>
+<span class="comment">//   "message": "Balance insufficient",</span>
+<span class="comment">//   "traceId": "abc123"</span>
+<span class="comment">// }</span>
+
+<span class="comment">// Service A's Feign client — maps HTTP errors back to exceptions</span>
+<span class="ann">@Component</span>
+<span class="kw">public class</span> <span class="type">PaymentFeignErrorDecoder</span> <span class="kw">implements</span> <span class="type">ErrorDecoder</span> {
+    <span class="ann">@Override</span>
+    <span class="kw">public</span> <span class="type">Exception</span> <span class="method">decode</span>(<span class="type">String</span> methodKey, <span class="type">Response</span> response) {
+        <span class="type">ErrorResponse</span> body = parseBody(response);
+        <span class="kw">return switch</span> (body.<span class="method">getCode</span>()) {
+            <span class="kw">case</span> <span class="str">"INSUFFICIENT_FUNDS"</span>   -> <span class="kw">new</span> <span class="type">InsufficientFundsException</span>(body.<span class="method">getMessage</span>());
+            <span class="kw">case</span> <span class="str">"PAYMENT_DECLINED"</span>      -> <span class="kw">new</span> <span class="type">PaymentDeclinedException</span>(body.<span class="method">getMessage</span>());
+            <span class="kw">case</span> <span class="str">"SERVICE_UNAVAILABLE"</span>   -> <span class="kw">new</span> <span class="type">RetryableException</span>(<span class="num">503</span>, body.<span class="method">getMessage</span>(),
+                                                <span class="type">Request</span>.<span class="type">HttpMethod</span>.POST, <span class="kw">null</span>);
+            <span class="kw">default</span>                     -> <span class="kw">new</span> <span class="type">ServiceException</span>(body.<span class="method">getMessage</span>());
+        };
+    }
+}</pre>
+
+  <h2>Saga Pattern — Compensating Transactions</h2>
+<pre><span class="comment">// When a multi-step distributed transaction partially fails,
+// compensate (undo) the steps that already succeeded</span>
+<span class="kw">public</span> <span class="type">OrderConfirmation</span> <span class="method">placeOrder</span>(<span class="type">Order</span> order) {
+    <span class="type">String</span> paymentId = <span class="kw">null</span>;
+    <span class="type">String</span> inventoryReservationId = <span class="kw">null</span>;
+
+    <span class="kw">try</span> {
+        <span class="comment">// Step 1: Reserve inventory</span>
+        inventoryReservationId = inventoryService.<span class="method">reserve</span>(order.<span class="method">getItems</span>());
+
+        <span class="comment">// Step 2: Charge payment</span>
+        paymentId = paymentService.<span class="method">charge</span>(order.<span class="method">getPayment</span>());
+
+        <span class="comment">// Step 3: Create shipment</span>
+        shippingService.<span class="method">schedule</span>(order);
+
+        <span class="kw">return</span> <span class="type">OrderConfirmation</span>.<span class="method">success</span>(order);
+
+    } <span class="kw">catch</span> (<span class="type">ShippingException</span> e) {
+        <span class="comment">// Step 3 failed — compensate steps 1 and 2</span>
+        safeCancel(() -> paymentService.<span class="method">refund</span>(paymentId));
+        safeCancel(() -> inventoryService.<span class="method">release</span>(inventoryReservationId));
+        <span class="kw">throw new</span> <span class="type">OrderFailedException</span>(<span class="str">"Shipping unavailable"</span>, e);
+
+    } <span class="kw">catch</span> (<span class="type">PaymentException</span> e) {
+        <span class="comment">// Step 2 failed — compensate step 1 only</span>
+        safeCancel(() -> inventoryService.<span class="method">release</span>(inventoryReservationId));
+        <span class="kw">throw new</span> <span class="type">OrderFailedException</span>(<span class="str">"Payment failed"</span>, e);
+    }
+}
+
+<span class="kw">private void</span> <span class="method">safeCancel</span>(<span class="type">Runnable</span> compensation) {
+    <span class="kw">try</span> { compensation.<span class="method">run</span>(); }
+    <span class="kw">catch</span> (<span class="type">Exception</span> e) {
+        <span class="comment">// Compensation failed! Alert ops — manual intervention needed</span>
+        log.<span class="method">error</span>(<span class="str">"CRITICAL: Compensation failed — manual intervention required"</span>, e);
+        alertOps.<span class="method">critical</span>(<span class="str">"Saga compensation failure"</span>, e);
+    }
+}</pre>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 20: PERFORMANCE -->
+<!-- ============================================================ -->
+<div id="s20" class="section">
+  <div class="section-header">
+    <span class="level-badge level-expert">Expert</span>
+    <h1>Exception Performance Impact</h1>
+    <p class="subtitle">Stack trace creation is expensive — understanding the cost and when to optimise.</p>
+  </div>
+
+  <h2>Why Exceptions Are Expensive</h2>
+  <p>When an exception is created, the JVM calls <code>fillInStackTrace()</code> which walks the entire call stack and captures every frame. This is the expensive part — not the throw/catch itself.</p>
+
+  <table>
+    <tr><th>Operation</th><th>Relative Cost</th><th>Notes</th></tr>
+    <tr><td>Normal method call</td><td>~1x</td><td>Baseline</td></tr>
+    <tr><td><code>new Exception()</code></td><td>~100-1000x</td><td>fillInStackTrace() — stack depth matters</td></tr>
+    <tr><td><code>throw / catch</code></td><td>~1-2x</td><td>The throw/catch itself is cheap</td></tr>
+    <tr><td>Exception with deep stack</td><td>Up to 10,000x</td><td>100-deep call stack = huge overhead</td></tr>
+  </table>
+
+  <h2>Overriding fillInStackTrace() for High-Frequency Exceptions</h2>
+<pre><span class="comment">// When you throw the same exception thousands of times per second
+// (e.g. validation in a hot path), skip stack trace collection</span>
+<span class="kw">public class</span> <span class="type">FastValidationException</span> <span class="kw">extends</span> <span class="type">RuntimeException</span> {
+
+    <span class="kw">private static final long</span> serialVersionUID = <span class="num">1L</span>;
+
+    <span class="kw">public</span> <span class="type">FastValidationException</span>(<span class="type">String</span> message) {
+        <span class="kw">super</span>(message, <span class="kw">null</span>, <span class="kw">true</span>, <span class="kw">false</span>); <span class="comment">// writableStackTrace = false</span>
+    }
+
+    <span class="comment">// OR override directly:</span>
+    <span class="ann">@Override</span>
+    <span class="kw">public synchronized</span> <span class="type">Throwable</span> <span class="method">fillInStackTrace</span>() {
+        <span class="kw">return this</span>; <span class="comment">// Do nothing — massive performance win</span>
+    }
+}
+<span class="comment">// Trade-off: You lose stack trace info — only use for EXPECTED, frequent exceptions
+// where you already know the location (e.g. input validation)</span></pre>
+
+  <h2>Static Exception Instances (Use with Extreme Care)</h2>
+<pre><span class="comment">// Pre-created exception — zero allocation cost</span>
+<span class="kw">public class</span> <span class="type">CacheException</span> <span class="kw">extends</span> <span class="type">RuntimeException</span> {
+    <span class="comment">// Singleton for cache miss — thrown millions of times</span>
+    <span class="kw">public static final</span> <span class="type">CacheException</span> CACHE_MISS =
+        <span class="kw">new</span> <span class="type">CacheException</span>(<span class="str">"Cache miss"</span>);
+
+    <span class="kw">private</span> <span class="type">CacheException</span>(<span class="type">String</span> msg) {
+        <span class="kw">super</span>(msg, <span class="kw">null</span>, <span class="kw">true</span>, <span class="kw">false</span>);
+    }
+}
+<span class="comment">// WARNING: No stack trace. No context. Only suitable for very
+// specific, well-understood hot paths. Not for general use.</span></pre>
+
+  <h2>JIT Optimisation of Exception-Free Paths</h2>
+<pre><span class="comment">// The JVM's JIT compiler optimises code that never throws.
+// If your hot path throws exceptions 99% of the time, JIT can't optimise it.
+// Profile BEFORE optimising — exceptions are rarely the bottleneck.</span>
+
+<span class="comment">// ❌ Using exception for expected flow — prevents JIT optimisation</span>
+<span class="kw">try</span> {
+    <span class="kw">return</span> cache.<span class="method">get</span>(key); <span class="comment">// throws CacheException on miss</span>
+} <span class="kw">catch</span> (<span class="type">CacheException</span> e) {
+    <span class="kw">return</span> db.<span class="method">fetch</span>(key);
+}
+
+<span class="comment">// ✅ Use null or Optional — no exception, JIT can optimise freely</span>
+<span class="type">String</span> cached = cache.<span class="method">getOrNull</span>(key);
+<span class="kw">return</span> cached != <span class="kw">null</span> ? cached : db.<span class="method">fetch</span>(key);</pre>
+
+  <div class="alert alert-yellow">
+    <strong>Rule of thumb:</strong> Exceptions should be exceptional. If you're throwing more than a few hundred per second on a hot path, that's a code smell — not a performance tuning opportunity. Fix the logic first.
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 21: INTERVIEW Q&A -->
+<!-- ============================================================ -->
+<div id="s21" class="section">
+  <div class="section-header">
+    <span class="level-badge level-expert">Interview</span>
+    <h1>Interview Q&A — All Levels</h1>
+    <p class="subtitle">50 questions from beginner to senior. Click any question to reveal the answer.</p>
+  </div>
+
+  <h2 style="color:var(--green-light)">Beginner</h2>
+  <div class="qa"><div class="qa-q" onclick="toggleQA(this)">What is the difference between Error and Exception? <span class="qa-arrow">▼</span></div><div class="qa-a"><strong>Exception</strong> is for recoverable application-level problems (file not found, invalid input). <strong>Error</strong> is for unrecoverable JVM-level problems (OutOfMemoryError, StackOverflowError). Both extend Throwable. You should handle Exceptions; you should generally not catch Errors.</div></div>
+
+  <div class="qa"><div class="qa-q" onclick="toggleQA(this)">What is the difference between checked and unchecked exceptions? <span class="qa-arrow">▼</span></div><div class="qa-a"><strong>Checked</strong> exceptions extend Exception (not RuntimeException) and must be either caught or declared in the method signature with <code>throws</code>. The compiler enforces this. Examples: IOException, SQLException.<br><br><strong>Unchecked</strong> exceptions extend RuntimeException. No compiler enforcement — you can ignore them. Examples: NullPointerException, IllegalArgumentException.<br><br>Rule: Use checked for external/recoverable failures. Use unchecked for programming errors and business rules.</div></div>
+
+  <div class="qa"><div class="qa-q" onclick="toggleQA(this)">Does finally always execute? <span class="qa-arrow">▼</span></div><div class="qa-a">Almost always — yes. The only exceptions (no pun intended) are: <strong>System.exit()</strong> being called, the JVM crashing, or the thread being forcibly killed. Even if the try block throws an exception, even if there's a return statement — finally runs.</div></div>
+
+  <div class="qa"><div class="qa-q" onclick="toggleQA(this)">What is the output of this code? try { return 1; } finally { return 2; } <span class="qa-arrow">▼</span></div><div class="qa-a">The output is <strong>2</strong>. The finally block runs before the actual return, and its <code>return 2</code> overrides the <code>return 1</code> from the try block. This is considered very bad practice and should never appear in real code — it's confusing and hides the original return value.</div></div>
+
+  <div class="qa"><div class="qa-q" onclick="toggleQA(this)">What is the difference between throw and throws? <span class="qa-arrow">▼</span></div><div class="qa-a"><code>throw</code> is an <strong>action</strong> inside a method body — it creates and throws an exception instance: <code>throw new IllegalArgumentException("bad input")</code>.<br><br><code>throws</code> is a <strong>declaration</strong> in the method signature — it tells callers what checked exceptions might propagate: <code>public void read() throws IOException</code>.</div></div>
+
+  <div class="qa"><div class="qa-q" onclick="toggleQA(this)">Can you have try without catch? <span class="qa-arrow">▼</span></div><div class="qa-a">Yes! Two valid forms: <code>try { } finally { }</code> (no catch, but must have finally) and try-with-resources <code>try (Resource r = ...) { }</code> (no catch or finally required). What's NOT valid: <code>try { }</code> alone with no catch or finally.</div></div>
+
+  <div class="qa"><div class="qa-q" onclick="toggleQA(this)">What happens if a catch block throws an exception? <span class="qa-arrow">▼</span></div><div class="qa-a">The new exception from the catch block propagates up the call stack. The original exception that triggered the catch block is lost (unless you chain them with the cause constructor). The finally block still runs first before propagation. This is why you should almost never throw from within catch without chaining the original exception.</div></div>
+
+  <h2 style="color:var(--yellow-light)">Intermediate</h2>
+  <div class="qa"><div class="qa-q" onclick="toggleQA(this)">What are suppressed exceptions? <span class="qa-arrow">▼</span></div><div class="qa-a">In try-with-resources, if both the body and the resource's <code>close()</code> method throw exceptions, the body exception is the primary one and the close exception is <strong>suppressed</strong> — attached to the primary exception. You can access them via <code>e.getSuppressed()</code>. Before Java 7, the close exception would silently swallow the body exception.</div></div>
+
+  <div class="qa"><div class="qa-q" onclick="toggleQA(this)">What is exception chaining and why is it important? <span class="qa-arrow">▼</span></div><div class="qa-a">Exception chaining means wrapping one exception inside another using the <code>cause</code> constructor parameter: <code>throw new ServiceException("msg", originalException)</code>. It's critical in layered architectures because it preserves the entire failure history. Without chaining, you lose the root cause — making production debugging nearly impossible. The full chain appears in logs as "Caused by:" sections.</div></div>
+
+  <div class="qa"><div class="qa-q" onclick="toggleQA(this)">Can you catch multiple exceptions in one catch block? <span class="qa-arrow">▼</span></div><div class="qa-a">Yes, since Java 7 using the multi-catch syntax: <code>catch (IOException | ParseException e) { }</code>. Key rules: (1) the exception variable <code>e</code> is effectively final — you can't reassign it; (2) you cannot list related types (parent and child) in the same multi-catch — that's a compile error; (3) any method both types share from Throwable can be called.</div></div>
+
+  <div class="qa"><div class="qa-q" onclick="toggleQA(this)">What is the AutoCloseable interface and how does it relate to try-with-resources? <span class="qa-arrow">▼</span></div><div class="qa-a">Any class implementing <code>AutoCloseable</code> (which has a single <code>close()</code> method) can be used in try-with-resources. The compiler automatically generates the finally block to call <code>close()</code>. If <code>close()</code> throws while an exception is already in flight, the close exception is added as suppressed (not lost). <code>Closeable</code> extends <code>AutoCloseable</code> and is for I/O specifically.</div></div>
+
+  <div class="qa"><div class="qa-q" onclick="toggleQA(this)">When should you create a custom exception? <span class="qa-arrow">▼</span></div><div class="qa-a">Create custom exceptions when: (1) you need to carry domain-specific context beyond a message string (userId, errorCode, available balance); (2) callers need to distinguish this failure mode from others — they can't do that if you throw a generic RuntimeException; (3) you want semantic clarity in code — InsufficientFundsException is far more readable than RuntimeException("insufficient").</div></div>
+
+  <div class="qa"><div class="qa-q" onclick="toggleQA(this)">What is the problem with using exceptions for control flow? <span class="qa-arrow">▼</span></div><div class="qa-a">Three problems: (1) <strong>Performance</strong> — constructing an exception requires filling the stack trace which is expensive (100-1000x normal method call); (2) <strong>Readability</strong> — exceptions signal exceptional conditions; using them for "user not found" pollutes the semantics; (3) <strong>JIT pessimisation</strong> — the JVM can't optimise code paths that routinely throw. Use Optional, null, or boolean returns for expected conditions.</div></div>
+
+  <div class="qa"><div class="qa-q" onclick="toggleQA(this)">Why should you never swallow exceptions? <span class="qa-arrow">▼</span></div><div class="qa-a">Swallowing exceptions (<code>catch (Exception e) { }</code>) is one of the worst practices because: failures become invisible — you have no idea the code failed; subsequent code runs in an invalid state potentially causing data corruption; debugging becomes nearly impossible since there's no error signal; what looks like a rare bug might actually be a 100% failure rate masked by empty catch blocks.</div></div>
+
+  <h2 style="color:var(--orange-light)">Advanced</h2>
+
+  <div class="qa"><div class="qa-q" onclick="toggleQA(this)">How do you handle checked exceptions in Java 8 streams and lambdas? <span class="qa-arrow">▼</span></div><div class="qa-a">Three approaches: (1) <strong>Wrap inline</strong>: wrap with try-catch inside the lambda and throw an unchecked exception — aborts the stream on first failure; (2) <strong>ThrowingFunction wrapper</strong>: create a generic functional interface that wraps checked exceptions; (3) <strong>Try-Result pattern</strong>: map each element to a Try&lt;T&gt; that holds either a value or error — processes all elements, collects failures separately. Choice depends on whether partial success is acceptable.</div></div>
+
+  <div class="qa"><div class="qa-q" onclick="toggleQA(this)">How are exceptions handled in CompletableFuture? <span class="qa-arrow">▼</span></div><div class="qa-a">Exceptions are captured in the future itself. <code>get()</code> throws checked <code>ExecutionException</code> wrapping the real cause; <code>join()</code> throws unchecked <code>CompletionException</code>. Handle without blocking using: <code>exceptionally()</code> for providing fallback values, <code>handle()</code> for processing both success and failure, <code>whenComplete()</code> for side effects (logging/metrics) without changing the result. Always unwrap with <code>e.getCause()</code> to get the original exception.</div></div>
+
+  <div class="qa"><div class="qa-q" onclick="toggleQA(this)">What happens to exceptions thrown in background threads? <span class="qa-arrow">▼</span></div><div class="qa-a">By default, they're silently swallowed — the thread dies, nobody knows. Solutions: (1) Set <code>Thread.setDefaultUncaughtExceptionHandler()</code> for all threads; (2) For <code>ExecutorService.submit()</code>, the exception is captured in the Future — you get it when calling <code>future.get()</code>; (3) For <code>ExecutorService.execute()</code>, it goes to UncaughtExceptionHandler; (4) Override <code>afterExecute()</code> in custom ThreadPoolExecutor to catch both.</div></div>
+
+  <div class="qa"><div class="qa-q" onclick="toggleQA(this)">What is @ControllerAdvice and how does exception handling priority work? <span class="qa-arrow">▼</span></div><div class="qa-a"><code>@ControllerAdvice</code> (or @RestControllerAdvice) is a global exception handler for all controllers. Priority rules: (1) most specific exception type wins over more general; (2) handler in the controller class itself takes precedence over @ControllerAdvice; (3) among multiple @ControllerAdvice classes, order them with @Order or implement Ordered; (4) @ExceptionHandler can declare multiple exception types.</div></div>
+
+  <div class="qa"><div class="qa-q" onclick="toggleQA(this)">What is Spring's exception translation for @Repository? <span class="qa-arrow">▼</span></div><div class="qa-a">The <code>@Repository</code> annotation activates Spring's <code>PersistenceExceptionTranslationPostProcessor</code>. This AOP proxy intercepts JPA/JDBC exceptions thrown from @Repository beans and translates them to Spring's <code>DataAccessException</code> hierarchy. This makes your persistence layer vendor-neutral — the service layer catches DataAccessException, not Hibernate-specific exceptions. Without this, JPA implementation details leak into the service layer.</div></div>
+
+  <div class="qa"><div class="qa-q" onclick="toggleQA(this)">How does OptimisticLocking work and what exception does it throw? <span class="qa-arrow">▼</span></div><div class="qa-a">JPA's @Version field enables optimistic locking. When you read an entity (version=1) and try to save it, JPA checks the DB still has version=1. If another thread saved it (version=2), the update fails and throws <code>OptimisticLockException</code> (JPA) / <code>ObjectOptimisticLockingFailureException</code> (Spring). The standard response is to reload the entity and retry. This prevents lost updates in concurrent scenarios without using database-level locks.</div></div>
+
+  <h2 style="color:var(--red-light)">Senior / Expert</h2>
+
+  <div class="qa"><div class="qa-q" onclick="toggleQA(this)">Why is creating exceptions expensive and how can you mitigate it? <span class="qa-arrow">▼</span></div><div class="qa-a">Expense comes from <code>fillInStackTrace()</code> — the JVM walks the entire call stack capturing every frame. On a 50-frame stack this can be 100-1000x more expensive than a normal method call. Mitigations: (1) Override <code>fillInStackTrace()</code> to return <code>this</code> without walking the stack — use for high-frequency expected exceptions; (2) Use the constructor: <code>super(msg, null, true, false)</code> where the last boolean disables stack trace; (3) Use pre-allocated static exception instances (only for stateless, very hot paths). Never optimise prematurely — benchmark first.</div></div>
+
+  <div class="qa"><div class="qa-q" onclick="toggleQA(this)">Why should you never swallow InterruptedException? <span class="qa-arrow">▼</span></div><div class="qa-a"><code>InterruptedException</code> signals that a thread was requested to stop — it's a cooperative shutdown mechanism. Swallowing it clears the interrupt flag on the thread, breaking the entire shutdown chain. Thread pools won't shut down cleanly, awaitTermination() blocks forever, and other code checking Thread.isInterrupted() will get wrong answers. The correct options: (1) re-throw InterruptedException, or (2) call <code>Thread.currentThread().interrupt()</code> to restore the interrupt status before catching it.</div></div>
+
+  <div class="qa"><div class="qa-q" onclick="toggleQA(this)">What is the RFC 7807 ProblemDetail standard and how does Spring Boot 3 support it? <span class="qa-arrow">▼</span></div><div class="qa-a">RFC 7807 defines a standard JSON format for HTTP API error responses with fields: type (URI), title, status, detail, instance. Spring Boot 3 / Spring 6 has native <code>ProblemDetail</code> class. Configure with <code>spring.mvc.problemdetails.enabled=true</code> to auto-translate Spring MVC exceptions, or return <code>ProblemDetail</code> from @ExceptionHandler methods. Content-Type is <code>application/problem+json</code>. Allows adding custom properties via <code>setProperty()</code>.</div></div>
+
+  <div class="qa"><div class="qa-q" onclick="toggleQA(this)">How do you design exception handling for microservices with Feign clients? <span class="qa-arrow">▼</span></div><div class="qa-a">Implement a custom <code>ErrorDecoder</code> for each Feign client. Parse the structured error response body, map <code>errorCode</code> fields to specific exception types, and distinguish retryable (5xx, timeout) from non-retryable (4xx) errors. For retryable errors, throw a <code>RetryableException</code> which Feign knows to retry. For non-retryable errors, throw domain exceptions. Combine with Resilience4j @CircuitBreaker and @Retry annotations, with separate ignoreExceptions/retryExceptions configuration for each error class.</div></div>
+
+  <div class="qa"><div class="qa-q" onclick="toggleQA(this)">What is the Saga pattern and how does exception handling work in it? <span class="qa-arrow">▼</span></div><div class="qa-a">Saga manages distributed transactions as a sequence of local transactions with compensating actions for rollback. When step N fails, you execute compensation transactions for steps 1 through N-1 in reverse order. Exception handling is critical: compensations must be wrapped in their own try-catch (safe cancellation) because compensation failure is worse than original failure — it leaves the system in an inconsistent state. Failed compensations must trigger alerts for manual intervention. Each compensation should be idempotent for retryability.</div></div>
+
+  <div class="qa"><div class="qa-q" onclick="toggleQA(this)">What are the best practices for logging exceptions in production? <span class="qa-arrow">▼</span></div><div class="qa-a">Key rules: (1) Always pass the exception as the LAST argument to SLF4J — <code>log.error("msg", ex)</code> — this appends the full stack trace; (2) Include rich context: orderId, userId, what operation was attempted; (3) Use MDC for correlation IDs so all log lines for a request are traceable; (4) Log OR rethrow — not both (avoid duplicate log entries); (5) Never log sensitive data (passwords, card numbers, tokens); (6) Choose the right level: ERROR for unexpected, WARN for expected failures worth monitoring, INFO for normal 404s/validation; (7) Use structured JSON logging for searchability.</div></div>
+
+  <div class="qa"><div class="qa-q" onclick="toggleQA(this)">Tricky: What is "precise rethrow" introduced in Java 7? <span class="qa-arrow">▼</span></div><div class="qa-a">Before Java 7, if you caught <code>Exception</code> and re-threw it, the compiler treated the throw as type <code>Exception</code> — forcing you to declare <code>throws Exception</code> (too broad). Java 7 introduced precise rethrow: the compiler now analyses what can actually be thrown in the try block. So you can catch <code>Exception</code>, rethrow it, and still declare only the specific subtypes. Example: a try block that only throws IOException and ParseException allows <code>throws IOException, ParseException</code> even though you catch and rethrow as bare <code>Exception</code>.</div></div>
+
+  <div class="qa"><div class="qa-q" onclick="toggleQA(this)">How does Spring AOP interact with exception handling, and what is the pitfall? <span class="qa-arrow">▼</span></div><div class="qa-a">Spring AOP proxies wrap bean methods. If an exception is thrown inside a @Transactional method and caught by AOP advice, the transaction may not roll back correctly. Key rules: (1) <code>@Transactional</code> only rolls back on RuntimeException and Error by default — checked exceptions commit; (2) If you catch an exception inside a @Transactional method and don't rethrow, the transaction commits — it doesn't know an error occurred; (3) Set <code>rollbackFor = Exception.class</code> to rollback on checked exceptions too; (4) Self-invocation (calling a @Transactional method on <code>this</code>) bypasses the proxy and won't trigger rollback.</div></div>
+
+  <div class="qa"><div class="qa-q" onclick="toggleQA(this)">What is serialVersionUID and why does it matter for exceptions? <span class="qa-arrow">▼</span></div><div class="qa-a"><code>serialVersionUID</code> is a version marker for Java serialization. It matters for exceptions in distributed systems where exceptions are serialized and sent over the wire (RMI, some messaging systems). If sender and receiver have different class versions without explicit serialVersionUID, Java generates one from the class structure — any change (adding a field) produces a different ID, causing <code>InvalidClassException</code> on deserialization. Always declare <code>private static final long serialVersionUID = 1L</code> in custom exceptions. Increment it when making incompatible changes.</div></div>
+
+</div>
+
+</main>
+</div>
+
+<script>
+function show(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.currentTarget.classList.add('active');
+  document.querySelector('.main').scrollTop = 0;
+  window.scrollTo(0, 0);
+}
+function toggleQA(el) {
+  const ans = el.nextElementSibling;
+  const arrow = el.querySelector('.qa-arrow');
+  ans.classList.toggle('open');
+  arrow.classList.toggle('open');
+}
+</script>
+</body>
+</html>

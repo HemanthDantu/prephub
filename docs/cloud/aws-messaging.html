@@ -1,0 +1,1790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>AWS Module 7 — Messaging</title>
+<style>
+:root{--bg:#0c1117;--bg2:#131a24;--bg3:#1a2332;--bg4:#1f2b3d;--border:#243048;--border2:#2e3d55;--text:#e2e8f0;--text2:#94a3b8;--text3:#5a6a82;--orange:#f97316;--orange-bg:#2a1500;--orange-light:#fdba74;--blue:#3b82f6;--blue-bg:#0f2340;--blue-light:#93c5fd;--green:#22c55e;--green-bg:#0a2414;--green-light:#86efac;--red:#ef4444;--red-bg:#2a0a0a;--red-light:#fca5a5;--yellow:#f59e0b;--yellow-bg:#2a1800;--yellow-light:#fcd34d;--purple:#a855f7;--purple-bg:#1e0a35;--purple-light:#d8b4fe;--teal:#14b8a6;--teal-bg:#021e1c;--teal-light:#5eead4;--aws:#ff9900;--aws-bg:#1a0f00;--radius:8px;--radius-lg:12px;--mono:'Fira Code','Cascadia Code','Consolas',monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;line-height:1.7}
+.layout{display:flex;min-height:100vh}
+.sidebar{width:255px;min-width:255px;background:var(--bg2);border-right:1px solid var(--border);position:sticky;top:0;height:100vh;overflow-y:auto}
+.sidebar-header{padding:16px 20px;border-bottom:1px solid var(--border)}
+.sidebar-mod{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--aws);margin-bottom:3px}
+.sidebar-title{font-size:14px;font-weight:700;color:var(--text)}
+.sidebar-sub{font-size:11px;color:var(--text3);margin-top:2px}
+.nav-item{display:flex;align-items:center;gap:8px;padding:8px 20px;cursor:pointer;font-size:12.5px;color:var(--text2);transition:all .15s;border-left:3px solid transparent}
+.nav-item:hover{background:var(--bg3);color:var(--text)}
+.nav-item.active{background:var(--bg3);color:var(--orange-light);border-left-color:var(--aws)}
+.nav-dot{width:5px;height:5px;border-radius:50%;background:var(--border2);flex-shrink:0}
+.nav-item.active .nav-dot{background:var(--aws)}
+.nav-badge{font-size:9.5px;padding:1px 6px;border-radius:10px;background:var(--bg4);color:var(--text3);margin-left:auto}
+.nav-item.active .nav-badge{background:var(--aws-bg);color:var(--orange-light)}
+.nav-group-label{font-size:9.5px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.9px;padding:12px 20px 4px}
+.main{flex:1;padding:44px 52px;max-width:960px;overflow-x:hidden}
+.section{display:none}.section.active{display:block}
+h1{font-size:27px;font-weight:700;margin-bottom:8px;line-height:1.25}
+h2{font-size:19px;font-weight:600;margin:36px 0 14px;color:var(--text)}
+h3{font-size:15px;font-weight:600;margin:22px 0 10px;color:var(--text)}
+h4{font-size:13px;font-weight:600;margin:14px 0 6px;color:var(--orange-light)}
+p{color:var(--text2);margin-bottom:12px;line-height:1.78}
+strong{color:var(--text);font-weight:600}
+.subtitle{color:var(--text3);font-size:14px;margin-bottom:26px;line-height:1.65}
+pre{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px;font-family:var(--mono);font-size:12.5px;line-height:1.72;overflow-x:auto;margin:14px 0}
+code{font-family:var(--mono);font-size:12px;background:var(--bg3);padding:2px 6px;border-radius:4px;color:var(--teal-light)}
+.cm{color:var(--text3)}.kw{color:var(--purple-light)}.str{color:var(--green-light)}.ty{color:var(--blue-light)}.ak{color:var(--orange-light)}.num{color:var(--yellow-light)}.fn{color:var(--teal-light)}.jk{color:var(--orange-light)}.jv{color:var(--green-light)}.allow{color:#86efac}.deny{color:#fca5a5}
+.card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px;margin-bottom:14px}
+.card-title{font-size:13.5px;font-weight:600;margin-bottom:8px}
+.card-body{font-size:13px;color:var(--text2);line-height:1.75}
+.alert{border-radius:var(--radius);padding:13px 16px;margin:16px 0;font-size:13px;border-left:3px solid;line-height:1.7}
+.a-orange{background:var(--orange-bg);border-color:var(--orange);color:var(--orange-light)}
+.a-blue{background:var(--blue-bg);border-color:var(--blue);color:var(--blue-light)}
+.a-green{background:var(--green-bg);border-color:var(--green);color:var(--green-light)}
+.a-red{background:var(--red-bg);border-color:var(--red);color:var(--red-light)}
+.a-yellow{background:var(--yellow-bg);border-color:var(--yellow);color:var(--yellow-light)}
+.a-purple{background:var(--purple-bg);border-color:var(--purple);color:var(--purple-light)}
+.alert strong{color:inherit}
+.refs{margin:12px 0 16px;display:flex;flex-wrap:wrap;gap:6px}
+.ref{display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:3px 10px;border-radius:10px;background:var(--bg4);color:var(--text3);border:1px solid var(--border);text-decoration:none;transition:all .15s}
+.ref:hover{background:var(--bg3);color:var(--text2)}
+table{width:100%;border-collapse:collapse;margin:14px 0;font-size:13px}
+th{background:var(--bg3);color:var(--text);font-weight:600;padding:10px 14px;text-align:left;border-bottom:1px solid var(--border2)}
+td{padding:9px 14px;border-bottom:1px solid var(--border);color:var(--text2);vertical-align:top}
+tr:hover td{background:var(--bg3)}
+.qa{border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:10px;overflow:hidden}
+.qa-q{padding:13px 18px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;background:var(--bg3);font-size:13px;font-weight:500;transition:background .15s;user-select:none;gap:12px}
+.qa-q:hover{background:var(--bg4)}
+.qa-a{display:none;padding:16px 18px;font-size:13px;color:var(--text2);line-height:1.8;background:var(--bg2);border-top:1px solid var(--border)}
+.qa-a.open{display:block}.qa-arrow{transition:transform .2s;color:var(--text3);font-size:11px;flex-shrink:0}.qa-arrow.open{transform:rotate(180deg)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin:14px 0}
+.section-header{padding-bottom:18px;border-bottom:1px solid var(--border);margin-bottom:26px}
+.mod-badge{font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;display:inline-block;margin-bottom:10px;background:var(--aws-bg);color:var(--aws)}
+.steps{counter-reset:step}
+.step{display:flex;gap:14px;margin-bottom:16px}
+.step-num{counter-increment:step;width:26px;height:26px;min-width:26px;background:var(--aws-bg);color:var(--aws);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;margin-top:2px;border:1px solid var(--orange)}
+.step-content{flex:1}.step-title{font-weight:600;font-size:13px;margin-bottom:3px}.step-body{font-size:13px;color:var(--text2);line-height:1.65}
+.scenario{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:18px 20px;margin:16px 0}
+.scenario-label{font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;color:var(--aws);margin-bottom:6px}
+.scenario-title{font-size:14px;font-weight:600;margin-bottom:10px}
+.compare-row{display:flex;gap:0;margin:14px 0;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+.cmp-a{flex:1;background:var(--red-bg);padding:16px;border-right:1px solid var(--border)}
+.cmp-b{flex:1;background:var(--green-bg);padding:16px}
+.cmp-label{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px}
+.cmp-a .cmp-label{color:var(--red)}.cmp-b .cmp-label{color:var(--green)}
+.flow-diagram{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin:14px 0}
+.flow-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text3);margin-bottom:12px}
+.flow-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+.fbox{background:var(--bg4);border:1px solid var(--border2);border-radius:var(--radius);padding:8px 14px;font-size:12px;font-weight:600;white-space:nowrap}
+.fbox-green{background:#061a0d;border-color:#14532d;color:var(--green-light)}
+.fbox-blue{background:var(--blue-bg);border-color:var(--blue);color:var(--blue-light)}
+.fbox-orange{background:var(--aws-bg);border-color:var(--orange);color:var(--orange-light)}
+.fbox-purple{background:var(--purple-bg);border-color:var(--purple);color:var(--purple-light)}
+.fbox-red{background:var(--red-bg);border-color:var(--red);color:var(--red-light)}
+.fbox-yellow{background:var(--yellow-bg);border-color:var(--yellow);color:var(--yellow-light)}
+.farr{color:var(--aws);font-size:18px;font-weight:700;padding:0 4px}
+.traffic-flow{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin:14px 0}
+.traffic-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text3);margin-bottom:12px}
+.traffic-step{display:flex;align-items:flex-start;gap:12px;margin-bottom:10px;font-size:13px}
+.traffic-num{width:22px;height:22px;min-width:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;margin-top:1px}
+.t-green{background:#061a0d;color:var(--green-light);border:1px solid #14532d}
+.t-blue{background:var(--blue-bg);color:var(--blue-light);border:1px solid var(--blue)}
+.t-orange{background:var(--aws-bg);color:var(--aws);border:1px solid var(--orange)}
+.t-purple{background:var(--purple-bg);color:var(--purple-light);border:1px solid var(--purple)}
+.t-red{background:var(--red-bg);color:var(--red-light);border:1px solid var(--red)}
+.t-teal{background:var(--teal-bg);color:var(--teal-light);border:1px solid var(--teal)}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-mod">Module 7</div>
+    <div class="sidebar-title">Messaging</div>
+    <div class="sidebar-sub">SQS · SNS · EventBridge · Kinesis</div>
+  </div>
+  <div class="nav-group-label">Why Messaging Exists</div>
+  <div class="nav-item active" onclick="show('s0')"><span class="nav-dot"></span>0. Async vs Sync — Start Here</div>
+  <div class="nav-group-label">SQS — Queues</div>
+  <div class="nav-item" onclick="show('s1')"><span class="nav-dot"></span>1. What is SQS?</div>
+  <div class="nav-item" onclick="show('s2')"><span class="nav-dot"></span>2. Standard vs FIFO Queues</div>
+  <div class="nav-item" onclick="show('s3')"><span class="nav-dot"></span>3. Visibility Timeout &amp; DLQ <span class="nav-badge">Key</span></div>
+  <div class="nav-item" onclick="show('s4')"><span class="nav-dot"></span>4. SQS + Lambda Integration</div>
+  <div class="nav-group-label">SNS — Pub/Sub</div>
+  <div class="nav-item" onclick="show('s5')"><span class="nav-dot"></span>5. What is SNS?</div>
+  <div class="nav-item" onclick="show('s6')"><span class="nav-dot"></span>6. Fan-out &amp; Message Filtering</div>
+  <div class="nav-group-label">EventBridge</div>
+  <div class="nav-item" onclick="show('s7')"><span class="nav-dot"></span>7. What is EventBridge?</div>
+  <div class="nav-item" onclick="show('s8')"><span class="nav-dot"></span>8. Rules, Patterns &amp; Targets</div>
+  <div class="nav-item" onclick="show('s9')"><span class="nav-dot"></span>9. Event-Driven Architectures</div>
+  <div class="nav-group-label">Kinesis — Streaming</div>
+  <div class="nav-item" onclick="show('s10')"><span class="nav-dot"></span>10. What is Kinesis?</div>
+  <div class="nav-item" onclick="show('s11')"><span class="nav-dot"></span>11. Kinesis Data Streams Deep Dive</div>
+  <div class="nav-item" onclick="show('s12')"><span class="nav-dot"></span>12. Kinesis Firehose</div>
+  <div class="nav-group-label">Decisions</div>
+  <div class="nav-item" onclick="show('s13')"><span class="nav-dot"></span>13. SQS vs SNS vs EventBridge vs Kinesis</div>
+  <div class="nav-item" onclick="show('s14')"><span class="nav-dot"></span>14. Real-World Messaging Architectures</div>
+  <div class="nav-item" onclick="show('s15')"><span class="nav-dot"></span>Interview Q&amp;A <span class="nav-badge">16 Qs</span></div>
+</aside>
+
+<main class="main">
+
+<!-- ======================================================= S0: WHY MESSAGING -->
+<div id="s0" class="section active">
+<div class="section-header">
+  <span class="mod-badge">Module 7 · Section 0</span>
+  <h1>Async vs Sync — Why Messaging Exists</h1>
+  <p class="subtitle">Before touching SQS or SNS, you need to understand the fundamental problem they solve. Without this context, messaging feels like unnecessary complexity. With it, it becomes the obvious solution.</p>
+</div>
+
+<h2>The Synchronous Service Problem</h2>
+<p>When Service A calls Service B directly over HTTP, they are <strong>tightly coupled</strong>. Service A waits for Service B to respond before continuing. This works fine until it doesn't — and the failures are spectacular.</p>
+
+<div class="scenario">
+  <div class="scenario-label">Real Production Failure</div>
+  <div class="scenario-title">Direct HTTP coupling causes cascade failure</div>
+  <p>Your e-commerce checkout works like this: user places order → OrderService calls PaymentService → calls InventoryService → calls EmailService → calls AnalyticsService → returns success. All synchronous, all in sequence.</p>
+  <p style="margin-top:8px"><strong>What actually happens:</strong> EmailService is slow today (email provider having issues). InventoryService waits 30 seconds for EmailService. OrderService waits 30 seconds. User sees a spinner. They abandon. You lose the sale. And EmailService being slow has nothing to do with whether the order was successfully placed — it's a downstream notification that has zero impact on the order itself.</p>
+  <p style="margin-top:8px"><strong>Cascade:</strong> If EmailService goes down, orders stop processing. If AnalyticsService has a bug and throws an exception, orders fail. Services that should be independent are coupled together by synchronous calls.</p>
+</div>
+
+<h2>Asynchronous Messaging Decouples Everything</h2>
+<p>With messaging, Service A puts a message in a queue and returns immediately. Service B reads from the queue when it's ready. Service A doesn't wait, doesn't care if Service B is slow, doesn't fail if Service B is down. They are <strong>loosely coupled</strong>.</p>
+
+<div class="compare-row">
+  <div class="cmp-a">
+    <div class="cmp-label">❌ Synchronous (direct calls)</div>
+    <pre style="background:transparent;border:none;padding:0;font-size:12px;color:var(--text2)">OrderService.placeOrder()
+  ↓ HTTP call (waits 200ms)
+  PaymentService.charge()
+  ↓ HTTP call (waits 50ms)
+  InventoryService.reserve()
+  ↓ HTTP call (waits 3,000ms!!!)
+  EmailService.sendConfirmation()
+  ↓ HTTP call (waits 100ms)
+  AnalyticsService.track()
+  ← DONE (total: 3,350ms)
+
+If EmailService dies → orders fail
+If it's slow → users wait
+Tight coupling = fragile system</pre>
+  </div>
+  <div class="cmp-b">
+    <div class="cmp-label">✅ Asynchronous (messaging)</div>
+    <pre style="background:transparent;border:none;padding:0;font-size:12px;color:var(--text2)">OrderService.placeOrder()
+  ↓ HTTP call (waits 200ms)
+  PaymentService.charge()
+  ↓ HTTP call (waits 50ms)
+  InventoryService.reserve()
+  ↓ SQS.sendMessage() (waits 5ms)
+  "order-placed" event queued
+  ← DONE (total: 255ms!) ✓
+
+EmailService reads queue when ready
+AnalyticsService reads queue when ready
+If EmailService dies → messages queue up
+  → delivered when it recovers
+Loose coupling = resilient system</pre>
+  </div>
+</div>
+
+<h2>The Three Messaging Patterns</h2>
+<div class="grid3">
+  <div class="card">
+    <div class="card-title" style="color:var(--orange-light)">Queue (Point-to-Point)</div>
+    <div class="card-body">
+      One sender, one receiver. Message is consumed once and deleted. Order between sender and consumer. Used for work distribution — divide tasks among multiple workers.<br><br>
+      <strong>AWS service:</strong> SQS
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--blue-light)">Pub/Sub (Broadcast)</div>
+    <div class="card-body">
+      One sender (publisher), many receivers (subscribers). Every subscriber gets a copy. Publisher doesn't know who is subscribed. Used for event notification — "something happened, tell everyone who cares."<br><br>
+      <strong>AWS service:</strong> SNS, EventBridge
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--green-light)">Streaming (Replay)</div>
+    <div class="card-body">
+      Ordered, partitioned log of records. Multiple consumers can read at their own pace. Records retained for days/weeks — can replay from the beginning.<br><br>
+      <strong>AWS service:</strong> Kinesis, Kafka (MSK)
+    </div>
+  </div>
+</div>
+
+<div class="refs">
+  <a class="ref" href="https://aws.amazon.com/messaging/" target="_blank">AWS Messaging Services</a>
+  <a class="ref" href="https://aws.amazon.com/event-driven-architecture/" target="_blank">Event-Driven Architecture on AWS</a>
+</div>
+</div>
+
+<!-- ======================================================= S1: WHAT IS SQS -->
+<div id="s1" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 7 · SQS · Section 1</span>
+  <h1>What is SQS?</h1>
+  <p class="subtitle">Simple Queue Service — a fully managed message queue. One of the oldest AWS services (2004) and still one of the most used. Understanding SQS deeply is essential because it's used in nearly every distributed AWS application.</p>
+</div>
+
+<h2>What a Queue Actually Does</h2>
+<p>A queue is a buffer between a producer (something creating work) and a consumer (something doing the work). The producer adds messages to the queue. The consumer picks messages off the queue, processes them, and deletes them. The queue holds messages if consumers are busy or down — nothing is lost.</p>
+
+<div class="scenario">
+  <div class="scenario-label">Analogy</div>
+  <div class="scenario-title">SQS is like a ticket number system at a bank</div>
+  <p>Customers (producers) take a numbered ticket when they arrive. Tellers (consumers) call the next number when they're free. If all tellers are busy, customers wait. If the bank suddenly gets 100 customers, tickets are issued immediately — customers don't get turned away, they just wait. If a teller is sick, their tickets get processed by other tellers or when they return. The ticket system (queue) absorbs the mismatch between arrival rate and service rate.</p>
+</div>
+
+<h2>SQS Core Properties</h2>
+<div class="grid3">
+  <div class="card">
+    <div class="card-title" style="color:var(--orange-light)">At-least-once delivery</div>
+    <div class="card-body">SQS guarantees every message is delivered at least once. In rare cases, a message might be delivered twice. Your consumer code must be idempotent — processing the same message twice should produce the same result as processing it once.</div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--orange-light)">Unlimited throughput</div>
+    <div class="card-body">Standard queues handle unlimited messages per second. No capacity planning. Send 1 message or 1 million messages per second — SQS handles it. You're billed per message, not per capacity unit.</div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--orange-light)">Retention period</div>
+    <div class="card-body">Messages persist in the queue for 1 minute to 14 days (default: 4 days). If no consumer processes a message within the retention period, it's deleted. Set longer retention for fault-tolerant systems.</div>
+  </div>
+</div>
+
+<h2>Message Lifecycle — What Actually Happens</h2>
+<div class="traffic-flow">
+  <div class="traffic-label">Complete SQS message lifecycle</div>
+  <div class="traffic-step"><div class="traffic-num t-orange">1</div><div><strong>Producer sends:</strong> OrderService calls <code>sqs.sendMessage()</code>. SQS stores the message and returns a MessageId. Message is now <strong>visible</strong> in the queue.</div></div>
+  <div class="traffic-step"><div class="traffic-num t-blue">2</div><div><strong>Consumer receives:</strong> Worker calls <code>sqs.receiveMessage()</code>. SQS returns up to 10 messages and makes them <strong>invisible</strong> for the visibility timeout period (default 30s). This prevents other workers from seeing and processing the same message.</div></div>
+  <div class="traffic-step"><div class="traffic-num t-blue">3</div><div><strong>Consumer processes:</strong> Worker processes the message (writes to DB, calls an API, sends an email). This should complete within the visibility timeout.</div></div>
+  <div class="traffic-step"><div class="traffic-num t-green">4a — Success:</div><div>Worker calls <code>sqs.deleteMessage()</code> with the receipt handle. Message is permanently removed from the queue. Processed successfully.</div></div>
+  <div class="traffic-step"><div class="traffic-num t-red">4b — Failure:</div><div>Worker crashes or throws an exception. It never calls deleteMessage. Visibility timeout expires. Message becomes <strong>visible again</strong> and is redelivered to another worker. This is SQS's built-in retry mechanism.</div></div>
+  <div class="traffic-step"><div class="traffic-num t-purple">5</div><div><strong>Dead Letter Queue:</strong> After N retry attempts (configured by maxReceiveCount), message is moved to the DLQ for investigation. Never silently lost.</div></div>
+</div>
+
+<h2>SQS in Practice — Sending and Receiving</h2>
+<pre><span class="cm"># Create a queue</span>
+aws sqs create-queue \
+  --queue-name orders-processing \
+  --attributes '{
+    "VisibilityTimeout": "60",
+    "MessageRetentionPeriod": "86400",
+    "ReceiveMessageWaitTimeSeconds": "20",
+    "RedrivePolicy": "{
+      \"deadLetterTargetArn\": \"arn:aws:sqs:us-east-1:123:orders-dlq\",
+      \"maxReceiveCount\": \"3\"
+    }"
+  }'
+
+<span class="cm"># Returns: QueueUrl = https://sqs.us-east-1.amazonaws.com/123456789012/orders-processing</span></pre>
+
+<pre><span class="ty">SqsClient</span> sqs = <span class="ty">SqsClient</span>.<span class="fn">create</span>();
+<span class="ty">String</span> queueUrl = <span class="str">"https://sqs.us-east-1.amazonaws.com/123456789012/orders-processing"</span>;
+
+<span class="cm">// PRODUCER: Send a message</span>
+<span class="ty">SendMessageResponse</span> sent = sqs.<span class="fn">sendMessage</span>(<span class="ty">SendMessageRequest</span>.<span class="fn">builder</span>()
+    .<span class="fn">queueUrl</span>(queueUrl)
+    .<span class="fn">messageBody</span>(objectMapper.<span class="fn">writeValueAsString</span>(order))
+    .<span class="fn">messageAttributes</span>(<span class="ty">Map</span>.<span class="fn">of</span>(
+        <span class="str">"orderType"</span>, <span class="ty">MessageAttributeValue</span>.<span class="fn">builder</span>()
+            .<span class="fn">dataType</span>(<span class="str">"String"</span>).<span class="fn">stringValue</span>(<span class="str">"PHYSICAL"</span>).<span class="fn">build</span>()))
+    .<span class="fn">delaySeconds</span>(<span class="num">0</span>)    <span class="cm">// optionally delay delivery by 0-900 seconds</span>
+    .<span class="fn">build</span>());
+log.<span class="fn">info</span>(<span class="str">"Sent: {}"</span>, sent.<span class="fn">messageId</span>());
+
+<span class="cm">// CONSUMER: Poll for messages (long polling — waits up to 20s for messages)</span>
+<span class="kw">while</span> (<span class="kw">true</span>) {
+    <span class="ty">ReceiveMessageResponse</span> response = sqs.<span class="fn">receiveMessage</span>(
+        <span class="ty">ReceiveMessageRequest</span>.<span class="fn">builder</span>()
+            .<span class="fn">queueUrl</span>(queueUrl)
+            .<span class="fn">maxNumberOfMessages</span>(<span class="num">10</span>)     <span class="cm">// up to 10 per receive call</span>
+            .<span class="fn">waitTimeSeconds</span>(<span class="num">20</span>)          <span class="cm">// long polling (cheaper, fewer empty receives)</span>
+            .<span class="fn">visibilityTimeout</span>(<span class="num">60</span>)         <span class="cm">// 60s to process each message</span>
+            .<span class="fn">build</span>());
+
+    <span class="kw">for</span> (<span class="ty">Message</span> msg : response.<span class="fn">messages</span>()) {
+        <span class="kw">try</span> {
+            <span class="ty">Order</span> order = objectMapper.<span class="fn">readValue</span>(msg.<span class="fn">body</span>(), <span class="ty">Order</span>.<span class="kw">class</span>);
+            orderProcessor.<span class="fn">process</span>(order);
+
+            <span class="cm">// SUCCESS: delete message from queue</span>
+            sqs.<span class="fn">deleteMessage</span>(<span class="ty">DeleteMessageRequest</span>.<span class="fn">builder</span>()
+                .<span class="fn">queueUrl</span>(queueUrl)
+                .<span class="fn">receiptHandle</span>(msg.<span class="fn">receiptHandle</span>())  <span class="cm">// unique handle for this receive</span>
+                .<span class="fn">build</span>());
+        } <span class="kw">catch</span> (<span class="ty">Exception</span> e) {
+            log.<span class="fn">error</span>(<span class="str">"Failed to process {}"</span>, msg.<span class="fn">messageId</span>(), e);
+            <span class="cm">// DON'T delete — visibility timeout expires, message redelivered</span>
+        }
+    }
+}</pre>
+
+<h2>Long Polling vs Short Polling</h2>
+<div class="grid2">
+  <div class="card" style="border-color:#5a1a1a">
+    <div class="card-title" style="color:var(--red-light)">Short Polling (default, avoid)</div>
+    <div class="card-body">SQS returns immediately — even if the queue is empty. You get back an empty response and immediately call again. Creates thousands of empty API calls per minute. Costs more, wastes CPU. <code>WaitTimeSeconds=0</code></div>
+  </div>
+  <div class="card" style="border-color:#14532d">
+    <div class="card-title" style="color:var(--green-light)">Long Polling (always use this)</div>
+    <div class="card-body">SQS holds the connection open up to <code>WaitTimeSeconds</code> (max 20) waiting for a message. Returns immediately if a message arrives. Dramatically reduces empty responses. Cheaper and more efficient. <code>WaitTimeSeconds=20</code></div>
+  </div>
+</div>
+
+<h2>Batch Operations — Process Multiple Messages at Once</h2>
+<pre><span class="cm"># Send up to 10 messages in one API call (batch send)</span>
+aws sqs send-message-batch \
+  --queue-url https://sqs.us-east-1.amazonaws.com/123/orders \
+  --entries '[
+    {"Id":"1","MessageBody":"{\"orderId\":\"ord-001\"}"},
+    {"Id":"2","MessageBody":"{\"orderId\":\"ord-002\"}"},
+    {"Id":"3","MessageBody":"{\"orderId\":\"ord-003\"}"}
+  ]'
+<span class="cm"># Cost: one API call vs three = 66% cost reduction at scale</span>
+
+<span class="cm"># Delete batch (always batch deletes after processing)</span>
+sqs.<span class="fn">deleteMessageBatch</span>(<span class="ty">DeleteMessageBatchRequest</span>.<span class="fn">builder</span>()
+    .<span class="fn">queueUrl</span>(queueUrl)
+    .<span class="fn">entries</span>(processedMessages.<span class="fn">stream</span>()
+        .<span class="fn">map</span>(m -> <span class="ty">DeleteMessageBatchRequestEntry</span>.<span class="fn">builder</span>()
+            .<span class="fn">id</span>(m.<span class="fn">messageId</span>())
+            .<span class="fn">receiptHandle</span>(m.<span class="fn">receiptHandle</span>())
+            .<span class="fn">build</span>())
+        .<span class="fn">collect</span>(<span class="ty">Collectors</span>.<span class="fn">toList</span>()))
+    .<span class="fn">build</span>());</pre>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/welcome.html" target="_blank">SQS Developer Guide</a>
+  <a class="ref" href="https://aws.amazon.com/sqs/pricing/" target="_blank">SQS Pricing</a>
+</div>
+</div>
+
+<!-- ======================================================= S2: STANDARD vs FIFO -->
+<div id="s2" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 7 · SQS · Section 2</span>
+  <h1>Standard vs FIFO Queues</h1>
+  <p class="subtitle">Two fundamentally different queue types with different guarantees, throughput limits, and cost. Choosing wrong causes either data loss, duplicate processing, or ordering bugs.</p>
+</div>
+
+<h2>Standard Queue — Maximum Throughput, Best-Effort Ordering</h2>
+<p>Standard queues offer <strong>unlimited throughput</strong> and <strong>at-least-once delivery</strong>. Messages are generally delivered in the order sent but there's no guarantee — SQS distributes messages across many servers for throughput, and occasionally this causes out-of-order delivery. Occasionally a message may be delivered more than once.</p>
+
+<p><strong>Use Standard when:</strong> order doesn't matter, occasional duplicates are fine (your processing is idempotent), you need maximum throughput. Examples: sending emails (duplicate email is annoying but not catastrophic), triggering image processing, logging events, fan-out workloads.</p>
+
+<h2>FIFO Queue — Exactly-Once, In-Order</h2>
+<p>FIFO queues guarantee: messages are delivered <strong>in the order sent</strong>, each message is processed <strong>exactly once</strong> (no duplicates). They achieve this via a content-based deduplication ID — SQS deduplicates messages with the same ID within a 5-minute window.</p>
+
+<p><strong>Trade-off:</strong> FIFO queues have a throughput limit — 3,000 messages/second with batching (300/sec without). Much lower than Standard. You also pay ~10% more per message.</p>
+
+<p><strong>Use FIFO when:</strong> order matters (financial transactions, sequential state machine transitions), duplicates are unacceptable (charge a credit card exactly once), workflow that must execute in steps.</p>
+
+<pre><span class="cm"># Create a FIFO queue (name MUST end in .fifo)</span>
+aws sqs create-queue \
+  --queue-name payments-processing.fifo \
+  --attributes '{
+    "FifoQueue": "true",
+    "ContentBasedDeduplication": "true",  
+    "DeduplicationScope": "messageGroup",
+    "FifoThroughputLimit": "perMessageGroupId"
+  }'
+
+<span class="cm"># FIFO messages require MessageGroupId (like a partition key)
+# Messages in the same group are ordered relative to each other
+# Messages across groups can be processed in parallel</span></pre>
+
+<pre><span class="cm">// Send to FIFO queue — must include MessageGroupId</span>
+sqs.<span class="fn">sendMessage</span>(<span class="ty">SendMessageRequest</span>.<span class="fn">builder</span>()
+    .<span class="fn">queueUrl</span>(<span class="str">"https://sqs.us-east-1.amazonaws.com/123/payments-processing.fifo"</span>)
+    .<span class="fn">messageBody</span>(<span class="fn">serialise</span>(paymentEvent))
+    .<span class="fn">messageGroupId</span>(<span class="str">"user-"</span> + userId)     <span class="cm">// same user = same group = ordered</span>
+    .<span class="fn">messageDeduplicationId</span>(paymentId)     <span class="cm">// prevents duplicate processing</span>
+    .<span class="fn">build</span>());
+
+<span class="cm">// Why per-user grouping?
+// User Alice makes payments: Payment A1 then A2 then A3
+// They MUST process in order (A1 before A2 before A3)
+// User Bob makes payments: B1, B2
+// Bob's payments can process in parallel with Alice's
+// MessageGroupId per user achieves this</span></pre>
+
+<h2>FIFO Message Group ID — The Parallelism Key</h2>
+<p>This is the subtlety that most people miss about FIFO queues. Messages in the <em>same</em> group are strictly ordered and processed one at a time. Messages in <em>different</em> groups can be processed in parallel. Design your group IDs around what needs to be ordered relative to each other.</p>
+
+<pre><span class="cm">## Good MessageGroupId choices:
+userId       → per-user ordering (most common)
+orderId      → per-order operations ordered
+accountId    → per-account financial operations
+
+## Bad: everything in one group
+MessageGroupId = "all"  ← everything serialised, 300 msg/sec throughput
+                            no benefit from FIFO, bottleneck
+
+## Bad: too granular
+MessageGroupId = paymentId  ← each payment is its own group, no ordering
+                               between related operations, might as well use Standard</span></pre>
+
+<h2>Comparison Table</h2>
+<table>
+  <tr><th>Feature</th><th>Standard</th><th>FIFO</th></tr>
+  <tr><td>Throughput</td><td>Unlimited</td><td>3,000/sec (with batching), 300/sec (without)</td></tr>
+  <tr><td>Ordering</td><td>Best-effort (generally in-order)</td><td>Strict first-in, first-out per group</td></tr>
+  <tr><td>Delivery</td><td>At-least-once (occasional duplicates)</td><td>Exactly-once processing</td></tr>
+  <tr><td>Deduplication</td><td>Not supported</td><td>5-minute deduplication window</td></tr>
+  <tr><td>Price</td><td>$0.40/million requests</td><td>$0.50/million requests</td></tr>
+  <tr><td>Use for</td><td>High-volume, order-not-critical work</td><td>Financial transactions, ordered workflows</td></tr>
+</table>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/FIFO-queues.html" target="_blank">SQS FIFO Queues</a>
+  <a class="ref" href="https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/standard-queues.html" target="_blank">SQS Standard Queues</a>
+</div>
+</div>
+
+<!-- ======================================================= S3: VISIBILITY TIMEOUT & DLQ -->
+<div id="s3" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 7 · SQS · Section 3</span>
+  <h1>Visibility Timeout &amp; Dead Letter Queues</h1>
+  <p class="subtitle">Two SQS mechanisms that are critical to understand for building reliable systems. Get visibility timeout wrong and messages are processed twice. Ignore DLQs and failing messages silently disappear.</p>
+</div>
+
+<h2>Visibility Timeout — How SQS Prevents Double Processing</h2>
+<p>When a consumer receives a message, SQS makes that message <strong>invisible</strong> to all other consumers for the <code>VisibilityTimeout</code> duration. This prevents two consumers from processing the same message simultaneously while still allowing retry on failure.</p>
+
+<div class="scenario">
+  <div class="scenario-label">Why This Exists</div>
+  <div class="scenario-title">The problem without visibility timeout</div>
+  <p>Without invisibility: Consumer A receives "Process Order 123" and starts working. Three seconds later, Consumer B also receives "Process Order 123" (queue thinks A didn't get it). Now both A and B are processing the same order — double charge, double shipment. Disaster.</p>
+  <p style="margin-top:8px">With visibility timeout: Consumer A receives the message. SQS hides it for 60 seconds. Consumer B polls the queue and sees nothing. A processes successfully and deletes the message. Message gone. If A crashes mid-processing, the 60s expires, the message reappears, B picks it up and processes it. Reliability without double processing.</p>
+</div>
+
+<pre><span class="cm">## Key rules for setting VisibilityTimeout:
+# Must be > time it takes to process the message
+# If processing takes 45s and timeout is 30s → message reappears WHILE being processed
+# → double processing even though consumer is alive!
+
+# Safe formula: VisibilityTimeout = max_processing_time × 6
+# (gives plenty of headroom)
+
+# For variable processing times: extend visibility timeout dynamically</span>
+<span class="ty">ChangeMessageVisibilityResponse</span> r = sqs.<span class="fn">changeMessageVisibility</span>(
+    <span class="ty">ChangeMessageVisibilityRequest</span>.<span class="fn">builder</span>()
+        .<span class="fn">queueUrl</span>(queueUrl)
+        .<span class="fn">receiptHandle</span>(msg.<span class="fn">receiptHandle</span>())
+        .<span class="fn">visibilityTimeout</span>(<span class="num">120</span>)  <span class="cm">// extend by 2 more minutes</span>
+        .<span class="fn">build</span>());
+<span class="cm">// Call this when you know processing will take longer than expected
+// Common pattern: extend every 30 seconds in a background thread</span>
+
+<span class="cm">## Visibility timeout settings reference:
+# Queue-level default: 0-43200 seconds (12 hours)
+# Per-receive override: can set in receiveMessage call
+# Maximum: 43200 seconds (12 hours)</span></pre>
+
+<h2>Dead Letter Queue (DLQ) — Never Lose a Failed Message</h2>
+<p>A DLQ is a regular SQS queue where SQS automatically sends messages that have failed processing too many times. Without a DLQ, a consistently failing message would cycle through your queue forever, consuming resources and preventing other messages from being processed (in FIFO). With a DLQ, problematic messages are isolated for investigation.</p>
+
+<div class="flow-diagram">
+  <div class="flow-label">DLQ Flow — Message repeatedly fails processing</div>
+  <div class="flow-row">
+    <div class="fbox-orange fbox">Producer</div>
+    <div class="farr">→</div>
+    <div class="fbox-blue fbox">Main Queue</div>
+    <div class="farr">→</div>
+    <div class="fbox">Consumer tries (fail #1)</div>
+  </div>
+  <div class="flow-row">
+    <div style="width:200px"></div>
+    <div class="farr" style="transform:rotate(90deg);display:inline-block">↺</div>
+    <div class="fbox">Message re-visible after timeout</div>
+    <div class="farr">→</div>
+    <div class="fbox">Consumer tries (fail #2)</div>
+  </div>
+  <div class="flow-row">
+    <div style="width:200px"></div>
+    <div class="farr" style="transform:rotate(90deg);display:inline-block">↺</div>
+    <div class="fbox">Consumer tries (fail #3 = maxReceiveCount)</div>
+  </div>
+  <div class="flow-row">
+    <div style="width:200px"></div>
+    <div class="farr">→</div>
+    <div class="fbox-red fbox">Dead Letter Queue</div>
+    <div class="farr">→</div>
+    <div class="fbox">Alert! Developer investigates</div>
+  </div>
+</div>
+
+<pre><span class="cm"># Step 1: Create the DLQ</span>
+aws sqs create-queue --queue-name orders-processing-dlq
+
+<span class="cm"># Step 2: Configure the main queue to use it</span>
+aws sqs set-queue-attributes \
+  --queue-url https://sqs.us-east-1.amazonaws.com/123/orders-processing \
+  --attributes '{
+    "RedrivePolicy": "{
+      \"deadLetterTargetArn\": \"arn:aws:sqs:us-east-1:123:orders-processing-dlq\",
+      \"maxReceiveCount\": \"3\"
+    }"
+  }'
+
+<span class="cm"># maxReceiveCount=3 means:
+# Attempt 1: consumer receives, fails, doesn't delete
+# Attempt 2: message re-visible, consumer receives, fails again
+# Attempt 3: consumer receives, fails again
+# SQS moves to DLQ — consumer won't see it again in main queue</span>
+
+<span class="cm"># Step 3: Set up CloudWatch alarm on DLQ depth</span>
+aws cloudwatch put-metric-alarm \
+  --alarm-name orders-dlq-not-empty \
+  --namespace AWS/SQS \
+  --metric-name ApproximateNumberOfMessagesVisible \
+  --dimensions Name=QueueName,Value=orders-processing-dlq \
+  --threshold 0 \
+  --comparison-operator GreaterThanThreshold \
+  --evaluation-periods 1 \
+  --period 60 \
+  --statistic Sum \
+  --alarm-actions arn:aws:sns:...:engineering-alerts
+<span class="cm"># Alert fires the moment any message lands in DLQ</span>
+
+<span class="cm"># After fixing the bug: redrive messages from DLQ back to main queue</span>
+aws sqs start-message-move-task \
+  --source-arn arn:aws:sqs:us-east-1:123:orders-processing-dlq \
+  --destination-arn arn:aws:sqs:us-east-1:123:orders-processing</span></pre>
+
+<h2>Making Your Consumer Idempotent</h2>
+<p>Since SQS delivers at-least-once, your consumer must handle the same message arriving twice without bad effects. This is called idempotency.</p>
+
+<pre><span class="kw">public class</span> <span class="ty">OrderProcessor</span> {
+
+    <span class="kw">public void</span> <span class="fn">processOrder</span>(<span class="ty">String</span> sqsMessageId, <span class="ty">Order</span> order) {
+
+        <span class="cm">// Check if we've already processed this message</span>
+        <span class="cm">// Store processed messageIds in DynamoDB with TTL</span>
+        <span class="kw">boolean</span> alreadyProcessed = processedMessageRepo
+            .<span class="fn">exists</span>(sqsMessageId);  <span class="cm">// check DynamoDB</span>
+
+        <span class="kw">if</span> (alreadyProcessed) {
+            log.<span class="fn">info</span>(<span class="str">"Duplicate SQS message {}, skipping"</span>, sqsMessageId);
+            <span class="kw">return</span>;  <span class="cm">// idempotent — safe to skip</span>
+        }
+
+        <span class="cm">// Process the order</span>
+        orderRepository.<span class="fn">save</span>(order);
+        inventoryService.<span class="fn">reserve</span>(order.<span class="fn">getItems</span>());
+
+        <span class="cm">// Record that we processed this message (TTL: 7 days)</span>
+        processedMessageRepo.<span class="fn">save</span>(sqsMessageId, <span class="ty">Instant</span>.<span class="fn">now</span>().<span class="fn">plusDays</span>(<span class="num">7</span>));
+    }
+}</pre>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html" target="_blank">Visibility Timeout</a>
+  <a class="ref" href="https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-dead-letter-queues.html" target="_blank">Dead Letter Queues</a>
+</div>
+</div>
+
+<!-- ======================================================= S4: SQS + LAMBDA -->
+<div id="s4" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 7 · SQS · Section 4</span>
+  <h1>SQS + Lambda Integration</h1>
+  <p class="subtitle">The most powerful and common SQS pattern — Lambda automatically polling the queue, scaling to match message volume, handling partial failures, and reporting results back.</p>
+</div>
+
+<h2>How Lambda Polling Works with SQS</h2>
+<p>When you configure an SQS queue as a Lambda trigger, AWS creates an <strong>Event Source Mapping (ESM)</strong>. The ESM is an internal process that polls the SQS queue on your behalf, batches messages, and invokes your Lambda function. You never write polling code — AWS does it for you.</p>
+
+<div class="traffic-flow">
+  <div class="traffic-label">Lambda + SQS — internal flow</div>
+  <div class="traffic-step"><div class="traffic-num t-orange">1</div><div>You create an Event Source Mapping: "Poll this SQS queue and invoke this Lambda function."</div></div>
+  <div class="traffic-step"><div class="traffic-num t-blue">2</div><div>ESM continuously polls the queue using long polling. When messages arrive, it batches them (up to your configured batch size, e.g. 10 messages).</div></div>
+  <div class="traffic-step"><div class="traffic-num t-blue">3</div><div>ESM invokes Lambda with the batch as the event payload. Lambda scales automatically — if 1,000 messages are queued, ESM invokes many Lambda concurrencies simultaneously.</div></div>
+  <div class="traffic-step"><div class="traffic-num t-green">4</div><div>Lambda processes the batch. If ALL messages succeed, ESM deletes them all from SQS.</div></div>
+  <div class="traffic-step"><div class="traffic-num t-red">5</div><div>If Lambda throws an exception (fails the whole batch), ESM does NOT delete any messages. All messages become visible again after visibility timeout. The whole batch retries.</div></div>
+  <div class="traffic-step"><div class="traffic-num t-purple">6</div><div>With Partial Batch Response: Lambda returns which specific message IDs failed. ESM deletes successful ones, retries only failed ones.</div></div>
+</div>
+
+<pre><span class="cm"># Create Event Source Mapping — Lambda polls SQS automatically</span>
+aws lambda create-event-source-mapping \
+  --function-name OrderProcessor \
+  --event-source-arn arn:aws:sqs:us-east-1:123:orders-processing \
+  --batch-size 10 \
+  --maximum-batching-window-in-seconds 5 \   <span class="cm"># wait up to 5s to fill a batch</span>
+  --function-response-types ReportBatchItemFailures  <span class="cm"># partial failure support</span></pre>
+
+<pre><span class="kw">public class</span> <span class="ty">OrderHandler</span> <span class="kw">implements</span>
+    <span class="ty">RequestHandler</span>&lt;<span class="ty">SQSEvent</span>, <span class="ty">SQSBatchResponse</span>&gt; {
+
+    <span class="kw">public</span> <span class="ty">SQSBatchResponse</span> <span class="fn">handleRequest</span>(<span class="ty">SQSEvent</span> event, <span class="ty">Context</span> ctx) {
+        <span class="ty">List</span>&lt;<span class="ty">SQSBatchResponse</span>.<span class="ty">BatchItemFailure</span>&gt; failures = <span class="kw">new</span> <span class="ty">ArrayList</span>&lt;&gt;();
+
+        <span class="kw">for</span> (<span class="ty">SQSEvent.SQSMessage</span> msg : event.<span class="fn">getRecords</span>()) {
+            <span class="kw">try</span> {
+                <span class="ty">Order</span> order = objectMapper.<span class="fn">readValue</span>(msg.<span class="fn">getBody</span>(), <span class="ty">Order</span>.<span class="kw">class</span>);
+                orderService.<span class="fn">process</span>(order);
+                log.<span class="fn">info</span>(<span class="str">"Processed order: {}"</span>, order.<span class="fn">getId</span>());
+
+            } <span class="kw">catch</span> (<span class="ty">NonRetryableException</span> e) {
+                <span class="cm">// Bug in the message data — don't retry, send to DLQ</span>
+                log.<span class="fn">error</span>(<span class="str">"Non-retryable error for {}: {}"</span>, msg.<span class="fn">getMessageId</span>(), e.<span class="fn">getMessage</span>());
+                failures.<span class="fn">add</span>(<span class="ty">SQSBatchResponse</span>.<span class="ty">BatchItemFailure</span>.<span class="fn">builder</span>()
+                    .<span class="fn">withItemIdentifier</span>(msg.<span class="fn">getMessageId</span>())
+                    .<span class="fn">build</span>());
+
+            } <span class="kw">catch</span> (<span class="ty">TransientException</span> e) {
+                <span class="cm">// Downstream service is slow — retry this message</span>
+                log.<span class="fn">warn</span>(<span class="str">"Transient error for {}, will retry"</span>, msg.<span class="fn">getMessageId</span>());
+                failures.<span class="fn">add</span>(<span class="ty">SQSBatchResponse</span>.<span class="ty">BatchItemFailure</span>.<span class="fn">builder</span>()
+                    .<span class="fn">withItemIdentifier</span>(msg.<span class="fn">getMessageId</span>())
+                    .<span class="fn">build</span>());
+            }
+        }
+
+        <span class="cm">// Failed messages go back to queue (or DLQ if maxReceiveCount exceeded)
+        // Successful messages are automatically deleted by Lambda ESM</span>
+        <span class="kw">return</span> <span class="ty">SQSBatchResponse</span>.<span class="fn">builder</span>()
+            .<span class="fn">withBatchItemFailures</span>(failures)
+            .<span class="fn">build</span>();
+    }
+}</pre>
+
+<h2>Scaling Behaviour</h2>
+<pre><span class="cm">## How Lambda scales with SQS:
+# Lambda adds concurrency based on queue depth:
+# - Starts with 5 concurrent invocations
+# - Adds 60 more per minute until queue clears or concurrency limit hit
+# - With a 10,000 message burst: full concurrency in ~3 minutes
+
+## Scaling control:
+# Reserved concurrency on the Lambda function limits max concurrency
+# This protects downstream services (your DB can't handle 1000 parallel workers)
+aws lambda put-function-concurrency \
+  --function-name OrderProcessor \
+  --reserved-concurrent-executions 50  # max 50 concurrent Lambda workers</span></pre>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html" target="_blank">Lambda with SQS</a>
+  <a class="ref" href="https://docs.aws.amazon.com/lambda/latest/dg/with-sqs-create-package.html" target="_blank">Lambda SQS Tutorial</a>
+</div>
+</div>
+
+<!-- ======================================================= S5: WHAT IS SNS -->
+<div id="s5" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 7 · SNS · Section 5</span>
+  <h1>What is SNS?</h1>
+  <p class="subtitle">Simple Notification Service — a fully managed pub/sub messaging service. Publishers send one message to a topic; every subscriber gets a copy. Used for broadcast notification and fan-out.</p>
+</div>
+
+<h2>The Pub/Sub Mental Model</h2>
+<p>In SQS, there's one queue, one producer, and one (or more competing) consumers — a message is processed by exactly one consumer. In SNS, there's one <strong>topic</strong>, and any number of <strong>subscribers</strong>. Every subscriber gets their own copy of every message published to the topic. The publisher has no idea who is subscribed.</p>
+
+<div class="scenario">
+  <div class="scenario-label">Real-World Example</div>
+  <div class="scenario-title">Order placed event — 5 systems need to know</div>
+  <p>When an order is placed, five different systems need to act: EmailService sends confirmation, InventoryService reserves items, AnalyticsService records the event, FraudService checks for fraud, and RecommendationService updates the model.</p>
+  <p style="margin-top:8px">Without SNS: OrderService makes 5 separate calls — it's tightly coupled to all five downstream services. Add a 6th service? Modify OrderService. Remove one? Modify OrderService again.</p>
+  <p style="margin-top:8px">With SNS: OrderService publishes ONE message to the <code>order-placed</code> topic. All 5 services subscribe to the topic — each gets their own copy. Add/remove subscribers without touching OrderService. Zero coupling between producer and consumers.</p>
+</div>
+
+<h2>SNS Core Concepts</h2>
+<div class="grid3">
+  <div class="card">
+    <div class="card-title" style="color:var(--orange-light)">Topic</div>
+    <div class="card-body">A named channel. Publishers send messages to it. Subscribers receive from it. Topics have an ARN: <code>arn:aws:sns:us-east-1:123:order-placed</code></div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--blue-light)">Subscription</div>
+    <div class="card-body">The connection between a topic and an endpoint. When you subscribe SQS to SNS, SNS will automatically push messages to that SQS queue. Protocol can be SQS, Lambda, HTTP, email, SMS.</div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--green-light)">Delivery protocols</div>
+    <div class="card-body">SQS (push to queue), Lambda (invoke function directly), HTTP/S (POST to your endpoint), Email (human-readable), SMS (text message), Mobile Push (iOS/Android notifications).</div>
+  </div>
+</div>
+
+<pre><span class="cm"># Create a topic</span>
+aws sns create-topic --name order-placed
+<span class="cm"># Returns: TopicArn=arn:aws:sns:us-east-1:123:order-placed</span>
+
+<span class="cm"># Subscribe an SQS queue to the topic</span>
+aws sns subscribe \
+  --topic-arn arn:aws:sns:us-east-1:123:order-placed \
+  --protocol sqs \
+  --notification-endpoint arn:aws:sqs:us-east-1:123:email-service-queue
+
+<span class="cm"># Subscribe a Lambda function directly</span>
+aws sns subscribe \
+  --topic-arn arn:aws:sns:us-east-1:123:order-placed \
+  --protocol lambda \
+  --notification-endpoint arn:aws:lambda:us-east-1:123:function:FraudChecker
+
+<span class="cm"># Subscribe an HTTPS endpoint (your service's webhook URL)</span>
+aws sns subscribe \
+  --topic-arn arn:aws:sns:us-east-1:123:order-placed \
+  --protocol https \
+  --notification-endpoint https://analytics.internal.acme.com/events
+
+<span class="cm"># Publish a message — delivered to ALL subscribers simultaneously</span>
+aws sns publish \
+  --topic-arn arn:aws:sns:us-east-1:123:order-placed \
+  --message '{"orderId":"ord-abc123","userId":"user-456","total":99.99}' \
+  --subject "New Order Placed"</pre>
+
+<pre><span class="cm">// Publishing from Java SDK</span>
+<span class="ty">SnsClient</span> sns = <span class="ty">SnsClient</span>.<span class="fn">create</span>();
+
+<span class="ty">PublishResponse</span> response = sns.<span class="fn">publish</span>(<span class="ty">PublishRequest</span>.<span class="fn">builder</span>()
+    .<span class="fn">topicArn</span>(<span class="str">"arn:aws:sns:us-east-1:123:order-placed"</span>)
+    .<span class="fn">message</span>(objectMapper.<span class="fn">writeValueAsString</span>(orderEvent))
+    .<span class="fn">messageAttributes</span>(<span class="ty">Map</span>.<span class="fn">of</span>(
+        <span class="str">"orderType"</span>, <span class="ty">MessageAttributeValue</span>.<span class="fn">builder</span>()
+            .<span class="fn">dataType</span>(<span class="str">"String"</span>)
+            .<span class="fn">stringValue</span>(order.<span class="fn">getType</span>().<span class="fn">name</span>())
+            .<span class="fn">build</span>()))
+    .<span class="fn">build</span>());
+
+log.<span class="fn">info</span>(<span class="str">"Published to {} subscribers, messageId={}"</span>,
+    <span class="cm">// SNS simultaneously pushes to all subscriptions</span>
+    response.<span class="fn">messageId</span>());</pre>
+
+<h2>The SQS Queue Policy — Required for SNS to Push</h2>
+<pre><span class="cm"># When SNS pushes to SQS, it must have permission to write to the queue
+# Add this policy to the SQS queue (not IAM — this is a resource policy)</span>
+aws sqs set-queue-attributes \
+  --queue-url https://sqs.us-east-1.amazonaws.com/123/email-service-queue \
+  --attributes '{
+    "Policy": "{
+      \"Version\": \"2012-10-17\",
+      \"Statement\": [{
+        \"Effect\": \"Allow\",
+        \"Principal\": {\"Service\": \"sns.amazonaws.com\"},
+        \"Action\": \"sqs:SendMessage\",
+        \"Resource\": \"arn:aws:sqs:us-east-1:123:email-service-queue\",
+        \"Condition\": {
+          \"ArnEquals\": {
+            \"aws:SourceArn\": \"arn:aws:sns:us-east-1:123:order-placed\"
+          }
+        }
+      }]
+    }"
+  }'</pre>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/sns/latest/dg/welcome.html" target="_blank">SNS Developer Guide</a>
+  <a class="ref" href="https://aws.amazon.com/sns/pricing/" target="_blank">SNS Pricing</a>
+</div>
+</div>
+
+<!-- ======================================================= S6: FAN-OUT & FILTERING -->
+<div id="s6" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 7 · SNS · Section 6</span>
+  <h1>Fan-Out Pattern &amp; Message Filtering</h1>
+  <p class="subtitle">The most important SNS pattern: SNS fan-out to multiple SQS queues. Combined with subscription filters, this lets each consumer receive only the messages relevant to them.</p>
+</div>
+
+<h2>Fan-Out — The Production Pattern</h2>
+<p>Direct Lambda subscriptions to SNS work for simple cases, but for reliable production systems you want: SNS → SQS → Lambda. The SQS queue adds durability (if Lambda has a cold start or is throttled, messages queue up and nothing is lost) and retry logic (DLQ on the SQS queue).</p>
+
+<div class="flow-diagram">
+  <div class="flow-label">Fan-out: SNS → Multiple SQS queues → Multiple Lambdas</div>
+  <div class="flow-row">
+    <div class="fbox-orange fbox">OrderService</div>
+    <div class="farr">publishes</div>
+    <div class="fbox-blue fbox">SNS: order-placed</div>
+  </div>
+  <div style="margin:8px 0 8px 140px;border-left:2px solid var(--border2);height:20px"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:0">
+    <div>
+      <div class="fbox-green fbox" style="margin-bottom:6px">SQS: email-queue</div>
+      <div class="farr" style="display:block;text-align:center">↓</div>
+      <div class="fbox-green fbox" style="margin-top:6px">Lambda: EmailSender</div>
+    </div>
+    <div>
+      <div class="fbox-blue fbox" style="margin-bottom:6px">SQS: inventory-queue</div>
+      <div class="farr" style="display:block;text-align:center">↓</div>
+      <div class="fbox-blue fbox" style="margin-top:6px">Lambda: InventoryReserver</div>
+    </div>
+    <div>
+      <div class="fbox-purple fbox" style="margin-bottom:6px">SQS: analytics-queue</div>
+      <div class="farr" style="display:block;text-align:center">↓</div>
+      <div class="fbox-purple fbox" style="margin-top:6px">Lambda: AnalyticsTracker</div>
+    </div>
+  </div>
+</div>
+
+<p>When OrderService publishes one message, SNS delivers a copy to all three queues simultaneously. Each queue has its own Lambda consumer, its own DLQ, its own retry logic. Completely independent. If InventoryService's Lambda is throttled and messages queue up, EmailService is unaffected.</p>
+
+<h2>Message Filtering — Subscribe to Only What You Need</h2>
+<p>By default, every SNS subscriber receives every message published to the topic. Message filtering lets each subscription specify a <strong>filter policy</strong> — a JSON condition on message attributes. The subscription only receives messages that match its filter.</p>
+
+<div class="scenario">
+  <div class="scenario-label">Real Example</div>
+  <div class="scenario-title">One topic, different consumers for different order types</div>
+  <p>You have one <code>order-placed</code> topic. Digital orders (ebooks, software) don't need InventoryService (nothing physical to reserve). Physical orders don't need DigitalFulfillmentService. Without filtering: all services receive all messages and must check and ignore irrelevant ones. With filtering: each service only receives what it cares about.</p>
+</div>
+
+<pre><span class="cm"># Subscribe InventoryService queue but only receive PHYSICAL orders</span>
+aws sns subscribe \
+  --topic-arn arn:aws:sns:us-east-1:123:order-placed \
+  --protocol sqs \
+  --notification-endpoint arn:aws:sqs:us-east-1:123:inventory-queue \
+  --attributes '{
+    "FilterPolicy": "{
+      \"orderType\": [\"PHYSICAL\"]
+    }"
+  }'
+
+<span class="cm"># Subscribe DigitalFulfillment queue but only receive DIGITAL orders</span>
+aws sns subscribe \
+  --topic-arn arn:aws:sns:us-east-1:123:order-placed \
+  --protocol sqs \
+  --notification-endpoint arn:aws:sqs:us-east-1:123:digital-fulfillment-queue \
+  --attributes '{
+    "FilterPolicy": "{
+      \"orderType\": [\"DIGITAL\", \"SUBSCRIPTION\"]
+    }"
+  }'
+
+<span class="cm"># Subscribe EmailService — receives ALL orders (no filter)</span>
+aws sns subscribe \
+  --topic-arn arn:aws:sns:us-east-1:123:order-placed \
+  --protocol sqs \
+  --notification-endpoint arn:aws:sqs:us-east-1:123:email-queue
+<span class="cm"># No FilterPolicy = receives everything</span>
+
+<span class="cm"># Complex filter: orders above £100 AND from UK customers</span>
+{
+  "totalAmount": [{"numeric": [">", 100]}],
+  "customerCountry": ["GB"]
+}</span></pre>
+
+<pre><span class="cm">// Publishing with message attributes for filtering to work</span>
+sns.<span class="fn">publish</span>(<span class="ty">PublishRequest</span>.<span class="fn">builder</span>()
+    .<span class="fn">topicArn</span>(topicArn)
+    .<span class="fn">message</span>(orderJson)
+    .<span class="fn">messageAttributes</span>(<span class="ty">Map</span>.<span class="fn">of</span>(
+        <span class="str">"orderType"</span>, <span class="ty">MessageAttributeValue</span>.<span class="fn">builder</span>()
+            .<span class="fn">dataType</span>(<span class="str">"String"</span>)
+            .<span class="fn">stringValue</span>(<span class="str">"PHYSICAL"</span>)   <span class="cm">// This attribute is what filters match on</span>
+            .<span class="fn">build</span>(),
+        <span class="str">"totalAmount"</span>, <span class="ty">MessageAttributeValue</span>.<span class="fn">builder</span>()
+            .<span class="fn">dataType</span>(<span class="str">"Number"</span>)
+            .<span class="fn">stringValue</span>(<span class="str">"150.00"</span>)
+            .<span class="fn">build</span>(),
+        <span class="str">"customerCountry"</span>, <span class="ty">MessageAttributeValue</span>.<span class="fn">builder</span>()
+            .<span class="fn">dataType</span>(<span class="str">"String"</span>)
+            .<span class="fn">stringValue</span>(<span class="str">"GB"</span>)
+            .<span class="fn">build</span>()))
+    .<span class="fn">build</span>());</pre>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/sns/latest/dg/sns-message-filtering.html" target="_blank">SNS Message Filtering</a>
+  <a class="ref" href="https://docs.aws.amazon.com/sns/latest/dg/sns-common-scenarios.html" target="_blank">SNS Common Scenarios</a>
+</div>
+</div>
+
+<!-- ======================================================= S7: WHAT IS EVENTBRIDGE -->
+<div id="s7" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 7 · EventBridge · Section 7</span>
+  <h1>What is EventBridge?</h1>
+  <p class="subtitle">EventBridge is a serverless event bus that connects AWS services, SaaS applications, and your own services using events. It's SNS's more powerful sibling — with richer routing, schema registry, and native AWS service integration.</p>
+</div>
+
+<h2>Why EventBridge Exists Beyond SNS</h2>
+<p>SNS is excellent for simple pub/sub with message attribute filtering. EventBridge goes further — it receives events natively from 200+ AWS services (CloudTrail API calls, EC2 state changes, RDS events, etc.) and third-party SaaS apps, provides content-based routing on the full event body (not just attributes), includes a schema registry, and has more sophisticated retry and error handling.</p>
+
+<div class="grid2">
+  <div class="card">
+    <div class="card-title" style="color:var(--blue-light)">SNS strengths</div>
+    <div class="card-body">
+      Simple pub/sub. High throughput (millions/sec). SMS and mobile push delivery. Fan-out to SQS/Lambda/HTTP. Message filtering on attributes. Simpler to set up.
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--orange-light)">EventBridge additional power</div>
+    <div class="card-body">
+      Content-based routing on full JSON body. Native AWS service events (200+ services). SaaS integration (Zendesk, Stripe, Datadog). Schema registry. Event replay. Pipes for point-to-point enrichment. Cross-account and cross-region delivery.
+    </div>
+  </div>
+</div>
+
+<h2>EventBridge Core Concepts</h2>
+<table>
+  <tr><th>Concept</th><th>What it is</th><th>Example</th></tr>
+  <tr><td><strong>Event Bus</strong></td><td>A channel that receives and routes events. Default bus: AWS service events. Custom bus: your own events.</td><td><code>default</code>, <code>my-app-events</code></td></tr>
+  <tr><td><strong>Event</strong></td><td>A JSON object with source, detail-type, and detail fields. Max 256KB.</td><td><code>{"source":"com.acme.orders","detail-type":"OrderPlaced","detail":{...}}</code></td></tr>
+  <tr><td><strong>Rule</strong></td><td>A pattern that matches events and routes them to targets.</td><td>"When source is com.acme.orders AND detail-type is OrderPlaced, send to Lambda X"</td></tr>
+  <tr><td><strong>Target</strong></td><td>Where matched events are sent: Lambda, SQS, SNS, StepFunctions, API Gateway, ECS task, more.</td><td>20+ supported target types</td></tr>
+  <tr><td><strong>Schema Registry</strong></td><td>Stores and versions event schemas. Auto-discovers schemas from bus traffic. Generates code bindings.</td><td>Java POJO generated from event schema</td></tr>
+</table>
+
+<pre><span class="cm"># Create a custom event bus</span>
+aws events create-event-bus --name myapp-events
+
+<span class="cm"># Publish a custom event to your bus</span>
+aws events put-events --entries '[{
+  "Source": "com.acme.orders",
+  "DetailType": "OrderPlaced",
+  "Detail": "{\"orderId\":\"ord-abc\",\"userId\":\"user-123\",\"total\":99.99,\"type\":\"PHYSICAL\"}",
+  "EventBusName": "myapp-events"
+}]'</pre>
+
+<pre><span class="cm">// Publishing from Java SDK</span>
+<span class="ty">EventBridgeClient</span> eb = <span class="ty">EventBridgeClient</span>.<span class="fn">create</span>();
+
+eb.<span class="fn">putEvents</span>(<span class="ty">PutEventsRequest</span>.<span class="fn">builder</span>()
+    .<span class="fn">entries</span>(<span class="ty">PutEventsRequestEntry</span>.<span class="fn">builder</span>()
+        .<span class="fn">source</span>(<span class="str">"com.acme.orders"</span>)
+        .<span class="fn">detailType</span>(<span class="str">"OrderPlaced"</span>)
+        .<span class="fn">detail</span>(objectMapper.<span class="fn">writeValueAsString</span>(orderEvent))
+        .<span class="fn">eventBusName</span>(<span class="str">"myapp-events"</span>)
+        .<span class="fn">build</span>())
+    .<span class="fn">build</span>());</pre>
+
+<h2>EventBridge Receives AWS Service Events Automatically</h2>
+<p>The <code>default</code> event bus receives events from all AWS services automatically — no configuration needed. This is how you react to things that happen in your infrastructure.</p>
+
+<pre><span class="cm">## Examples of AWS service events on the default bus:
+
+# EC2 instance state change (running → stopped)
+{
+  "source": "aws.ec2",
+  "detail-type": "EC2 Instance State-change Notification",
+  "detail": {"instance-id": "i-0abc123", "state": "stopped"}
+}
+
+# RDS failover completed
+{
+  "source": "aws.rds",
+  "detail-type": "RDS DB Cluster Failover",
+  "detail": {"SourceArn": "arn:aws:rds:...", "Message": "Failover completed"}
+}
+
+# CloudTrail: someone deleted an S3 bucket
+{
+  "source": "aws.cloudtrail",
+  "detail-type": "AWS API Call via CloudTrail",
+  "detail": {
+    "eventName": "DeleteBucket",
+    "userIdentity": {"arn": "arn:aws:iam::123:user/alice"},
+    "requestParameters": {"bucketName": "production-data"}
+  }
+}
+
+# CodePipeline stage failed
+{
+  "source": "aws.codepipeline",
+  "detail-type": "CodePipeline Stage Execution State Change",
+  "detail": {"pipeline": "my-app", "stage": "Deploy", "state": "FAILED"}
+}</span></pre>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-what-is.html" target="_blank">EventBridge Documentation</a>
+  <a class="ref" href="https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-service-event.html" target="_blank">AWS Service Events</a>
+</div>
+</div>
+
+<!-- ======================================================= S8: RULES, PATTERNS & TARGETS -->
+<div id="s8" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 7 · EventBridge · Section 8</span>
+  <h1>Rules, Patterns &amp; Targets</h1>
+  <p class="subtitle">Rules match events against patterns and route them to targets. EventBridge patterns are more powerful than SNS filters — they match on the full event body using rich conditions.</p>
+</div>
+
+<h2>Event Patterns — Matching Rules</h2>
+<p>An event pattern is a JSON document that specifies which fields an event must contain (and what values) to match the rule. EventBridge checks every event against every rule on the bus.</p>
+
+<pre><span class="cm">## Pattern examples — from simple to complex</span>
+
+<span class="cm"># Match all events from a source</span>
+{"source": ["com.acme.orders"]}
+
+<span class="cm"># Match specific detail-type</span>
+{"source": ["com.acme.orders"], "detail-type": ["OrderPlaced"]}
+
+<span class="cm"># Match on event body — only PHYSICAL orders above £100</span>
+{
+  "source": ["com.acme.orders"],
+  "detail-type": ["OrderPlaced"],
+  "detail": {
+    "orderType": ["PHYSICAL"],
+    "total": [{"numeric": [">", 100]}]
+  }
+}
+
+<span class="cm"># Match EC2 instances stopping (from default bus)</span>
+{
+  "source": ["aws.ec2"],
+  "detail-type": ["EC2 Instance State-change Notification"],
+  "detail": {"state": ["stopped", "terminated"]}
+}
+
+<span class="cm"># Match any failed CodePipeline deployment</span>
+{
+  "source": ["aws.codepipeline"],
+  "detail": {"state": ["FAILED"]}
+}
+
+<span class="cm"># Prefix matching — any order from UK customers</span>
+{
+  "detail": {
+    "customerId": [{"prefix": "UK-"}]
+  }
+}
+
+<span class="cm"># "Anything but" — match all events EXCEPT from test environment</span>
+{
+  "source": ["com.acme.orders"],
+  "detail": {
+    "environment": [{"anything-but": "test"}]
+  }
+}</pre>
+
+<h2>Creating Rules with Targets</h2>
+<pre><span class="cm"># Rule: when an order is placed, invoke OrderProcessor Lambda</span>
+aws events put-rule \
+  --name on-order-placed \
+  --event-bus-name myapp-events \
+  --event-pattern '{
+    "source": ["com.acme.orders"],
+    "detail-type": ["OrderPlaced"]
+  }' \
+  --state ENABLED
+
+<span class="cm"># Add Lambda as target</span>
+aws events put-targets \
+  --rule on-order-placed \
+  --event-bus-name myapp-events \
+  --targets '[{
+    "Id": "OrderProcessorLambda",
+    "Arn": "arn:aws:lambda:us-east-1:123:function:OrderProcessor",
+    "RetryPolicy": {
+      "MaximumRetryAttempts": 3,
+      "MaximumEventAgeInSeconds": 86400
+    },
+    "DeadLetterConfig": {
+      "Arn": "arn:aws:sqs:us-east-1:123:eventbridge-dlq"
+    }
+  }]'
+
+<span class="cm"># Add multiple targets to the same rule (fan-out like SNS)</span>
+aws events put-targets \
+  --rule on-order-placed \
+  --event-bus-name myapp-events \
+  --targets '[
+    {
+      "Id": "InventoryFunction",
+      "Arn": "arn:aws:lambda:us-east-1:123:function:InventoryReserver"
+    },
+    {
+      "Id": "AnalyticsQueue",
+      "Arn": "arn:aws:sqs:us-east-1:123:analytics-queue"
+    },
+    {
+      "Id": "FraudCheckFunction",
+      "Arn": "arn:aws:lambda:us-east-1:123:function:FraudChecker"
+    }
+  ]'</pre>
+
+<h2>Scheduled Rules — EventBridge as Cron</h2>
+<pre><span class="cm"># EventBridge replaces cron jobs on EC2 — trigger Lambda on a schedule</span>
+
+<span class="cm"># Every day at 2am UTC — cleanup job</span>
+aws events put-rule \
+  --name nightly-cleanup \
+  --schedule-expression "cron(0 2 * * ? *)" \
+  --state ENABLED
+
+<span class="cm"># Every 5 minutes</span>
+aws events put-rule \
+  --name every-5-minutes \
+  --schedule-expression "rate(5 minutes)" \
+  --state ENABLED
+
+<span class="cm"># Every Monday morning 8am London time (UTC+1 in summer)</span>
+aws events put-rule \
+  --name monday-report \
+  --schedule-expression "cron(0 7 ? * MON *)"
+
+<span class="cm"># The target (Lambda) receives a scheduled event:
+{
+  "source": "aws.events",
+  "detail-type": "Scheduled Event",
+  "resources": ["arn:aws:events:us-east-1:123:rule/nightly-cleanup"]
+}
+# Your Lambda handler just needs to respond to this trigger — no payload to parse</span></pre>
+
+<h2>Input Transformation — Reshape Events Before Delivery</h2>
+<pre><span class="cm"># EventBridge can transform an event before passing it to a target
+# Useful when your target expects a specific format</span>
+
+<span class="cm"># Source event:</span>
+{
+  "detail": {
+    "orderId": "ord-abc123",
+    "userId": "user-456",
+    "total": 99.99
+  }
+}
+
+<span class="cm"># Input transformer — reshape to what the Lambda expects</span>
+aws events put-targets \
+  --targets '[{
+    "Id": "ShippingService",
+    "Arn": "arn:aws:lambda:...:function:ShippingService",
+    "InputTransformer": {
+      "InputPathsMap": {
+        "orderId": "$.detail.orderId",
+        "userId": "$.detail.userId"
+      },
+      "InputTemplate": "{\"shipOrderId\": \"<orderId>\", \"customerId\": \"<userId>\"}"
+    }
+  }]'
+
+<span class="cm"># Lambda receives: {"shipOrderId": "ord-abc123", "customerId": "user-456"}
+# Not the full EventBridge event — just the reshaped fields</span></pre>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-event-patterns.html" target="_blank">EventBridge Event Patterns</a>
+  <a class="ref" href="https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-scheduled-rule-pattern.html" target="_blank">Scheduled Events</a>
+</div>
+</div>
+
+<!-- ======================================================= S9: EVENT-DRIVEN ARCHITECTURES -->
+<div id="s9" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 7 · EventBridge · Section 9</span>
+  <h1>Event-Driven Architectures in Practice</h1>
+  <p class="subtitle">How real systems are built with EventBridge at the centre — the patterns, the trade-offs, and concrete examples showing how services communicate without direct coupling.</p>
+</div>
+
+<h2>The Choreography Pattern</h2>
+<p>In choreography, no service tells other services what to do. Each service publishes events ("this happened") and subscribes to events it cares about ("when this happens, I do this"). Services evolve independently. No central coordinator knows the overall flow.</p>
+
+<div class="flow-diagram">
+  <div class="flow-label">E-commerce order flow — pure choreography via EventBridge</div>
+  <div class="flow-row">
+    <div class="fbox-orange fbox">User places order</div>
+    <div class="farr">→</div>
+    <div class="fbox-blue fbox">OrderService</div>
+    <div class="farr">publishes</div>
+    <div class="fbox-blue fbox">OrderCreated event</div>
+  </div>
+  <div style="height:8px"></div>
+  <div class="flow-row">
+    <div class="fbox-blue fbox">PaymentService</div>
+    <div style="color:var(--text3);font-size:12px;padding:0 8px">subscribes to OrderCreated</div>
+    <div class="farr">→</div>
+    <div class="fbox-blue fbox">charges card</div>
+    <div class="farr">→</div>
+    <div class="fbox-green fbox">PaymentConfirmed event</div>
+  </div>
+  <div style="height:8px"></div>
+  <div class="flow-row">
+    <div class="fbox-green fbox">InventoryService</div>
+    <div style="color:var(--text3);font-size:12px;padding:0 8px">subscribes to PaymentConfirmed</div>
+    <div class="farr">→</div>
+    <div class="fbox-green fbox">reserves items</div>
+    <div class="farr">→</div>
+    <div class="fbox-purple fbox">ItemsReserved event</div>
+  </div>
+  <div style="height:8px"></div>
+  <div class="flow-row">
+    <div class="fbox-purple fbox">ShippingService</div>
+    <div style="color:var(--text3);font-size:12px;padding:0 8px">subscribes to ItemsReserved</div>
+    <div class="farr">→</div>
+    <div class="fbox-orange fbox">creates shipment</div>
+  </div>
+</div>
+
+<p>No service calls another directly. OrderService doesn't know PaymentService exists. PaymentService doesn't know InventoryService exists. Add an EmailService that subscribes to PaymentConfirmed — OrderService doesn't need to change at all. Remove ShippingService for digital goods — nothing breaks.</p>
+
+<h2>Practical EventBridge: Responding to AWS Infrastructure Events</h2>
+<pre><span class="cm">## Real-world automation — react to AWS events without polling</span>
+
+<span class="cm"># Pattern 1: Alert when production EC2 terminates unexpectedly</span>
+aws events put-rule \
+  --name prod-ec2-terminated-alert \
+  --event-pattern '{
+    "source": ["aws.ec2"],
+    "detail-type": ["EC2 Instance State-change Notification"],
+    "detail": {"state": ["terminated"], "instance-id": [{"prefix": "i-"}]}
+  }'
+<span class="cm"># Target: SNS → PagerDuty or Slack webhook</span>
+
+<span class="cm"># Pattern 2: Auto-tag EC2 instances when they start</span>
+aws events put-rule \
+  --name auto-tag-new-instances \
+  --event-pattern '{
+    "source": ["aws.ec2"],
+    "detail": {"state": ["running"]}
+  }'
+<span class="cm"># Target: Lambda that reads CloudTrail to find who started the instance,
+# then tags it with Creator, Environment, StartTime</span>
+
+<span class="cm"># Pattern 3: Notify on IAM privilege escalation</span>
+aws events put-rule \
+  --name iam-privilege-escalation-alert \
+  --event-pattern '{
+    "source": ["aws.cloudtrail"],
+    "detail": {
+      "eventName": [
+        "AttachUserPolicy", "AttachRolePolicy",
+        "PutUserPolicy", "CreateAccessKey"
+      ],
+      "userIdentity": {
+        "type": [{"anything-but": "AssumedRole"}]
+      }
+    }
+  }'
+<span class="cm"># Target: security team SNS topic → immediate alert</span>
+
+<span class="cm"># Pattern 4: Start data processing when new files arrive in S3
+# (S3 Events → EventBridge requires enabling S3 event notifications to EventBridge)</span>
+aws events put-rule \
+  --name new-csv-uploaded \
+  --event-pattern '{
+    "source": ["aws.s3"],
+    "detail-type": ["Object Created"],
+    "detail": {
+      "bucket": {"name": ["data-imports"]},
+      "object": {"key": [{"suffix": ".csv"}]}
+    }
+  }'</pre>
+
+<h2>EventBridge Pipes — Point-to-Point Event Enrichment</h2>
+<p>EventBridge Pipes creates a point-to-point integration between a source and a target, with optional filtering and enrichment (calling Lambda to add data). It's simpler than building a full event-driven architecture for direct integrations.</p>
+
+<pre><span class="cm">## Pipe: DynamoDB Stream → enrich with Lambda → push to EventBridge bus
+# Instead of writing polling/enrichment code yourself</span>
+
+aws pipes create-pipe \
+  --name order-stream-to-events \
+  --role-arn arn:aws:iam::123:role/PipeRole \
+  --source arn:aws:dynamodb:us-east-1:123:table/Orders/stream/xxx \
+  --source-parameters '{
+    "DynamoDBStreamParameters": {
+      "StartingPosition": "LATEST",
+      "BatchSize": 10
+    },
+    "FilterCriteria": {
+      "Filters": [{
+        "Pattern": "{\"dynamodb\":{\"NewImage\":{\"status\":{\"S\":[\"SHIPPED\"]}}}}"
+      }]
+    }
+  }' \
+  --enrichment arn:aws:lambda:us-east-1:123:function:OrderEnricher \
+  --target arn:aws:events:us-east-1:123:event-bus/myapp-events</pre>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes.html" target="_blank">EventBridge Pipes</a>
+  <a class="ref" href="https://aws.amazon.com/blogs/compute/building-an-event-driven-application-with-amazon-eventbridge/" target="_blank">Event-Driven App with EventBridge</a>
+</div>
+</div>
+
+<!-- ======================================================= S10: WHAT IS KINESIS -->
+<div id="s10" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 7 · Kinesis · Section 10</span>
+  <h1>What is Kinesis?</h1>
+  <p class="subtitle">Kinesis is AWS's real-time data streaming platform. Unlike SQS (queue — processed once, deleted) Kinesis is a log — data is retained, multiple consumers can read it at different positions, and you can replay historical data.</p>
+</div>
+
+<h2>The Fundamental Difference: Queue vs Stream</h2>
+<p>This is the most important concept to grasp before Kinesis makes sense. SQS is a queue — process a message, delete it, next. Kinesis is a <strong>log</strong> — messages are written sequentially, retained for days, and multiple independent consumers each have their own read position.</p>
+
+<div class="compare-row">
+  <div class="cmp-a">
+    <div class="cmp-label">SQS — Queue Model</div>
+    <p style="font-size:12.5px;color:var(--text2)">Message received → processed → deleted. Next consumer gets the next message. Only one consumer processes each message. No replay. Messages gone after processing.</p>
+    <p style="font-size:12px;color:var(--text3);margin-top:8px">Good for: work queues, task distribution, retry handling</p>
+  </div>
+  <div class="cmp-b">
+    <div class="cmp-label">Kinesis — Stream Model</div>
+    <p style="font-size:12.5px;color:var(--text2)">Records written to a numbered position in the stream. Retained for 24h–365 days. Consumer A reads position 1-100. Consumer B independently reads position 1-100. Consumer C starts fresh. All read the same data.</p>
+    <p style="font-size:12px;color:var(--text3);margin-top:8px">Good for: real-time analytics, audit logs, event sourcing, replay scenarios</p>
+  </div>
+</div>
+
+<div class="scenario">
+  <div class="scenario-label">Real Example — Why You Need Kinesis</div>
+  <div class="scenario-title">Website clickstream — three systems need the same data, at different speeds</div>
+  <p>Your website generates 10 million clicks/day. Three systems need this data:</p>
+  <p style="margin-top:8px"><strong>Real-time fraud detection:</strong> Must process within 100ms. Checks patterns against known fraud signatures. Fast consumer.</p>
+  <p style="margin-top:8px"><strong>Analytics dashboard:</strong> Aggregates clicks per page per minute. Processes every 60 seconds. Medium speed consumer.</p>
+  <p style="margin-top:8px"><strong>ML training pipeline:</strong> Batches a day's data and trains a recommendation model overnight. Slow consumer.</p>
+  <p style="margin-top:8px">With SQS: only one consumer gets each click — you'd need three separate queues and three producers. With Kinesis: one stream, three independent consumers, each reading at their own pace from their own position.</p>
+</div>
+
+<h2>Kinesis Data Streams Components</h2>
+<div class="grid3">
+  <div class="card">
+    <div class="card-title" style="color:var(--orange-light)">Stream</div>
+    <div class="card-body">The top-level resource. Made up of shards. You specify the number of shards (or use on-demand). Data is retained 24h–365 days.</div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--orange-light)">Shard</div>
+    <div class="card-body">The unit of capacity. Each shard handles: 1MB/s writes, 2MB/s reads, 1000 records/s writes. Add more shards to scale throughput. More shards = more parallelism for consumers.</div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--orange-light)">Record</div>
+    <div class="card-body">The data unit. Up to 1MB. Has a partition key (determines which shard), a sequence number (position in shard), and the data blob. Records with the same partition key always go to the same shard.</div>
+  </div>
+</div>
+
+<pre><span class="cm"># Create a Kinesis Data Stream</span>
+aws kinesis create-stream \
+  --stream-name website-clickstream \
+  --shard-count 4  <span class="cm"># 4 shards = 4MB/s write, 8MB/s read</span>
+
+<span class="cm"># Or use On-Demand mode (auto-scales, simpler)</span>
+aws kinesis create-stream \
+  --stream-name website-clickstream \
+  --stream-mode-details StreamMode=ON_DEMAND</pre>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/streams/latest/dev/introduction.html" target="_blank">Kinesis Data Streams Developer Guide</a>
+  <a class="ref" href="https://aws.amazon.com/kinesis/data-streams/pricing/" target="_blank">Kinesis Pricing</a>
+</div>
+</div>
+
+<!-- ======================================================= S11: KINESIS DEEP DIVE -->
+<div id="s11" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 7 · Kinesis · Section 11</span>
+  <h1>Kinesis Data Streams — Deep Dive</h1>
+  <p class="subtitle">Shards, partition keys, sequence numbers, consumer types, checkpointing — the mechanics of how Kinesis actually works and how to build reliable streaming consumers.</p>
+</div>
+
+<h2>Shards and Partition Keys — The Core Mechanics</h2>
+<p>When you write a record to Kinesis, you specify a <strong>partition key</strong> (a string). Kinesis hashes this key to determine which shard receives the record. Records with the same partition key always land on the same shard — preserving ordering for that partition.</p>
+
+<pre><span class="cm">// Producer: writing to Kinesis</span>
+<span class="ty">KinesisClient</span> kinesis = <span class="ty">KinesisClient</span>.<span class="fn">create</span>();
+
+<span class="ty">PutRecordResponse</span> response = kinesis.<span class="fn">putRecord</span>(<span class="ty">PutRecordRequest</span>.<span class="fn">builder</span>()
+    .<span class="fn">streamName</span>(<span class="str">"website-clickstream"</span>)
+    .<span class="fn">partitionKey</span>(userId)                         <span class="cm">// same userId → same shard → ordered</span>
+    .<span class="fn">data</span>(<span class="ty">SdkBytes</span>.<span class="fn">fromUtf8String</span>(clickEventJson))
+    .<span class="fn">build</span>());
+
+<span class="cm">// Returns: ShardId, SequenceNumber (position in the shard)</span>
+log.<span class="fn">info</span>(<span class="str">"Written to shard {} at sequence {}"</span>,
+    response.<span class="fn">shardId</span>(), response.<span class="fn">sequenceNumber</span>());
+
+<span class="cm">// Batch write — up to 500 records per request</span>
+<span class="ty">List</span>&lt;<span class="ty">PutRecordsRequestEntry</span>&gt; entries = clicks.<span class="fn">stream</span>()
+    .<span class="fn">map</span>(click -> <span class="ty">PutRecordsRequestEntry</span>.<span class="fn">builder</span>()
+        .<span class="fn">partitionKey</span>(click.<span class="fn">getUserId</span>())
+        .<span class="fn">data</span>(<span class="ty">SdkBytes</span>.<span class="fn">fromUtf8String</span>(serialise(click)))
+        .<span class="fn">build</span>())
+    .<span class="fn">collect</span>(<span class="ty">Collectors</span>.<span class="fn">toList</span>());
+
+<span class="ty">PutRecordsResponse</span> batchResponse = kinesis.<span class="fn">putRecords</span>(<span class="ty">PutRecordsRequest</span>.<span class="fn">builder</span>()
+    .<span class="fn">streamName</span>(<span class="str">"website-clickstream"</span>)
+    .<span class="fn">records</span>(entries)
+    .<span class="fn">build</span>());
+
+<span class="cm">// Check for partial failures (some records may fail in batch write)</span>
+<span class="kw">if</span> (batchResponse.<span class="fn">failedRecordCount</span>() > <span class="num">0</span>) {
+    <span class="cm">// Retry failed records with exponential backoff</span>
+}</pre>
+
+<h2>Lambda Consumer — The Simplest Consumer</h2>
+<pre><span class="cm"># Create Event Source Mapping — Lambda processes Kinesis records</span>
+aws lambda create-event-source-mapping \
+  --function-name ClickstreamProcessor \
+  --event-source-arn arn:aws:kinesis:us-east-1:123:stream/website-clickstream \
+  --batch-size 100 \
+  --starting-position LATEST \          <span class="cm"># LATEST or TRIM_HORIZON (from beginning)</span>
+  --bisect-batch-on-function-error \    <span class="cm"># on error, split batch and retry halves separately</span>
+  --function-response-types ReportBatchItemFailures</pre>
+
+<pre><span class="kw">public class</span> <span class="ty">ClickstreamProcessor</span> <span class="kw">implements</span> <span class="ty">RequestHandler</span>&lt;<span class="ty">KinesisEvent</span>, <span class="ty">StreamsEventResponse</span>&gt; {
+
+    <span class="kw">public</span> <span class="ty">StreamsEventResponse</span> <span class="fn">handleRequest</span>(<span class="ty">KinesisEvent</span> event, <span class="ty">Context</span> ctx) {
+        <span class="ty">List</span>&lt;<span class="ty">StreamsEventResponse</span>.<span class="ty">BatchItemFailure</span>&gt; failures = <span class="kw">new</span> <span class="ty">ArrayList</span>&lt;&gt;();
+
+        <span class="kw">for</span> (<span class="ty">KinesisEvent.KinesisEventRecord</span> record : event.<span class="fn">getRecords</span>()) {
+            <span class="kw">try</span> {
+                <span class="ty">String</span> shardId = record.<span class="fn">getEventID</span>().<span class="fn">split</span>(<span class="str">":"</span>)[<span class="num">0</span>];
+                <span class="ty">String</span> sequenceNumber = record.<span class="fn">getKinesis</span>().<span class="fn">getSequenceNumber</span>();
+                <span class="ty">String</span> data = record.<span class="fn">getKinesis</span>().<span class="fn">getData</span>().<span class="fn">toString</span>(<span class="ty">StandardCharsets</span>.UTF_8);
+
+                <span class="ty">ClickEvent</span> click = objectMapper.<span class="fn">readValue</span>(data, <span class="ty">ClickEvent</span>.<span class="kw">class</span>);
+                clickAnalytics.<span class="fn">process</span>(click);
+
+            } <span class="kw">catch</span> (<span class="ty">Exception</span> e) {
+                failures.<span class="fn">add</span>(<span class="ty">StreamsEventResponse</span>.<span class="ty">BatchItemFailure</span>.<span class="fn">builder</span>()
+                    .<span class="fn">withItemIdentifier</span>(record.<span class="fn">getKinesis</span>().<span class="fn">getSequenceNumber</span>())
+                    .<span class="fn">build</span>());
+            }
+        }
+
+        <span class="kw">return</span> <span class="ty">StreamsEventResponse</span>.<span class="fn">builder</span>()
+            .<span class="fn">withBatchItemFailures</span>(failures)
+            .<span class="fn">build</span>();
+    }
+}</pre>
+
+<h2>Enhanced Fan-Out — Multiple Fast Consumers</h2>
+<pre><span class="cm">## Standard consumer: 2MB/sec shared across ALL consumers of a shard
+# If 3 consumers read shard 1: each gets ~666KB/sec
+
+## Enhanced Fan-Out: 2MB/sec dedicated per consumer per shard
+# Register each consumer as an "enhanced fan-out" consumer
+# Push-based (Kinesis pushes to consumer vs consumer polling)
+
+aws kinesis register-stream-consumer \
+  --stream-arn arn:aws:kinesis:us-east-1:123:stream/website-clickstream \
+  --consumer-name FraudDetectionConsumer
+
+aws kinesis register-stream-consumer \
+  --stream-arn arn:aws:kinesis:us-east-1:123:stream/website-clickstream \
+  --consumer-name AnalyticsConsumer
+
+# Each consumer now gets full 2MB/sec per shard dedicated throughput
+# Cost: $0.015 per shard-hour per enhanced fan-out consumer</span></pre>
+
+<h2>Key Kinesis Limits and Gotchas</h2>
+<table>
+  <tr><th>Limit</th><th>Value</th><th>Implication</th></tr>
+  <tr><td>Write per shard</td><td>1 MB/s or 1,000 records/s</td><td>Plan shards based on write throughput</td></tr>
+  <tr><td>Read per shard (standard)</td><td>2 MB/s shared</td><td>Multiple consumers = less per consumer; use enhanced fan-out</td></tr>
+  <tr><td>Record size</td><td>1 MB max</td><td>Large records need chunking</td></tr>
+  <tr><td>Retention period</td><td>24h (default) to 365 days</td><td>Extended retention costs extra</td></tr>
+  <tr><td>Hot partition key</td><td>One key → one shard → limited throughput</td><td>Use high-cardinality partition keys (userId, not "all")</td></tr>
+</table>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/streams/latest/dev/enhanced-consumers.html" target="_blank">Enhanced Fan-Out</a>
+  <a class="ref" href="https://docs.aws.amazon.com/lambda/latest/dg/with-kinesis.html" target="_blank">Lambda with Kinesis</a>
+</div>
+</div>
+
+<!-- ======================================================= S12: KINESIS FIREHOSE -->
+<div id="s12" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 7 · Kinesis · Section 12</span>
+  <h1>Kinesis Data Firehose</h1>
+  <p class="subtitle">Firehose is not a stream — it's a fully managed delivery pipeline that automatically batches, optionally transforms, and delivers streaming data to destinations like S3, Redshift, or OpenSearch. Zero consumer code to write.</p>
+</div>
+
+<h2>Firehose vs Data Streams</h2>
+<div class="grid2">
+  <div class="card">
+    <div class="card-title" style="color:var(--orange-light)">Kinesis Data Streams</div>
+    <div class="card-body">
+      Low latency (~200ms). Multiple independent consumers. Replay support. You write consumer code. Consumer manages checkpoints. For real-time processing where you need custom logic.
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--blue-light)">Kinesis Data Firehose</div>
+    <div class="card-body">
+      60s–900s buffer (near-real-time). One destination per Firehose. No consumer code — Firehose handles delivery automatically. For loading streaming data into S3/Redshift/OpenSearch/Splunk without building a pipeline.
+    </div>
+  </div>
+</div>
+
+<pre><span class="cm"># Create a Firehose that delivers to S3</span>
+aws firehose create-delivery-stream \
+  --delivery-stream-name clickstream-to-s3 \
+  --delivery-stream-type DirectPut \
+  --extended-s3-destination-configuration '{
+    "RoleARN": "arn:aws:iam::123:role/FirehoseRole",
+    "BucketARN": "arn:aws:s3:::my-data-lake",
+    "Prefix": "clickstream/year=!{timestamp:yyyy}/month=!{timestamp:MM}/day=!{timestamp:dd}/",
+    "ErrorOutputPrefix": "clickstream-errors/",
+    "BufferingHints": {
+      "SizeInMBs": 128,
+      "IntervalInSeconds": 300
+    },
+    "DataFormatConversionConfiguration": {
+      "Enabled": true,
+      "OutputFormatConfiguration": {
+        "Serializer": {"ParquetSerDe": {}}
+      }
+    },
+    "CompressionFormat": "SNAPPY"
+  }'
+
+<span class="cm"># Firehose buffers incoming records and writes when:
+# - Buffer size reaches 128 MB (SizeInMBs), OR
+# - 300 seconds have elapsed (IntervalInSeconds)
+# Whichever comes first
+# Converts JSON → Parquet automatically for cheaper Athena queries</span>
+
+<span class="cm"># Send records to Firehose (same API as Data Streams)</span>
+aws firehose put-record \
+  --delivery-stream-name clickstream-to-s3 \
+  --record '{"Data":"eyJ1c2VySWQiOiJhYmMiLCJwYWdlIjoiaG9tZSJ9"}'
+<span class="cm"># Data is base64 encoded</span></pre>
+
+<pre><span class="cm">// Chain: Kinesis Data Streams → Firehose → S3
+// Some records need real-time processing AND archival
+// Solution: use both in sequence</span>
+
+<span class="cm">// Or Lambda transforms records in Firehose before delivery</span>
+<span class="cm"># Firehose calls Lambda to transform each batch before writing to S3</span>
+<span class="cm"># Lambda can: filter, enrich, convert format, redact PII</span>
+{
+  "ProcessingConfiguration": {
+    "Enabled": true,
+    "Processors": [{
+      "Type": "Lambda",
+      "Parameters": [{
+        "ParameterName": "LambdaArn",
+        "ParameterValue": "arn:aws:lambda:...:function:FirehoseTransformer"
+      }]
+    }]
+  }
+}</pre>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/firehose/latest/dev/what-is-this-service.html" target="_blank">Kinesis Data Firehose Guide</a>
+  <a class="ref" href="https://aws.amazon.com/kinesis/data-firehose/pricing/" target="_blank">Firehose Pricing</a>
+</div>
+</div>
+
+<!-- ======================================================= S13: COMPARISON -->
+<div id="s13" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 7 · Section 13</span>
+  <h1>SQS vs SNS vs EventBridge vs Kinesis</h1>
+  <p class="subtitle">The most-asked question when it comes to AWS messaging. These services overlap but serve distinct purposes. A clear mental model prevents choosing wrong.</p>
+</div>
+
+<h2>One-Line Summary Each</h2>
+<div class="grid2">
+  <div class="card" style="border-color:#1a3050">
+    <div class="card-title" style="color:var(--orange-light)">SQS — Work queue</div>
+    <div class="card-body">"I have work to distribute. One worker processes each task. I need retry, DLQ, and backpressure."</div>
+  </div>
+  <div class="card" style="border-color:#1a3050">
+    <div class="card-title" style="color:var(--blue-light)">SNS — Broadcast notification</div>
+    <div class="card-body">"Something happened. Everyone who cares should know. I want fan-out to many consumers simultaneously."</div>
+  </div>
+  <div class="card" style="border-color:#14532d">
+    <div class="card-title" style="color:var(--green-light)">EventBridge — Smart routing</div>
+    <div class="card-body">"I want to react to events across AWS services and applications with content-based routing and rich patterns."</div>
+  </div>
+  <div class="card" style="border-color:#2a1800">
+    <div class="card-title" style="color:var(--yellow-light)">Kinesis — Real-time streaming log</div>
+    <div class="card-body">"High-volume, ordered records. Multiple independent consumers. I need replay. Analytics pipeline."</div>
+  </div>
+</div>
+
+<h2>Full Comparison</h2>
+<table>
+  <tr><th>Feature</th><th>SQS</th><th>SNS</th><th>EventBridge</th><th>Kinesis</th></tr>
+  <tr><td>Pattern</td><td>Queue</td><td>Pub/Sub</td><td>Event bus</td><td>Stream</td></tr>
+  <tr><td>Consumers</td><td>Competing (one gets each msg)</td><td>All get a copy</td><td>All matching rules fire</td><td>Multiple independent</td></tr>
+  <tr><td>Throughput</td><td>Unlimited</td><td>Unlimited</td><td>~10M events/sec</td><td>1MB/s per shard</td></tr>
+  <tr><td>Retention</td><td>14 days max</td><td>None (fire-forget)</td><td>None (replay optional)</td><td>24h–365 days</td></tr>
+  <tr><td>Ordering</td><td>FIFO queues only</td><td>None</td><td>None</td><td>Per shard, per partition key</td></tr>
+  <tr><td>Replay</td><td>No</td><td>No</td><td>Yes (archive + replay)</td><td>Yes (rewind to any position)</td></tr>
+  <tr><td>AWS service events</td><td>No</td><td>No</td><td>Yes (200+ services)</td><td>No</td></tr>
+  <tr><td>Content filtering</td><td>No</td><td>Attribute-based</td><td>Full JSON body</td><td>No (application handles)</td></tr>
+  <tr><td>Latency</td><td>Near-real-time</td><td>Near-real-time</td><td>~500ms</td><td>70–200ms</td></tr>
+  <tr><td>Cost model</td><td>Per request</td><td>Per request</td><td>Per event</td><td>Per shard-hour + data</td></tr>
+</table>
+
+<h2>Decision Tree</h2>
+<div class="steps">
+  <div class="step"><div class="step-num">1</div><div class="step-content">
+    <div class="step-title">Do you need to distribute work to competing workers?</div>
+    <div class="step-body">Yes → SQS. Each message processed by exactly one worker. Retry, DLQ, scaling by queue depth. Classic work queue.</div>
+  </div></div>
+  <div class="step"><div class="step-num">2</div><div class="step-content">
+    <div class="step-title">Do you need to notify multiple independent services about an event?</div>
+    <div class="step-body">Simple fan-out (same message to all) → SNS. Complex routing (different services get different events based on content) → EventBridge.</div>
+  </div></div>
+  <div class="step"><div class="step-num">3</div><div class="step-content">
+    <div class="step-title">Do you need to react to AWS service events?</div>
+    <div class="step-body">Yes → EventBridge (default bus). CloudTrail, EC2 state, RDS events, CodePipeline — all land on the default bus automatically.</div>
+  </div></div>
+  <div class="step"><div class="step-num">4</div><div class="step-content">
+    <div class="step-title">High volume data stream with multiple consumers or replay needed?</div>
+    <div class="step-body">Yes → Kinesis Data Streams. Clickstream, IoT telemetry, log aggregation, event sourcing, any scenario needing independent consumers at different speeds or replay.</div>
+  </div></div>
+  <div class="step"><div class="step-num">5</div><div class="step-content">
+    <div class="step-title">Just need to load streaming data into S3/Redshift/OpenSearch?</div>
+    <div class="step-body">Yes → Kinesis Firehose. No consumer code. Automatic batching, format conversion, delivery. Near-real-time (60s+ buffer).</div>
+  </div></div>
+</div>
+
+<div class="refs">
+  <a class="ref" href="https://aws.amazon.com/messaging/" target="_blank">AWS Messaging Overview</a>
+  <a class="ref" href="https://docs.aws.amazon.com/prescriptive-guidance/latest/modernization-integrating-microservices/choosing-messaging-service.html" target="_blank">AWS: Choosing a Messaging Service</a>
+</div>
+</div>
+
+<!-- ======================================================= S14: REAL-WORLD ARCHITECTURES -->
+<div id="s14" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 7 · Section 14</span>
+  <h1>Real-World Messaging Architectures</h1>
+  <p class="subtitle">How these services work together in production systems — the patterns you'll actually build and encounter in the field.</p>
+</div>
+
+<h2>Pattern 1: Order Processing — The Full Stack</h2>
+<pre><span class="cm">## E-commerce order placement — real production architecture using all four services</span>
+
+<span class="cm">Step 1: User places order — synchronous path (must be fast and reliable)</span>
+User → API Gateway → OrderService (ECS) → Aurora PostgreSQL
+OrderService returns 200 OK with orderId immediately
+
+<span class="cm">Step 2: Order placed → fan-out via EventBridge</span>
+OrderService → EventBridge (myapp-events bus, OrderPlaced event)
+       ↓ Rule: all OrderPlaced events
+       ├── SNS: order-notifications-topic
+       │         ├── SQS: email-queue → Lambda: EmailSender (confirmation email)
+       │         ├── SQS: sms-queue → Lambda: SmsSender (mobile notification)
+       │         └── SQS: push-queue → Lambda: PushNotifier (app notification)
+       ↓ Rule: PHYSICAL orders only
+       ├── SQS: inventory-queue → Lambda: InventoryReserver (reserve stock)
+       └── SQS: shipping-queue → Lambda: ShipmentCreator (create shipment)
+
+<span class="cm">Step 3: High-volume analytics → Kinesis</span>
+OrderService → Kinesis Data Firehose → S3 (every 5min)
+                                      ↓ (also)
+                 Kinesis Data Streams → Lambda: RealTimeDashboard (live order count)
+                                      → Lambda: FraudDetection (real-time patterns)</pre>
+
+<h2>Pattern 2: Microservice Communication via SQS</h2>
+<pre><span class="cm">## Problem: UserService needs to notify 3 services when a user is deleted
+## Solution: async fire-and-forget via SQS, with DLQ safety net</span>
+
+<span class="cm">// UserService.deleteUser() — returns fast, doesn't wait for downstream</span>
+<span class="kw">public void</span> <span class="fn">deleteUser</span>(<span class="ty">String</span> userId) {
+    userRepository.<span class="fn">softDelete</span>(userId);   <span class="cm">// mark deleted in DB</span>
+
+    <span class="cm">// Fire-and-forget to SQS — returns immediately</span>
+    sqs.<span class="fn">sendMessage</span>(<span class="ty">SendMessageRequest</span>.<span class="fn">builder</span>()
+        .<span class="fn">queueUrl</span>(userDeletedQueueUrl)
+        .<span class="fn">messageBody</span>(objectMapper.<span class="fn">writeValueAsString</span>(
+            <span class="kw">new</span> <span class="ty">UserDeletedEvent</span>(userId, <span class="ty">Instant</span>.<span class="fn">now</span>())))
+        .<span class="fn">build</span>());
+
+    <span class="cm">// Return immediately — don't wait for downstream</span>
+}
+
+<span class="cm">// OrderService Lambda reads user-deleted-queue</span>
+<span class="cm">// → anonymises orders for GDPR compliance</span>
+<span class="cm">// → If Lambda fails, retries 3x, then DLQ → alert → manual investigation</span>
+
+<span class="cm">// SessionService Lambda reads same queue after SNS fan-out
+// → invalidates all user sessions
+// → independent of OrderService processing</span></pre>
+
+<h2>Pattern 3: Infrastructure Automation with EventBridge</h2>
+<pre><span class="cm">## Auto-remediation: if EC2 instance stops unexpectedly, notify team and restart</span>
+
+<span class="cm">Rule: EC2 state = stopped AND NOT during maintenance window</span>
+EventBridge → Lambda: IncidentResponder
+   → checks if this was a scheduled stop (tag: StopScheduled=true)
+   → if unexpected: SNS → PagerDuty alert
+   → if auto-recoverable: start the instance
+   → CloudWatch: log incident details
+
+<span class="cm">## Auto-tagging: tag all new resources with creator and cost centre</span>
+EventBridge → Lambda: ResourceTagger
+   Source: aws.cloudtrail
+   Events: RunInstances, CreateBucket, CreateTable, CreateFunction
+   → reads the userIdentity from CloudTrail event (who created it)
+   → adds Creator tag and CostCentre tag from user's IAM profile
+   → if untagged after 24h → SNS → compliance alert</pre>
+
+<h2>Pattern 4: Event Sourcing with Kinesis</h2>
+<pre><span class="cm">## All state changes stored as immutable events in Kinesis
+## Current state = replay of all events</span>
+
+<span class="cm">All services publish events to Kinesis stream: app-event-log</span>
+Events: UserCreated, OrderPlaced, PaymentProcessed, ItemShipped, OrderDelivered...
+
+<span class="cm">Consumer 1: DynamoDB projector (latest-state)
+   Reads each event → updates DynamoDB with current state
+   TRIM_HORIZON starting position — builds current state from scratch
+
+Consumer 2: Analytics projector (aggregate-state)
+   Reads each event → updates monthly revenue in Redshift
+   
+Consumer 3: Audit log (append-only-store)
+   Reads each event → appends to append-only S3 log
+   365 day retention on the stream → full audit history
+
+# If a bug corrupts DynamoDB:
+# → restart Consumer 1 from TRIM_HORIZON
+# → replay all events → rebuild complete current state
+# This is the power of event sourcing with Kinesis</span></pre>
+
+<div class="refs">
+  <a class="ref" href="https://aws.amazon.com/blogs/compute/enriching-event-driven-architectures-with-aws-event-bridge-pipes/" target="_blank">EventBridge Pipes for Enrichment</a>
+  <a class="ref" href="https://aws.amazon.com/event-driven-architecture/" target="_blank">Event-Driven Architecture Guide</a>
+</div>
+</div>
+
+<!-- ======================================================= S15: INTERVIEW -->
+<div id="s15" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 7 · Interview Q&amp;A</span>
+  <h1>Interview Questions — Messaging</h1>
+  <p class="subtitle">16 questions from beginner to architect. Messaging patterns are core to system design interviews.</p>
+</div>
+
+<h2 style="color:var(--green-light)">Beginner</h2>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">Why would you use SQS instead of calling a service directly over HTTP? <span class="qa-arrow">▼</span></div><div class="qa-a">Direct HTTP coupling means: (1) Caller waits for the callee to respond — if callee is slow, caller is slow. (2) If callee is down, caller fails. (3) If callee is overwhelmed, caller gets errors. (4) Traffic spikes directly hit the callee. SQS decouples them: (1) Caller sends to SQS and returns immediately — milliseconds instead of seconds. (2) If callee is down, messages queue up and are processed when it recovers — nothing is lost. (3) Callee processes at its own pace — natural rate limiting. (4) SQS absorbs traffic spikes — messages queue up and process when there's capacity. You accept a trade-off: the result is asynchronous (you won't know immediately if processing succeeded), but the system is more resilient, scalable, and performant.</div></div>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">What is the visibility timeout in SQS and what happens if it's too short? <span class="qa-arrow">▼</span></div><div class="qa-a">The visibility timeout is the period during which a message received by a consumer is hidden from other consumers. The purpose: prevent two consumers from processing the same message simultaneously. If too short: your consumer is still processing when the timeout expires. SQS makes the message visible again. Another consumer picks it up and starts processing. Now two consumers are processing the same message concurrently — double processing. For orders: two emails sent, two charges made, two inventory deductions. Fix: set the timeout longer than your maximum processing time. Formula: VisibilityTimeout = expected_max_processing_time × 6 for safety margin. For variable-duration processing: use ChangeMessageVisibility to extend dynamically while processing.</div></div>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">What is the difference between SNS and SQS? <span class="qa-arrow">▼</span></div><div class="qa-a"><strong>SQS (queue):</strong> One producer sends messages, one or more competing consumers each process a different message. Each message is consumed exactly once (by one consumer), then deleted. Use for: distributing work among workers, task queues, retries with DLQ. <strong>SNS (pub/sub):</strong> One publisher sends a message, EVERY subscriber gets their own copy. Use for: notifying multiple systems about an event. Fan-out. <strong>The canonical production pattern is SNS → SQS (fan-out):</strong> SNS broadcasts the event, multiple SQS queues subscribe (each service has its own queue), each service processes from its own queue at its own pace. This gives you: fan-out (SNS), retry + DLQ + rate-limiting (SQS), complete decoupling.</div></div>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">What is a Dead Letter Queue and why is it essential? <span class="qa-arrow">▼</span></div><div class="qa-a">A Dead Letter Queue (DLQ) is a separate SQS queue where messages are automatically moved when they fail to be processed successfully after N attempts (maxReceiveCount). Without a DLQ: a "poison pill" message (malformed data that always causes exceptions) loops in the queue forever, consuming retry attempts and potentially blocking other messages (especially in FIFO queues). Developers never know it's happening. With a DLQ: after 3 failures, the problematic message is isolated in the DLQ and stopped retrying. A CloudWatch alarm on DLQ depth fires immediately, alerting developers. Developers can inspect the message, understand what went wrong, fix the bug, then redrive the message back to the main queue for reprocessing. Nothing is ever silently lost. Production rule: every SQS queue that processes business-critical data must have a DLQ with a CloudWatch alarm.</div></div>
+
+<h2 style="color:var(--yellow-light)">Intermediate</h2>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">When would you choose Kinesis over SQS? <span class="qa-arrow">▼</span></div><div class="qa-a">Kinesis over SQS when: (1) <strong>Multiple independent consumers need the same data:</strong> With SQS, each message goes to one consumer. With Kinesis, Consumer A, B, and C can all read the same records independently from their own position. (2) <strong>You need to replay data:</strong> SQS deletes messages after processing. Kinesis retains records for 24h–365 days. You can rewind to position 0 and reprocess. If a bug corrupted your database, replay from the stream to rebuild. (3) <strong>Order within a partition matters:</strong> Kinesis guarantees ordering per shard per partition key. SQS only guarantees FIFO in FIFO queues. (4) <strong>Real-time analytics pipeline:</strong> High-volume data where you need multiple analytics systems processing concurrently — clickstream, IoT, log aggregation. Choose SQS when: work distribution to competing workers, retry handling with DLQ, simpler setup, order doesn't matter, each task done by one worker.</div></div>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">Explain the SNS fan-out to SQS pattern and why it's used instead of direct Lambda subscriptions. <span class="qa-arrow">▼</span></div><div class="qa-a">SNS fan-out to SQS (SNS → multiple SQS queues → Lambda per queue) vs direct SNS → Lambda: <strong>Why SQS in the middle:</strong> (1) <strong>Durability:</strong> If the Lambda is throttled or has a cold start, messages queue up in SQS and aren't lost. Direct SNS → Lambda delivery failures go to DLQ but can be lost if retry exhausted. (2) <strong>Retry logic:</strong> SQS + Lambda has configurable retry with exactly the DLQ handling you need. Direct SNS → Lambda has limited retry control. (3) <strong>Rate control:</strong> SQS naturally limits how fast Lambda processes — the batch size and reserved concurrency control throughput. Protects downstream services from being overwhelmed. (4) <strong>Visibility:</strong> SQS metrics (depth, age, DLQ count) give clear operational visibility into each service's queue health. (5) <strong>Message filtering:</strong> SNS filter policies control which messages each SQS queue receives — each service only processes what it cares about. Use direct SNS → Lambda only for very simple, high-reliability functions where the Lambda is always available.</div></div>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">How do you make an SQS consumer idempotent? Why is it necessary? <span class="qa-arrow">▼</span></div><div class="qa-a">Idempotency means processing the same message twice produces the same result as processing it once. Necessary because SQS standard queues offer at-least-once delivery — a message may occasionally be delivered more than once. Implementation approaches: (1) <strong>Idempotency key in DynamoDB:</strong> Store the SQS messageId in DynamoDB with a TTL (7 days). Before processing, check if this ID exists. If yes: skip. If no: process and record it. (2) <strong>Conditional DB updates:</strong> Use database conditions to make updates idempotent. <code>UPDATE orders SET status='SHIPPED' WHERE status='PACKED'</code> — running this twice is safe; second run does nothing. (3) <strong>Upsert pattern:</strong> Use INSERT ON CONFLICT DO NOTHING or equivalent. Writing the same record twice = same result. (4) <strong>FIFO queue:</strong> For critical workflows, use SQS FIFO with message deduplication ID — SQS itself deduplicates within a 5-minute window, so duplicates never reach your consumer.</div></div>
+
+<h2 style="color:var(--orange-light)">Advanced</h2>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">What is the difference between SNS and EventBridge? When would you choose EventBridge over SNS? <span class="qa-arrow">▼</span></div><div class="qa-a">Both are pub/sub, but EventBridge is significantly more powerful: <strong>Filtering:</strong> SNS filters on message attributes only. EventBridge filters on the full JSON body using rich operators (numeric comparisons, prefix matching, anything-but, exists). <strong>AWS service events:</strong> EventBridge's default bus receives events from 200+ AWS services automatically (EC2 state changes, CloudTrail API calls, RDS events). SNS cannot. <strong>Schema registry:</strong> EventBridge discovers and versions event schemas, generates SDK code bindings. SNS has nothing. <strong>Replay:</strong> EventBridge can archive events and replay them. SNS: fire-and-forget. <strong>SaaS integration:</strong> EventBridge connects to Zendesk, Stripe, Datadog, etc. as event sources. <strong>Choose SNS when:</strong> Simple fan-out, SMS/mobile push delivery (EventBridge doesn't support these), maximum throughput (SNS handles more), lower per-event cost. <strong>Choose EventBridge when:</strong> Need to react to AWS service events, content-based routing on event body, schema governance, event replay, complex enterprise integration.</div></div>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">Design an event-driven architecture for an e-commerce platform where placing an order must trigger: payment processing (synchronous), inventory reservation, email confirmation, analytics recording, and fraud checking. <span class="qa-arrow">▼</span></div><div class="qa-a">Architecture: <strong>Synchronous path (must succeed for order to be placed):</strong> User → API Gateway → OrderService → PaymentService (direct HTTP, synchronous, 200ms timeout). Both complete → write order to Aurora → return orderId to user. Only these two are synchronous because order placement requires payment confirmation. <strong>Async fan-out (once payment confirmed):</strong> OrderService publishes OrderConfirmed event to EventBridge custom bus. Rules and targets: (1) Rule: all OrderConfirmed → SQS inventory-queue → Lambda InventoryReserver. DLQ for failures. (2) Rule: all OrderConfirmed → SQS email-queue → Lambda EmailSender. DLQ. (3) Rule: PHYSICAL orders only → SQS fraud-queue → Lambda FraudChecker. (4) Rule: all events → Kinesis Firehose → S3 (analytics data lake, Athena queries). <strong>Reliability:</strong> Each SQS queue has maxReceiveCount=3 and a DLQ with CloudWatch alarm. All Lambda consumers are idempotent (check eventId in DynamoDB before processing). FIFO queue for inventory reservation (prevent double reservation). EventBridge retry policy: 3 retries, 24h max age, DLQ for undeliverable. <strong>Monitoring:</strong> CloudWatch dashboard showing SQS queue depths, Lambda error rates, DLQ message counts. PagerDuty integration for DLQ alarms.</div></div>
+
+</div>
+</main>
+</div>
+
+<script>
+function show(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.currentTarget.classList.add('active');
+  window.scrollTo(0, 0);
+}
+function toggleQA(el) {
+  const ans = el.nextElementSibling;
+  const arrow = el.querySelector('.qa-arrow');
+  ans.classList.toggle('open');
+  arrow.classList.toggle('open');
+}
+</script>
+</body>
+</html>

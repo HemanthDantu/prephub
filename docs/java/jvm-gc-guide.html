@@ -1,0 +1,1900 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>JVM Garbage Collection — Complete Guide</title>
+<style>
+  :root {
+    --bg:#0f1117;--bg2:#161b27;--bg3:#1e2535;--bg4:#252d3d;
+    --border:#2a3347;--border2:#374159;
+    --text:#e2e8f0;--text2:#94a3b8;--text3:#64748b;
+    --blue:#3b82f6;--blue-bg:#1e3a5f;--blue-light:#93c5fd;
+    --green:#22c55e;--green-bg:#14532d;--green-light:#86efac;
+    --red:#ef4444;--red-bg:#450a0a;--red-light:#fca5a5;
+    --yellow:#f59e0b;--yellow-bg:#451a03;--yellow-light:#fcd34d;
+    --purple:#a855f7;--purple-bg:#2e1065;--purple-light:#d8b4fe;
+    --teal:#14b8a6;--teal-bg:#042f2e;--teal-light:#5eead4;
+    --orange:#f97316;--orange-bg:#431407;--orange-light:#fdba74;
+    --radius:8px;--radius-lg:12px;
+    --font-mono:'Fira Code','Cascadia Code','Consolas',monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;line-height:1.7}
+  .layout{display:flex;min-height:100vh}
+  .sidebar{width:265px;min-width:265px;background:var(--bg2);border-right:1px solid var(--border);padding:20px 0;position:sticky;top:0;height:100vh;overflow-y:auto}
+  .sidebar-title{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;padding:0 20px 10px}
+  .nav-group{margin-bottom:6px}
+  .nav-group-label{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;padding:10px 20px 4px}
+  .nav-item{display:flex;align-items:center;gap:8px;padding:7px 20px;cursor:pointer;font-size:13px;color:var(--text2);transition:all .15s;border-left:3px solid transparent}
+  .nav-item:hover{background:var(--bg3);color:var(--text)}
+  .nav-item.active{background:var(--bg3);color:var(--teal-light);border-left-color:var(--teal)}
+  .nav-badge{font-size:10px;padding:1px 6px;border-radius:10px;background:var(--bg4);color:var(--text3);margin-left:auto}
+  .nav-item.active .nav-badge{background:var(--teal-bg);color:var(--teal-light)}
+  .main{flex:1;padding:40px 48px;max-width:960px}
+  .section{display:none}.section.active{display:block}
+  h1{font-size:28px;font-weight:700;margin-bottom:6px}
+  h2{font-size:20px;font-weight:600;margin:32px 0 14px;color:var(--text)}
+  h3{font-size:16px;font-weight:600;margin:24px 0 10px;color:var(--text)}
+  h4{font-size:14px;font-weight:600;margin:16px 0 8px;color:var(--text2)}
+  p{color:var(--text2);margin-bottom:12px}
+  strong{color:var(--text);font-weight:600}
+  .subtitle{color:var(--text3);font-size:15px;margin-bottom:28px}
+  pre{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px;font-family:var(--font-mono);font-size:12.5px;line-height:1.7;overflow-x:auto;margin:14px 0}
+  code{font-family:var(--font-mono);font-size:12px;background:var(--bg3);padding:2px 6px;border-radius:4px;color:var(--teal-light)}
+  .comment{color:var(--text3)}.kw{color:var(--purple-light)}.str{color:var(--green-light)}.type{color:var(--blue-light)}.ann{color:var(--yellow-light)}.num{color:var(--orange-light)}.method{color:var(--teal-light)}.flag{color:var(--yellow-light)}
+  .card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px;margin-bottom:14px}
+  .card-title{font-size:14px;font-weight:600;margin-bottom:8px}
+  .card-body{font-size:13px;color:var(--text2);line-height:1.7}
+  .pros-cons{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0}
+  .pros{background:#0a2416;border:1px solid #14532d;border-radius:var(--radius-lg);padding:16px}
+  .cons{background:#1a0a0a;border:1px solid #450a0a;border-radius:var(--radius-lg);padding:16px}
+  .pros-title{color:var(--green);font-weight:600;font-size:13px;margin-bottom:10px}
+  .cons-title{color:var(--red);font-weight:600;font-size:13px;margin-bottom:10px}
+  .pros ul,.cons ul{padding-left:16px}
+  .pros li,.cons li{font-size:12.5px;color:var(--text2);margin-bottom:5px;line-height:1.6}
+  .badge{display:inline-flex;align-items:center;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;margin:2px}
+  .badge-blue{background:var(--blue-bg);color:var(--blue-light)}
+  .badge-green{background:var(--green-bg);color:var(--green-light)}
+  .badge-red{background:var(--red-bg);color:var(--red-light)}
+  .badge-yellow{background:var(--yellow-bg);color:var(--yellow-light)}
+  .badge-purple{background:var(--purple-bg);color:var(--purple-light)}
+  .badge-teal{background:var(--teal-bg);color:var(--teal-light)}
+  .badge-orange{background:var(--orange-bg);color:var(--orange-light)}
+  .alert{border-radius:var(--radius);padding:12px 16px;margin:14px 0;font-size:13px;border-left:3px solid}
+  .alert-blue{background:var(--blue-bg);border-color:var(--blue);color:var(--blue-light)}
+  .alert-green{background:var(--green-bg);border-color:var(--green);color:var(--green-light)}
+  .alert-red{background:var(--red-bg);border-color:var(--red);color:var(--red-light)}
+  .alert-yellow{background:var(--yellow-bg);border-color:var(--yellow);color:var(--yellow-light)}
+  .alert-teal{background:var(--teal-bg);border-color:var(--teal);color:var(--teal-light)}
+  .alert strong{color:inherit}
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:13px}
+  th{background:var(--bg3);color:var(--text);font-weight:600;padding:10px 14px;text-align:left;border-bottom:1px solid var(--border2)}
+  td{padding:9px 14px;border-bottom:1px solid var(--border);color:var(--text2);vertical-align:top}
+  tr:hover td{background:var(--bg3)}
+  .qa{border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:10px;overflow:hidden}
+  .qa-q{padding:14px 18px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;background:var(--bg3);font-size:13px;font-weight:500;transition:background .15s;user-select:none}
+  .qa-q:hover{background:var(--bg4)}
+  .qa-a{display:none;padding:16px 18px;font-size:13px;color:var(--text2);line-height:1.8;background:var(--bg2);border-top:1px solid var(--border)}
+  .qa-a.open{display:block}
+  .qa-arrow{transition:transform .2s;color:var(--text3);font-size:12px}
+  .qa-arrow.open{transform:rotate(180deg)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin:14px 0}
+  .grid4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;margin:14px 0}
+  .scenario{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:18px 20px;margin:16px 0}
+  .scenario-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--teal);margin-bottom:8px}
+  .scenario-title{font-size:15px;font-weight:600;margin-bottom:10px}
+  .steps{counter-reset:step}
+  .step{display:flex;gap:14px;margin-bottom:16px}
+  .step-num{counter-increment:step;width:26px;height:26px;min-width:26px;background:var(--teal-bg);color:var(--teal-light);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;margin-top:2px}
+  .step-content{flex:1}
+  .step-title{font-weight:600;font-size:13px;margin-bottom:4px}
+  .step-body{font-size:13px;color:var(--text2);line-height:1.6}
+  .compare-row{display:flex;gap:0;margin:14px 0;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+  .compare-bad{flex:1;background:#1a0a0a;padding:16px;border-right:1px solid var(--border)}
+  .compare-good{flex:1;background:#0a2416;padding:16px}
+  .compare-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px}
+  .compare-bad .compare-label{color:var(--red)}
+  .compare-good .compare-label{color:var(--green)}
+  .section-header{padding-bottom:20px;border-bottom:1px solid var(--border);margin-bottom:28px}
+  .level-badge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;display:inline-block;margin-bottom:10px}
+  .level-beginner{background:var(--green-bg);color:var(--green-light)}
+  .level-intermediate{background:var(--yellow-bg);color:var(--yellow-light)}
+  .level-advanced{background:var(--red-bg);color:var(--red-light)}
+  .level-expert{background:var(--purple-bg);color:var(--purple-light)}
+  .level-core{background:var(--teal-bg);color:var(--teal-light)}
+  .mem-box{border-radius:var(--radius);padding:14px;text-align:center;border:1px solid}
+  .mem-heap{background:#1a2a1a;border-color:#2d5a2d}
+  .mem-eden{background:#0a2416;border-color:#14532d;font-size:12px}
+  .mem-s{background:#1a1a0a;border-color:#453a00;font-size:12px}
+  .mem-old{background:#1a1a2a;border-color:#2d2d5a;font-size:12px}
+  .mem-meta{background:#1a0a1a;border-color:#4a0a4a;font-size:12px}
+  .mem-stack{background:#1a0a0a;border-color:#5a1a1a;font-size:12px}
+  .gc-phase{border-radius:var(--radius);padding:12px 14px;margin-bottom:8px;border-left:3px solid}
+  .phase-blue{background:var(--blue-bg);border-color:var(--blue)}
+  .phase-yellow{background:var(--yellow-bg);border-color:var(--yellow)}
+  .phase-red{background:var(--red-bg);border-color:var(--red)}
+  .phase-green{background:var(--green-bg);border-color:var(--green)}
+  .phase-purple{background:var(--purple-bg);border-color:var(--purple)}
+  .phase-teal{background:var(--teal-bg);border-color:var(--teal)}
+  .phase-title{font-weight:600;font-size:13px;margin-bottom:4px}
+  .phase-stw{font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;margin-left:8px}
+  .stw-yes{background:var(--red-bg);color:var(--red-light)}
+  .stw-no{background:var(--green-bg);color:var(--green-light)}
+  .stw-short{background:var(--yellow-bg);color:var(--yellow-light)}
+  ::-webkit-scrollbar{width:6px;height:6px}
+  ::-webkit-scrollbar-track{background:var(--bg2)}
+  ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+</style>
+</head>
+<body>
+<div class="layout">
+
+<aside class="sidebar">
+  <div class="sidebar-title">JVM Garbage Collection</div>
+
+  <div class="nav-group">
+    <div class="nav-group-label">Foundations</div>
+    <div class="nav-item active" onclick="show('s1')">What is GC? <span class="nav-badge">Beginner</span></div>
+    <div class="nav-item" onclick="show('s2')">JVM Memory Structure <span class="nav-badge">Core</span></div>
+    <div class="nav-item" onclick="show('s3')">Object Lifecycle <span class="nav-badge">Core</span></div>
+    <div class="nav-item" onclick="show('s4')">Generational Hypothesis <span class="nav-badge">Core</span></div>
+    <div class="nav-item" onclick="show('s5')">GC Roots &amp; Reachability <span class="nav-badge">Core</span></div>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-group-label">GC Algorithms</div>
+    <div class="nav-item" onclick="show('s6')">Mark-Sweep-Compact <span class="nav-badge">Core</span></div>
+    <div class="nav-item" onclick="show('s7')">Serial &amp; Parallel GC <span class="nav-badge">Classic</span></div>
+    <div class="nav-item" onclick="show('s8')">CMS — Concurrent Mark Sweep <span class="nav-badge">Deprecated</span></div>
+    <div class="nav-item" onclick="show('s9')">G1GC — Garbage First <span class="nav-badge">Default</span></div>
+    <div class="nav-item" onclick="show('s10')">ZGC — Ultra Low Latency <span class="nav-badge">Java 15+</span></div>
+    <div class="nav-item" onclick="show('s11')">Shenandoah GC <span class="nav-badge">OpenJDK</span></div>
+    <div class="nav-item" onclick="show('s12')">GC Comparison <span class="nav-badge">Decision</span></div>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-group-label">GC Events</div>
+    <div class="nav-item" onclick="show('s13')">Minor, Major &amp; Full GC <span class="nav-badge">Inter</span></div>
+    <div class="nav-item" onclick="show('s14')">Stop-The-World Pauses <span class="nav-badge">Inter</span></div>
+    <div class="nav-item" onclick="show('s15')">Soft, Weak &amp; Phantom Refs <span class="nav-badge">Inter</span></div>
+    <div class="nav-item" onclick="show('s16')">Finalization &amp; Cleaners <span class="nav-badge">Inter</span></div>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-group-label">Tuning &amp; Production</div>
+    <div class="nav-item" onclick="show('s17')">JVM Tuning Flags <span class="nav-badge">Advanced</span></div>
+    <div class="nav-item" onclick="show('s18')">GC Logging &amp; Analysis <span class="nav-badge">Advanced</span></div>
+    <div class="nav-item" onclick="show('s19')">Memory Leaks <span class="nav-badge">Advanced</span></div>
+    <div class="nav-item" onclick="show('s20')">Off-Heap &amp; Direct Memory <span class="nav-badge">Advanced</span></div>
+    <div class="nav-item" onclick="show('s21')">GC Monitoring Tools <span class="nav-badge">Expert</span></div>
+    <div class="nav-item" onclick="show('s22')">GC Anti-Patterns <span class="nav-badge">Expert</span></div>
+    <div class="nav-item" onclick="show('s23')">Microservices &amp; Containers <span class="nav-badge">Expert</span></div>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-group-label">Interview</div>
+    <div class="nav-item" onclick="show('s24')">Q&amp;A — All Levels <span class="nav-badge">55 Q's</span></div>
+  </div>
+</aside>
+
+<main class="main">
+
+<!-- ============================================================ -->
+<!-- S1: WHAT IS GC -->
+<!-- ============================================================ -->
+<div id="s1" class="section active">
+  <div class="section-header">
+    <span class="level-badge level-beginner">Beginner</span>
+    <h1>What is Garbage Collection?</h1>
+    <p class="subtitle">Automatic memory management — why Java doesn't need free() and what the JVM does behind the scenes.</p>
+  </div>
+
+  <h2>The Problem GC Solves</h2>
+  <p>In languages like C/C++, you manually allocate memory with <code>malloc()</code> and free it with <code>free()</code>. Forget to free and you get a memory leak. Free twice and you get a crash. Free the wrong pointer and you corrupt memory. Java's GC eliminates this entire class of bugs by automatically reclaiming memory that is no longer needed.</p>
+
+  <div class="scenario">
+    <div class="scenario-label">Real World Analogy</div>
+    <div class="scenario-title">A Restaurant Kitchen</div>
+    <p>Imagine every object is a plate. When a chef is done with a plate, they put it down. In C, the chef must manually return each plate to the shelf — forget one and the kitchen runs out of plates (memory leak). With Java's GC, a kitchen assistant (the garbage collector) watches which plates are actively being used and periodically collects all abandoned plates and puts them back — automatically.</p>
+  </div>
+
+  <h2>The Core Concept — Reachability</h2>
+  <p>GC doesn't track whether you're "done" with an object — it tracks whether the object is <strong>reachable</strong>. An object is alive if any live part of the program holds a reference to it, directly or transitively. An object is garbage when nothing in the running program can possibly reach it anymore.</p>
+
+<pre><span class="comment">// Object lifecycle example</span>
+<span class="kw">public void</span> <span class="method">processOrder</span>() {
+    <span class="type">Order</span> order = <span class="kw">new</span> <span class="type">Order</span>();      <span class="comment">// Object created — reachable via 'order' variable</span>
+    order.<span class="method">setItems</span>(getItems());
+    <span class="method">save</span>(order);                     <span class="comment">// Still reachable</span>
+    <span class="comment">// method returns — 'order' variable goes out of scope</span>
+    <span class="comment">// Order object is now UNREACHABLE — eligible for GC</span>
+    <span class="comment">// GC will reclaim it at some future point (not immediately)</span>
+}
+
+<span class="comment">// Making an object unreachable explicitly</span>
+<span class="type">List</span>&lt;<span class="type">User</span>&gt; users = loadAllUsers(); <span class="comment">// holds reference to large list</span>
+<span class="method">process</span>(users);
+users = <span class="kw">null</span>;                       <span class="comment">// Dereference — list now eligible for GC</span>
+<span class="comment">// (but often unnecessary — just let the variable go out of scope)</span></pre>
+
+  <h2>What GC Does NOT Guarantee</h2>
+  <div class="grid3">
+    <div class="card">
+      <div class="card-title" style="color:var(--red-light)">Timing</div>
+      <div class="card-body">GC runs when the JVM decides — not when an object becomes unreachable. You cannot force it with <code>System.gc()</code> (it's only a hint).</div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="color:var(--red-light)">Immediacy</div>
+      <div class="card-body">An unreachable object can live in memory for seconds or minutes before being collected. Your heap size determines how long this matters.</div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="color:var(--red-light)">Zero Pauses</div>
+      <div class="card-body">GC needs to stop or slow the application to work safely. Even modern collectors like ZGC have some pause, just very short.</div>
+    </div>
+  </div>
+
+  <h2>GC Phases at a High Level</h2>
+  <div class="steps">
+    <div class="step"><div class="step-num">1</div><div class="step-content"><div class="step-title">Mark</div><div class="step-body">Starting from GC roots (stack variables, static fields, etc.), traverse all object references and mark every reachable object as "alive".</div></div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-content"><div class="step-title">Sweep</div><div class="step-body">Scan the heap. Any object NOT marked as alive is garbage — reclaim its memory.</div></div></div>
+    <div class="step"><div class="step-num">3</div><div class="step-content"><div class="step-title">Compact (optional)</div><div class="step-body">Move surviving objects together to eliminate fragmentation — now allocation is just a pointer bump.</div></div></div>
+  </div>
+
+  <div class="alert alert-teal">
+    <strong>Key insight:</strong> Java GC is a tracing collector — it traces live objects, not dead ones. It never looks at garbage; it marks everything that's alive, and everything it didn't mark is garbage by definition.
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- S2: JVM MEMORY STRUCTURE -->
+<!-- ============================================================ -->
+<div id="s2" class="section">
+  <div class="section-header">
+    <span class="level-badge level-core">Core</span>
+    <h1>JVM Memory Structure</h1>
+    <p class="subtitle">The complete JVM memory layout — Heap, Stack, Metaspace, Code Cache, and where everything lives.</p>
+  </div>
+
+  <h2>Full Memory Map</h2>
+  <div class="card" style="padding:24px">
+    <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px;margin-bottom:12px">
+      <div class="mem-box mem-heap" style="grid-column:1/2;padding:20px">
+        <div style="font-weight:600;margin-bottom:12px;color:var(--green-light)">HEAP (GC-managed)</div>
+        <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:8px;margin-bottom:8px">
+          <div class="mem-box mem-eden" style="padding:10px"><div style="color:var(--green-light);font-weight:600;font-size:11px">Young Gen</div><div style="font-size:11px;margin-top:4px;color:var(--text2)">Eden Space</div><div style="font-size:10px;color:var(--text3)">New objects born here</div></div>
+          <div class="mem-box mem-s" style="padding:10px"><div style="color:var(--yellow-light);font-weight:600;font-size:11px">S0</div><div style="font-size:10px;color:var(--text3)">Survivor</div></div>
+          <div class="mem-box mem-s" style="padding:10px"><div style="color:var(--yellow-light);font-weight:600;font-size:11px">S1</div><div style="font-size:10px;color:var(--text3)">Survivor</div></div>
+        </div>
+        <div class="mem-box mem-old" style="padding:12px"><div style="color:var(--blue-light);font-weight:600;font-size:12px">Old Generation (Tenured)</div><div style="font-size:11px;color:var(--text2);margin-top:4px">Long-lived objects — promoted from Young Gen after N GC cycles</div></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div class="mem-box mem-meta" style="flex:1"><div style="color:var(--purple-light);font-weight:600;font-size:12px">Metaspace</div><div style="font-size:11px;color:var(--text2);margin-top:4px">Class metadata, method info, static fields (Java 8+)</div></div>
+        <div class="mem-box" style="background:#1a1a0a;border-color:#453500;flex:1"><div style="color:var(--orange-light);font-weight:600;font-size:12px">Code Cache</div><div style="font-size:11px;color:var(--text2);margin-top:4px">JIT-compiled native code</div></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div class="mem-box mem-stack" style="flex:1"><div style="color:var(--red-light);font-weight:600;font-size:12px">Thread Stack(s)</div><div style="font-size:11px;color:var(--text2);margin-top:4px">Stack frames, local variables, method calls. One per thread.</div></div>
+        <div class="mem-box" style="background:#0a1a1a;border-color:#003a3a;flex:1"><div style="color:var(--teal-light);font-weight:600;font-size:12px">Direct Memory</div><div style="font-size:11px;color:var(--text2);margin-top:4px">Off-heap buffers (NIO)</div></div>
+      </div>
+    </div>
+  </div>
+
+  <h2>The Heap — Detailed Breakdown</h2>
+  <table>
+    <tr><th>Region</th><th>Size (default)</th><th>Purpose</th><th>GC Type</th></tr>
+    <tr><td><strong style="color:var(--green-light)">Eden Space</strong></td><td>~80% of Young Gen</td><td>All new objects allocated here first (TLAB)</td><td>Minor GC</td></tr>
+    <tr><td><strong style="color:var(--yellow-light)">Survivor S0 / S1</strong></td><td>~10% each of Young Gen</td><td>Objects that survived at least one Minor GC</td><td>Minor GC</td></tr>
+    <tr><td><strong style="color:var(--blue-light)">Old Generation</strong></td><td>~2/3 of total heap</td><td>Objects that survived many Minor GCs (age threshold)</td><td>Major/Full GC</td></tr>
+  </table>
+
+  <h2>What Lives Where</h2>
+  <div class="grid2">
+    <div class="card">
+      <div class="card-title" style="color:var(--green-light)">Heap</div>
+      <div class="card-body">
+        All object instances (<code>new Object()</code>)<br>
+        Array contents<br>
+        Instance variables (fields)<br>
+        Static variables' object references<br><br>
+        <span class="badge badge-green">GC-managed</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="color:var(--red-light)">Stack (per thread)</div>
+      <div class="card-body">
+        Local primitive variables (<code>int x = 5</code>)<br>
+        Local reference variables (the reference, not the object)<br>
+        Method call frames<br>
+        Return addresses<br><br>
+        <span class="badge badge-red">Not GC-managed — auto-freed when method returns</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="color:var(--purple-light)">Metaspace (Java 8+)</div>
+      <div class="card-body">
+        Class metadata (field names, method signatures)<br>
+        JVM bytecode<br>
+        Static field values (primitives and references)<br>
+        Interned Strings<br><br>
+        <span class="badge badge-purple">GC-managed but rarely collected (class unloading)</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="color:var(--orange-light)">Code Cache</div>
+      <div class="card-body">
+        JIT-compiled native machine code<br>
+        HotSpot optimized method compilations<br><br>
+        <span class="badge badge-orange">Managed by JIT compiler</span>
+      </div>
+    </div>
+  </div>
+
+  <h2>PermGen vs Metaspace (Java 7 vs Java 8)</h2>
+  <div class="compare-row">
+    <div class="compare-bad">
+      <div class="compare-label">Java 7 — PermGen (Obsolete)</div>
+      <p style="font-size:12.5px;color:var(--text2)">Fixed-size region on the heap. If you loaded many classes (frameworks, dynamic proxies), you'd get <code style="font-size:11px">java.lang.OutOfMemoryError: PermGen space</code>. Common in old app servers. You had to tune <code style="font-size:11px">-XX:MaxPermSize</code>.</p>
+    </div>
+    <div class="compare-good">
+      <div class="compare-label">Java 8+ — Metaspace (Current)</div>
+      <p style="font-size:12.5px;color:var(--text2)">Moved to <strong>native memory</strong> (outside heap). Grows dynamically — no fixed limit by default. No more PermGen OOM. Can still be bounded with <code style="font-size:11px">-XX:MaxMetaspaceSize</code>. Much better for framework-heavy apps.</p>
+    </div>
+  </div>
+
+  <h2>TLAB — Thread-Local Allocation Buffers</h2>
+  <p>Each thread gets its own small private chunk of Eden space called a TLAB. Object allocation is just a pointer bump within the TLAB — no synchronisation needed, making allocation extremely fast (nanoseconds). When the TLAB fills up, the thread requests a new one.</p>
+
+<pre><span class="comment">// JVM flag to see TLAB usage</span>
+<span class="flag">-XX:+PrintTLAB</span>                  <span class="comment">// print TLAB statistics</span>
+<span class="flag">-XX:TLABSize=512k</span>               <span class="comment">// set TLAB size</span>
+<span class="flag">-XX:-UseTLAB</span>                    <span class="comment">// disable TLAB (not recommended)</span></pre>
+</div>
+
+<!-- ============================================================ -->
+<!-- S3: OBJECT LIFECYCLE -->
+<!-- ============================================================ -->
+<div id="s3" class="section">
+  <div class="section-header">
+    <span class="level-badge level-core">Core</span>
+    <h1>Object Lifecycle &amp; Aging</h1>
+    <p class="subtitle">How objects are born, age, get promoted, and eventually die — the full journey through heap generations.</p>
+  </div>
+
+  <h2>The Complete Object Journey</h2>
+  <div class="steps">
+    <div class="step"><div class="step-num">1</div><div class="step-content"><div class="step-title">Allocation in Eden</div><div class="step-body">New object created via <code>new</code>. Allocated in the thread's TLAB within Eden space. Age = 0. If the object is large (>threshold), it goes directly to Old Gen (humongous objects in G1).</div></div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-content"><div class="step-title">Eden fills up → Minor GC triggered</div><div class="step-body">JVM pauses application (Stop-The-World). All live objects in Eden are copied to Survivor S0. Dead objects in Eden are wiped. Age of surviving objects incremented to 1.</div></div></div>
+    <div class="step"><div class="step-num">3</div><div class="step-content"><div class="step-title">Survivor bouncing</div><div class="step-body">On next Minor GC, live objects from Eden + S0 are copied to S1 (always the empty survivor). Dead objects in S0 are wiped. Age incremented to 2. S0 and S1 roles alternate each GC.</div></div></div>
+    <div class="step"><div class="step-num">4</div><div class="step-content"><div class="step-title">Promotion to Old Gen</div><div class="step-body">When an object's age reaches the <strong>tenuring threshold</strong> (default 15, configurable), it's promoted to Old Generation. Also promoted early if Survivor space is full.</div></div></div>
+    <div class="step"><div class="step-num">5</div><div class="step-content"><div class="step-title">Major / Full GC</div><div class="step-body">Old Gen fills up → Major GC collects Old Gen. If heap is fully exhausted and GC can't free enough → <code>OutOfMemoryError</code>.</div></div></div>
+  </div>
+
+  <h2>Object Age &amp; Promotion</h2>
+<pre><span class="comment">// Object header contains 4 bits for GC age (0-15)</span>
+<span class="flag">-XX:MaxTenuringThreshold=15</span>        <span class="comment">// default — max age before promotion</span>
+<span class="flag">-XX:InitialTenuringThreshold=7</span>     <span class="comment">// starting threshold (adaptive)</span>
+
+<span class="comment">// Dynamic tenuring: JVM adjusts threshold based on survivor space usage
+// If 50% of survivor space would be occupied by objects of age N+,
+// threshold is set to N, promoting older objects early</span>
+<span class="flag">-XX:TargetSurvivorRatio=50</span>         <span class="comment">// default 50% — tune if you see early promotion</span>
+
+<span class="comment">// Large object bypass — goes directly to Old Gen</span>
+<span class="flag">-XX:PretenureSizeThreshold=1m</span>      <span class="comment">// objects > 1MB bypass Young Gen entirely</span></pre>
+
+  <h2>Premature Promotion — A Common Problem</h2>
+  <p>When Survivor spaces are too small, short-lived objects that would normally die in Young Gen get promoted to Old Gen prematurely — polluting Old Gen with garbage and causing unnecessary Major GCs.</p>
+
+<pre><span class="comment">// Symptom: Old Gen filling up fast despite mostly short-lived objects
+// Diagnosis: check GC logs for "Desired survivor size" vs actual</span>
+
+<span class="comment">// Fix 1: Increase Young Gen size</span>
+<span class="flag">-XX:NewRatio=2</span>       <span class="comment">// Old:Young ratio — default 2 (Old is 2x Young)</span>
+<span class="flag">-XX:NewSize=512m</span>     <span class="comment">// explicit Young Gen size</span>
+<span class="flag">-XX:SurvivorRatio=8</span>  <span class="comment">// Eden:Survivor ratio — default 8 (Eden is 8x each Survivor)</span>
+
+<span class="comment">// Fix 2: Reduce tenuring threshold to promote objects faster</span>
+<span class="flag">-XX:MaxTenuringThreshold=4</span>  <span class="comment">// promote after 4 GC cycles, not 15</span></pre>
+</div>
+
+<!-- ============================================================ -->
+<!-- S4: GENERATIONAL HYPOTHESIS -->
+<!-- ============================================================ -->
+<div id="s4" class="section">
+  <div class="section-header">
+    <span class="level-badge level-core">Core</span>
+    <h1>Generational Hypothesis</h1>
+    <p class="subtitle">The foundational observation that makes generational GC so efficient — and when it breaks down.</p>
+  </div>
+
+  <h2>The Weak Generational Hypothesis</h2>
+  <p>The entire generational GC design is built on one empirical observation: <strong>most objects die young</strong>. Studies across many languages and applications consistently show that 80-98% of objects become unreachable within milliseconds of creation.</p>
+
+  <div class="scenario">
+    <div class="scenario-label">Real World Example — Web Application</div>
+    <div class="scenario-title">Per-Request Objects in a Spring Application</div>
+    <p>Every HTTP request creates: an HttpServletRequest wrapper, DTO objects, Optional wrappers, Stream intermediaries, StringBuilder buffers, Jackson deserialization objects. All of these are created for a single request and are garbage the moment the response is sent — typically in under 100ms. They never need to outlive the request.</p>
+    <p style="margin-top:8px">Meanwhile, Spring beans (ApplicationContext, repositories, services), database connection pools, thread pools, and caches are created once and live for the lifetime of the application — they're long-lived by design.</p>
+  </div>
+
+  <h2>Why Generational GC is Efficient</h2>
+  <div class="grid2">
+    <div class="card">
+      <div class="card-title" style="color:var(--green-light)">Minor GC — Fast &amp; Frequent</div>
+      <div class="card-body">
+        Only scans Young Gen (~10-20% of heap)<br>
+        Most objects are already dead — very few survive<br>
+        Copying survivors is proportional to <em>live</em> objects (few)<br>
+        Typical pause: <strong>1-100ms</strong><br>
+        Frequency: every few seconds under load
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="color:var(--blue-light)">Major/Full GC — Slow &amp; Rare</div>
+      <div class="card-body">
+        Must scan entire heap<br>
+        Old Gen mostly contains live objects (expensive to scan)<br>
+        Compaction is expensive<br>
+        Typical pause: <strong>100ms - several seconds</strong><br>
+        Frequency: minutes to hours (ideally)
+      </div>
+    </div>
+  </div>
+
+  <h2>When the Hypothesis Breaks Down</h2>
+  <p>Some workloads violate the generational hypothesis — causing GC to perform poorly:</p>
+  <table>
+    <tr><th>Violation</th><th>Example</th><th>Symptom</th><th>Fix</th></tr>
+    <tr><td>Long-lived temp objects</td><td>Large in-memory caches, session state</td><td>Old Gen fills fast</td><td>Off-heap caching (Redis, Ehcache off-heap)</td></tr>
+    <tr><td>Objects referencing young ones</td><td>Old object holds reference to new object</td><td>Card table overhead</td><td>Remember sets / write barriers handle this</td></tr>
+    <tr><td>Very large allocation rate</td><td>Streaming data processing</td><td>Constant Minor GCs</td><td>ZGC/Shenandoah, object pooling</td></tr>
+    <tr><td>Humongous objects</td><td>Allocating large byte arrays</td><td>Direct Old Gen pressure</td><td>Buffer pooling, streaming I/O</td></tr>
+  </table>
+
+  <div class="alert alert-yellow">
+    <strong>Card Table &amp; Write Barrier:</strong> When an Old Gen object holds a reference to a Young Gen object, the GC must know about it during Minor GC. The JVM maintains a "card table" — a bitmap of 512-byte card regions. When any reference in a card changes (write barrier), that card is marked "dirty". Minor GC only scans dirty Old Gen cards, not the entire Old Gen.
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- S5: GC ROOTS & REACHABILITY -->
+<!-- ============================================================ -->
+<div id="s5" class="section">
+  <div class="section-header">
+    <span class="level-badge level-core">Core</span>
+    <h1>GC Roots &amp; Reachability</h1>
+    <p class="subtitle">The starting points of liveness tracing — understanding exactly what keeps objects alive.</p>
+  </div>
+
+  <h2>What are GC Roots?</h2>
+  <p>GC starts its mark phase from a set of definitive starting points called <strong>GC roots</strong>. Any object reachable from a GC root (directly or through a chain of references) is considered alive. Everything else is garbage.</p>
+
+  <div class="grid2">
+    <div class="card">
+      <div class="card-title" style="color:var(--teal-light)">The GC Root Set</div>
+      <div class="card-body" style="line-height:2">
+        <strong>Thread stacks</strong> — local variables and method parameters in all active thread frames<br>
+        <strong>Static fields</strong> — all static fields of loaded classes<br>
+        <strong>JNI references</strong> — references held by native code via JNI<br>
+        <strong>Synchronization monitors</strong> — objects used as locks currently held<br>
+        <strong>JVM internals</strong> — classes loaded by bootstrap classloader, exception classes, interned strings
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="color:var(--red-light)">Common Memory Leak Roots</div>
+      <div class="card-body" style="line-height:2">
+        <strong>Static collections</strong> — adding to a static HashMap/List and never removing<br>
+        <strong>ThreadLocal</strong> — storing objects in ThreadLocal without remove()<br>
+        <strong>Listeners/Callbacks</strong> — registering event listeners and never deregistering<br>
+        <strong>Caches</strong> — unbounded caches that grow forever<br>
+        <strong>Inner class references</strong> — non-static inner class holds implicit reference to outer class
+      </div>
+    </div>
+  </div>
+
+  <h2>Reference Chains — How GC Traces</h2>
+<pre><span class="comment">// GC traces the entire object graph from roots</span>
+<span class="kw">static</span> <span class="type">Map</span>&lt;<span class="type">String</span>, <span class="type">Session</span>&gt; sessions = <span class="kw">new</span> <span class="type">HashMap</span>&lt;&gt;();  <span class="comment">// GC ROOT (static field)</span>
+<span class="comment">//   └── HashMap object (ALIVE — reachable from static field)</span>
+<span class="comment">//       └── Session object (ALIVE — reachable from HashMap)</span>
+<span class="comment">//           └── User object (ALIVE — reachable from Session)</span>
+<span class="comment">//               └── List&lt;Order&gt; (ALIVE — reachable from User)</span>
+<span class="comment">//                   └── Order objects (ALIVE)</span>
+<span class="comment">// ALL of these stay in memory as long as sessions map holds them!</span>
+
+<span class="comment">// After removing from the map:</span>
+sessions.<span class="method">remove</span>(<span class="str">"session123"</span>);
+<span class="comment">// Session and everything it referenced MAY now be unreachable
+// (unless something else also references them)</span></pre>
+
+  <h2>The ThreadLocal Leak — Classic Senior Interview Topic</h2>
+<pre><span class="kw">public class</span> <span class="type">RequestContextHolder</span> {
+    <span class="comment">// ThreadLocal backed by Thread → ThreadLocalMap → (WeakRef key, value)</span>
+    <span class="kw">private static final</span> <span class="type">ThreadLocal</span>&lt;<span class="type">RequestContext</span>&gt; context =
+        <span class="kw">new</span> <span class="type">ThreadLocal</span>&lt;&gt;();
+
+    <span class="kw">public static void</span> <span class="method">set</span>(<span class="type">RequestContext</span> ctx) { context.<span class="method">set</span>(ctx); }
+    <span class="kw">public static</span> <span class="type">RequestContext</span> <span class="method">get</span>() { <span class="kw">return</span> context.<span class="method">get</span>(); }
+
+    <span class="comment">// ❌ LEAK: in a thread pool, threads are reused.
+    // ThreadLocal value stays in the thread's ThreadLocalMap FOREVER
+    // if you don't remove it. RequestContext (and all it references)
+    // is never GC'd even though the request is done.</span>
+
+    <span class="comment">// ✅ ALWAYS call remove() when done — especially with thread pools</span>
+    <span class="kw">public static void</span> <span class="method">clear</span>() { context.<span class="method">remove</span>(); }
+}
+
+<span class="comment">// In Spring, use a Filter to ensure cleanup:</span>
+<span class="kw">public class</span> <span class="type">RequestContextFilter</span> <span class="kw">implements</span> <span class="type">Filter</span> {
+    <span class="kw">public void</span> <span class="method">doFilter</span>(<span class="type">ServletRequest</span> req, <span class="type">ServletResponse</span> res, <span class="type">FilterChain</span> chain) {
+        <span class="kw">try</span> {
+            <span class="type">RequestContextHolder</span>.<span class="method">set</span>(<span class="kw">new</span> <span class="type">RequestContext</span>(req));
+            chain.<span class="method">doFilter</span>(req, res);
+        } <span class="kw">finally</span> {
+            <span class="type">RequestContextHolder</span>.<span class="method">clear</span>(); <span class="comment">// ALWAYS clean up</span>
+        }
+    }
+}</pre>
+</div>
+
+<!-- ============================================================ -->
+<!-- S6: MARK-SWEEP-COMPACT -->
+<!-- ============================================================ -->
+<div id="s6" class="section">
+  <div class="section-header">
+    <span class="level-badge level-core">Core</span>
+    <h1>Mark-Sweep-Compact Algorithm</h1>
+    <p class="subtitle">The fundamental algorithm all GC collectors are built upon — and why each phase has its trade-offs.</p>
+  </div>
+
+  <h2>Phase 1: Mark</h2>
+  <div class="gc-phase phase-blue">
+    <div class="phase-title">Mark Phase <span class="phase-stw stw-yes">STW in simple collectors</span></div>
+    <p style="font-size:13px;color:var(--text2);margin:0">Starting from GC roots, traverse every reachable object reference recursively. Set a "marked" bit in each reachable object's header. Objects not marked after traversal are garbage.</p>
+  </div>
+<pre><span class="comment">// Conceptual traversal (actual JVM uses efficient bitwise marking)</span>
+<span class="kw">void</span> <span class="method">mark</span>(<span class="type">Object</span> obj) {
+    <span class="kw">if</span> (obj == <span class="kw">null</span> || isMarked(obj)) <span class="kw">return</span>;
+    setMarked(obj);
+    <span class="kw">for</span> (<span class="type">Object</span> ref : getReferences(obj)) {
+        <span class="method">mark</span>(ref);  <span class="comment">// DFS traversal of object graph</span>
+    }
+}</pre>
+
+  <h2>Phase 2: Sweep</h2>
+  <div class="gc-phase phase-yellow">
+    <div class="phase-title">Sweep Phase <span class="phase-stw stw-yes">STW</span></div>
+    <p style="font-size:13px;color:var(--text2);margin:0">Linear scan of the entire heap. For each object: if marked → clear the mark bit (reset for next GC). If not marked → reclaim the memory (add to free list). Problem: creates fragmentation — gaps between live objects.</p>
+  </div>
+
+  <h2>Phase 3: Compact</h2>
+  <div class="gc-phase phase-green">
+    <div class="phase-title">Compact Phase <span class="phase-stw stw-yes">STW — most expensive</span></div>
+    <p style="font-size:13px;color:var(--text2);margin:0">Move all live objects to one end of the heap. Update all references to point to new locations. The result is a contiguous block of free space — allocation becomes a simple pointer bump again. Expensive but eliminates fragmentation.</p>
+  </div>
+
+  <h2>Why Compaction Matters</h2>
+  <div class="compare-row">
+    <div class="compare-bad">
+      <div class="compare-label">Without Compaction — Fragmented</div>
+      <p style="font-size:12px;color:var(--text2)">Free space scattered in small chunks. Allocating a 1MB object fails even if 10MB total is free (but in 100 × 100KB fragments). Forces a GC even though enough memory exists. Performance degrades over time.</p>
+    </div>
+    <div class="compare-good">
+      <div class="compare-label">With Compaction — Clean</div>
+      <p style="font-size:12px;color:var(--text2)">All free space in one contiguous block. Allocation is a simple pointer increment — near-zero cost. GC can be deferred longer. Consistent performance.</p>
+    </div>
+  </div>
+
+  <h2>Copying Collection (Used in Young Gen)</h2>
+  <p>An alternative to compact — instead of moving objects in-place, copy live objects to a fresh "to" space. The "from" space is then entirely empty. Faster than compacting because you only touch live objects (which are few in Young Gen), and the entire from-space is freed atomically.</p>
+
+<pre><span class="comment">// Why Young Gen uses copying — most efficient when few objects survive</span>
+<span class="comment">// Cost is proportional to LIVE objects, not total space</span>
+<span class="comment">// If 99% of Eden objects are dead, copying 1% is very fast</span>
+<span class="comment">// Eden → S0 (live objects), Eden is then clean — no sweep needed</span></pre>
+
+  <h2>Tri-Color Marking (Concurrent GC)</h2>
+  <p>Concurrent collectors (G1, ZGC) use tri-color marking to allow GC to run while the application continues:</p>
+  <div class="grid3">
+    <div class="card" style="border-color:#2d2d2d">
+      <div class="card-title" style="color:var(--text3)">⬜ White</div>
+      <div class="card-body">Not yet visited. Either unreachable (garbage) or not yet reached during marking.</div>
+    </div>
+    <div class="card" style="border-color:#453a00">
+      <div class="card-title" style="color:var(--yellow-light)">🟡 Grey</div>
+      <div class="card-body">Visited but references not yet processed. In the marking worklist.</div>
+    </div>
+    <div class="card" style="border-color:#14532d">
+      <div class="card-title" style="color:var(--green-light)">⬛ Black</div>
+      <div class="card-body">Fully processed — object and all its references are scanned and marked.</div>
+    </div>
+  </div>
+  <p>The challenge: the application can modify references while marking is in progress. Write barriers detect these changes and re-mark affected objects (SATB — Snapshot At The Beginning, used in G1).</p>
+</div>
+
+<!-- ============================================================ -->
+<!-- S7: SERIAL & PARALLEL GC -->
+<!-- ============================================================ -->
+<div id="s7" class="section">
+  <div class="section-header">
+    <span class="level-badge level-intermediate">Classic</span>
+    <h1>Serial GC &amp; Parallel GC</h1>
+    <p class="subtitle">The original collectors — Serial for single-core/small apps, Parallel for throughput-oriented batch workloads.</p>
+  </div>
+
+  <h2>Serial GC — Single-Threaded</h2>
+  <p>The simplest collector. Uses a single thread for all GC work. During GC, all application threads stop (full Stop-The-World). After GC, all application threads resume.</p>
+
+<pre><span class="flag">-XX:+UseSerialGC</span>    <span class="comment">// Enable Serial GC</span>
+
+<span class="comment">// Young Gen: Serial copying collector
+// Old Gen: Serial mark-sweep-compact
+// All phases: single-threaded, full STW</span></pre>
+
+  <div class="pros-cons">
+    <div class="pros">
+      <div class="pros-title">✓ Serial GC — When to Use</div>
+      <ul>
+        <li>Single-CPU machines or VMs with 1-2 cores</li>
+        <li>Very small heap (&lt;100MB)</li>
+        <li>Client-side desktop applications</li>
+        <li>Microservices with tiny heaps in containers</li>
+        <li>When overhead of multi-thread coordination is worse than serial</li>
+        <li>Embedded systems with limited resources</li>
+      </ul>
+    </div>
+    <div class="cons">
+      <div class="cons-title">✗ Serial GC — Avoid When</div>
+      <ul>
+        <li>Multi-core server with &gt;1GB heap</li>
+        <li>Latency-sensitive applications</li>
+        <li>High-throughput web services</li>
+        <li>Any production server workload</li>
+        <li>Pause times grow linearly with heap size</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>Parallel GC (Throughput Collector)</h2>
+  <p>Same algorithm as Serial but uses multiple threads for Young Gen collection (parallel copying). Old Gen uses a single-threaded mark-sweep-compact. Goal: maximise throughput — spend as little total CPU time on GC as possible, even if individual pauses are long.</p>
+
+<pre><span class="flag">-XX:+UseParallelGC</span>                  <span class="comment">// Enable Parallel GC (default Java 8)</span>
+<span class="flag">-XX:ParallelGCThreads=8</span>             <span class="comment">// number of GC threads (default: CPU count)</span>
+<span class="flag">-XX:MaxGCPauseMillis=200</span>            <span class="comment">// goal: max 200ms pause (best-effort)</span>
+<span class="flag">-XX:GCTimeRatio=99</span>                  <span class="comment">// goal: &lt;1% time in GC (99:1 app:gc)</span>
+<span class="flag">-XX:+UseAdaptiveSizePolicy</span>          <span class="comment">// JVM auto-adjusts heap sizes (default ON)</span></pre>
+
+  <div class="pros-cons">
+    <div class="pros">
+      <div class="pros-title">✓ Parallel GC — When to Use</div>
+      <ul>
+        <li>Batch processing — throughput matters more than latency</li>
+        <li>ETL pipelines, analytics, overnight batch jobs</li>
+        <li>CPU-bound workloads that can tolerate longer pauses</li>
+        <li>Multi-core servers where concurrent GC overhead isn't worth it</li>
+        <li>When maximising total work done is the priority</li>
+      </ul>
+    </div>
+    <div class="cons">
+      <div class="cons-title">✗ Parallel GC — Avoid When</div>
+      <ul>
+        <li>Interactive applications or APIs with latency SLAs</li>
+        <li>Pause times of seconds are unacceptable</li>
+        <li>Large heaps (&gt;4GB) — pauses scale with heap size</li>
+        <li>Any app where users notice GC pauses</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>Parallel Old GC</h2>
+<pre><span class="comment">// Java 7+ — Parallel Old: both Young and Old Gen are parallel</span>
+<span class="flag">-XX:+UseParallelOldGC</span>   <span class="comment">// parallel multi-threaded Old Gen collection</span>
+<span class="comment">// This is the default with UseParallelGC in Java 7+</span>
+<span class="comment">// Reduces Full GC pause significantly on multi-core machines</span></pre>
+</div>
+
+<!-- ============================================================ -->
+<!-- S8: CMS -->
+<!-- ============================================================ -->
+<div id="s8" class="section">
+  <div class="section-header">
+    <span class="level-badge level-intermediate">Deprecated Java 9+</span>
+    <h1>CMS — Concurrent Mark Sweep</h1>
+    <p class="subtitle">The first low-latency collector — revolutionary in its time, deprecated in Java 9, removed in Java 14. Understanding it is still key to interviews.</p>
+  </div>
+
+  <h2>CMS Goal</h2>
+  <p>CMS aimed to minimise Old Gen pause times by doing most of the marking work <strong>concurrently</strong> — while the application continues running. Only two short STW phases required.</p>
+
+  <h2>CMS Phases</h2>
+  <div class="gc-phase phase-red">
+    <div class="phase-title">1. Initial Mark <span class="phase-stw stw-yes">STW — very short</span></div>
+    <p style="font-size:13px;color:var(--text2);margin:0">Mark only the objects directly reachable from GC roots. Very fast — just one level deep.</p>
+  </div>
+  <div class="gc-phase phase-green">
+    <div class="phase-title">2. Concurrent Mark <span class="phase-stw stw-no">Concurrent</span></div>
+    <p style="font-size:13px;color:var(--text2);margin:0">Traverse the object graph from initially marked objects. Application runs simultaneously — this is the long phase but doesn't pause the app.</p>
+  </div>
+  <div class="gc-phase phase-yellow">
+    <div class="phase-title">3. Concurrent Preclean <span class="phase-stw stw-no">Concurrent</span></div>
+    <p style="font-size:13px;color:var(--text2);margin:0">Scan card table for objects modified by the app during concurrent mark. Reduces work needed in Remark.</p>
+  </div>
+  <div class="gc-phase phase-red">
+    <div class="phase-title">4. Remark <span class="phase-stw stw-yes">STW — short</span></div>
+    <p style="font-size:13px;color:var(--text2);margin:0">Re-scan objects modified during concurrent mark. Must pause app for correctness. The pause is much shorter than a Full GC.</p>
+  </div>
+  <div class="gc-phase phase-green">
+    <div class="phase-title">5. Concurrent Sweep <span class="phase-stw stw-no">Concurrent</span></div>
+    <p style="font-size:13px;color:var(--text2);margin:0">Reclaim unmarked objects. Application runs. No compaction — free space added to free list.</p>
+  </div>
+  <div class="gc-phase phase-green">
+    <div class="phase-title">6. Concurrent Reset <span class="phase-stw stw-no">Concurrent</span></div>
+    <p style="font-size:13px;color:var(--text2);margin:0">Reset data structures for next CMS cycle.</p>
+  </div>
+
+  <h2>CMS Fatal Flaws — Why It Was Deprecated</h2>
+  <div class="grid2">
+    <div class="card" style="border-color:#5a1a1a">
+      <div class="card-title" style="color:var(--red-light)">No Compaction</div>
+      <div class="card-body">CMS never compacts — it uses free-list allocation. Over time, fragmentation grows until it can't allocate large objects, triggering a full compacting STW collection — the dreaded "concurrent mode failure" pause that can last seconds.</div>
+    </div>
+    <div class="card" style="border-color:#5a1a1a">
+      <div class="card-title" style="color:var(--red-light)">Concurrent Mode Failure</div>
+      <div class="card-body">If Old Gen fills up while concurrent sweep is still running, CMS falls back to a Serial full STW compacting GC — often worse than if CMS had never run. Happens when allocation rate is too high or CMS wasn't started early enough.</div>
+    </div>
+    <div class="card" style="border-color:#5a1a1a">
+      <div class="card-title" style="color:var(--red-light)">High CPU Usage</div>
+      <div class="card-body">Concurrent marking uses CPU cycles while the application runs — steals throughput. Applications with high CPU utilisation suffer under CMS.</div>
+    </div>
+    <div class="card" style="border-color:#5a1a1a">
+      <div class="card-title" style="color:var(--red-light)">Complex Tuning</div>
+      <div class="card-body">Requires extensive tuning: CMSInitiatingOccupancyFraction, CMSParallelRemarkEnabled, CMSTriggerRatio. Getting it right for a specific workload required significant expertise.</div>
+    </div>
+  </div>
+
+<pre><span class="comment">// CMS flags (for reference — deprecated/removed in Java 14)</span>
+<span class="flag">-XX:+UseConcMarkSweepGC</span>
+<span class="flag">-XX:CMSInitiatingOccupancyFraction=75</span>  <span class="comment">// start CMS when OldGen is 75% full</span>
+<span class="flag">-XX:+UseCMSInitiatingOccupancyOnly</span>     <span class="comment">// don't use adaptive triggering</span>
+<span class="flag">-XX:+CMSParallelRemarkEnabled</span>          <span class="comment">// parallel remark phase</span>
+<span class="flag">-XX:+CMSScavengeBeforeRemark</span>           <span class="comment">// minor GC before remark to reduce work</span></pre>
+
+  <div class="alert alert-yellow">
+    <strong>Interview note:</strong> CMS was removed in Java 14. If you're still using CMS, you need to migrate to G1GC or ZGC. Interviewers often ask you to compare CMS vs G1 — the key difference is G1 does compaction (in regions) which eliminates concurrent mode failures.
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- S9: G1GC -->
+<!-- ============================================================ -->
+<div id="s9" class="section">
+  <div class="section-header">
+    <span class="level-badge level-advanced">Default — Java 9+</span>
+    <h1>G1GC — Garbage First</h1>
+    <p class="subtitle">The default collector since Java 9 — designed for large heaps (>4GB) with predictable pause time goals.</p>
+  </div>
+
+  <h2>The Core Innovation — Regions</h2>
+  <p>G1 divides the heap into equal-sized <strong>regions</strong> (typically 1-32MB each). Instead of fixed Young/Old generations, any region can be designated as Eden, Survivor, Old, or Humongous. This enables incremental collection — G1 collects the regions with the most garbage first ("Garbage First").</p>
+
+  <div class="card">
+    <div style="display:grid;grid-template-columns:repeat(8,1fr);gap:4px;font-size:11px;text-align:center">
+      <div style="background:#0a2416;border:1px solid #14532d;border-radius:4px;padding:8px;color:var(--green-light)">Eden</div>
+      <div style="background:#0a2416;border:1px solid #14532d;border-radius:4px;padding:8px;color:var(--green-light)">Eden</div>
+      <div style="background:#1a1a2a;border:1px solid #2d2d5a;border-radius:4px;padding:8px;color:var(--blue-light)">Old</div>
+      <div style="background:#1a1a0a;border:1px solid #453a00;border-radius:4px;padding:8px;color:var(--yellow-light)">Surv</div>
+      <div style="background:#0a2416;border:1px solid #14532d;border-radius:4px;padding:8px;color:var(--green-light)">Eden</div>
+      <div style="background:#1a1a2a;border:1px solid #2d2d5a;border-radius:4px;padding:8px;color:var(--blue-light)">Old</div>
+      <div style="background:#2e1065;border:1px solid #6d28d9;border-radius:4px;padding:8px;color:var(--purple-light)">Hum.</div>
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:8px;color:var(--text3)">Free</div>
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:8px;color:var(--text3)">Free</div>
+      <div style="background:#1a1a2a;border:1px solid #2d2d5a;border-radius:4px;padding:8px;color:var(--blue-light)">Old</div>
+      <div style="background:#1a1a0a;border:1px solid #453a00;border-radius:4px;padding:8px;color:var(--yellow-light)">Surv</div>
+      <div style="background:#0a2416;border:1px solid #14532d;border-radius:4px;padding:8px;color:var(--green-light)">Eden</div>
+      <div style="background:#1a1a2a;border:1px solid #2d2d5a;border-radius:4px;padding:8px;color:var(--blue-light)">Old</div>
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:8px;color:var(--text3)">Free</div>
+      <div style="background:#1a1a2a;border:1px solid #2d2d5a;border-radius:4px;padding:8px;color:var(--blue-light)">Old</div>
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:8px;color:var(--text3)">Free</div>
+    </div>
+    <div style="display:flex;gap:12px;margin-top:12px;flex-wrap:wrap;font-size:12px">
+      <span class="badge badge-green">Eden</span>
+      <span class="badge badge-yellow">Survivor</span>
+      <span class="badge badge-blue">Old</span>
+      <span class="badge badge-purple">Humongous</span>
+      <span style="font-size:12px;color:var(--text3)">Free regions — available for any purpose</span>
+    </div>
+  </div>
+
+  <h2>G1 Collection Phases</h2>
+  <div class="gc-phase phase-red">
+    <div class="phase-title">Young-Only GC (Evacuation Pause) <span class="phase-stw stw-yes">STW</span></div>
+    <p style="font-size:13px;color:var(--text2);margin:0">Parallel collection of Eden and Survivor regions. Live objects copied to new Survivor/Old regions. Collected regions become free. Happens frequently. G1 tries to meet the pause time goal by limiting the number of regions collected per pause.</p>
+  </div>
+  <div class="gc-phase phase-blue">
+    <div class="phase-title">Concurrent Marking Cycle <span class="phase-stw stw-short">2 short STW pauses</span></div>
+    <p style="font-size:13px;color:var(--text2);margin:0">Triggered when heap occupancy exceeds InitiatingHeapOccupancyPercent (default 45%). Phases: Initial Mark (STW, piggybacks on Young GC) → Root Region Scan (concurrent) → Concurrent Mark (concurrent) → Remark (STW, SATB) → Cleanup (STW for accounting, concurrent for freeing empty regions).</p>
+  </div>
+  <div class="gc-phase phase-purple">
+    <div class="phase-title">Mixed GC <span class="phase-stw stw-yes">STW</span></div>
+    <p style="font-size:13px;color:var(--text2);margin:0">Collects Young regions PLUS selected Old Gen regions with most garbage. "Garbage First" — G1 picks Old regions by garbage density to maximise reclamation per pause. Multiple mixed GC rounds follow a marking cycle.</p>
+  </div>
+  <div class="gc-phase phase-red">
+    <div class="phase-title">Full GC (Emergency) <span class="phase-stw stw-yes">Full STW — avoid at all costs</span></div>
+    <p style="font-size:13px;color:var(--text2);margin:0">Serial full heap collection triggered when G1 can't keep up with allocation rate. In Java 10+, Full GC is parallel. Indicates G1 tuning is needed — increase heap, adjust IHOP, reduce allocation rate.</p>
+  </div>
+
+  <h2>Key G1 Tuning Flags</h2>
+<pre><span class="flag">-XX:+UseG1GC</span>                          <span class="comment">// enable G1 (default Java 9+)</span>
+<span class="flag">-XX:MaxGCPauseMillis=200</span>              <span class="comment">// pause time GOAL (not guarantee), default 200ms</span>
+<span class="flag">-XX:G1HeapRegionSize=16m</span>             <span class="comment">// region size (1-32MB, power of 2)</span>
+<span class="flag">-XX:InitiatingHeapOccupancyPercent=45</span><span class="comment">// start concurrent marking at 45% heap used</span>
+<span class="flag">-XX:G1NewSizePercent=5</span>               <span class="comment">// min Young Gen %</span>
+<span class="flag">-XX:G1MaxNewSizePercent=60</span>           <span class="comment">// max Young Gen %</span>
+<span class="flag">-XX:G1MixedGCLiveThresholdPercent=85</span> <span class="comment">// only include Old regions with &lt;85% live data</span>
+<span class="flag">-XX:G1HeapWastePercent=5</span>             <span class="comment">// stop mixed GC when &lt;5% of heap is reclaimable</span>
+<span class="flag">-XX:ConcGCThreads=4</span>                  <span class="comment">// concurrent marking threads</span></pre>
+
+  <h2>Humongous Objects — G1 Special Case</h2>
+<pre><span class="comment">// Objects > half a region size are "humongous"
+// They're allocated directly in Old Gen (contiguous regions)
+// They bypass Young Gen entirely — NEVER collected by Minor GC
+// Humongous objects are only collected during Concurrent Marking or Full GC</span>
+<span class="comment">// ❌ This is a common performance problem in G1!</span>
+<span class="kw">byte</span>[] data = <span class="kw">new byte</span>[<span class="num">10</span> * <span class="num">1024</span> * <span class="num">1024</span>]; <span class="comment">// 10MB — humongous if region=16MB</span>
+<span class="comment">// Fix: buffer pooling, streaming, or increase G1HeapRegionSize</span></pre>
+
+  <div class="pros-cons">
+    <div class="pros">
+      <div class="pros-title">✓ G1GC Strengths</div>
+      <ul>
+        <li>Predictable pause times (pause goal-oriented)</li>
+        <li>Handles large heaps well (4GB-100GB+)</li>
+        <li>Concurrent marking reduces Old Gen pressure</li>
+        <li>Does compact (no fragmentation like CMS)</li>
+        <li>Adaptive — self-tuning based on pause goal</li>
+        <li>Best general-purpose collector for most applications</li>
+      </ul>
+    </div>
+    <div class="cons">
+      <div class="cons-title">✗ G1GC Limitations</div>
+      <ul>
+        <li>More CPU overhead than Parallel GC (lower throughput)</li>
+        <li>Humongous object handling can cause issues</li>
+        <li>Complex to tune (many flags)</li>
+        <li>Write barriers have per-write overhead</li>
+        <li>Not suited for ultra-low-latency (&lt;10ms) — use ZGC</li>
+        <li>Full GC still single-threaded until Java 10</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- S10: ZGC -->
+<!-- ============================================================ -->
+<div id="s10" class="section">
+  <div class="section-header">
+    <span class="level-badge level-advanced">Java 15+ Production</span>
+    <h1>ZGC — Ultra Low Latency</h1>
+    <p class="subtitle">Sub-millisecond pause times regardless of heap size — designed for terabyte heaps and microsecond SLAs.</p>
+  </div>
+
+  <h2>ZGC Goals</h2>
+  <div class="grid3">
+    <div class="card">
+      <div class="card-title" style="color:var(--teal-light)">Pause Target</div>
+      <div class="card-body"><strong>&lt;1ms</strong> pause times (often sub-millisecond), regardless of heap size or live set size.</div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="color:var(--teal-light)">Heap Scale</div>
+      <div class="card-body">Works efficiently from <strong>8MB to 16TB</strong> heap. Pause time does NOT scale with heap size.</div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="color:var(--teal-light)">Throughput</div>
+      <div class="card-body">Typically within <strong>5-15% of throughput</strong> compared to Parallel GC — much better than CMS.</div>
+    </div>
+  </div>
+
+  <h2>How ZGC Achieves Sub-Millisecond Pauses</h2>
+  <div class="steps">
+    <div class="step"><div class="step-num">1</div><div class="step-content"><div class="step-title">Load Barriers (not Write Barriers)</div><div class="step-body">ZGC inserts a <strong>load barrier</strong> — code that runs when any reference is loaded from memory. This allows ZGC to intercept reference reads and handle relocation on the fly, without needing STW for relocation.</div></div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-content"><div class="step-title">Colored Pointers (Java 15+)</div><div class="step-body">ZGC uses unused bits in 64-bit pointers to store metadata (marked0, marked1, remapped, finalizable). This lets GC track object state by checking the pointer itself — no need to access the object header.</div></div></div>
+    <div class="step"><div class="step-num">3</div><div class="step-content"><div class="step-title">Concurrent Relocation</div><div class="step-body">Objects are relocated (moved) while the application runs. Load barriers ensure that when app code reads a reference to a relocated object, it gets the new address transparently — no STW needed for relocation.</div></div></div>
+    <div class="step"><div class="step-num">4</div><div class="step-content"><div class="step-title">Extremely Short STW Phases</div><div class="step-body">Only 3 very short STW pauses: Pause Mark Start (scan GC roots), Pause Mark End (flush marking), Pause Relocate Start (start relocation). All typically &lt;1ms.</div></div></div>
+  </div>
+
+  <h2>ZGC Phases</h2>
+  <div class="gc-phase phase-red"><div class="phase-title">Pause Mark Start <span class="phase-stw stw-yes">STW ~0.5ms</span></div><p style="font-size:13px;color:var(--text2);margin:0">Scan GC roots. Mark them. Very short — just the roots, not the whole graph.</p></div>
+  <div class="gc-phase phase-green"><div class="phase-title">Concurrent Mark <span class="phase-stw stw-no">Concurrent</span></div><p style="font-size:13px;color:var(--text2);margin:0">Traverse entire object graph. Application runs. Load barrier handles any objects created during this phase.</p></div>
+  <div class="gc-phase phase-red"><div class="phase-title">Pause Mark End <span class="phase-stw stw-yes">STW ~0.5ms</span></div><p style="font-size:13px;color:var(--text2);margin:0">Flush remaining marking work. Handle weak references.</p></div>
+  <div class="gc-phase phase-green"><div class="phase-title">Concurrent Prepare for Relocation <span class="phase-stw stw-no">Concurrent</span></div><p style="font-size:13px;color:var(--text2);margin:0">Identify which regions to relocate (relocation set). Sort by garbage density.</p></div>
+  <div class="gc-phase phase-red"><div class="phase-title">Pause Relocate Start <span class="phase-stw stw-yes">STW ~0.5ms</span></div><p style="font-size:13px;color:var(--text2);margin:0">Scan GC roots for the relocation set.</p></div>
+  <div class="gc-phase phase-green"><div class="phase-title">Concurrent Relocate <span class="phase-stw stw-no">Concurrent</span></div><p style="font-size:13px;color:var(--text2);margin:0">Move objects. Maintain forwarding table. Load barriers redirect stale references. Application runs throughout.</p></div>
+
+  <h2>ZGC Configuration</h2>
+<pre><span class="flag">-XX:+UseZGC</span>                         <span class="comment">// enable ZGC</span>
+<span class="flag">-Xmx16g</span>                            <span class="comment">// ZGC needs generous heap (min 2x live set)</span>
+<span class="flag">-XX:ConcGCThreads=4</span>                 <span class="comment">// concurrent GC threads</span>
+<span class="flag">-XX:ZAllocationSpikeTolerance=2.0</span>   <span class="comment">// tolerance for allocation spikes</span>
+<span class="flag">-XX:ZCollectionInterval=0</span>          <span class="comment">// min time between GC cycles (0=no limit)</span>
+<span class="flag">-XX:+ZGenerational</span>                  <span class="comment">// Java 21: generational ZGC (much improved)</span>
+
+<span class="comment">// JVM 21: Generational ZGC — the best of both worlds
+// ZGC + generational hypothesis = lower overhead + sub-ms pauses</span></pre>
+
+  <div class="pros-cons">
+    <div class="pros">
+      <div class="pros-title">✓ ZGC — When to Use</div>
+      <ul>
+        <li>Ultra-low-latency: real-time trading, gaming, ad-tech</li>
+        <li>Very large heaps (16GB-16TB)</li>
+        <li>P99/P999 latency SLAs — microsecond requirements</li>
+        <li>Java 21+ with Generational ZGC for best results</li>
+        <li>When G1 pause times are too long despite tuning</li>
+      </ul>
+    </div>
+    <div class="cons">
+      <div class="cons-title">✗ ZGC — Trade-offs</div>
+      <ul>
+        <li>Load barrier overhead on every reference read (~5-15% throughput)</li>
+        <li>Needs more heap headroom than G1 (ZGC needs space to relocate)</li>
+        <li>64-bit platforms only (no 32-bit support)</li>
+        <li>Higher memory usage for GC metadata</li>
+        <li>Generational ZGC only stable in Java 21+</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- S11: SHENANDOAH -->
+<!-- ============================================================ -->
+<div id="s11" class="section">
+  <div class="section-header">
+    <span class="level-badge level-advanced">OpenJDK / RedHat</span>
+    <h1>Shenandoah GC</h1>
+    <p class="subtitle">Red Hat's low-latency collector — concurrent compaction using Brooks pointers, available in OpenJDK 12+.</p>
+  </div>
+
+  <h2>Shenandoah's Key Innovation — Brooks Pointers</h2>
+  <p>Where ZGC uses colored pointers (metadata in the pointer), Shenandoah uses <strong>forwarding pointers</strong> — an extra word in each object header pointing to the object itself (or its new location during relocation). This allows concurrent compaction without STW.</p>
+
+  <h2>Shenandoah Phases</h2>
+  <div class="gc-phase phase-red"><div class="phase-title">Init Mark <span class="phase-stw stw-yes">STW — short</span></div><p style="font-size:13px;color:var(--text2);margin:0">Scan GC roots. Very brief.</p></div>
+  <div class="gc-phase phase-green"><div class="phase-title">Concurrent Mark <span class="phase-stw stw-no">Concurrent</span></div><p style="font-size:13px;color:var(--text2);margin:0">Mark all live objects. Application runs.</p></div>
+  <div class="gc-phase phase-red"><div class="phase-title">Final Mark <span class="phase-stw stw-yes">STW — short</span></div><p style="font-size:13px;color:var(--text2);margin:0">Drain remaining mark queues, handle weak refs.</p></div>
+  <div class="gc-phase phase-green"><div class="phase-title">Concurrent Cleanup <span class="phase-stw stw-no">Concurrent</span></div><p style="font-size:13px;color:var(--text2);margin:0">Reclaim completely empty regions.</p></div>
+  <div class="gc-phase phase-green"><div class="phase-title">Concurrent Evacuation <span class="phase-stw stw-no">Concurrent</span></div><p style="font-size:13px;color:var(--text2);margin:0">Copy live objects from collection set to new regions. Brooks pointers redirect reads/writes to new location. This is Shenandoah's unique feature.</p></div>
+  <div class="gc-phase phase-red"><div class="phase-title">Init Update Refs <span class="phase-stw stw-yes">STW — very short</span></div><p style="font-size:13px;color:var(--text2);margin:0">Ensure evacuation finished before updating references.</p></div>
+  <div class="gc-phase phase-green"><div class="phase-title">Concurrent Update Refs <span class="phase-stw stw-no">Concurrent</span></div><p style="font-size:13px;color:var(--text2);margin:0">Update all references to point to new object locations.</p></div>
+  <div class="gc-phase phase-red"><div class="phase-title">Final Update Refs <span class="phase-stw stw-yes">STW — very short</span></div><p style="font-size:13px;color:var(--text2);margin:0">Update GC root references. Release old regions.</p></div>
+
+<pre><span class="flag">-XX:+UseShenandoahGC</span>                     <span class="comment">// enable Shenandoah</span>
+<span class="flag">-XX:ShenandoahGCMode=normal</span>              <span class="comment">// normal, compact, passive</span>
+<span class="flag">-XX:ShenandoahAllocationThreshold=10</span>    <span class="comment">// trigger GC at 10% free</span>
+<span class="flag">-XX:ShenandoahInitFreeThreshold=70</span>      <span class="comment">// initial free threshold</span></pre>
+
+  <h2>Shenandoah vs ZGC</h2>
+  <table>
+    <tr><th>Feature</th><th>Shenandoah</th><th>ZGC</th></tr>
+    <tr><td>Forwarding mechanism</td><td>Brooks pointers (extra word per object)</td><td>Colored pointers (bits in reference)</td></tr>
+    <tr><td>32-bit support</td><td>Yes</td><td>No (64-bit only)</td></tr>
+    <tr><td>Generational</td><td>Experimental (Shenandoah 2.0)</td><td>Yes (Java 21+ ZGC)</td></tr>
+    <tr><td>Available in Oracle JDK</td><td>No (OpenJDK/Amazon Corretto)</td><td>Yes</td></tr>
+    <tr><td>Pause times</td><td>1-10ms typical</td><td>&lt;1ms typical</td></tr>
+    <tr><td>Memory overhead</td><td>Extra word per object</td><td>Colored pointer bits</td></tr>
+  </table>
+</div>
+
+<!-- ============================================================ -->
+<!-- S12: GC COMPARISON -->
+<!-- ============================================================ -->
+<div id="s12" class="section">
+  <div class="section-header">
+    <span class="level-badge level-advanced">Decision Guide</span>
+    <h1>GC Comparison &amp; Selection Guide</h1>
+    <p class="subtitle">How to choose the right collector for your workload — the decision matrix every senior developer needs.</p>
+  </div>
+
+  <h2>Complete Comparison Table</h2>
+  <table>
+    <tr><th>Collector</th><th>Pause Times</th><th>Throughput</th><th>Heap Size</th><th>Best For</th><th>Java Version</th></tr>
+    <tr><td><strong>Serial GC</strong></td><td>High</td><td>Medium</td><td>&lt;100MB</td><td>CLI tools, embedded, tiny containers</td><td>All</td></tr>
+    <tr><td><strong>Parallel GC</strong></td><td>High (but parallel)</td><td>Highest</td><td>1GB-4GB</td><td>Batch jobs, ETL, throughput-first</td><td>All (default Java 8)</td></tr>
+    <tr><td><strong>CMS</strong></td><td>Low (concurrent)</td><td>Medium</td><td>1GB-8GB</td><td>Deprecated — use G1</td><td>Removed Java 14</td></tr>
+    <tr><td><strong>G1GC</strong></td><td>Predictable 200ms</td><td>Good</td><td>4GB-64GB</td><td>Most server apps, APIs, microservices</td><td>Java 7+ (default Java 9+)</td></tr>
+    <tr><td><strong>ZGC</strong></td><td>&lt;1ms</td><td>Good</td><td>8MB-16TB</td><td>Ultra-low latency, huge heaps</td><td>Production Java 15+</td></tr>
+    <tr><td><strong>Shenandoah</strong></td><td>1-10ms</td><td>Good</td><td>Any</td><td>Low latency, OpenJDK</td><td>Java 12+ (OpenJDK)</td></tr>
+  </table>
+
+  <h2>Decision Flowchart</h2>
+  <div class="card" style="padding:20px">
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div class="step-content"><div class="step-title">Is it a batch job / throughput matters most?</div><div class="step-body">→ <span class="badge badge-yellow">Parallel GC</span> — maximum throughput, pauses don't matter</div></div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-content"><div class="step-title">Is heap size very small (&lt;256MB) — e.g. tiny container?</div><div class="step-body">→ <span class="badge badge-teal">Serial GC</span> or default — overhead of concurrent GC isn't worth it</div></div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-content"><div class="step-title">Standard API / web service — target &lt;200ms pauses?</div><div class="step-body">→ <span class="badge badge-green">G1GC</span> — the safe default for most applications</div></div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-content"><div class="step-title">Need &lt;10ms pauses or heap &gt; 32GB?</div><div class="step-body">→ <span class="badge badge-blue">ZGC</span> (Java 21 + Generational ZGC for best results)</div></div></div>
+      <div class="step"><div class="step-num">5</div><div class="step-content"><div class="step-title">On OpenJDK/Amazon Corretto — need low latency?</div><div class="step-body">→ <span class="badge badge-purple">Shenandoah</span> — similar to ZGC, available outside Oracle JDK</div></div></div>
+    </div>
+  </div>
+
+  <h2>Pause Time vs Throughput Trade-off</h2>
+  <p>Every GC collector makes a fundamental trade-off: doing more concurrent work (to reduce pauses) requires CPU time that the application could otherwise use — reducing throughput. There is no free lunch.</p>
+
+  <div class="card">
+    <div style="display:flex;align-items:center;gap:0;font-size:12px">
+      <div style="text-align:center;padding:12px 20px;background:var(--yellow-bg);border-radius:8px 0 0 8px;flex:1"><div style="color:var(--yellow-light);font-weight:600">Parallel GC</div><div style="color:var(--text2);margin-top:4px">Max throughput<br>Long pauses</div></div>
+      <div style="text-align:center;padding:12px 20px;background:var(--blue-bg);flex:1"><div style="color:var(--blue-light);font-weight:600">G1GC</div><div style="color:var(--text2);margin-top:4px">Balanced<br>Predictable pauses</div></div>
+      <div style="text-align:center;padding:12px 20px;background:var(--purple-bg);flex:1"><div style="color:var(--purple-light);font-weight:600">Shenandoah</div><div style="color:var(--text2);margin-top:4px">Low pauses<br>Less throughput</div></div>
+      <div style="text-align:center;padding:12px 20px;background:var(--teal-bg);border-radius:0 8px 8px 0;flex:1"><div style="color:var(--teal-light);font-weight:600">ZGC</div><div style="color:var(--text2);margin-top:4px">Sub-ms pauses<br>Most CPU overhead</div></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text3);padding:8px 20px 0">
+      <span>← Higher throughput</span>
+      <span>Lower pause times →</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- S13: MINOR MAJOR FULL GC -->
+<!-- ============================================================ -->
+<div id="s13" class="section">
+  <div class="section-header">
+    <span class="level-badge level-intermediate">Intermediate</span>
+    <h1>Minor, Major &amp; Full GC</h1>
+    <p class="subtitle">The three types of GC events — causes, costs, and how to minimise the expensive ones.</p>
+  </div>
+
+  <h2>Minor GC</h2>
+  <div class="gc-phase phase-green">
+    <div class="phase-title">Minor GC — Young Generation Collection</div>
+    <p style="font-size:13px;color:var(--text2);margin:0"><strong>Trigger:</strong> Eden space is full. <strong>Scope:</strong> Young Gen only (Eden + Survivor). <strong>Cost:</strong> 1-100ms, proportional to live objects in Young Gen (usually very few). <strong>Frequency:</strong> Every few seconds under load. Most objects die here — this is normal and efficient.</p>
+  </div>
+<pre><span class="comment">// GC log — Minor GC (Java 9+ unified GC logging)</span>
+[<span class="num">0.234</span>s][info][gc] GC(<span class="num">1</span>) Pause Young (Normal) (<span class="type">G1 Evacuation Pause</span>)
+                     <span class="num">256M</span>-><span class="num">24M</span>(<span class="num">512M</span>) <span class="num">8.234ms</span>
+<span class="comment">// Heap: 256MB → 24MB (heap capacity 512MB), pause: 8.2ms
+// 232MB of Young Gen garbage collected in 8ms — excellent</span></pre>
+
+  <h2>Major GC</h2>
+  <div class="gc-phase phase-blue">
+    <div class="phase-title">Major GC — Old Generation Collection</div>
+    <p style="font-size:13px;color:var(--text2);margin:0"><strong>Trigger:</strong> Old Gen reaches occupancy threshold (IHOP in G1, CMSInitiatingOccupancyFraction in CMS). <strong>Scope:</strong> Old Gen (may include Young Gen). <strong>Cost:</strong> 100ms-several seconds. <strong>Frequency:</strong> Should be rare — minutes to hours. Frequent Major GCs indicate a problem.</p>
+  </div>
+
+  <h2>Full GC — The Worst Case</h2>
+  <div class="gc-phase phase-red">
+    <div class="phase-title">Full GC — Entire Heap <span class="phase-stw stw-yes">Full STW — avoid at all costs</span></div>
+    <p style="font-size:13px;color:var(--text2);margin:0"><strong>Trigger:</strong> Heap exhausted, concurrent GC can't keep up, G1 evacuation failure, explicit <code>System.gc()</code>. <strong>Scope:</strong> Entire heap — Young + Old + Metaspace. <strong>Cost:</strong> Seconds to minutes. <strong>Impact:</strong> Application completely frozen during this time.</p>
+  </div>
+
+  <h2>Full GC Root Causes and Fixes</h2>
+  <table>
+    <tr><th>Root Cause</th><th>Symptom</th><th>Fix</th></tr>
+    <tr><td>Memory leak</td><td>Heap grows over time, GC can never free enough</td><td>Find and fix the leak — heap dump analysis</td></tr>
+    <tr><td>Undersized heap</td><td>Frequent Full GC from startup</td><td>Increase -Xmx</td></tr>
+    <tr><td>G1 evacuation failure</td><td>"to-space exhausted" in GC logs</td><td>Increase heap, reduce IHOP, fix humongous objects</td></tr>
+    <tr><td>Excessive allocation rate</td><td>GC can't keep up with new objects</td><td>Reduce allocation rate, object pooling, larger heap</td></tr>
+    <tr><td>System.gc() called</td><td>Full GC at unexpected times</td><td>Add -XX:+DisableExplicitGC or -XX:+ExplicitGCInvokesConcurrent</td></tr>
+    <tr><td>Metaspace full</td><td>"OutOfMemoryError: Metaspace"</td><td>Increase MaxMetaspaceSize, check for classloader leaks</td></tr>
+  </table>
+<pre><span class="comment">// Disable explicit GC calls (RMI, etc. call System.gc() periodically)</span>
+<span class="flag">-XX:+DisableExplicitGC</span>             <span class="comment">// treat System.gc() as no-op</span>
+<span class="flag">-XX:+ExplicitGCInvokesConcurrent</span>   <span class="comment">// use concurrent GC instead of Full GC</span></pre>
+</div>
+
+<!-- ============================================================ -->
+<!-- S14: STOP THE WORLD -->
+<!-- ============================================================ -->
+<div id="s14" class="section">
+  <div class="section-header">
+    <span class="level-badge level-intermediate">Intermediate</span>
+    <h1>Stop-The-World Pauses</h1>
+    <p class="subtitle">What happens during an STW pause, why it's necessary, and how to measure and minimise it.</p>
+  </div>
+
+  <h2>What Happens During an STW Pause</h2>
+  <div class="steps">
+    <div class="step"><div class="step-num">1</div><div class="step-content"><div class="step-title">Safepoint request</div><div class="step-body">JVM sets a flag requesting all threads to reach a <strong>safepoint</strong> — a point in execution where the thread's state is fully known (no partially completed bytecode, no holding partial references).</div></div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-content"><div class="step-title">Threads park</div><div class="step-body">Each thread checks for the safepoint flag at regular intervals (back edges of loops, method calls). They suspend themselves and signal "I'm at a safepoint." JVM waits for ALL threads to park.</div></div></div>
+    <div class="step"><div class="step-num">3</div><div class="step-content"><div class="step-title">GC work runs</div><div class="step-body">With all application threads stopped, GC runs its STW phase(s) safely. The heap is in a consistent, non-changing state — GC can read and modify it safely.</div></div></div>
+    <div class="step"><div class="step-num">4</div><div class="step-content"><div class="step-title">Threads resume</div><div class="step-body">JVM signals all threads to resume. They continue execution from where they paused. Application resumes as if nothing happened (but time passed).</div></div></div>
+  </div>
+
+  <h2>Safepoint Bias — The Hidden Latency</h2>
+  <p>Reported GC pause times are measured from when all threads reach safepoint — but <strong>Time To Safepoint (TTSP)</strong> — the time for all threads to reach safepoint — is often not included. A thread executing a counted loop may not check for safepoints until the loop completes, causing 50-100ms TTSP even for a 5ms GC.</p>
+
+<pre><span class="comment">// Diagnose safepoint issues</span>
+<span class="flag">-XX:+PrintSafepointStatistics</span>           <span class="comment">// print safepoint info</span>
+<span class="flag">-XX:PrintSafepointStatisticsCount=1</span>     <span class="comment">// every safepoint</span>
+<span class="flag">-Xlog:safepoint=info</span>                    <span class="comment">// Java 9+ unified logging</span>
+
+<span class="comment">// Fix long TTSP: avoid long-running counted loops
+// ❌ This loop won't check safepoints in old JVMs (int loop, JIT-optimised)</span>
+<span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; i &lt; <span class="num">1_000_000_000</span>; i++) {
+    process(data[i]);
+}
+<span class="comment">// ✅ Use long loop — long loops always have safepoint checks</span>
+<span class="kw">for</span> (<span class="kw">long</span> i = <span class="num">0</span>; i &lt; <span class="num">1_000_000_000L</span>; i++) {
+    process(data[(<span class="kw">int</span>)i]);
+}</pre>
+
+  <h2>Measuring GC Pause Impact</h2>
+<pre><span class="comment">// Enable comprehensive GC logging (Java 9+)</span>
+<span class="flag">-Xlog:gc*:file=/var/log/app/gc.log:time,uptime,level,tags:filecount=5,filesize=20m</span>
+
+<span class="comment">// Or simpler — just key events</span>
+<span class="flag">-Xlog:gc:stdout:time,uptime</span>
+
+<span class="comment">// Sample output:</span>
+<span class="comment">// [2024-01-15T10:23:45.123+0000][5.234s] GC(42) Pause Young 256M->24M(512M) 8.5ms</span>
+<span class="comment">// [2024-01-15T10:25:12.456+0000][92.567s] GC(43) Pause Full 480M->180M(512M) 2345ms ← problem!</span></pre>
+</div>
+
+<!-- ============================================================ -->
+<!-- S15: REFERENCE TYPES -->
+<!-- ============================================================ -->
+<div id="s15" class="section">
+  <div class="section-header">
+    <span class="level-badge level-intermediate">Intermediate</span>
+    <h1>Soft, Weak &amp; Phantom References</h1>
+    <p class="subtitle">Java's four reference strengths — how GC treats each type and when to use them.</p>
+  </div>
+
+  <h2>The Four Reference Types</h2>
+  <table>
+    <tr><th>Type</th><th>GC Clears When</th><th>Use Case</th></tr>
+    <tr><td><strong style="color:var(--red-light)">Strong (default)</strong></td><td>Never — object kept alive as long as reference exists</td><td>Everything — normal Java references</td></tr>
+    <tr><td><strong style="color:var(--yellow-light)">Soft</strong></td><td>Only when JVM is low on memory (before OOM)</td><td>Memory-sensitive caches — LRU caches</td></tr>
+    <tr><td><strong style="color:var(--blue-light)">Weak</strong></td><td>Next GC cycle — whenever GC runs</td><td>Canonicalising mappings, metadata, listeners</td></tr>
+    <tr><td><strong style="color:var(--purple-light)">Phantom</strong></td><td>After finalization — for cleanup notification</td><td>Post-GC cleanup, native resource management</td></tr>
+  </table>
+
+  <h2>SoftReference — Memory-Sensitive Cache</h2>
+<pre><span class="kw">public class</span> <span class="type">ImageCache</span> {
+    <span class="kw">private final</span> <span class="type">Map</span>&lt;<span class="type">String</span>, <span class="type">SoftReference</span>&lt;<span class="type">BufferedImage</span>&gt;&gt; cache = <span class="kw">new</span> <span class="type">HashMap</span>&lt;&gt;();
+
+    <span class="kw">public</span> <span class="type">BufferedImage</span> <span class="method">get</span>(<span class="type">String</span> key) {
+        <span class="type">SoftReference</span>&lt;<span class="type">BufferedImage</span>&gt; ref = cache.<span class="method">get</span>(key);
+        <span class="kw">if</span> (ref == <span class="kw">null</span>) <span class="kw">return null</span>;
+        <span class="type">BufferedImage</span> img = ref.<span class="method">get</span>(); <span class="comment">// null if GC cleared it</span>
+        <span class="kw">if</span> (img == <span class="kw">null</span>) {
+            cache.<span class="method">remove</span>(key); <span class="comment">// clean up stale entry</span>
+        }
+        <span class="kw">return</span> img;
+    }
+
+    <span class="kw">public void</span> <span class="method">put</span>(<span class="type">String</span> key, <span class="type">BufferedImage</span> img) {
+        cache.<span class="method">put</span>(key, <span class="kw">new</span> <span class="type">SoftReference</span>&lt;&gt;(img));
+    }
+    <span class="comment">// JVM will clear images before throwing OOM
+    // Cache shrinks automatically under memory pressure</span>
+}</pre>
+
+  <h2>WeakReference — WeakHashMap Pattern</h2>
+<pre><span class="comment">// WeakHashMap — keys are weakly referenced
+// When a key is no longer strongly referenced elsewhere, entry is removed</span>
+<span class="type">WeakHashMap</span>&lt;<span class="type">Widget</span>, <span class="type">WidgetMetadata</span>&gt; metadata = <span class="kw">new</span> <span class="type">WeakHashMap</span>&lt;&gt;();
+
+<span class="comment">// Real-world use: attaching metadata to objects you don't own
+// without preventing their GC</span>
+<span class="type">Widget</span> w = <span class="kw">new</span> <span class="type">Widget</span>();
+metadata.<span class="method">put</span>(w, <span class="kw">new</span> <span class="type">WidgetMetadata</span>());
+<span class="comment">// When 'w' is no longer referenced anywhere (strong ref),
+// the WeakHashMap entry is automatically removed — no memory leak!</span>
+
+<span class="comment">// Manual WeakReference</span>
+<span class="type">WeakReference</span>&lt;<span class="type">User</span>&gt; weakUser = <span class="kw">new</span> <span class="type">WeakReference</span>&lt;&gt;(user);
+<span class="type">User</span> u = weakUser.<span class="method">get</span>(); <span class="comment">// null if GC already collected it</span>
+<span class="kw">if</span> (u != <span class="kw">null</span>) {
+    <span class="method">process</span>(u); <span class="comment">// safe — we checked it's still alive</span>
+}</pre>
+
+  <h2>PhantomReference &amp; Cleaner — Post-GC Cleanup</h2>
+<pre><span class="comment">// Modern way: java.lang.ref.Cleaner (Java 9+)
+// Register cleanup action to run after object is GC'd</span>
+<span class="kw">public class</span> <span class="type">NativeBuffer</span> <span class="kw">implements</span> <span class="type">AutoCloseable</span> {
+    <span class="kw">private static final</span> <span class="type">Cleaner</span> CLEANER = <span class="type">Cleaner</span>.<span class="method">create</span>();
+
+    <span class="kw">private final</span> <span class="kw">long</span> nativePtr;
+    <span class="kw">private final</span> <span class="type">Cleaner</span>.<span class="type">Cleanable</span> cleanable;
+
+    <span class="kw">public</span> <span class="type">NativeBuffer</span>(<span class="kw">int</span> size) {
+        <span class="kw">this</span>.nativePtr = <span class="method">allocateNative</span>(size);
+        <span class="comment">// Register cleanup — runs when this object is GC'd</span>
+        <span class="comment">// Uses a separate Runnable to avoid capturing 'this' (would prevent GC)</span>
+        <span class="kw">this</span>.cleanable = CLEANER.<span class="method">register</span>(<span class="kw">this</span>, <span class="kw">new</span> <span class="type">Cleanup</span>(nativePtr));
+    }
+
+    <span class="kw">private record</span> <span class="type">Cleanup</span>(<span class="kw">long</span> ptr) <span class="kw">implements</span> <span class="type">Runnable</span> {
+        <span class="kw">public void</span> <span class="method">run</span>() { <span class="method">freeNative</span>(ptr); } <span class="comment">// called after GC</span>
+    }
+
+    <span class="ann">@Override</span>
+    <span class="kw">public void</span> <span class="method">close</span>() { cleanable.<span class="method">clean</span>(); } <span class="comment">// explicit cleanup if possible</span>
+}
+<span class="comment">// Cleaner is the recommended replacement for finalize()</span></pre>
+</div>
+
+<!-- ============================================================ -->
+<!-- S16: FINALIZATION -->
+<!-- ============================================================ -->
+<div id="s16" class="section">
+  <div class="section-header">
+    <span class="level-badge level-intermediate">Intermediate</span>
+    <h1>Finalization &amp; Cleaners</h1>
+    <p class="subtitle">finalize() is deprecated — why it's broken and what to use instead.</p>
+  </div>
+
+  <h2>finalize() — What It Was</h2>
+<pre><span class="comment">// finalize() runs before an object is GC'd — in theory</span>
+<span class="kw">public class</span> <span class="type">LegacyResource</span> {
+    <span class="ann">@Override</span>
+    <span class="ann">@Deprecated</span> <span class="comment">// deprecated since Java 9, scheduled for removal</span>
+    <span class="kw">protected void</span> <span class="method">finalize</span>() <span class="kw">throws</span> <span class="type">Throwable</span> {
+        <span class="kw">try</span> {
+            <span class="method">releaseNativeResource</span>();
+        } <span class="kw">finally</span> {
+            <span class="kw">super</span>.<span class="method">finalize</span>();
+        }
+    }
+}</pre>
+
+  <h2>Why finalize() is Broken</h2>
+  <div class="grid2">
+    <div class="card" style="border-color:#5a1a1a">
+      <div class="card-title" style="color:var(--red-light)">Unpredictable Timing</div>
+      <div class="card-body">No guarantee WHEN finalize() runs. Could be seconds, minutes, or never if the JVM exits. Can't rely on it for timely resource release.</div>
+    </div>
+    <div class="card" style="border-color:#5a1a1a">
+      <div class="card-title" style="color:var(--red-light)">Resurrection Risk</div>
+      <div class="card-body">finalize() can make an object reachable again by storing <code>this</code> somewhere. JVM must check this — objects with finalize() require two GC cycles to collect.</div>
+    </div>
+    <div class="card" style="border-color:#5a1a1a">
+      <div class="card-title" style="color:var(--red-light)">Performance Penalty</div>
+      <div class="card-body">Objects with finalizers are moved to a special finalization queue. They survive their first GC — always promoted to Old Gen. Massive GC overhead.</div>
+    </div>
+    <div class="card" style="border-color:#5a1a1a">
+      <div class="card-title" style="color:var(--red-light)">Exception Swallowing</div>
+      <div class="card-body">Exceptions thrown from finalize() are silently ignored. Bugs in finalize() vanish without a trace.</div>
+    </div>
+  </div>
+
+  <h2>The Right Way — Cleaner or AutoCloseable</h2>
+<pre><span class="comment">// Best practice: AutoCloseable + try-with-resources (explicit, deterministic)</span>
+<span class="kw">public class</span> <span class="type">DatabaseConnection</span> <span class="kw">implements</span> <span class="type">AutoCloseable</span> {
+    <span class="kw">private</span> <span class="type">Connection</span> conn;
+
+    <span class="kw">public</span> <span class="type">DatabaseConnection</span>() { conn = <span class="method">openConnection</span>(); }
+
+    <span class="ann">@Override</span>
+    <span class="kw">public void</span> <span class="method">close</span>() {
+        <span class="kw">if</span> (conn != <span class="kw">null</span>) {
+            conn.<span class="method">close</span>();
+            conn = <span class="kw">null</span>;
+        }
+    }
+}
+<span class="comment">// Usage: deterministic, timely resource release</span>
+<span class="kw">try</span> (<span class="kw">var</span> db = <span class="kw">new</span> <span class="type">DatabaseConnection</span>()) {
+    db.<span class="method">query</span>(<span class="str">"SELECT 1"</span>);
+} <span class="comment">// close() called immediately — no GC needed</span></pre>
+</div>
+
+<!-- ============================================================ -->
+<!-- S17: JVM TUNING FLAGS -->
+<!-- ============================================================ -->
+<div id="s17" class="section">
+  <div class="section-header">
+    <span class="level-badge level-advanced">Advanced</span>
+    <h1>JVM GC Tuning Flags</h1>
+    <p class="subtitle">The essential flags for each collector — with explanations of what they do and real-world tuning guidelines.</p>
+  </div>
+
+  <h2>Heap Size — Foundation of All Tuning</h2>
+<pre><span class="flag">-Xms4g</span>                    <span class="comment">// initial heap size — set equal to Xmx to avoid resize overhead</span>
+<span class="flag">-Xmx4g</span>                    <span class="comment">// maximum heap size</span>
+<span class="flag">-XX:+AlwaysPreTouch</span>       <span class="comment">// touch all heap pages at startup — prevents runtime page faults</span>
+<span class="comment">// Rule: Xms = Xmx in production. Heap resize causes Full GC and unpredictable pauses.
+// Typical: set max heap to ~75% of available RAM, leave 25% for OS, stack, Metaspace</span>
+
+<span class="flag">-XX:MaxMetaspaceSize=512m</span> <span class="comment">// cap Metaspace (default unlimited — protect from classloader leaks)</span>
+<span class="flag">-XX:MetaspaceSize=256m</span>    <span class="comment">// initial Metaspace size (avoid GC on Metaspace resize)</span></pre>
+
+  <h2>G1GC Tuning Cheat Sheet</h2>
+<pre><span class="comment">// Step 1: Start with defaults, just set the heap and pause goal</span>
+<span class="flag">-XX:+UseG1GC</span>
+<span class="flag">-Xms8g -Xmx8g</span>
+<span class="flag">-XX:MaxGCPauseMillis=200</span>    <span class="comment">// G1 will try to stay under 200ms — it's a GOAL not a guarantee</span>
+
+<span class="comment">// Step 2: Tune IHOP if you're getting Full GCs</span>
+<span class="flag">-XX:InitiatingHeapOccupancyPercent=35</span>  <span class="comment">// start marking earlier (default 45)</span>
+<span class="comment">// Lower IHOP = more frequent marking = less chance of Full GC</span>
+<span class="comment">// Too low = wasting CPU on unnecessary marking</span>
+
+<span class="comment">// Step 3: Tune region size if you have humongous object issues</span>
+<span class="flag">-XX:G1HeapRegionSize=32m</span>   <span class="comment">// objects > 16MB become humongous — adjust to your allocation patterns</span>
+
+<span class="comment">// Step 4: If pauses are too short (not meeting throughput), relax the goal</span>
+<span class="flag">-XX:MaxGCPauseMillis=500</span>   <span class="comment">// allow longer pauses → more work per pause → fewer GCs</span>
+
+<span class="comment">// Step 5: Logging to verify</span>
+<span class="flag">-Xlog:gc*:file=gc.log:time,uptime:filecount=5,filesize=20m</span></pre>
+
+  <h2>ZGC Tuning</h2>
+<pre><span class="flag">-XX:+UseZGC</span>
+<span class="flag">-Xms16g -Xmx16g</span>          <span class="comment">// ZGC needs more headroom — set to 2-3x live set</span>
+<span class="flag">-XX:+ZGenerational</span>        <span class="comment">// Java 21+: generational ZGC — significantly better</span>
+<span class="flag">-XX:ConcGCThreads=8</span>       <span class="comment">// increase concurrent GC threads for high allocation rates</span>
+<span class="flag">-XX:SoftMaxHeapSize=14g</span>   <span class="comment">// Java 13+: soft limit — ZGC tries to keep heap below this</span>
+<span class="comment">// ZGC is mostly self-tuning. Don't over-tune.
+// Most important: give it enough heap. ZGC + too-small heap = bad results.</span></pre>
+
+  <h2>Diagnostic Flags — Always Use in Production</h2>
+<pre><span class="flag">-XX:+HeapDumpOnOutOfMemoryError</span>          <span class="comment">// auto heap dump on OOM — gold for diagnosis</span>
+<span class="flag">-XX:HeapDumpPath=/var/log/app/heap.hprof</span> <span class="comment">// where to write the dump</span>
+<span class="flag">-XX:+ExitOnOutOfMemoryError</span>             <span class="comment">// exit JVM on OOM (better than lingering)</span>
+<span class="flag">-XX:ErrorFile=/var/log/app/hs_err.log</span>   <span class="comment">// JVM crash log location</span>
+<span class="flag">-XX:+PrintFlagsFinal</span>                    <span class="comment">// print all JVM flags at startup (for verification)</span>
+
+<span class="comment">// Container-aware flags (Java 8u191+, Java 10+)</span>
+<span class="flag">-XX:+UseContainerSupport</span>               <span class="comment">// respect container CPU/memory limits (default ON in Java 11+)</span>
+<span class="flag">-XX:MaxRAMPercentage=75.0</span>              <span class="comment">// use 75% of container memory for heap</span>
+<span class="flag">-XX:MinRAMPercentage=50.0</span>              <span class="comment">// minimum heap if container memory is very small</span></pre>
+
+  <h2>Young/Old Gen Sizing</h2>
+<pre><span class="flag">-XX:NewRatio=2</span>           <span class="comment">// Old:Young ratio (default 2 = Old is 2x Young Gen)</span>
+<span class="flag">-XX:NewSize=2g</span>           <span class="comment">// explicit Young Gen minimum size</span>
+<span class="flag">-XX:MaxNewSize=4g</span>        <span class="comment">// explicit Young Gen maximum size</span>
+<span class="flag">-XX:SurvivorRatio=8</span>      <span class="comment">// Eden:Survivor ratio (default 8 = Eden is 8x Survivor)</span>
+
+<span class="comment">// Rule of thumb: Young Gen should hold 1-2x the rate of object creation
+// per GC pause target time. If you allocate 500MB/s and want &lt;200ms pauses,
+// Young Gen should be at least 100MB.</span></pre>
+</div>
+
+<!-- ============================================================ -->
+<!-- S18: GC LOGGING -->
+<!-- ============================================================ -->
+<div id="s18" class="section">
+  <div class="section-header">
+    <span class="level-badge level-advanced">Advanced</span>
+    <h1>GC Logging &amp; Log Analysis</h1>
+    <p class="subtitle">Reading GC logs like a pro — understanding every field and diagnosing problems from log patterns.</p>
+  </div>
+
+  <h2>Enable GC Logging (Java 9+)</h2>
+<pre><span class="comment">// Recommended production setup</span>
+<span class="flag">-Xlog:gc*:file=/var/log/app/gc-%t.log:time,uptime,level,tags:filecount=10,filesize=50m</span>
+<span class="comment">// gc* = all GC-related logs
+// %t = timestamp in filename
+// filecount=10,filesize=50m = rotate through 10 files of 50MB each</span>
+
+<span class="comment">// More granular control</span>
+<span class="flag">-Xlog:gc:stdout:time</span>                        <span class="comment">// just GC events to stdout</span>
+<span class="flag">-Xlog:gc+heap=debug:file=gc.log:time</span>        <span class="comment">// heap stats with each GC</span>
+<span class="flag">-Xlog:gc+phases=debug</span>                       <span class="comment">// detailed phase breakdown</span>
+<span class="flag">-Xlog:safepoint:file=safepoint.log:time</span>     <span class="comment">// safepoint info</span></pre>
+
+  <h2>Reading GC Logs — Line by Line</h2>
+<pre><span class="comment">// Minor GC (G1 Young Evacuation)</span>
+[<span class="num">2024-01-15T10:23:45.123+0000</span>][<span class="num">5.234</span>s][info][gc] GC(<span class="num">42</span>) Pause Young (Normal)
+    (G1 Evacuation Pause) <span class="num">256M</span>-><span class="num">24M</span>(<span class="num">512M</span>) <span class="num">8.234ms</span>
+<span class="comment">// ↑timestamp  ↑uptime    ↑GC#42     ↑heap before→after(capacity) ↑pause</span>
+
+<span class="comment">// Concurrent Marking</span>
+[...][gc] GC(<span class="num">43</span>) Concurrent Cycle
+[...][gc] GC(<span class="num">43</span>) Pause Remark <span class="num">380M</span>-><span class="num">380M</span>(<span class="num">512M</span>) <span class="num">3.456ms</span>    <span class="comment">← short STW remark</span>
+[...][gc] GC(<span class="num">43</span>) Concurrent Cycle <span class="num">234.567ms</span>                 <span class="comment">← total cycle time</span>
+
+<span class="comment">// Mixed GC (after marking)</span>
+[...][gc] GC(<span class="num">44</span>) Pause Young (Mixed) (G1 Evacuation Pause)
+    <span class="num">380M</span>-><span class="num">120M</span>(<span class="num">512M</span>) <span class="num">45.678ms</span>                                <span class="comment">← more reclamation</span>
+
+<span class="comment">// ❌ PROBLEM: Full GC!</span>
+[...][gc] GC(<span class="num">50</span>) Pause Full (Allocation Failure) <span class="num">510M</span>-><span class="num">280M</span>(<span class="num">512M</span>) <span class="num">3456.789ms</span>
+<span class="comment">// 3.4 seconds pause! Investigate immediately.</span>
+<span class="comment">// Cause: "Allocation Failure" = heap nearly full, GC can't free enough</span></pre>
+
+  <h2>Key Metrics to Track</h2>
+  <table>
+    <tr><th>Metric</th><th>Healthy</th><th>Warning</th><th>Critical</th></tr>
+    <tr><td>Minor GC frequency</td><td>Every 10-60s</td><td>Every 1-5s</td><td>Multiple/second</td></tr>
+    <tr><td>Minor GC pause</td><td>&lt;50ms</td><td>50-200ms</td><td>&gt;200ms</td></tr>
+    <tr><td>Major/Full GC frequency</td><td>Never or hourly</td><td>Every few minutes</td><td>Every minute</td></tr>
+    <tr><td>Full GC pause</td><td>N/A (avoid)</td><td>&lt;2s</td><td>&gt;2s</td></tr>
+    <tr><td>Heap after Full GC</td><td>&lt;50% of max</td><td>50-80% of max</td><td>&gt;80% — memory leak likely</td></tr>
+    <tr><td>Time in GC</td><td>&lt;1%</td><td>1-5%</td><td>&gt;5%</td></tr>
+  </table>
+
+  <h2>Online GC Log Analysers</h2>
+  <div class="grid3">
+    <div class="card">
+      <div class="card-title" style="color:var(--teal-light)">GCEasy.io</div>
+      <div class="card-body">Upload GC log → instant analysis with charts, problem detection, and tuning recommendations. Free tier available.</div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="color:var(--blue-light)">GCViewer</div>
+      <div class="card-body">Open-source desktop tool. Visualises GC activity, throughput, and pause time distribution over time.</div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="color:var(--purple-light)">JVM Monitor</div>
+      <div class="card-body">Eclipse plugin for real-time GC monitoring. Good for development-time analysis.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- S19: MEMORY LEAKS -->
+<!-- ============================================================ -->
+<div id="s19" class="section">
+  <div class="section-header">
+    <span class="level-badge level-advanced">Advanced</span>
+    <h1>Memory Leaks — Detection &amp; Prevention</h1>
+    <p class="subtitle">Java can have memory leaks despite GC — objects that are technically reachable but should have been released.</p>
+  </div>
+
+  <h2>Java Memory Leak Definition</h2>
+  <p>In Java, a memory leak is when objects are <strong>logically unused</strong> but remain <strong>strongly reachable</strong> — GC cannot collect them because something still holds a reference. The objects are "alive" to GC but "dead" to the application's logic.</p>
+
+  <h2>The 6 Most Common Memory Leaks</h2>
+
+  <h3>1. Unbounded Static Collections</h3>
+<pre><span class="comment">// ❌ Classic leak — static collection grows forever</span>
+<span class="kw">public class</span> <span class="type">RequestTracker</span> {
+    <span class="kw">private static final</span> <span class="type">List</span>&lt;<span class="type">Request</span>&gt; ALL_REQUESTS = <span class="kw">new</span> <span class="type">ArrayList</span>&lt;&gt;();
+
+    <span class="kw">public static void</span> <span class="method">track</span>(<span class="type">Request</span> r) {
+        ALL_REQUESTS.<span class="method">add</span>(r); <span class="comment">// Added forever, never removed</span>
+    }
+}
+<span class="comment">// Every request adds to the list. Static = GC Root. Never collected.
+// After 24h of traffic: GBs of old request objects in memory.</span>
+
+<span class="comment">// ✅ Fix: use size-bounded collection or evict old entries</span>
+<span class="kw">private static final</span> <span class="type">Deque</span>&lt;<span class="type">Request</span>&gt; RECENT = <span class="kw">new</span> <span class="type">ArrayDeque</span>&lt;&gt;();
+<span class="kw">public static synchronized void</span> <span class="method">track</span>(<span class="type">Request</span> r) {
+    RECENT.<span class="method">addLast</span>(r);
+    <span class="kw">if</span> (RECENT.<span class="method">size</span>() > <span class="num">1000</span>) RECENT.<span class="method">removeFirst</span>(); <span class="comment">// bounded</span>
+}</pre>
+
+  <h3>2. Event Listener Accumulation</h3>
+<pre><span class="comment">// ❌ Listener registered but never removed</span>
+<span class="kw">public class</span> <span class="type">UserSessionView</span> {
+    <span class="kw">public</span> <span class="type">UserSessionView</span>(<span class="type">EventBus</span> bus) {
+        bus.<span class="method">register</span>(<span class="kw">this</span>); <span class="comment">// EventBus holds strong ref to 'this'</span>
+    }
+    <span class="comment">// When the view is "closed", it's removed from UI
+    // But EventBus still holds the reference — UserSessionView never GC'd
+    // All its fields (user data, session) remain in memory</span>
+}
+
+<span class="comment">// ✅ Fix: always deregister</span>
+<span class="kw">public void</span> <span class="method">destroy</span>() {
+    bus.<span class="method">unregister</span>(<span class="kw">this</span>); <span class="comment">// remove before discarding</span>
+}</pre>
+
+  <h3>3. ThreadLocal Without Remove</h3>
+<pre><span class="comment">// ❌ In a thread pool — threads are reused, ThreadLocals accumulate</span>
+<span class="kw">public class</span> <span class="type">RequestHandler</span> {
+    <span class="kw">static</span> <span class="type">ThreadLocal</span>&lt;<span class="type">LargeContext</span>&gt; ctx = <span class="kw">new</span> <span class="type">ThreadLocal</span>&lt;&gt;();
+
+    <span class="kw">public void</span> <span class="method">handle</span>(<span class="type">Request</span> req) {
+        ctx.<span class="method">set</span>(<span class="kw">new</span> <span class="type">LargeContext</span>(req));
+        <span class="method">process</span>();
+        <span class="comment">// ❌ No ctx.remove() — LargeContext lives in thread pool thread forever</span>
+    }
+}
+<span class="comment">// ✅ Fix:</span>
+<span class="kw">public void</span> <span class="method">handle</span>(<span class="type">Request</span> req) {
+    ctx.<span class="method">set</span>(<span class="kw">new</span> <span class="type">LargeContext</span>(req));
+    <span class="kw">try</span> { <span class="method">process</span>(); } <span class="kw">finally</span> { ctx.<span class="method">remove</span>(); } <span class="comment">// ALWAYS remove</span>
+}</pre>
+
+  <h3>4. Inner Class Holding Outer Reference</h3>
+<pre><span class="comment">// ❌ Non-static inner class implicitly holds reference to outer class</span>
+<span class="kw">public class</span> <span class="type">DataProcessor</span> {
+    <span class="kw">private</span> <span class="type">byte</span>[] <span class="kw">largeBuffer</span> = <span class="kw">new byte</span>[<span class="num">100</span> * <span class="num">1024</span> * <span class="num">1024</span>]; <span class="comment">// 100MB</span>
+
+    <span class="kw">class</span> <span class="type">Task</span> <span class="kw">implements</span> <span class="type">Runnable</span> { <span class="comment">// non-static inner class</span>
+        <span class="kw">public void</span> <span class="method">run</span>() { <span class="comment">/* only uses a few fields */</span> }
+    }
+}
+<span class="comment">// If Task is submitted to a long-lived executor, it holds a reference to
+// DataProcessor, which holds 100MB buffer — even if DataProcessor is "done"</span>
+
+<span class="comment">// ✅ Fix: use static nested class (no implicit outer reference)</span>
+<span class="kw">static class</span> <span class="type">Task</span> <span class="kw">implements</span> <span class="type">Runnable</span> {
+    <span class="kw">private final</span> <span class="type">String</span> data; <span class="comment">// only capture what you need</span>
+    <span class="type">Task</span>(<span class="type">String</span> d) { <span class="kw">this</span>.data = d; }
+}</pre>
+
+  <h2>How to Find Memory Leaks</h2>
+  <div class="steps">
+    <div class="step"><div class="step-num">1</div><div class="step-content"><div class="step-title">Monitor heap over time</div><div class="step-body">Use JVM metrics (Micrometer, JMX) to plot heap after each Full GC. If heap-after-GC grows consistently over hours/days — you have a leak.</div></div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-content"><div class="step-title">Take heap dump</div><div class="step-body"><code>jmap -dump:format=b,file=heap.hprof &lt;pid&gt;</code> or configure <code>-XX:+HeapDumpOnOutOfMemoryError</code>. Take two dumps 30 minutes apart.</div></div></div>
+    <div class="step"><div class="step-num">3</div><div class="step-content"><div class="step-title">Analyse with MAT or VisualVM</div><div class="step-body">Eclipse MAT (Memory Analyser Tool): open heap dump → "Leak Suspects" report → shows largest object trees and what's holding them alive.</div></div></div>
+    <div class="step"><div class="step-num">4</div><div class="step-content"><div class="step-title">Compare two dumps</div><div class="step-body">Look at what grew between the two dumps. Objects that are increasing but shouldn't be are your leak. Follow the reference chain to the GC root that's holding them.</div></div></div>
+  </div>
+<pre><span class="comment">// Commands for heap dump analysis</span>
+jmap -dump:format=b,file=heap.hprof &lt;pid&gt;         <span class="comment">// take heap dump</span>
+jmap -histo:live &lt;pid&gt; | head -30                  <span class="comment">// top 30 object types by size</span>
+jcmd &lt;pid&gt; GC.heap_info                            <span class="comment">// heap usage summary</span>
+jcmd &lt;pid&gt; VM.native_memory                        <span class="comment">// total JVM memory breakdown</span></pre>
+</div>
+
+<!-- ============================================================ -->
+<!-- S20: OFF-HEAP -->
+<!-- ============================================================ -->
+<div id="s20" class="section">
+  <div class="section-header">
+    <span class="level-badge level-advanced">Advanced</span>
+    <h1>Off-Heap &amp; Direct Memory</h1>
+    <p class="subtitle">Memory outside the Java heap — how NIO Direct Buffers, Unsafe, and native libraries use native memory.</p>
+  </div>
+
+  <h2>Why Off-Heap?</h2>
+  <div class="grid3">
+    <div class="card">
+      <div class="card-title" style="color:var(--teal-light)">No GC Pressure</div>
+      <div class="card-body">Off-heap objects are invisible to GC. Large data structures don't cause GC pauses regardless of size.</div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="color:var(--teal-light)">Zero-Copy I/O</div>
+      <div class="card-body">Direct ByteBuffers can be used for I/O without copying to/from Java heap — faster network and file I/O.</div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="color:var(--teal-light)">Huge Data</div>
+      <div class="card-body">Store terabytes of data without heap limits. Used by databases (Cassandra, Kafka) and caching systems (Ehcache off-heap).</div>
+    </div>
+  </div>
+
+  <h2>NIO Direct ByteBuffers</h2>
+<pre><span class="comment">// Heap buffer — lives on Java heap, GC-managed</span>
+<span class="type">ByteBuffer</span> heapBuf = <span class="type">ByteBuffer</span>.<span class="method">allocate</span>(<span class="num">1024</span>);
+
+<span class="comment">// Direct buffer — lives in native memory, outside heap</span>
+<span class="type">ByteBuffer</span> directBuf = <span class="type">ByteBuffer</span>.<span class="method">allocateDirect</span>(<span class="num">1024</span>);
+<span class="comment">// NOT GC'd normally — released when DirectBuffer object is finalized
+// or when Cleaner runs (Java 9+)</span>
+
+<span class="comment">// ❌ Problem: Direct buffers are expensive to allocate — always pool them</span>
+<span class="kw">for</span> (<span class="type">Request</span> r : requests) {
+    <span class="type">ByteBuffer</span> buf = <span class="type">ByteBuffer</span>.<span class="method">allocateDirect</span>(<span class="num">64 * 1024</span>); <span class="comment">// expensive!</span>
+    <span class="method">processWithBuffer</span>(r, buf);
+}
+
+<span class="comment">// ✅ Pool direct buffers (Netty PooledByteBufAllocator does this)</span>
+<span class="kw">private final</span> <span class="type">BlockingDeque</span>&lt;<span class="type">ByteBuffer</span>&gt; pool = <span class="kw">new</span> <span class="type">LinkedBlockingDeque</span>&lt;&gt;();
+
+<span class="type">ByteBuffer</span> <span class="method">acquire</span>() {
+    <span class="type">ByteBuffer</span> buf = pool.<span class="method">poll</span>();
+    <span class="kw">return</span> buf != <span class="kw">null</span> ? buf.<span class="method">clear</span>() : <span class="type">ByteBuffer</span>.<span class="method">allocateDirect</span>(<span class="num">64*1024</span>);
+}
+<span class="kw">void</span> <span class="method">release</span>(<span class="type">ByteBuffer</span> buf) { pool.<span class="method">offer</span>(buf); }</pre>
+
+  <h2>Direct Memory Limit &amp; Monitoring</h2>
+<pre><span class="flag">-XX:MaxDirectMemorySize=512m</span>    <span class="comment">// limit total direct memory (default = Xmx)</span>
+<span class="comment">// Without this, direct memory can consume all available native memory
+// causing OS-level OOM killer to kill your JVM process!</span>
+
+<span class="comment">// Monitor via JMX</span>
+<span class="type">MemoryMXBean</span> mem = <span class="type">ManagementFactory</span>.<span class="method">getMemoryMXBean</span>();
+<span class="type">List</span>&lt;<span class="type">MemoryPoolMXBean</span>&gt; pools = <span class="type">ManagementFactory</span>.<span class="method">getMemoryPoolMXBeans</span>();
+<span class="comment">// Check "Direct" pool — if usage keeps growing, you have a direct buffer leak</span>
+
+<span class="comment">// Spring Boot Actuator — expose JVM metrics (Micrometer + Prometheus)</span>
+management:
+  endpoints:
+    web:
+      exposure:
+        include: metrics,health
+<span class="comment">// Metrics: jvm.buffer.memory.used{id="direct"} — monitor this in Grafana</span></pre>
+</div>
+
+<!-- ============================================================ -->
+<!-- S21: MONITORING TOOLS -->
+<!-- ============================================================ -->
+<div id="s21" class="section">
+  <div class="section-header">
+    <span class="level-badge level-expert">Expert</span>
+    <h1>GC Monitoring Tools</h1>
+    <p class="subtitle">The essential toolchain for GC analysis — from JDK built-ins to production APMs.</p>
+  </div>
+
+  <h2>JDK Built-in Tools</h2>
+  <table>
+    <tr><th>Tool</th><th>Purpose</th><th>Command</th></tr>
+    <tr><td><code>jstat</code></td><td>Real-time GC stats — heap usage, GC counts, times</td><td><code>jstat -gcutil &lt;pid&gt; 1000</code></td></tr>
+    <tr><td><code>jmap</code></td><td>Heap dump, object histogram</td><td><code>jmap -histo:live &lt;pid&gt;</code></td></tr>
+    <tr><td><code>jcmd</code></td><td>Swiss Army knife — heap info, GC, threads, flags</td><td><code>jcmd &lt;pid&gt; GC.run_finalization</code></td></tr>
+    <tr><td><code>jconsole</code></td><td>GUI JMX monitoring — heap, GC, threads</td><td><code>jconsole &lt;pid&gt;</code></td></tr>
+    <tr><td><code>jvisualvm</code></td><td>GUI profiler — heap, GC, CPU, sampling</td><td><code>jvisualvm</code></td></tr>
+  </table>
+
+  <h2>jstat — Quick GC Health Check</h2>
+<pre><span class="comment">// jstat -gcutil &lt;pid&gt; &lt;interval_ms&gt; &lt;count&gt;</span>
+jstat -gcutil <span class="num">12345</span> <span class="num">1000</span> <span class="num">10</span>
+<span class="comment">// Output every 1 second, 10 times:
+//  S0     S1     E      O      M     CCS    YGC   YGCT   FGC  FGCT   CGC   CGCT     GCT
+//  0.00  45.23  78.45  62.34  95.67  89.23   42   1.234    0  0.000    3   0.456   1.690
+//   ↑      ↑      ↑      ↑      ↑            ↑     ↑      ↑    ↑
+// Surv0% Surv1% Eden% OldGen% Metasp%    #YoungGC  time  #FullGC  time
+// Key: O (OldGen%) growing? Memory leak! FGC > 0? Problem! YGCT/YGC = avg minor GC time</span></pre>
+
+  <h2>JFR — Java Flight Recorder</h2>
+<pre><span class="comment">// Continuous low-overhead profiling built into the JDK (Java 11+ free)</span>
+<span class="comment">// Start recording</span>
+jcmd &lt;pid&gt; JFR.start name=gc_diagnosis settings=profile maxage=5m filename=/tmp/gc.jfr
+
+<span class="comment">// Stop and dump</span>
+jcmd &lt;pid&gt; JFR.dump name=gc_diagnosis filename=/tmp/gc.jfr
+jcmd &lt;pid&gt; JFR.stop name=gc_diagnosis
+
+<span class="comment">// Or start via JVM flags</span>
+<span class="flag">-XX:StartFlightRecording=duration=60s,settings=profile,filename=/tmp/gc.jfr</span>
+
+<span class="comment">// Analyse with JDK Mission Control (JMC)
+// Shows: GC pauses timeline, allocation rate, live set, class loading, etc.
+// Best tool for finding allocation hot spots and GC inefficiencies</span></pre>
+
+  <h2>Production APM Integration</h2>
+<pre><span class="comment">// Spring Boot + Micrometer + Prometheus + Grafana (standard stack)</span>
+
+<span class="comment">// Key GC metrics to alert on:</span>
+jvm_gc_pause_seconds_max         <span class="comment">// alert if > 0.5s</span>
+jvm_gc_pause_seconds_sum         <span class="comment">// GC overhead</span>
+jvm_memory_used_bytes{area="heap"}      <span class="comment">// alert at 80% of max</span>
+jvm_memory_used_bytes{area="nonheap"}   <span class="comment">// Metaspace growth</span>
+jvm_buffer_memory_used_bytes{id="direct"}  <span class="comment">// direct buffer leak detection</span>
+jvm_gc_memory_allocated_bytes_total     <span class="comment">// allocation rate</span>
+
+<span class="comment">// Grafana dashboard: plot heap after each GC
+// If post-GC heap trends upward over time = memory leak</span></pre>
+</div>
+
+<!-- ============================================================ -->
+<!-- S22: ANTI-PATTERNS -->
+<!-- ============================================================ -->
+<div id="s22" class="section">
+  <div class="section-header">
+    <span class="level-badge level-expert">Expert</span>
+    <h1>GC Anti-Patterns</h1>
+    <p class="subtitle">Common mistakes that hurt GC performance — what not to do and why.</p>
+  </div>
+
+  <h2>1. Calling System.gc()</h2>
+<pre><span class="comment">// ❌ NEVER do this in production code</span>
+System.<span class="method">gc</span>(); <span class="comment">// Hint to JVM to run GC — but causes Full GC on most JVMs</span>
+<span class="comment">// Common in code that "wants to be helpful" — actually causes:
+// 1. Full STW pause (seconds)
+// 2. Disrupts GC's own adaptive scheduling
+// 3. RMI/Java serialization calls this every 60s by default!</span>
+
+<span class="comment">// Fix: disable it entirely</span>
+<span class="flag">-XX:+DisableExplicitGC</span>              <span class="comment">// treat System.gc() as no-op</span>
+<span class="flag">-Dsun.rmi.dgc.client.gcInterval=3600000</span> <span class="comment">// RMI: GC every hour instead of 60s</span></pre>
+
+  <h2>2. Excessive Object Creation (Allocation Pressure)</h2>
+<pre><span class="comment">// ❌ Creating objects inside hot loops</span>
+<span class="kw">for</span> (<span class="type">String</span> line : lines) {
+    <span class="type">String</span>[] parts = line.<span class="method">split</span>(<span class="str">","</span>);         <span class="comment">// allocates String array + Strings</span>
+    <span class="type">BigDecimal</span> value = <span class="kw">new</span> <span class="type">BigDecimal</span>(parts[<span class="num">2</span>]); <span class="comment">// allocates BigDecimal</span>
+    <span class="type">DateTimeFormatter</span> fmt = <span class="type">DateTimeFormatter</span>.<span class="method">ofPattern</span>(<span class="str">"yyyy-MM-dd"</span>); <span class="comment">// !!!</span>
+    <span class="comment">// DateTimeFormatter creation is expensive AND creates garbage per iteration</span>
+}
+
+<span class="comment">// ✅ Hoist allocations out of loops</span>
+<span class="kw">private static final</span> <span class="type">DateTimeFormatter</span> FMT = <span class="type">DateTimeFormatter</span>.<span class="method">ofPattern</span>(<span class="str">"yyyy-MM-dd"</span>);
+<span class="kw">for</span> (<span class="type">String</span> line : lines) {
+    <span class="kw">int</span> idx1 = line.<span class="method">indexOf</span>(<span class="str">','</span>);            <span class="comment">// avoid split() allocation</span>
+    <span class="kw">int</span> idx2 = line.<span class="method">indexOf</span>(<span class="str">','</span>, idx1+<span class="num">1</span>);
+    <span class="type">LocalDate</span> date = <span class="type">LocalDate</span>.<span class="method">parse</span>(line, FMT);
+}</pre>
+
+  <h2>3. Finalizer-Dependent Code</h2>
+<pre><span class="comment">// ❌ Relying on finalize() for resource cleanup</span>
+<span class="kw">class</span> <span class="type">Connection</span> {
+    <span class="kw">protected void</span> <span class="method">finalize</span>() { socket.<span class="method">close</span>(); } <span class="comment">// NEVER rely on this</span>
+}
+<span class="comment">// Finalizers run in an unpredictable thread, may never run before OOM,
+// and keep objects alive an extra GC cycle. Recipe for connection exhaustion.</span>
+
+<span class="comment">// ✅ AutoCloseable + try-with-resources or Cleaner</span></pre>
+
+  <h2>4. Keeping References Longer Than Needed</h2>
+<pre><span class="comment">// ❌ Holding reference in stack variable unnecessarily</span>
+<span class="kw">public void</span> <span class="method">process</span>() {
+    <span class="type">byte</span>[] largeData = <span class="method">loadLargeFile</span>(); <span class="comment">// 500MB</span>
+    <span class="type">String</span> result = <span class="method">extract</span>(largeData);
+    <span class="comment">// largeData still referenced until end of method!</span>
+    <span class="method">doOtherWork</span>(result); <span class="comment">// this allocates lots of memory — OOM risk</span>
+}
+
+<span class="comment">// ✅ Null out early to allow GC</span>
+<span class="kw">public void</span> <span class="method">process</span>() {
+    <span class="type">String</span> result;
+    {
+        <span class="type">byte</span>[] largeData = <span class="method">loadLargeFile</span>();
+        result = <span class="method">extract</span>(largeData);
+    } <span class="comment">// largeData out of scope here — eligible for GC during doOtherWork</span>
+    <span class="method">doOtherWork</span>(result);
+}</pre>
+
+  <h2>5. Mismatched Heap Size for GC Type</h2>
+<pre><span class="comment">// ❌ Using Serial GC on a 32GB heap</span>
+<span class="flag">-XX:+UseSerialGC -Xmx32g</span>    <span class="comment">// Full GC will take MINUTES — single-threaded</span>
+
+<span class="comment">// ❌ Using Parallel GC for a latency-sensitive API</span>
+<span class="flag">-XX:+UseParallelGC -Xmx8g</span>  <span class="comment">// Pauses will be hundreds of ms — users notice</span>
+
+<span class="comment">// ✅ Match collector to heap size and latency requirements</span>
+<span class="flag">-XX:+UseG1GC -Xmx8g -XX:MaxGCPauseMillis=200</span>    <span class="comment">// API servers</span>
+<span class="flag">-XX:+UseZGC -Xmx64g</span>                             <span class="comment">// huge heap, latency-critical</span>
+<span class="flag">-XX:+UseParallelGC -Xmx4g</span>                       <span class="comment">// batch jobs</span></pre>
+</div>
+
+<!-- ============================================================ -->
+<!-- S23: MICROSERVICES & CONTAINERS -->
+<!-- ============================================================ -->
+<div id="s23" class="section">
+  <div class="section-header">
+    <span class="level-badge level-expert">Expert</span>
+    <h1>GC in Microservices &amp; Containers</h1>
+    <p class="subtitle">Container-specific GC considerations — memory limits, CPU throttling, and tuning for small heaps.</p>
+  </div>
+
+  <h2>Container Memory Awareness</h2>
+<pre><span class="comment">// Java 8u191+ / Java 10+: JVM is container-aware by default
+// UseContainerSupport is ON — JVM reads cgroup limits</span>
+
+<span class="comment">// Docker/K8s: set memory request and limit</span>
+<span class="comment"># kubernetes deployment.yaml</span>
+resources:
+  requests:
+    memory: <span class="str">"1Gi"</span>
+  limits:
+    memory: <span class="str">"2Gi"</span>    <span class="comment"># JVM sees 2GB as available memory</span>
+
+<span class="comment">// JVM flags for containers</span>
+<span class="flag">-XX:MaxRAMPercentage=75.0</span>    <span class="comment">// use 75% of container memory for heap</span>
+<span class="flag">-XX:InitialRAMPercentage=50.0</span> <span class="comment">// start at 50%</span>
+<span class="flag">-XX:MinRAMPercentage=25.0</span>    <span class="comment">// minimum for very small containers</span>
+<span class="comment">// Result in 2GB container: ~1.5GB heap, ~500MB for stack, Metaspace, JIT code</span></pre>
+
+  <h2>CPU Throttling — GC Thread Impact</h2>
+<pre><span class="comment">// Problem: G1GC defaults concurrent threads to CPU_COUNT / 4
+// In a container with 2 CPU limit, G1 gets 0.5 concurrent threads → 1 thread
+// But if the node has 32 CPUs, JVM might think it has 32 and spawn 8 GC threads
+// Then CPU throttling kills performance</span>
+
+<span class="flag">-XX:ActiveProcessorCount=4</span>          <span class="comment">// explicitly set CPU count for GC thread calc</span>
+<span class="flag">-XX:ParallelGCThreads=4</span>             <span class="comment">// explicit STW GC threads</span>
+<span class="flag">-XX:ConcGCThreads=2</span>                 <span class="comment">// explicit concurrent GC threads</span>
+
+<span class="comment">// Java 11+: JVM respects container CPU quotas (UseContainerSupport)
+// Still good to set explicitly for predictability</span></pre>
+
+  <h2>GC Tuning for Small Containers (256MB-512MB heap)</h2>
+<pre><span class="comment">// Small heaps = frequent GC = different tuning needed</span>
+
+<span class="comment">// Option 1: Serial GC — surprisingly good for very small heaps</span>
+<span class="flag">-XX:+UseSerialGC -Xmx256m</span>
+<span class="comment">// Single-threaded GC overhead is lower than G1's region tracking
+// Works well for small stateless microservices</span>
+
+<span class="comment">// Option 2: G1GC with small region size</span>
+<span class="flag">-XX:+UseG1GC -Xmx256m -XX:G1HeapRegionSize=1m</span>
+<span class="comment">// Small regions for small heap — avoid huge humongous region overhead</span>
+
+<span class="comment">// Option 3: ZGC (Java 21 generational ZGC is much better for small heaps)</span>
+<span class="flag">-XX:+UseZGC -XX:+ZGenerational -Xmx512m</span>
+
+<span class="comment">// GraalVM Native Image — ultimate for containers
+// No JVM warmup, no GC pause variance, tiny memory footprint
+// Trade-off: no JIT optimisation after startup</span></pre>
+
+  <h2>Startup Time Optimisation</h2>
+<pre><span class="comment">// JVM JIT compilation causes GC pressure at startup
+// Tier 1-3 JIT compilers run, creating code objects, discarding intermediates</span>
+
+<span class="flag">-XX:+TieredCompilation</span>            <span class="comment">// enabled by default — keep it</span>
+<span class="flag">-XX:ReservedCodeCacheSize=256m</span>    <span class="comment">// larger code cache prevents deopt under load</span>
+<span class="flag">-XX:+UseStringDeduplication</span>       <span class="comment">// G1: deduplicate identical String contents</span>
+<span class="comment">// String dedup can reduce heap by 10-30% in typical web apps
+// Background thread identifies Strings with same content, keeps one char[]</span>
+
+<span class="comment">// AppCDS — precompile to shared archive, faster startup + smaller heap</span>
+java -XX:DumpLoadedClassList=classes.lst -cp app.jar Main    <span class="comment">// step 1</span>
+java -XX:SharedArchiveFile=app.jsa -XX:SharedClassListFile=classes.lst ...  <span class="comment">// step 2</span>
+java -XX:SharedArchiveFile=app.jsa -cp app.jar Main          <span class="comment">// use archive</span></pre>
+</div>
+
+<!-- ============================================================ -->
+<!-- S24: INTERVIEW Q&A -->
+<!-- ============================================================ -->
+<div id="s24" class="section">
+  <div class="section-header">
+    <span class="level-badge level-expert">Interview</span>
+    <h1>Interview Q&amp;A — All Levels</h1>
+    <p class="subtitle">55 questions from beginner to senior. Click to reveal answers.</p>
+  </div>
+
+  <h2 style="color:var(--green-light)">Beginner</h2>
+
+  <div class="qa"><div class="qa-q" onclick="toggleQA(this)">What is garbage collection and why does Java need it? <span class="qa-arrow">▼</span></div><div class="qa-a">GC is automatic memory management — the JVM tracks which objects are reachable from the running program and reclaims memory for objects that are no longer reachable. Java needs it because manually managing memory (as in C/C++) leads to memory leaks (forgetting to free) and crashes (double-free, use-after-free). GC eliminates this entire class of bugs, making Java safer and more productive.</div></div>
+
+  <div class="qa"><div class="qa-q" onclick="toggleQA(this)">What is the difference between heap and stack memory? <span class="qa-arrow">▼</span></div><div class="qa-a"><strong>Stack</strong>: per-thread memory holding method call frames, local variables (primitives and references), return addresses. Automatically freed when the method returns. Fast allocation (pointer decrement). Fixed max size (configurable with -Xss).<br><br><strong>Heap</strong>: shared memory where all objects live. GC-managed. Dynamic size. Objects survive method returns as long as references to them exist. Where garbage collection happens. Configured with -Xms/-Xmx.</div></div>
+
+  <div class="qa"><div class="qa-q" onclick="toggleQA(this)">Can you force garbage collection in Java? <span class="qa-arrow">▼</span></div><div class="qa-a"><code>System.gc()</code> and <code>Runtime.getRuntime().gc()</code> are hints — the JVM may ignore them. On HotSpot JVM, they typically do trigger a Full GC, which is undesirable in production. Best practice is to never call them in application code. Use <code>-XX:+DisableExplicitGC</code> to make them true no-ops.</div></div>
+
+  <div class="qa"><div class="qa-q" onclick="toggleQA(this)">What causes an OutOfMemoryError? <span class="qa-arrow">▼</span></div><div class="qa-a">OOM occurs when JVM cannot allocate an object because there's not enough memory and GC cannot free enough. Variants: <code>Java heap space</code> (heap full — GC overhead limit exceeded or memory leak), <code>Metaspace</code> (too many classes loaded, ClassLoader leak), <code>GC overhead limit exceeded</code> (GC spending >98% of time, freeing <2%), <code>Direct buffer memory</code> (off-heap direct buffers exhausted), <code>Unable to create native thread</code> (OS-level thread limit).</div></div>
+
+  <div class="qa"><div class="qa-q" onclick="toggleQA(this)">What is the Young Generation and why does it exist? <span class="qa-arrow">▼</span></div><div class="qa-a">Young Generation holds newly created objects. It exists because of the <strong>Weak Generational Hypothesis</strong> — empirically, 80-98% of objects die within milliseconds of creation. By keeping young objects in a small, frequently-collected space, GC can reclaim most garbage quickly (Minor GC collects only Young Gen — fast, cheap, frequent). Only the small fraction of long-lived objects ever reaches Old Gen.</div></div>
+
+  <h2 style="color:var(--yellow-light)">Intermediate</h2>
+
+  <div class="qa"><div class="qa-q" onclick="toggleQA(this)">What is Stop-The-World and why is it necessary? <span class="qa-arrow">▼</span></div><div class="qa-a">Stop-The-World (STW) pauses all application threads to allow GC to work on a consistent, non-changing heap. It's necessary because: concurrent object graph traversal is unsafe — if the application modifies references while GC is marking, GC might miss live objects (causing data corruption) or mark dead objects as live. STW ensures heap consistency. Modern GCs minimise STW using concurrent algorithms — only very short phases (root scanning) require STW.</div></div>
+
+  <div class="qa"><div class="qa-q" onclick="toggleQA(this)">What is the difference between Minor GC, Major GC, and Full GC? <span class="qa-arrow">▼</span></div><div class="qa-a"><strong>Minor GC</strong>: collects Young Generation only. Triggered when Eden is full. Fast (1-100ms), frequent. Normal and expected.<br><strong>Major GC</strong>: collects Old Generation. Triggered when Old Gen reaches occupancy threshold. Slower (100ms-seconds). Should be infrequent.<br><strong>Full GC</strong>: collects entire heap — Young + Old + Metaspace. Usually serial. Can pause for seconds. Indicates a problem (memory leak, under-tuned heap, G1 falling back). Avoid in production.</div></div>
+
+  <div class="qa"><div class="qa-q" onclick="toggleQA(this)">What happens to an object during a Minor GC? <span class="qa-arrow">▼</span></div><div class="qa-a">Live objects in Eden are copied to the empty Survivor space (say S0). Dead objects in Eden are simply abandoned — no explicit deallocation, Eden is cleared atomically. Existing survivors in S1 with age &lt;threshold are copied to S0 with age incremented. Objects reaching tenuring threshold are promoted to Old Gen. S0 and S1 roles swap. The entire Eden space becomes free for new allocations.</div></div>
+
+  <div class="qa"><div class="qa-q" onclick="toggleQA(this)">What is card table and write barrier? <span class="qa-arrow">▼</span></div><div class="qa-a">The card table is a bitmap where each bit represents a 512-byte "card" of Old Gen heap. A <strong>write barrier</strong> is code inserted by the JVM compiler before every reference write — when an Old Gen object's field is updated to point to a Young Gen object, the barrier marks that card as "dirty." During Minor GC, GC only scans dirty Old Gen cards (not the entire Old Gen) to find cross-generational references. This makes Minor GC efficient even with Old Gen references to Young Gen objects.</div></div>
+
+  <div class="qa"><div class="qa-q" onclick="toggleQA(this)">What is the difference between SoftReference, WeakReference, and PhantomReference? <span class="qa-arrow">▼</span></div><div class="qa-a"><strong>SoftReference</strong>: cleared by GC only when JVM is low on memory (before throwing OOM). Use for memory-sensitive caches — cache entries are kept if memory is available, cleared if needed.<br><strong>WeakReference</strong>: cleared on any GC cycle when no strong references exist. Use for canonicalising maps (WeakHashMap), listener registries, object metadata you don't want to prevent GC.<br><strong>PhantomReference</strong>: always returns null from get(). Enqueued AFTER finalization. Use for post-GC cleanup actions (modern replacement: Cleaner API).</div></div>
+
+  <div class="qa"><div class="qa-q" onclick="toggleQA(this)">Why is finalize() deprecated and what should you use instead? <span class="qa-arrow">▼</span></div><div class="qa-a">finalize() is broken because: unpredictable timing (may never run before OOM), objects with finalizers require two GC cycles to collect (survive first GC), exceptions are silently swallowed, can resurrect objects, and runs in an unpredictable thread. Use instead: <strong>AutoCloseable + try-with-resources</strong> for explicit deterministic cleanup, or <strong>java.lang.ref.Cleaner</strong> (Java 9+) for safety-net cleanup that runs after GC (without finalize()'s problems).</div></div>
+
+  <h2 style="color:var(--orange-light)">Advanced</h2>
+
+  <div class="qa"><div class="qa-q" onclick="toggleQA(this)">How does G1GC achieve predictable pause times? <span class="qa-arrow">▼</span></div><div class="qa-a">G1 achieves predictable pauses through <strong>region-based collection</strong>. It divides the heap into equal regions and tracks the amount of garbage in each region. Given a pause time goal (MaxGCPauseMillis), G1 selects only as many regions as can be collected within that time budget. It prioritises regions with the most garbage ("Garbage First"). Concurrent marking runs alongside the application to identify garbage density per region. This enables incremental collection — G1 never has to collect the whole heap in one pause.</div></div>
+
+  <div class="qa"><div class="qa-q" onclick="toggleQA(this)">What is a humongous object in G1GC and why is it a problem? <span class="qa-arrow">▼</span></div><div class="qa-a">A humongous object is any object larger than half a G1 region size. It's allocated directly into Old Generation (spanning one or more contiguous regions), bypassing Young Gen entirely. Problems: (1) only collected during concurrent marking cycles or Full GC — not during regular Young GC; (2) contiguous regions required — can cause premature Full GC due to fragmentation; (3) can trigger humongous allocation failure. Fix: increase G1HeapRegionSize (up to 32MB), use buffer pools for large byte arrays, or switch to streaming I/O to avoid large allocations.</div></div>
+
+  <div class="qa"><div class="qa-q" onclick="toggleQA(this)">How does ZGC achieve sub-millisecond pause times? <span class="qa-arrow">▼</span></div><div class="qa-a">ZGC uses three techniques: (1) <strong>Load barriers</strong> — code injected at every reference read that can handle relocation on the fly, allowing concurrent object moving; (2) <strong>Colored pointers</strong> — metadata bits in the 64-bit pointer indicate object state (marked, remapped, finalizable), enabling GC state tracking without accessing the object; (3) <strong>Concurrent relocation</strong> — objects are moved while the application runs; load barriers redirect reads/writes to the new location transparently. Only 3 very short STW phases exist (scanning GC roots), each typically &lt;1ms regardless of heap size.</div></div>
+
+  <div class="qa"><div class="qa-q" onclick="toggleQA(this)">What is a safepoint and what is safepoint bias? <span class="qa-arrow">▼</span></div><div class="qa-a">A <strong>safepoint</strong> is a point in thread execution where the thread's state is fully known (no partial operations). The JVM requests all threads to reach a safepoint before STW GC begins. Threads check for safepoint requests at back edges of loops and method calls.<br><br><strong>Safepoint bias</strong>: GC pause reporting measures from when all threads reach safepoint, not from when GC was requested. A thread stuck in a long counted loop may not check for safepoints until the loop completes — causing 50-200ms "Time To Safepoint" that isn't counted in the GC pause time but still affects application latency.</div></div>
+
+  <div class="qa"><div class="qa-q" onclick="toggleQA(this)">What is tri-color marking and why does it matter for concurrent GC? <span class="qa-arrow">▼</span></div><div class="qa-a">Tri-color marking assigns each object one of three states: <strong>White</strong> (unvisited — possibly garbage), <strong>Grey</strong> (visited but references not yet processed), <strong>Black</strong> (fully processed — object and all references scanned). GC marks grey objects until none remain; white objects are garbage. In concurrent GC, the application can modify references while marking — this could cause a black object to reference a white object (a reference the mutator just created). <strong>Write barriers</strong> (G1 uses SATB) detect these changes and ensure new references are also marked, maintaining correctness.</div></div>
+
+  <h2 style="color:var(--red-light)">Senior / Expert</h2>
+
+  <div class="qa"><div class="qa-q" onclick="toggleQA(this)">How do you diagnose and fix a GC-related performance issue in production? <span class="qa-arrow">▼</span></div><div class="qa-a">Systematic approach: (1) <strong>Identify symptoms</strong>: latency spikes (correlate with GC pauses in logs), high CPU usage, memory growing. (2) <strong>Collect GC logs</strong>: enable <code>-Xlog:gc*:file=gc.log:time,uptime</code>. (3) <strong>Analyse logs</strong> with GCEasy or GCViewer — identify: pause frequency/duration, Full GC occurrences, heap growth after GC. (4) <strong>Heap profiling</strong>: jmap histogram, heap dump with MAT for leak detection. (5) <strong>JFR</strong>: allocation hot spots, allocation rate. (6) <strong>Tune</strong> based on findings: memory leak → fix code, short-lived objects in Old Gen → increase Young Gen / reduce tenuring threshold, humongous objects → increase region size / pooling, Full GCs → increase IHOP, heap size.</div></div>
+
+  <div class="qa"><div class="qa-q" onclick="toggleQA(this)">Explain the GC overhead limit exceeded error and how to handle it. <span class="qa-arrow">▼</span></div><div class="qa-a"><code>GC overhead limit exceeded</code> is thrown when GC is spending >98% of CPU time but recovering <2% of heap — the JVM determines the application can't make progress. Root causes: memory leak (heap never gets free enough), undersized heap for the workload, massive allocation rate. Temporary fix: <code>-XX:-UseGCOverheadLimit</code> (NOT recommended — just delays OOM). Real fix: (1) take heap dump and analyse for leaks; (2) increase heap size; (3) reduce allocation rate; (4) profile and fix allocation hot spots with JFR/async-profiler.</div></div>
+
+  <div class="qa"><div class="qa-q" onclick="toggleQA(this)">How does string interning interact with GC? <span class="qa-arrow">▼</span></div><div class="qa-a">Interned strings are stored in the JVM's string pool — in Java 7+, this is in the heap (previously PermGen). The pool holds WeakReferences to strings in Java 8+, so interned strings ARE GC-eligible when no other references exist (unlike old PermGen which was never GC'd). However, <code>String.intern()</code> is expensive (hash table lookup/insert) and the pool can grow large. G1's String Deduplication (<code>-XX:+UseStringDeduplication</code>) is different — it doesn't use the pool but finds Strings with identical chars and makes them share the same char array, reducing memory without affecting semantics.</div></div>
+
+  <div class="qa"><div class="qa-q" onclick="toggleQA(this)">What is NUMA-aware GC and when does it matter? <span class="qa-arrow">▼</span></div><div class="qa-a">Non-Uniform Memory Access (NUMA) systems have multiple memory banks, each with a CPU socket. Accessing local memory (same NUMA node) is faster than remote. Without NUMA awareness, GC might allocate objects on a remote node, degrading performance.<br><br><code>-XX:+UseNUMA</code> enables NUMA-aware allocation: each thread allocates from its local NUMA node's memory. Young Gen is partitioned across NUMA nodes. Improves GC performance significantly on NUMA systems (typically large multi-socket servers). Check with <code>numactl --hardware</code> if relevant.</div></div>
+
+  <div class="qa"><div class="qa-q" onclick="toggleQA(this)">How do you tune GC for a container environment with limited CPU and memory? <span class="qa-arrow">▼</span></div><div class="qa-a">Key considerations: (1) <strong>UseContainerSupport</strong> must be enabled (default Java 11+) — JVM reads cgroup memory limits instead of host memory; (2) Use <code>-XX:MaxRAMPercentage=75</code> instead of fixed -Xmx for portability; (3) Set <code>-XX:ActiveProcessorCount</code> equal to CPU limit to prevent overprovisioning GC threads; (4) For small heaps (&lt;512MB): consider SerialGC (lower overhead) or G1 with 1MB regions; (5) Generational ZGC (Java 21) is increasingly viable even for small containers; (6) Set <code>-XX:+ExitOnOutOfMemoryError</code> so k8s can restart the pod immediately instead of limping along; (7) Configure liveness probes to detect GC-induced hangs.</div></div>
+
+  <div class="qa"><div class="qa-q" onclick="toggleQA(this)">What is Epsilon GC and when would you use it? <span class="qa-arrow">▼</span></div><div class="qa-a">Epsilon GC is a "no-op" garbage collector — it allocates memory but never frees any. When the heap is exhausted, the JVM exits with OOM. Use cases: (1) <strong>Performance benchmarking</strong> — eliminate GC variance from benchmark results to see true algorithm performance; (2) <strong>Short-lived jobs</strong> — batch jobs that finish quickly before exhausting heap, avoiding any GC overhead; (3) <strong>Memory usage analysis</strong> — allocate until OOM to see exact memory consumption; (4) <strong>GraalVM native image testing</strong>. Enable with <code>-XX:+UseEpsilonGC</code>. <em>Never use in production services!</em></div></div>
+
+  <div class="qa"><div class="qa-q" onclick="toggleQA(this)">Describe G1GC concurrent mode failure and evacuation failure — what causes them and how to fix? <span class="qa-arrow">▼</span></div><div class="qa-a"><strong>Evacuation failure</strong> (G1-specific): during a Young GC, live objects can't be copied to Survivor/Old regions because there isn't enough free space. G1 falls back to a Full GC (serial in older Java, parallel from Java 10). Causes: heap too small, IHOP too high (marking starts too late), high allocation rate, humongous object avalanche. Fix: increase heap, lower IHOP (start marking earlier), increase region size, fix humongous allocations.<br><br><strong>Concurrent mode failure</strong> (CMS-specific, deprecated): Old Gen fills up during concurrent sweep. CMS triggers a serial compacting Full GC. Causes: allocation rate exceeds concurrent sweep speed, CMSInitiatingOccupancyFraction too high. Fix: lower CMSInitiatingOccupancyFraction (or migrate to G1/ZGC).</div></div>
+
+</div>
+
+</main>
+</div>
+
+<script>
+function show(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.currentTarget.classList.add('active');
+  window.scrollTo(0, 0);
+}
+function toggleQA(el) {
+  const ans = el.nextElementSibling;
+  const arrow = el.querySelector('.qa-arrow');
+  ans.classList.toggle('open');
+  arrow.classList.toggle('open');
+}
+</script>
+</body>
+</html>

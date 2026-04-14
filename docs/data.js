@@ -168,6 +168,21 @@ const SITE_DATA = {
           ]
         },
         {
+          name: 'Core Language',
+          concepts: [
+            {
+              title:      'Exceptions & Error Handling',
+              subtitle:   'Checked vs unchecked exceptions, exception hierarchy, best practices, custom exceptions',
+              difficulty: 'intermediate',
+              time:       '30 min',
+              tags:       ['exceptions', 'error-handling', 'Guruji'],
+              file:       'exceptions-guide.html',
+              status:     'available',
+              featured:   true
+            }
+          ]
+        },
+        {
           name: 'Concurrency',
           concepts: [
             {
@@ -262,6 +277,16 @@ const SITE_DATA = {
               tags:       ['jvm', 'gc', 'memory'],
               file:       'gc_masterclass.html',
               status:     'available'
+            },
+            {
+              title:      'JVM Garbage Collection Guide',
+              subtitle:   'GC roots, generational heap, collectors, pauses, tuning trade-offs, practical profiling',
+              difficulty: 'advanced',
+              time:       '1 hr',
+              tags:       ['jvm', 'gc', 'Guruji'],
+              file:       'jvm-gc-guide.html',
+              status:     'available',
+              isNew:      true
             },
             {
               title:      'Java Fullstack Interview Reference',
@@ -1330,6 +1355,84 @@ const SITE_DATA = {
               time:       '45 min',
               tags:       ['reference', 'interview'],
               file:       'cloud_interview_reference_sheet.html',
+              status:     'available'
+            }
+          ]
+        },
+        {
+          name: 'AWS Deep Dive',
+          concepts: [
+            {
+              title:      'AWS & Cloud Foundations',
+              subtitle:   'Cloud value proposition, regions and AZs, service models, AWS account model',
+              difficulty: 'beginner',
+              time:       '45 min',
+              tags:       ['aws', 'cloud', 'Guruji'],
+              file:       'aws-foundation.html',
+              status:     'available',
+              featured:   true
+            },
+            {
+              title:      'IAM Deep Dive',
+              subtitle:   'Users, groups, roles, policies, trust relationships, permission evaluation',
+              difficulty: 'intermediate',
+              time:       '45 min',
+              tags:       ['aws', 'iam', 'security', 'Guruji'],
+              file:       'aws-iam.html',
+              status:     'available'
+            },
+            {
+              title:      'VPC & Networking',
+              subtitle:   'Subnets, route tables, internet gateways, NAT, security groups, NACLs',
+              difficulty: 'intermediate',
+              time:       '1 hr',
+              tags:       ['aws', 'networking', 'vpc', 'Guruji'],
+              file:       'aws-vpc.html',
+              status:     'available'
+            },
+            {
+              title:      'AWS Compute Deep Dive',
+              subtitle:   'EC2 instances, AMIs, launch templates, auto scaling, load balancing',
+              difficulty: 'intermediate',
+              time:       '45 min',
+              tags:       ['aws', 'compute', 'ec2', 'Guruji'],
+              file:       'aws-compute.html',
+              status:     'available'
+            },
+            {
+              title:      'AWS Storage Deep Dive',
+              subtitle:   'S3, EBS, EFS, consistency, durability, lifecycle policies, access patterns',
+              difficulty: 'intermediate',
+              time:       '45 min',
+              tags:       ['aws', 'storage', 's3', 'Guruji'],
+              file:       'aws-storage.html',
+              status:     'available'
+            },
+            {
+              title:      'AWS Databases Deep Dive',
+              subtitle:   'RDS, DynamoDB, OLTP vs OLAP, managed database trade-offs',
+              difficulty: 'intermediate',
+              time:       '45 min',
+              tags:       ['aws', 'databases', 'rds', 'Guruji'],
+              file:       'aws-databases.html',
+              status:     'available'
+            },
+            {
+              title:      'AWS Messaging & Eventing',
+              subtitle:   'SQS, SNS, event-driven patterns, retries, fan-out, decoupling services',
+              difficulty: 'intermediate',
+              time:       '45 min',
+              tags:       ['aws', 'messaging', 'eventing', 'Guruji'],
+              file:       'aws-messaging.html',
+              status:     'available'
+            },
+            {
+              title:      'Containers & Scaling on AWS',
+              subtitle:   'Docker, ECS, EKS, orchestration choices, scaling trade-offs, deployment patterns',
+              difficulty: 'intermediate',
+              time:       '1 hr',
+              tags:       ['aws', 'containers', 'scaling', 'Guruji'],
+              file:       'aws-containers-scaling.html',
               status:     'available'
             }
           ]

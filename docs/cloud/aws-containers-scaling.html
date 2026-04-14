@@ -1,0 +1,1536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>AWS Module 4.5 — Containers &amp; Scaling</title>
+<style>
+:root{--bg:#0c1117;--bg2:#131a24;--bg3:#1a2332;--bg4:#1f2b3d;--border:#243048;--border2:#2e3d55;--text:#e2e8f0;--text2:#94a3b8;--text3:#5a6a82;--orange:#f97316;--orange-bg:#2a1500;--orange-light:#fdba74;--blue:#3b82f6;--blue-bg:#0f2340;--blue-light:#93c5fd;--green:#22c55e;--green-bg:#0a2414;--green-light:#86efac;--red:#ef4444;--red-bg:#2a0a0a;--red-light:#fca5a5;--yellow:#f59e0b;--yellow-bg:#2a1800;--yellow-light:#fcd34d;--purple:#a855f7;--purple-bg:#1e0a35;--purple-light:#d8b4fe;--teal:#14b8a6;--teal-bg:#021e1c;--teal-light:#5eead4;--aws:#ff9900;--aws-bg:#1a0f00;--radius:8px;--radius-lg:12px;--mono:'Fira Code','Cascadia Code','Consolas',monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;line-height:1.7}
+.layout{display:flex;min-height:100vh}
+.sidebar{width:255px;min-width:255px;background:var(--bg2);border-right:1px solid var(--border);position:sticky;top:0;height:100vh;overflow-y:auto}
+.sidebar-header{padding:16px 20px;border-bottom:1px solid var(--border)}
+.sidebar-mod{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--aws);margin-bottom:3px}
+.sidebar-title{font-size:13px;font-weight:700;color:var(--text)}
+.sidebar-sub{font-size:11px;color:var(--text3);margin-top:2px}
+.nav-item{display:flex;align-items:center;gap:8px;padding:8px 20px;cursor:pointer;font-size:12.5px;color:var(--text2);transition:all .15s;border-left:3px solid transparent}
+.nav-item:hover{background:var(--bg3);color:var(--text)}
+.nav-item.active{background:var(--bg3);color:var(--orange-light);border-left-color:var(--aws)}
+.nav-dot{width:5px;height:5px;border-radius:50%;background:var(--border2);flex-shrink:0}
+.nav-item.active .nav-dot{background:var(--aws)}
+.nav-badge{font-size:9.5px;padding:1px 6px;border-radius:10px;background:var(--bg4);color:var(--text3);margin-left:auto}
+.nav-item.active .nav-badge{background:var(--aws-bg);color:var(--orange-light)}
+.nav-group-label{font-size:9.5px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.9px;padding:12px 20px 4px}
+.main{flex:1;padding:44px 52px;max-width:960px;overflow-x:hidden}
+.section{display:none}.section.active{display:block}
+h1{font-size:27px;font-weight:700;margin-bottom:8px;line-height:1.25}
+h2{font-size:19px;font-weight:600;margin:36px 0 14px}
+h3{font-size:15px;font-weight:600;margin:22px 0 10px}
+h4{font-size:13px;font-weight:600;margin:14px 0 6px;color:var(--orange-light)}
+p{color:var(--text2);margin-bottom:12px;line-height:1.78}
+strong{color:var(--text);font-weight:600}
+.subtitle{color:var(--text3);font-size:14px;margin-bottom:26px;line-height:1.65}
+pre{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px;font-family:var(--mono);font-size:12.5px;line-height:1.72;overflow-x:auto;margin:14px 0}
+code{font-family:var(--mono);font-size:12px;background:var(--bg3);padding:2px 6px;border-radius:4px;color:var(--teal-light)}
+.cm{color:var(--text3)}.kw{color:var(--purple-light)}.str{color:var(--green-light)}.ty{color:var(--blue-light)}.ak{color:var(--orange-light)}.num{color:var(--yellow-light)}.fn{color:var(--teal-light)}.jk{color:var(--orange-light)}.jv{color:var(--green-light)}
+.card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px;margin-bottom:14px}
+.card-title{font-size:13.5px;font-weight:600;margin-bottom:8px}
+.card-body{font-size:13px;color:var(--text2);line-height:1.75}
+.alert{border-radius:var(--radius);padding:13px 16px;margin:16px 0;font-size:13px;border-left:3px solid;line-height:1.7}
+.a-orange{background:var(--orange-bg);border-color:var(--orange);color:var(--orange-light)}
+.a-blue{background:var(--blue-bg);border-color:var(--blue);color:var(--blue-light)}
+.a-green{background:var(--green-bg);border-color:var(--green);color:var(--green-light)}
+.a-red{background:var(--red-bg);border-color:var(--red);color:var(--red-light)}
+.a-yellow{background:var(--yellow-bg);border-color:var(--yellow);color:var(--yellow-light)}
+.a-purple{background:var(--purple-bg);border-color:var(--purple);color:var(--purple-light)}
+.alert strong{color:inherit}
+.refs{margin:12px 0 16px;display:flex;flex-wrap:wrap;gap:6px}
+.ref{display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:3px 10px;border-radius:10px;background:var(--bg4);color:var(--text3);border:1px solid var(--border);text-decoration:none;transition:all .15s}
+.ref:hover{background:var(--bg3);color:var(--text2)}
+table{width:100%;border-collapse:collapse;margin:14px 0;font-size:13px}
+th{background:var(--bg3);color:var(--text);font-weight:600;padding:10px 14px;text-align:left;border-bottom:1px solid var(--border2)}
+td{padding:9px 14px;border-bottom:1px solid var(--border);color:var(--text2);vertical-align:top}
+tr:hover td{background:var(--bg3)}
+.qa{border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:10px;overflow:hidden}
+.qa-q{padding:13px 18px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;background:var(--bg3);font-size:13px;font-weight:500;transition:background .15s;user-select:none;gap:12px}
+.qa-q:hover{background:var(--bg4)}
+.qa-a{display:none;padding:16px 18px;font-size:13px;color:var(--text2);line-height:1.8;background:var(--bg2);border-top:1px solid var(--border)}
+.qa-a.open{display:block}.qa-arrow{transition:transform .2s;color:var(--text3);font-size:11px;flex-shrink:0}.qa-arrow.open{transform:rotate(180deg)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin:14px 0}
+.section-header{padding-bottom:18px;border-bottom:1px solid var(--border);margin-bottom:26px}
+.mod-badge{font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;display:inline-block;margin-bottom:10px;background:var(--aws-bg);color:var(--aws)}
+.steps{counter-reset:step}
+.step{display:flex;gap:14px;margin-bottom:16px}
+.step-num{counter-increment:step;width:26px;height:26px;min-width:26px;background:var(--aws-bg);color:var(--aws);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;margin-top:2px;border:1px solid var(--orange)}
+.step-content{flex:1}.step-title{font-weight:600;font-size:13px;margin-bottom:3px}.step-body{font-size:13px;color:var(--text2);line-height:1.65}
+.scenario{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:18px 20px;margin:16px 0}
+.scenario-label{font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;color:var(--aws);margin-bottom:6px}
+.scenario-title{font-size:14px;font-weight:600;margin-bottom:10px}
+.compare-row{display:flex;gap:0;margin:14px 0;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+.cmp-a{flex:1;background:var(--red-bg);padding:16px;border-right:1px solid var(--border)}
+.cmp-b{flex:1;background:var(--green-bg);padding:16px}
+.cmp-label{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px}
+.cmp-a .cmp-label{color:var(--red)}.cmp-b .cmp-label{color:var(--green)}
+
+/* Layer diagram styles */
+.layer-stack{margin:20px 0}
+.layer{border-radius:var(--radius);padding:14px 20px;margin-bottom:6px;border:1px solid}
+.layer-title{font-weight:700;font-size:13px;margin-bottom:3px}
+.layer-desc{font-size:12.5px;line-height:1.6}
+.layer-q{font-size:11px;font-style:italic;margin-top:4px;opacity:.8}
+.l1{background:#1a0f00;border-color:var(--orange);color:var(--orange-light)}
+.l1 .layer-desc{color:#fdba74cc}
+.l2{background:var(--blue-bg);border-color:var(--blue);color:var(--blue-light)}
+.l2 .layer-desc{color:#93c5fdcc}
+.l3{background:#061a0d;border-color:#14532d;color:var(--green-light)}
+.l3 .layer-desc{color:#86efaccc}
+.layer-arrow{text-align:center;color:var(--text3);font-size:11px;margin:2px 0}
+
+/* Node/pod diagrams */
+.node-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:14px 0}
+.node-box{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:14px}
+.node-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);margin-bottom:8px}
+.pod-row{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px}
+.pod{background:var(--bg4);border:1px solid var(--border2);border-radius:4px;padding:4px 8px;font-size:10px;font-weight:600}
+.pod-green{background:#061a0d;border-color:#14532d;color:var(--green-light)}
+.pod-blue{background:var(--blue-bg);border-color:var(--blue);color:var(--blue-light)}
+.pod-orange{background:var(--aws-bg);border-color:var(--orange);color:var(--orange-light)}
+.pod-red{background:var(--red-bg);border-color:var(--red);color:var(--red-light)}
+.pod-gray{background:var(--bg4);border-color:var(--border2);color:var(--text3)}
+
+/* Visual diagrams */
+.vis-diagram{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;margin:16px 0}
+.vis-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text3);margin-bottom:14px}
+.vis-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap}
+.vbox{padding:8px 14px;border-radius:var(--radius);font-size:12px;font-weight:600;border:1px solid}
+.vb-orange{background:var(--aws-bg);border-color:var(--orange);color:var(--orange-light)}
+.vb-blue{background:var(--blue-bg);border-color:var(--blue);color:var(--blue-light)}
+.vb-green{background:#061a0d;border-color:#14532d;color:var(--green-light)}
+.vb-purple{background:var(--purple-bg);border-color:var(--purple);color:var(--purple-light)}
+.vb-gray{background:var(--bg4);border-color:var(--border2);color:var(--text2)}
+.vb-yellow{background:var(--yellow-bg);border-color:var(--yellow);color:var(--yellow-light)}
+.varr{color:var(--aws);font-size:18px;font-weight:700;padding:0 4px}
+.vdouble{text-align:center;color:var(--text3);font-size:11px;padding:4px}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-mod">Module 4.5</div>
+    <div class="sidebar-title">Containers &amp; The Scaling Mental Model</div>
+    <div class="sidebar-sub">Docker · K8s · ECS · EKS · ASG</div>
+  </div>
+  <div class="nav-group-label">The Big Picture</div>
+  <div class="nav-item active" onclick="show('s0')"><span class="nav-dot"></span>0. Three Layers — The Mental Model</div>
+  <div class="nav-group-label">Layer 1 — Packaging</div>
+  <div class="nav-item" onclick="show('s1')"><span class="nav-dot"></span>1. The Problem Docker Solves</div>
+  <div class="nav-item" onclick="show('s2')"><span class="nav-dot"></span>2. How Docker Actually Works</div>
+  <div class="nav-item" onclick="show('s3')"><span class="nav-dot"></span>3. Dockerfile &amp; Images in Depth</div>
+  <div class="nav-group-label">Layer 2 — Orchestration</div>
+  <div class="nav-item" onclick="show('s4')"><span class="nav-dot"></span>4. The Problem Orchestration Solves</div>
+  <div class="nav-item" onclick="show('s5')"><span class="nav-dot"></span>5. Kubernetes Concepts from Scratch <span class="nav-badge">Key</span></div>
+  <div class="nav-item" onclick="show('s6')"><span class="nav-dot"></span>6. ECS — AWS's Orchestrator</div>
+  <div class="nav-group-label">Layer 3 — Infrastructure</div>
+  <div class="nav-item" onclick="show('s7')"><span class="nav-dot"></span>7. Who Provides the Machines?</div>
+  <div class="nav-group-label">How They Compose</div>
+  <div class="nav-item" onclick="show('s8')"><span class="nav-dot"></span>8. The Full Stack Together <span class="nav-badge">Key</span></div>
+  <div class="nav-item" onclick="show('s9')"><span class="nav-dot"></span>9. Two Scaling Dimensions</div>
+  <div class="nav-item" onclick="show('s10')"><span class="nav-dot"></span>10. AWS Path: ECS + Fargate</div>
+  <div class="nav-item" onclick="show('s11')"><span class="nav-dot"></span>11. Self-Managed: EKS + EC2 + ASG</div>
+  <div class="nav-item" onclick="show('s12')"><span class="nav-dot"></span>12. Why Teams Skip ASG</div>
+  <div class="nav-item" onclick="show('s13')"><span class="nav-dot"></span>13. ECS vs EKS — Decision Guide</div>
+  <div class="nav-item" onclick="show('s14')"><span class="nav-dot"></span>Interview Q&amp;A <span class="nav-badge">12 Qs</span></div>
+</aside>
+
+<main class="main">
+
+<!-- ======================================================= S0: THE THREE LAYERS -->
+<div id="s0" class="section active">
+<div class="section-header">
+  <span class="mod-badge">Module 4.5 · Section 0</span>
+  <h1>Three Layers — The Mental Model First</h1>
+  <p class="subtitle">Docker, Kubernetes, and Auto Scaling Groups feel confusing together because they operate at different levels. Once you understand the three distinct layers they each live on, the whole picture snaps into focus.</p>
+</div>
+
+<h2>The Confusion Explained</h2>
+<p>People hear: "We run Kubernetes on AWS with auto scaling." And wonder: does Kubernetes scale things? Does AWS scale things? What's Docker doing? Who's in charge? The answer: they each handle a <strong>completely different concern at a different layer</strong>. They don't compete — they compose.</p>
+
+<div class="layer-stack">
+  <div class="layer l1">
+    <div class="layer-title">🐳 Layer 1 — PACKAGING: Docker</div>
+    <div class="layer-desc">Solves: "My app works on my machine but not on the server."<br>Packages your application + all its dependencies into a portable, isolated unit called a <strong>container</strong>. Runs identically everywhere — laptop, CI server, production.</div>
+    <div class="layer-q">Question it answers: "How do I package and run my application consistently?"</div>
+  </div>
+  <div class="layer-arrow">↑ gives containers to ↓</div>
+  <div class="layer l2">
+    <div class="layer-title">☸ Layer 2 — ORCHESTRATION: Kubernetes or ECS</div>
+    <div class="layer-desc">Solves: "I have 50 containers. How do I run them, keep them healthy, balance traffic, deploy updates, and restart failed ones — automatically?"<br>Manages the <strong>lifecycle of containers</strong>: scheduling, health monitoring, scaling containers up/down, rolling deployments.</div>
+    <div class="layer-q">Question it answers: "How do I run and manage many containers reliably?"</div>
+  </div>
+  <div class="layer-arrow">↑ deploys containers onto ↓</div>
+  <div class="layer l3">
+    <div class="layer-title">🖥 Layer 3 — INFRASTRUCTURE: EC2 + ASG (or Fargate)</div>
+    <div class="layer-desc">Solves: "I have 100 containers to run. Where do the actual physical/virtual machines come from? How do I provision more servers when load increases?"<br>Provides the <strong>compute capacity</strong> that the orchestrator places containers onto.</div>
+    <div class="layer-q">Question it answers: "What machines are the containers actually running on, and how do I scale the fleet?"</div>
+  </div>
+</div>
+
+<div class="alert a-orange">
+  <strong>The core insight:</strong> Kubernetes/ECS scales <em>containers</em> (the application layer). ASG scales <em>EC2 instances</em> (the infrastructure layer). These are different things. You might go from 5 containers to 50 containers without adding any EC2 instances (if existing instances have spare capacity). And you might add EC2 instances without changing the container count (if containers need more headroom). Fargate removes Layer 3 entirely — you never think about machines.
+</div>
+
+<h2>The Analogy That Makes It Click</h2>
+<div class="scenario">
+  <div class="scenario-label">Analogy — Restaurant Chain</div>
+  <div class="scenario-title">Docker = Standardised meal kits. Orchestration = Restaurant manager. Infrastructure = Kitchen tables/stations.</div>
+  <p><strong>Docker (packaging):</strong> Each dish is prepared as a sealed, standardised meal kit (container image). The kit has everything needed — ingredients, recipe, tools. The chef (your app) works the same way whether in London or New York because everything they need is in the kit. No "it works in the test kitchen but not the main kitchen" problem.</p>
+  <p style="margin-top:8px"><strong>Orchestration (Kubernetes/ECS):</strong> The restaurant manager decides which chef works which station, ensures every station is staffed, notices when a chef is sick and calls in a replacement, handles rush hour by opening more stations, manages shift rotations during deployments.</p>
+  <p style="margin-top:8px"><strong>Infrastructure (EC2/ASG):</strong> The physical kitchen stations themselves — tables, stoves, equipment. When demand is high, you rent more kitchen space. When quiet, you close some stations to save money. The manager doesn't care about this — they just need stations to exist.</p>
+  <p style="margin-top:8px"><strong>Fargate:</strong> A catering company that provides kitchen stations on demand. "I need 5 stations now, 50 in an hour." The stations just appear. No building, no maintenance — you just use them.</p>
+</div>
+
+<h2>The Four Paths — What "Using Containers on AWS" Actually Means</h2>
+<div class="grid2">
+  <div class="card" style="border-color:#14532d">
+    <div class="card-title" style="color:var(--green-light)">Path A: ECS + Fargate (most common for new projects)</div>
+    <div class="card-body">AWS manages everything below the container. You define your container, resources, and desired count. AWS provisions, scales, and manages the infrastructure automatically. Zero server management.</div>
+  </div>
+  <div class="card" style="border-color:#14532d">
+    <div class="card-title" style="color:var(--green-light)">Path B: EKS + Fargate</div>
+    <div class="card-body">Kubernetes orchestration (portable, standard API) + Fargate infrastructure (no server management). Best of both worlds: K8s portability without EC2 cluster maintenance.</div>
+  </div>
+  <div class="card" style="border-color:#1a3050">
+    <div class="card-title" style="color:var(--blue-light)">Path C: EKS + EC2 + ASG (maximum control)</div>
+    <div class="card-body">Kubernetes orchestration + your own EC2 fleet managed by Auto Scaling Groups. Full control over instance types, placement, Spot Instances. Most complex to operate.</div>
+  </div>
+  <div class="card" style="border-color:#1a3050">
+    <div class="card-title" style="color:var(--blue-light)">Path D: ECS + EC2 + ASG</div>
+    <div class="card-body">ECS orchestration + your own EC2 fleet. Middle ground: AWS-native simplicity with EC2 cost optimisation (Spot Instances, reserved pricing, GPU instances).</div>
+  </div>
+</div>
+
+<div class="refs">
+  <a class="ref" href="https://aws.amazon.com/containers/" target="_blank">AWS Container Services</a>
+  <a class="ref" href="https://aws.amazon.com/blogs/containers/choosing-an-aws-container-service/" target="_blank">Choosing a Container Service</a>
+</div>
+</div>
+
+<!-- ======================================================= S1: THE PROBLEM DOCKER SOLVES -->
+<div id="s1" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 4.5 · Layer 1 · Section 1</span>
+  <h1>The Problem Docker Solves</h1>
+  <p class="subtitle">"It works on my machine" — the most infamous phrase in software development. Understanding why this problem exists makes Docker's solution obvious.</p>
+</div>
+
+<h2>Why "Works on My Machine" Happens</h2>
+<p>Your Spring Boot app needs: Java 21, specific JVM flags, environment variables pointing to your local database, a config file at a specific path, and a specific version of a native library. Your colleague has Java 17, different JVM flags, different env vars, and a newer version of the library. The app behaves differently — sometimes doesn't run at all.</p>
+
+<p>In production: the server has its own Java version, its own library versions, a different OS, different environment variables. Every deployment is a game of "what's different this time?"</p>
+
+<div class="compare-row">
+  <div class="cmp-a">
+    <div class="cmp-label">Before Docker — Environment Dependency Hell</div>
+    <pre style="background:transparent;border:none;padding:0;font-size:12px;color:var(--text2)">Developer machine:
+  Java 21, Spring Boot 3.2
+  MySQL 8.0 on localhost
+  .env file with local configs
+  /opt/ssl-certs/ (local path)
+
+CI server:
+  Java 17 (wrong version!)
+  No MySQL (mock only)
+  Different config location
+
+Production:
+  Java 11 (very wrong!)
+  MySQL on RDS
+  Secrets in /etc/app.conf
+  SSL certs in /etc/ssl/
+
+Every environment is different.
+Deployment = debugging environment
+differences. "Works on my machine"
+is a constant reality.</pre>
+  </div>
+  <div class="cmp-b">
+    <div class="cmp-label">With Docker — Identical Environment Everywhere</div>
+    <pre style="background:transparent;border:none;padding:0;font-size:12px;color:var(--text2)">Docker image contains:
+  Java 21 (exact version)
+  Your compiled app
+  All dependencies
+  Config file structure
+  SSL cert locations
+  Everything needed
+
+Developer machine: runs the image
+CI server: runs the image
+Production: runs the image
+
+The environment IS the image.
+The image is identical everywhere.
+"Works on my machine" = works
+everywhere the image runs.
+</pre>
+  </div>
+</div>
+
+<h2>Container vs Virtual Machine</h2>
+<p>Containers are often compared to VMs but they work very differently. Understanding this distinction matters because it explains why containers start in seconds, not minutes.</p>
+
+<div class="vis-diagram">
+  <div class="vis-title">VM vs Container — What's Actually Running</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+    <div>
+      <div style="font-size:11px;font-weight:700;color:var(--text3);margin-bottom:10px;text-transform:uppercase">Virtual Machine</div>
+      <div style="font-family:var(--mono);font-size:12px;line-height:2.2;color:var(--text2)">
+        <div style="background:var(--bg4);border:1px solid var(--border2);border-radius:4px;padding:4px 8px;margin-bottom:4px">Your App (Spring Boot)</div>
+        <div style="background:var(--bg4);border:1px solid var(--border2);border-radius:4px;padding:4px 8px;margin-bottom:4px">Guest OS (full Ubuntu)</div>
+        <div style="background:var(--bg4);border:1px solid var(--border2);border-radius:4px;padding:4px 8px;margin-bottom:4px">Hypervisor (VMware/KVM)</div>
+        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:4px 8px">Physical Hardware</div>
+      </div>
+      <div style="font-size:11px;color:var(--text3);margin-top:8px">Startup: 30–90 seconds<br>Image size: 1–10 GB<br>Isolation: hardware-level</div>
+    </div>
+    <div>
+      <div style="font-size:11px;font-weight:700;color:var(--text3);margin-bottom:10px;text-transform:uppercase">Container</div>
+      <div style="font-family:var(--mono);font-size:12px;line-height:2.2;color:var(--text2)">
+        <div style="background:#061a0d;border:1px solid #14532d;border-radius:4px;padding:4px 8px;margin-bottom:4px">Your App (Spring Boot)</div>
+        <div style="background:#061a0d;border:1px solid #14532d;border-radius:4px;padding:4px 8px;margin-bottom:4px">App libs (JRE + deps only)</div>
+        <div style="background:var(--bg4);border:1px solid var(--border2);border-radius:4px;padding:4px 8px;margin-bottom:4px">Container Runtime (Docker)</div>
+        <div style="background:var(--bg4);border:1px solid var(--border2);border-radius:4px;padding:4px 8px;margin-bottom:4px">Host OS kernel (shared!)</div>
+        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:4px 8px">Physical Hardware</div>
+      </div>
+      <div style="font-size:11px;color:var(--text3);margin-top:8px">Startup: 0.5–3 seconds<br>Image size: 50 MB – 500 MB<br>Isolation: OS-level namespaces</div>
+    </div>
+  </div>
+</div>
+
+<p>Containers share the host OS kernel — they don't boot an entire OS. This is why they start so fast and are so much smaller. The trade-off: containers are isolated at the OS process level (namespaces, cgroups), not the hardware level. VMs have stronger isolation for multi-tenant environments; containers are slightly less isolated but vastly more efficient.</p>
+
+<div class="alert a-blue">
+  <strong>AWS uses Firecracker microVMs for Lambda and Fargate containers.</strong> A microVM is a middle ground — it boots a minimal Linux kernel (like a container) but uses hardware virtualisation (like a VM). Sub-second startup, near-zero overhead, yet true hardware isolation. This is how AWS can safely run your containers alongside other customers' containers on the same physical hardware.
+</div>
+
+<div class="refs">
+  <a class="ref" href="https://docs.docker.com/get-started/overview/" target="_blank">Docker Overview</a>
+  <a class="ref" href="https://firecracker-microvm.github.io/" target="_blank">AWS Firecracker</a>
+</div>
+</div>
+
+<!-- ======================================================= S2: HOW DOCKER WORKS -->
+<div id="s2" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 4.5 · Layer 1 · Section 2</span>
+  <h1>How Docker Actually Works</h1>
+  <p class="subtitle">Images, containers, layers, registries — the mechanics of Docker that let you build once and run anywhere.</p>
+</div>
+
+<h2>Image vs Container — The Fundamental Distinction</h2>
+<div class="grid2">
+  <div class="card">
+    <div class="card-title" style="color:var(--orange-light)">Image — The Blueprint (read-only)</div>
+    <div class="card-body">
+      A Docker image is a read-only template. It contains your application code, runtime, libraries, and config, frozen at build time. Like a class in OOP — defines the structure but isn't running yet.<br><br>
+      Stored in a registry (ECR, Docker Hub). Tagged with a version. <code>myapp:v1.2.3</code>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--green-light)">Container — The Running Instance</div>
+    <div class="card-body">
+      A container is a running instance of an image. Like an object instantiated from a class. Has its own process space, network interface, filesystem (writable layer on top of the image).<br><br>
+      Run 1 image → 1 container. Run the same image 10 times → 10 independent containers, each isolated.
+    </div>
+  </div>
+</div>
+
+<h2>Layered Images — Why Docker is Fast and Efficient</h2>
+<p>Docker images are built in layers. Each instruction in a Dockerfile adds a new layer. Layers are cached — if a layer hasn't changed, Docker reuses the cached version instead of rebuilding. This makes builds fast and images efficient to transfer.</p>
+
+<pre><span class="cm"># Dockerfile builds layers from bottom to top</span>
+<span class="cm"># Layer 1: Base image (downloaded once, cached forever)</span>
+FROM amazoncorretto:21-alpine3.19    <span class="cm">← pulled from Docker Hub: ~120MB</span>
+
+<span class="cm"># Layer 2: Rarely-changing system dependencies</span>
+RUN apk add --no-cache curl          <span class="cm">← only rebuilt if this line changes</span>
+
+<span class="cm"># Layer 3: Application dependencies (changes occasionally)</span>
+COPY pom.xml .
+RUN mvn dependency:go-offline -q     <span class="cm">← downloads dependencies</span>
+
+<span class="cm"># Layer 4: Application code (changes on every commit)</span>
+COPY src ./src
+RUN mvn package -DskipTests -q       <span class="cm">← only this rebuilds on code changes</span>
+
+<span class="cm"># Configuration (not a layer — just metadata)</span>
+EXPOSE 8080
+ENV JAVA_OPTS="-Xmx512m -Xms256m"
+ENTRYPOINT ["java", "-jar", "target/app.jar"]</pre>
+
+<p>The smart ordering above is critical: put things that change rarely at the top, things that change often at the bottom. If only your code changes (Layer 4), Docker reuses the cached Layers 1-3 and only rebuilds Layer 4. Build time goes from minutes to seconds.</p>
+
+<h2>Working with Docker — Essential Commands</h2>
+<pre><span class="cm"># Build an image from Dockerfile in current directory</span>
+docker build -t myapp:v1.2.3 .
+docker build -t myapp:v1.2.3 --platform linux/arm64 .  <span class="cm"># for Graviton/M1</span>
+
+<span class="cm"># Run a container from an image</span>
+docker run -d \              <span class="cm"># -d = detached (background)</span>
+  -p 8080:8080 \             <span class="cm"># host:container port mapping</span>
+  -e DB_URL=jdbc://... \     <span class="cm"># environment variable injection</span>
+  -e DB_PASS=secret \
+  --name myapp-local \       <span class="cm"># give it a name</span>
+  myapp:v1.2.3
+
+<span class="cm"># See running containers</span>
+docker ps
+
+<span class="cm"># See logs</span>
+docker logs myapp-local -f   <span class="cm"># -f = follow (like tail -f)</span>
+
+<span class="cm"># Shell into a running container (for debugging)</span>
+docker exec -it myapp-local /bin/sh
+
+<span class="cm"># Stop and remove</span>
+docker stop myapp-local
+docker rm myapp-local
+
+<span class="cm"># Push to ECR</span>
+aws ecr get-login-password | docker login --username AWS \
+  --password-stdin 123456789012.dkr.ecr.us-east-1.amazonaws.com
+docker tag myapp:v1.2.3 123456789012.dkr.ecr.us-east-1.amazonaws.com/myapp:v1.2.3
+docker push 123456789012.dkr.ecr.us-east-1.amazonaws.com/myapp:v1.2.3</pre>
+
+<h2>Docker Compose — Running Multiple Containers Locally</h2>
+<p>Your app needs the app container, a database, and a Redis cache — all running locally for development. Docker Compose defines and runs this multi-container setup with one command.</p>
+
+<pre><span class="cm"># docker-compose.yml — local dev environment</span>
+version: <span class="str">'3.9'</span>
+services:
+  app:
+    build: .
+    ports: [<span class="str">"8080:8080"</span>]
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/mydb
+      REDIS_URL: redis://cache:6379
+    depends_on: [db, cache]
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: mydb
+      POSTGRES_PASSWORD: localpassword
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  cache:
+    image: redis:7-alpine
+    ports: [<span class="str">"6379:6379"</span>]
+
+volumes:
+  postgres_data:
+
+<span class="cm"># Start everything:</span>
+docker compose up -d
+
+<span class="cm"># Tear everything down:</span>
+docker compose down</pre>
+
+<div class="alert a-orange">
+  <strong>Docker Compose is for local development only.</strong> It runs on one machine — no HA, no auto-restart if the machine fails, no scaling across multiple hosts. For production multi-container workloads: use ECS or Kubernetes. They are the production equivalent of Compose, but distributed.
+</div>
+
+<div class="refs">
+  <a class="ref" href="https://docs.docker.com/engine/reference/builder/" target="_blank">Dockerfile Reference</a>
+  <a class="ref" href="https://docs.docker.com/compose/" target="_blank">Docker Compose</a>
+  <a class="ref" href="https://docs.docker.com/develop/develop-images/instructions/" target="_blank">Best Practices for Dockerfiles</a>
+</div>
+</div>
+
+<!-- ======================================================= S3: DOCKERFILE IN DEPTH -->
+<div id="s3" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 4.5 · Layer 1 · Section 3</span>
+  <h1>Production-Grade Dockerfile</h1>
+  <p class="subtitle">A Dockerfile that's fast to build, small in size, and secure. The gap between a "works" Dockerfile and a production Dockerfile is significant.</p>
+</div>
+
+<h2>The Multi-Stage Build — Build Once, Ship Small</h2>
+<p>The most important Dockerfile pattern. Use a large build image (with Maven, JDK, all build tools) to compile your app, then copy only the compiled output into a minimal runtime image. The final image has no build tools, no source code — only what's needed to run.</p>
+
+<pre><span class="cm"># Multi-stage Dockerfile for a Spring Boot application</span>
+
+<span class="cm"># ====== STAGE 1: BUILD ======</span>
+<span class="cm"># Use full Maven + JDK image for building (this is large — ~600MB)</span>
+FROM maven:3.9-amazoncorretto-21 AS builder
+
+WORKDIR /build
+
+<span class="cm"># Copy pom.xml first — download dependencies as a separate layer</span>
+<span class="cm"># This layer is cached until pom.xml changes (not on every code commit)</span>
+COPY pom.xml .
+RUN mvn dependency:go-offline -q
+
+<span class="cm"># Now copy source and build</span>
+COPY src ./src
+RUN mvn package -DskipTests -q
+
+<span class="cm"># ====== STAGE 2: RUNTIME ======</span>
+<span class="cm"># Minimal JRE-only image (no JDK, no Maven, no build tools)</span>
+FROM amazoncorretto:21-alpine3.19 AS runtime
+
+<span class="cm"># Run as non-root user (security best practice)</span>
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+USER appuser
+
+WORKDIR /app
+
+<span class="cm"># Copy ONLY the compiled JAR from the builder stage</span>
+COPY --from=builder --chown=appuser:appgroup \
+  /build/target/myapp.jar ./app.jar
+
+<span class="cm"># Document what port the app listens on</span>
+EXPOSE 8080
+
+<span class="cm"># Health check — orchestrators use this</span>
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+  CMD wget -qO- http://localhost:8080/actuator/health || exit 1
+
+<span class="cm"># JVM tuning for containers (respect container memory limits)</span>
+ENV JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -XX:+UseG1GC"
+
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
+
+<span class="cm"># Result: Final image is ~150MB instead of 600MB
+#         No Maven, no JDK, no source code in the final image
+#         Security: runs as non-root user
+#         Efficiency: dependency layer cached separately</span></pre>
+
+<h2>Important JVM Flags for Containers</h2>
+<pre><span class="cm"># Before Java 10: JVM didn't understand container memory limits
+# It saw HOST machine RAM → allocated too much heap → OOMKilled
+# Fix: UseContainerSupport (default from Java 11+)</span>
+
+-XX:+UseContainerSupport          <span class="cm"># JVM reads cgroup limits (not host RAM)</span>
+-XX:MaxRAMPercentage=75.0         <span class="cm"># use 75% of container RAM for heap</span>
+                                   <span class="cm"># (remaining 25% for metaspace, threads, etc.)</span>
+
+<span class="cm"># Example: Container has 1GB RAM
+# Without flags: JVM might allocate 4GB heap (sees host RAM) → crash
+# With flags: JVM allocates 750MB heap → runs fine</span>
+
+-XX:InitialRAMPercentage=50.0     <span class="cm"># start at 50% heap, grow to MaxRAM</span>
+-XX:+ExitOnOutOfMemoryError       <span class="cm"># crash cleanly (let orchestrator restart)</span>
+                                   <span class="cm"># instead of limping with corrupted state</span></pre>
+
+<div class="refs">
+  <a class="ref" href="https://docs.docker.com/develop/develop-images/multistage-build/" target="_blank">Multi-stage Builds</a>
+  <a class="ref" href="https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-scanning.html" target="_blank">ECR Image Scanning</a>
+</div>
+</div>
+
+<!-- ======================================================= S4: ORCHESTRATION PROBLEM -->
+<div id="s4" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 4.5 · Layer 2 · Section 4</span>
+  <h1>The Problem Orchestration Solves</h1>
+  <p class="subtitle">Docker solves packaging. But once you have 50 containers running across 10 servers — who keeps them running, distributes the load, replaces failed ones, and deploys updates without downtime? That's orchestration.</p>
+</div>
+
+<h2>What Goes Wrong Without Orchestration</h2>
+<p>You have 10 EC2 instances and 5 microservices, each needing 3 replicas = 15 containers total. You manually deploy them by SSHing into servers. Here's what you must handle manually:</p>
+
+<div class="grid3">
+  <div class="card" style="border-color:#5a1a1a">
+    <div class="card-title" style="color:var(--red-light)">Container crashes</div>
+    <div class="card-body">Container crashes at 3am. No one restarts it. Service is down until someone manually SSHes in and runs docker start. Users see errors for hours.</div>
+  </div>
+  <div class="card" style="border-color:#5a1a1a">
+    <div class="card-title" style="color:var(--red-light)">Deployments cause downtime</div>
+    <div class="card-body">To deploy a new version, stop the old container, pull new image, start new container. Gap between stop and start = downtime. Manual process = human error.</div>
+  </div>
+  <div class="card" style="border-color:#5a1a1a">
+    <div class="card-title" style="color:var(--red-light)">Load distribution</div>
+    <div class="card-body">Server 1 has 10 containers running. Server 5 has 2. Unbalanced. You'd need to manually move containers around. Who tracks what's running where?</div>
+  </div>
+  <div class="card" style="border-color:#5a1a1a">
+    <div class="card-title" style="color:var(--red-light)">Server failures</div>
+    <div class="card-body">Server 3 dies. 3 containers gone. Someone must manually restart those containers on surviving servers. Meanwhile, those services are under-replicated.</div>
+  </div>
+  <div class="card" style="border-color:#5a1a1a">
+    <div class="card-title" style="color:var(--red-light)">Scaling</div>
+    <div class="card-body">Traffic spikes. You need 5 more containers of the API service. Which server has capacity? SSH in, run docker commands, manually register with load balancer...</div>
+  </div>
+  <div class="card" style="border-color:#5a1a1a">
+    <div class="card-title" style="color:var(--red-light)">Resource management</div>
+    <div class="card-body">How much CPU and RAM does each container get? If one container uses all RAM on a server, others get OOMKilled. Manual limits = human error = production incidents.</div>
+  </div>
+</div>
+
+<h2>What an Orchestrator Does</h2>
+<p>An orchestrator (Kubernetes, ECS) is a control plane that continuously watches the state of your containers and takes automated action to keep them in the desired state. You declare <em>what you want</em> ("5 replicas of my API container, each with 0.5 CPU and 1GB RAM") and the orchestrator makes it happen and keeps it that way.</p>
+
+<div class="steps">
+  <div class="step"><div class="step-num">1</div><div class="step-content">
+    <div class="step-title">Scheduling — where does each container run?</div>
+    <div class="step-body">Orchestrator picks which server (node) each container runs on based on available CPU/RAM, affinity rules, and spread requirements. You never manually decide "container goes on server 3."</div>
+  </div></div>
+  <div class="step"><div class="step-num">2</div><div class="step-content">
+    <div class="step-title">Health monitoring — is each container healthy?</div>
+    <div class="step-body">Continuously runs health checks. Failed container → immediately replace it on a healthy server. Unhealthy container removed from load balancer before being restarted. Zero-downtime recovery.</div>
+  </div></div>
+  <div class="step"><div class="step-num">3</div><div class="step-content">
+    <div class="step-title">Desired state reconciliation</div>
+    <div class="step-body">"I declared 5 replicas, I see only 3 running." → Start 2 more. Server died taking 2 containers with it → start them elsewhere. This loop runs constantly, every few seconds.</div>
+  </div></div>
+  <div class="step"><div class="step-num">4</div><div class="step-content">
+    <div class="step-title">Rolling deployments — update without downtime</div>
+    <div class="step-body">Deploy new version: start 1 new container → wait for it to pass health checks → remove 1 old container → repeat. Traffic always flows to healthy containers. Zero downtime.</div>
+  </div></div>
+  <div class="step"><div class="step-num">5</div><div class="step-content">
+    <div class="step-title">Service discovery and load balancing</div>
+    <div class="step-body">When a new container starts, it's automatically registered for traffic. When it stops, automatically removed. No manual load balancer configuration.</div>
+  </div></div>
+</div>
+
+<div class="refs">
+  <a class="ref" href="https://kubernetes.io/docs/concepts/overview/" target="_blank">Kubernetes Overview</a>
+  <a class="ref" href="https://docs.aws.amazon.com/AmazonECS/latest/developerguide/Welcome.html" target="_blank">ECS Overview</a>
+</div>
+</div>
+
+<!-- ======================================================= S5: KUBERNETES CONCEPTS -->
+<div id="s5" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 4.5 · Layer 2 · Section 5</span>
+  <h1>Kubernetes Concepts from Scratch</h1>
+  <p class="subtitle">Kubernetes (K8s) is the dominant container orchestration system. Learning its core objects — Pod, Deployment, Service, Node — is essential even if you use ECS, because ECS is built on the same concepts.</p>
+</div>
+
+<h2>The Kubernetes Cluster</h2>
+<p>A Kubernetes cluster has two types of machines: the <strong>control plane</strong> (master nodes — the brain, runs the scheduler and API server) and <strong>worker nodes</strong> (the muscles — the machines your containers actually run on).</p>
+
+<div class="vis-diagram">
+  <div class="vis-title">Kubernetes Cluster Architecture</div>
+  <div style="display:grid;grid-template-columns:220px 1fr;gap:16px">
+    <div>
+      <div style="background:var(--purple-bg);border:1px solid var(--purple);border-radius:var(--radius);padding:12px;margin-bottom:8px">
+        <div style="font-size:11px;font-weight:700;color:var(--purple-light);margin-bottom:6px">Control Plane</div>
+        <div style="font-size:11px;color:var(--text3);line-height:1.8">
+          API Server<br>Scheduler<br>etcd (state store)<br>Controller Manager
+        </div>
+      </div>
+      <div style="font-size:10px;color:var(--text3);text-align:center">You talk to this via kubectl</div>
+    </div>
+    <div>
+      <div class="node-grid">
+        <div class="node-box">
+          <div class="node-label">Worker Node 1</div>
+          <div class="pod-row">
+            <div class="pod pod-green">api:v2</div>
+            <div class="pod pod-blue">worker:v2</div>
+          </div>
+          <div style="font-size:10px;color:var(--text3);margin-top:6px">4 vCPU / 8GB RAM</div>
+        </div>
+        <div class="node-box">
+          <div class="node-label">Worker Node 2</div>
+          <div class="pod-row">
+            <div class="pod pod-green">api:v2</div>
+            <div class="pod pod-orange">frontend:v1</div>
+          </div>
+          <div style="font-size:10px;color:var(--text3);margin-top:6px">4 vCPU / 8GB RAM</div>
+        </div>
+        <div class="node-box">
+          <div class="node-label">Worker Node 3</div>
+          <div class="pod-row">
+            <div class="pod pod-green">api:v2</div>
+            <div class="pod pod-blue">worker:v2</div>
+          </div>
+          <div style="font-size:10px;color:var(--text3);margin-top:6px">4 vCPU / 8GB RAM</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h2>Core Kubernetes Objects</h2>
+
+<h3>Pod — The Smallest Unit</h3>
+<p>A Pod is the smallest deployable unit in Kubernetes — one or more containers that share a network namespace and storage. Containers inside a Pod talk to each other via <code>localhost</code>. Most of the time: one container per Pod.</p>
+
+<pre><span class="cm"># pod.yaml — the most basic K8s object</span>
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-pod
+  labels:
+    app: myapp
+spec:
+  containers:
+  - name: myapp
+    image: 123456789012.dkr.ecr.us-east-1.amazonaws.com/myapp:v1.2.3
+    ports:
+    - containerPort: 8080
+    resources:
+      requests:                 <span class="cm"># minimum guaranteed resources</span>
+        memory: "512Mi"
+        cpu: "250m"             <span class="cm"># 250 millicores = 0.25 vCPU</span>
+      limits:                   <span class="cm"># maximum allowed — exceed = throttle/OOM</span>
+        memory: "1Gi"
+        cpu: "1000m"            <span class="cm"># 1000m = 1 vCPU</span>
+    env:
+    - name: DB_URL
+      valueFrom:
+        secretKeyRef:
+          name: db-credentials  <span class="cm"># K8s Secret</span>
+          key: url
+    livenessProbe:              <span class="cm"># if this fails, restart the container</span>
+      httpGet: {path: /health, port: 8080}
+      initialDelaySeconds: 60
+      periodSeconds: 30
+    readinessProbe:             <span class="cm"># if this fails, remove from load balancer</span>
+      httpGet: {path: /ready, port: 8080}
+      initialDelaySeconds: 10
+      periodSeconds: 5</pre>
+
+<h3>Deployment — Manages Pods at Scale</h3>
+<p>You never create Pods directly in production. You create a <strong>Deployment</strong> — a higher-level object that manages a set of identical Pods (a ReplicaSet). The Deployment controller ensures the desired number of Pods are always running and handles rolling updates.</p>
+
+<pre><span class="cm"># deployment.yaml — manage 5 replicas of your app</span>
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp-deployment
+spec:
+  replicas: 5                    <span class="cm"># desired number of running pods</span>
+  selector:
+    matchLabels:
+      app: myapp
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0          <span class="cm"># never go below 5 pods during update</span>
+      maxSurge: 2                <span class="cm"># allow up to 7 pods during update</span>
+  template:                      <span class="cm"># pod template — every pod looks like this</span>
+    metadata:
+      labels:
+        app: myapp
+    spec:
+      containers:
+      - name: myapp
+        image: myapp:v1.2.3
+        ... (same as pod spec above)
+
+<span class="cm"># Deploy a new version:</span>
+kubectl set image deployment/myapp-deployment myapp=myapp:v1.3.0
+<span class="cm"># K8s gradually replaces v1.2.3 pods with v1.3.0 pods
+# Watches readinessProbe — only sends traffic to ready pods
+
+# Rollback:</span>
+kubectl rollout undo deployment/myapp-deployment</pre>
+
+<h3>Service — Stable Network Endpoint</h3>
+<p>Pods are ephemeral — they start and stop, get new IP addresses each time. A <strong>Service</strong> provides a stable DNS name and IP that load-balances across all matching Pods. Other services call the Service's DNS name — they never care which specific Pod responds.</p>
+
+<pre><span class="cm"># service.yaml — stable endpoint for the myapp pods</span>
+apiVersion: v1
+kind: Service
+metadata:
+  name: myapp-service
+spec:
+  selector:
+    app: myapp                   <span class="cm"># matches all pods with label app=myapp</span>
+  ports:
+  - port: 80                     <span class="cm"># service listens on 80</span>
+    targetPort: 8080             <span class="cm"># forwards to port 8080 on pods</span>
+  type: ClusterIP                <span class="cm"># internal only (LoadBalancer = external ALB)</span>
+
+<span class="cm"># Other services call this via DNS: http://myapp-service/api/users
+# K8s DNS resolves myapp-service → Service IP → load balances across pods
+# If pods restart with new IPs, Service automatically picks them up</span></pre>
+
+<h3>HorizontalPodAutoscaler — Auto Scale Containers</h3>
+<pre><span class="cm"># hpa.yaml — scale pods based on CPU</span>
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: myapp-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: myapp-deployment
+  minReplicas: 3
+  maxReplicas: 50
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 60   <span class="cm"># scale when avg CPU > 60%</span>
+
+<span class="cm"># This scales PODS (the application layer)
+# It does NOT scale EC2 nodes (infrastructure layer)
+# If pods need more capacity than nodes have → scheduler can't place them
+# → pods stay "Pending" until a node with capacity exists
+# → THIS is where Cluster Autoscaler or Karpenter (node scaling) comes in</span></pre>
+
+<div class="refs">
+  <a class="ref" href="https://kubernetes.io/docs/concepts/workloads/pods/" target="_blank">K8s Pods</a>
+  <a class="ref" href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/" target="_blank">K8s Deployments</a>
+  <a class="ref" href="https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/" target="_blank">Horizontal Pod Autoscaler</a>
+</div>
+</div>
+
+<!-- ======================================================= S6: ECS -->
+<div id="s6" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 4.5 · Layer 2 · Section 6</span>
+  <h1>ECS — AWS's Orchestrator</h1>
+  <p class="subtitle">ECS (Elastic Container Service) is AWS's proprietary orchestrator. It solves the same problems as Kubernetes but with simpler concepts, deeper AWS integration, and less operational overhead.</p>
+</div>
+
+<h2>ECS vs Kubernetes — Same Layer, Different Tools</h2>
+<p>ECS and Kubernetes are both orchestrators — they both sit at Layer 2. They solve the same problem: running and managing containers reliably at scale. The difference is in complexity, portability, and trade-offs.</p>
+
+<table>
+  <tr><th>Concept</th><th>Kubernetes</th><th>ECS Equivalent</th></tr>
+  <tr><td>Container definition</td><td>Pod spec (YAML)</td><td>Task Definition (JSON)</td></tr>
+  <tr><td>Manages multiple pods/tasks</td><td>Deployment</td><td>ECS Service</td></tr>
+  <tr><td>Stable network endpoint</td><td>Service (ClusterIP)</td><td>ALB Target Group (external) or Service Discovery (internal)</td></tr>
+  <tr><td>Auto scale containers</td><td>HorizontalPodAutoscaler</td><td>Application Auto Scaling</td></tr>
+  <tr><td>Config/secrets</td><td>ConfigMap / Secret</td><td>SSM Parameter Store / Secrets Manager (injected at runtime)</td></tr>
+  <tr><td>Node provisioning</td><td>Cluster Autoscaler / Karpenter</td><td>ASG / Fargate (automatic with Fargate)</td></tr>
+  <tr><td>Image registry</td><td>Any (ECR, Docker Hub…)</td><td>ECR (or any)</td></tr>
+</table>
+
+<h2>ECS is Simpler — Here's Why</h2>
+<div class="grid2">
+  <div class="card">
+    <div class="card-title" style="color:var(--orange-light)">Kubernetes: You manage the control plane (on EC2)</div>
+    <div class="card-body">
+      If you self-host K8s: you provision master nodes, manage etcd backups, handle K8s version upgrades, configure RBAC, manage certificate rotation, deal with networking plugins (CNI), and install add-ons. Even with EKS (managed K8s), you still manage worker nodes and many components.
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--green-light)">ECS: AWS manages everything above your containers</div>
+    <div class="card-body">
+      ECS control plane is 100% managed by AWS. No master nodes. No etcd. No networking plugins. Deep native integration: IAM roles per task, native CloudWatch Logs, ALB integration, Secrets Manager injection — all configured declaratively, no add-ons needed.
+    </div>
+  </div>
+</div>
+
+<pre><span class="cm">## ECS Service = Kubernetes Deployment + Service combined</span>
+
+<span class="cm"># ECS scales containers (application layer) via Application Auto Scaling</span>
+aws application-autoscaling put-scaling-policy \
+  --service-namespace ecs \
+  --resource-id service/my-cluster/myapp-service \
+  --scalable-dimension ecs:service:DesiredCount \
+  --policy-type TargetTrackingScaling \
+  --target-tracking-scaling-policy-configuration '{
+    "TargetValue": 60.0,
+    "PredefinedMetricSpecification": {
+      "PredefinedMetricType": "ECSServiceAverageCPUUtilization"
+    }
+  }'
+
+<span class="cm"># This scales TASKS (containers) — same as K8s HPA
+# When a task needs resources and no capacity exists:
+#   - Fargate: AWS automatically creates a new microVM (no worries)
+#   - EC2 launch type: task stays PENDING until a node has capacity
+#     → Capacity Provider with ASG triggers EC2 scale-out</span></pre>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/AmazonECS/latest/developerguide/Welcome.html" target="_blank">ECS Documentation</a>
+  <a class="ref" href="https://aws.amazon.com/blogs/containers/amazon-ecs-vs-amazon-eks-making-sense-of-aws-container-services/" target="_blank">ECS vs EKS Comparison</a>
+</div>
+</div>
+
+<!-- ======================================================= S7: INFRASTRUCTURE LAYER -->
+<div id="s7" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 4.5 · Layer 3 · Section 7</span>
+  <h1>Who Provides the Machines?</h1>
+  <p class="subtitle">Layer 3 is the infrastructure — the actual compute that containers run on. Two options: manage EC2 instances yourself (via ASG) or let Fargate do it automatically.</p>
+</div>
+
+<h2>The Infrastructure Challenge</h2>
+<p>Kubernetes or ECS knows you want to run 50 containers. But those containers need to actually run on physical/virtual machines. Someone has to: provision EC2 instances, install the container runtime, join them to the cluster, ensure there's enough total capacity for all containers, remove instances when containers scale down (to save money).</p>
+
+<div class="grid2">
+  <div class="card">
+    <div class="card-title" style="color:var(--blue-light)">Option A: EC2 + Auto Scaling Group (you manage nodes)</div>
+    <div class="card-body">
+      You create an ASG with EC2 instances pre-configured as cluster nodes. When the orchestrator can't schedule containers (not enough capacity on existing nodes), something must tell the ASG to add more EC2 instances.<br><br>
+      For ECS: <strong>Capacity Providers</strong> + ASG<br>
+      For EKS: <strong>Cluster Autoscaler</strong> or <strong>Karpenter</strong> + ASG
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--orange-light)">Option B: Fargate (AWS manages nodes)</div>
+    <div class="card-body">
+      AWS provisions an isolated microVM for each task/pod. You don't see the underlying instances. No ASG to configure. No node groups to manage. Just declare your container's CPU and RAM requirements. Fargate provisions exactly what's needed.<br><br>
+      Works with both ECS and EKS.
+    </div>
+  </div>
+</div>
+
+<h2>EC2 Capacity Provider — How ECS Scales Infrastructure</h2>
+<p>When you use ECS with EC2 launch type, a Capacity Provider bridges the orchestrator and the infrastructure. When ECS has more tasks to place than existing instances can handle, the Capacity Provider triggers the ASG to add instances.</p>
+
+<pre><span class="cm">## Flow: ECS detects insufficient capacity → Capacity Provider scales ASG
+
+Step 1: ECS Service wants 20 tasks running
+Step 2: Current EC2 nodes can only fit 14 tasks
+Step 3: 6 tasks stay in PROVISIONING state
+Step 4: Capacity Provider sees unplaceable tasks
+Step 5: Sends scale-out signal to ASG
+Step 6: ASG launches 2 more EC2 instances (~3 minutes)
+Step 7: Instances join ECS cluster
+Step 8: 6 pending tasks placed on new instances</span>
+
+<span class="cm"># Create Capacity Provider linked to an ASG</span>
+aws ecs create-capacity-provider \
+  --name my-ec2-capacity-provider \
+  --auto-scaling-group-provider '{
+    "autoScalingGroupArn": "arn:aws:autoscaling:...:autoScalingGroup:my-asg",
+    "managedScaling": {
+      "status": "ENABLED",
+      "targetCapacity": 80,
+      "minimumScalingStepSize": 1,
+      "maximumScalingStepSize": 10
+    },
+    "managedTerminationProtection": "ENABLED"
+  }'</pre>
+
+<h2>Karpenter — Modern Node Scaling for EKS</h2>
+<p>For EKS, <strong>Karpenter</strong> is the modern alternative to Cluster Autoscaler. Instead of scaling ASG instance counts, Karpenter directly provisions EC2 instances of exactly the right size for pending pods. More efficient, faster (30s vs 3min), and supports diverse instance types including Spot.</p>
+
+<pre><span class="cm">## Karpenter flow:
+# 1. Pod declared: needs 3 vCPU, 6GB RAM
+# 2. No existing node has that capacity
+# 3. Karpenter checks: what's the cheapest/fastest EC2 type to fit this?
+# 4. Karpenter directly launches a c6i.xlarge (4vCPU, 8GB)
+# 5. Node joins cluster in ~30s
+# 6. Pod scheduled immediately
+
+## Unlike Cluster Autoscaler:
+# - Karpenter doesn't need pre-configured ASG node groups
+# - Picks optimal instance type per workload (bin packing)
+# - Consolidates nodes when underutilised (saves money)
+# - Supports multiple instance types and Spot in one NodePool</span></pre>
+
+<div class="refs">
+  <a class="ref" href="https://karpenter.sh/" target="_blank">Karpenter Documentation</a>
+  <a class="ref" href="https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cluster-capacity-providers.html" target="_blank">ECS Capacity Providers</a>
+</div>
+</div>
+
+<!-- ======================================================= S8: FULL STACK TOGETHER -->
+<div id="s8" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 4.5 · Section 8</span>
+  <h1>The Full Stack Together</h1>
+  <p class="subtitle">Now we put all three layers together. Walk through a real deployment, traffic flow, failure recovery, and scale event to see exactly how Docker, ECS, and ASG interact.</p>
+</div>
+
+<h2>The Complete Picture — All Three Layers</h2>
+
+<div class="vis-diagram">
+  <div class="vis-title">Complete Container Stack on AWS (ECS + EC2 + ASG)</div>
+  <div style="display:grid;grid-template-columns:1fr;gap:6px">
+
+    <div style="background:var(--aws-bg);border:2px solid var(--orange);border-radius:var(--radius);padding:12px">
+      <div style="font-size:11px;font-weight:700;color:var(--aws);margin-bottom:4px">Internet → ALB (Layer 0: Traffic Entry)</div>
+      <div style="font-size:11px;color:var(--text3)">User requests arrive. ALB distributes to healthy ECS tasks.</div>
+    </div>
+
+    <div style="text-align:center;color:var(--text3);font-size:11px">↕ routes to</div>
+
+    <div style="background:var(--blue-bg);border:2px solid var(--blue);border-radius:var(--radius);padding:12px">
+      <div style="font-size:11px;font-weight:700;color:var(--blue-light);margin-bottom:8px">ECS Service (Layer 2: Orchestration) — desired: 6 tasks</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <div class="pod pod-green" style="padding:5px 10px">Task 1 ✓ healthy</div>
+        <div class="pod pod-green" style="padding:5px 10px">Task 2 ✓ healthy</div>
+        <div class="pod pod-green" style="padding:5px 10px">Task 3 ✓ healthy</div>
+        <div class="pod pod-green" style="padding:5px 10px">Task 4 ✓ healthy</div>
+        <div class="pod pod-green" style="padding:5px 10px">Task 5 ✓ healthy</div>
+        <div class="pod pod-red" style="padding:5px 10px">Task 6 ✗ crashing → replacing</div>
+      </div>
+      <div style="font-size:11px;color:var(--text3);margin-top:8px">Each task = one running Docker container (your app image)</div>
+    </div>
+
+    <div style="text-align:center;color:var(--text3);font-size:11px">↕ scheduled onto</div>
+
+    <div style="background:#061a0d;border:2px solid #14532d;border-radius:var(--radius);padding:12px">
+      <div style="font-size:11px;font-weight:700;color:var(--green-light);margin-bottom:8px">EC2 Instances (Layer 3: Infrastructure) — 3 nodes</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+        <div style="background:var(--bg4);border:1px solid var(--border2);border-radius:6px;padding:8px">
+          <div style="font-size:10px;font-weight:700;color:var(--text3);margin-bottom:4px">Node 1 (m7g.large)</div>
+          <div class="pod pod-green" style="margin:2px;display:inline-block">Task 1</div>
+          <div class="pod pod-green" style="margin:2px;display:inline-block">Task 2</div>
+          <div style="font-size:10px;color:var(--text3);margin-top:4px">60% CPU used</div>
+        </div>
+        <div style="background:var(--bg4);border:1px solid var(--border2);border-radius:6px;padding:8px">
+          <div style="font-size:10px;font-weight:700;color:var(--text3);margin-bottom:4px">Node 2 (m7g.large)</div>
+          <div class="pod pod-green" style="margin:2px;display:inline-block">Task 3</div>
+          <div class="pod pod-green" style="margin:2px;display:inline-block">Task 4</div>
+          <div style="font-size:10px;color:var(--text3);margin-top:4px">65% CPU used</div>
+        </div>
+        <div style="background:var(--bg4);border:1px solid var(--border2);border-radius:6px;padding:8px">
+          <div style="font-size:10px;font-weight:700;color:var(--text3);margin-bottom:4px">Node 3 (m7g.large)</div>
+          <div class="pod pod-green" style="margin:2px;display:inline-block">Task 5</div>
+          <div class="pod pod-red" style="margin:2px;display:inline-block">Task 6 ✗</div>
+          <div style="font-size:10px;color:var(--text3);margin-top:4px">45% CPU used</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="text-align:center;color:var(--text3);font-size:11px">↕ managed by</div>
+
+    <div style="background:var(--yellow-bg);border:2px solid var(--yellow);border-radius:var(--radius);padding:12px">
+      <div style="font-size:11px;font-weight:700;color:var(--yellow-light);margin-bottom:4px">Auto Scaling Group (Layer 3 control) — min:2 max:10 current:3</div>
+      <div style="font-size:11px;color:var(--text3)">Adds/removes EC2 instances based on cluster capacity needs. Replaces unhealthy instances. Scales when orchestrator can't place tasks.</div>
+    </div>
+  </div>
+</div>
+
+<h2>Tracing a Real Deployment</h2>
+
+<div class="steps">
+  <div class="step"><div class="step-num">1</div><div class="step-content">
+    <div class="step-title">Developer pushes code → CI builds new Docker image</div>
+    <div class="step-body">GitHub push → CI runs tests → <code>docker build -t myapp:v1.3.0</code> → <code>docker push</code> to ECR. Image is now stored in ECR with tag v1.3.0. Nothing is deployed yet.</div>
+  </div></div>
+  <div class="step"><div class="step-num">2</div><div class="step-content">
+    <div class="step-title">CI registers new Task Definition revision</div>
+    <div class="step-body">Create ECS Task Definition revision: same CPU/RAM/env as before but image tag = <code>myapp:v1.3.0</code>. This just registers the specification — still nothing deployed.</div>
+  </div></div>
+  <div class="step"><div class="step-num">3</div><div class="step-content">
+    <div class="step-title">CI updates ECS Service</div>
+    <div class="step-body"><code>ecs update-service --task-definition myapp:7</code>. ECS begins rolling deployment. maxSurge=2 means it can run 8 tasks (6 old + 2 new) during the update.</div>
+  </div></div>
+  <div class="step"><div class="step-num">4</div><div class="step-content">
+    <div class="step-title">ECS pulls new image, starts new task</div>
+    <div class="step-body">ECS tells Node 1 to start a container using <code>myapp:v1.3.0</code>. Node 1's Docker daemon pulls the image from ECR (only new layers download — the rest are cached). Container starts.</div>
+  </div></div>
+  <div class="step"><div class="step-num">5</div><div class="step-content">
+    <div class="step-title">Health check passes → registered with ALB</div>
+    <div class="step-body">ECS runs the health check against the new task. Pass → ALB registers this task's IP and starts routing traffic to it. The new version is now serving real users.</div>
+  </div></div>
+  <div class="step"><div class="step-num">6</div><div class="step-content">
+    <div class="step-title">Old task drained and stopped</div>
+    <div class="step-body">ECS tells ALB to stop sending new requests to one old task (deregistration). ALB waits for in-flight requests to complete (connection draining, typically 30s). ECS stops the old container. Process repeats for each task.</div>
+  </div></div>
+  <div class="step"><div class="step-num">7</div><div class="step-content">
+    <div class="step-title">Result: all 6 tasks running v1.3.0, zero downtime</div>
+    <div class="step-body">Every task is now v1.3.0. No traffic disruption. If any new task failed health checks during the update, the Deployment Circuit Breaker would have stopped the rollout and rolled back automatically.</div>
+  </div></div>
+</div>
+
+<h2>Tracing a Scale Event</h2>
+<div class="steps">
+  <div class="step"><div class="step-num">1</div><div class="step-content">
+    <div class="step-title">Traffic spike — CPU rises above 60%</div>
+    <div class="step-body">All 6 tasks hit 75% average CPU. Application Auto Scaling detects this (CloudWatch metric: ECSServiceAverageCPUUtilization > 60%).</div>
+  </div></div>
+  <div class="step"><div class="step-num">2</div><div class="step-content">
+    <div class="step-title">Application Auto Scaling increases desired task count</div>
+    <div class="step-body">Auto Scaling policy fires. Calculates: need 12 tasks to bring avg CPU to 60%. Sets ECS Service desired count = 12. ECS must now place 6 new tasks.</div>
+  </div></div>
+  <div class="step"><div class="step-num">3</div><div class="step-content">
+    <div class="step-title">ECS tries to schedule new tasks — checks available capacity</div>
+    <div class="step-body">3 existing EC2 nodes are at 70-80% capacity. Only 2 more tasks can fit. 4 tasks are stuck in PROVISIONING state — no node has enough CPU/RAM for them.</div>
+  </div></div>
+  <div class="step"><div class="step-num">4</div><div class="step-content">
+    <div class="step-title">Capacity Provider triggers ASG to add EC2 instances</div>
+    <div class="step-body">Capacity Provider sees unplaceable tasks. Calculates 2 more m7g.large instances needed. Sends scale-out to ASG. ASG launches 2 new EC2 instances (~3 minutes).</div>
+  </div></div>
+  <div class="step"><div class="step-num">5</div><div class="step-content">
+    <div class="step-title">New nodes join cluster, pending tasks placed</div>
+    <div class="step-body">New EC2 instances register with ECS. ECS places the 4 pending tasks on the new nodes. All 12 tasks now running. ALB distributes traffic across all 12. CPU returns to ~40%.</div>
+  </div></div>
+</div>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-types.html" target="_blank">ECS Deployment Types</a>
+</div>
+</div>
+
+<!-- ======================================================= S9: TWO SCALING DIMENSIONS -->
+<div id="s9" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 4.5 · Section 9</span>
+  <h1>Two Scaling Dimensions</h1>
+  <p class="subtitle">The most important thing to understand about container scaling: there are TWO completely independent dimensions of scaling that must work together. Confusing them leads to bad architecture and production incidents.</p>
+</div>
+
+<h2>Dimension 1: Application Scaling (Horizontal Pod/Task Autoscaler)</h2>
+<p>This scales the number of <strong>containers</strong>. More containers = more application capacity to handle requests. Managed by the orchestrator (ECS Application Auto Scaling, K8s HPA). Reacts to: CPU, memory, request rate, queue depth, custom metrics.</p>
+
+<h2>Dimension 2: Infrastructure Scaling (Cluster Autoscaler / ASG)</h2>
+<p>This scales the number of <strong>EC2 instances</strong>. More instances = more raw capacity that containers can be scheduled on. Managed by ASG, Cluster Autoscaler, or Karpenter. Reacts to: unschedulable containers, node CPU/memory usage.</p>
+
+<div class="vis-diagram">
+  <div class="vis-title">Two Independent Dimensions — How They Interact</div>
+
+  <div style="margin-bottom:16px">
+    <div style="font-size:11px;font-weight:700;color:var(--orange-light);margin-bottom:8px">Scenario A: Scale containers, no new nodes needed</div>
+    <div style="display:flex;gap:8px;align-items:flex-start">
+      <div style="background:var(--bg4);border:1px solid var(--border2);border-radius:var(--radius);padding:10px;min-width:120px">
+        <div style="font-size:10px;font-weight:700;color:var(--text3);margin-bottom:4px">EC2 Node (40% CPU)</div>
+        <div class="pod pod-green" style="margin:2px;display:inline-block;font-size:10px">Task 1</div>
+        <div class="pod pod-green" style="margin:2px;display:inline-block;font-size:10px">Task 2</div>
+      </div>
+      <div style="color:var(--aws);font-size:20px;padding-top:10px">→</div>
+      <div style="background:var(--bg4);border:1px solid var(--border2);border-radius:var(--radius);padding:10px;min-width:120px">
+        <div style="font-size:10px;font-weight:700;color:var(--green-light);margin-bottom:4px">EC2 Node (70% CPU)</div>
+        <div class="pod pod-green" style="margin:2px;display:inline-block;font-size:10px">Task 1</div>
+        <div class="pod pod-green" style="margin:2px;display:inline-block;font-size:10px">Task 2</div>
+        <div class="pod pod-orange" style="margin:2px;display:inline-block;font-size:10px">Task 3 NEW</div>
+      </div>
+      <div style="font-size:11px;color:var(--text3);padding-top:10px;padding-left:8px">Node still has capacity → just add more tasks, no new EC2 needed. Fast (~seconds).</div>
+    </div>
+  </div>
+
+  <div style="margin-bottom:16px">
+    <div style="font-size:11px;font-weight:700;color:var(--blue-light);margin-bottom:8px">Scenario B: Scale containers AND need new nodes</div>
+    <div style="display:flex;gap:8px;align-items:flex-start">
+      <div style="background:var(--bg4);border:1px solid var(--border2);border-radius:var(--radius);padding:10px;min-width:120px">
+        <div style="font-size:10px;font-weight:700;color:var(--red-light);margin-bottom:4px">EC2 Node (90% CPU — FULL)</div>
+        <div class="pod pod-green" style="margin:2px;display:inline-block;font-size:10px">Task 1</div>
+        <div class="pod pod-green" style="margin:2px;display:inline-block;font-size:10px">Task 2</div>
+        <div class="pod pod-green" style="margin:2px;display:inline-block;font-size:10px">Task 3</div>
+        <div class="pod pod-red" style="margin:2px;display:inline-block;font-size:10px">Task 4 PENDING</div>
+      </div>
+      <div style="color:var(--aws);font-size:20px;padding-top:20px">→ ASG adds node →</div>
+      <div style="display:flex;gap:8px">
+        <div style="background:var(--bg4);border:1px solid var(--border2);border-radius:var(--radius);padding:10px;min-width:100px">
+          <div style="font-size:10px;color:var(--text3);margin-bottom:4px">Node 1 (90%)</div>
+          <div class="pod pod-green" style="margin:2px;display:inline-block;font-size:10px">T1</div>
+          <div class="pod pod-green" style="margin:2px;display:inline-block;font-size:10px">T2</div>
+          <div class="pod pod-green" style="margin:2px;display:inline-block;font-size:10px">T3</div>
+        </div>
+        <div style="background:#061a0d;border:1px solid #14532d;border-radius:var(--radius);padding:10px;min-width:100px">
+          <div style="font-size:10px;color:var(--green-light);margin-bottom:4px">Node 2 NEW (25%)</div>
+          <div class="pod pod-orange" style="margin:2px;display:inline-block;font-size:10px">T4 placed ✓</div>
+        </div>
+      </div>
+    </div>
+    <div style="font-size:11px;color:var(--text3);margin-top:6px">Node needed first (~3 min for EC2). Task placed after. Total: ~3-4 min for new capacity.</div>
+  </div>
+</div>
+
+<div class="alert a-orange">
+  <strong>This is why teams often skip ASG and use Fargate for containers.</strong> With EC2 + ASG, scale-out takes 3-5 minutes because you must wait for a new EC2 instance to boot. With Fargate, AWS allocates a microVM for your task in ~10-30 seconds — no node scaling step at all. The orchestrator just calls Fargate, and capacity appears almost instantly.
+</div>
+
+<h2>The Scaling Hierarchy — Who Reacts to What</h2>
+<pre><span class="cm">Traffic spike → App CPU rises → Application Auto Scaling fires
+  ↓ Increases desired task count
+  ↓ If capacity exists on nodes → tasks placed immediately (fast path)
+  ↓ If no capacity on nodes → tasks stay PENDING
+      ↓ Capacity Provider / Karpenter fires
+      ↓ Triggers ASG to add EC2 instances (slow path: ~3-5 min)
+      ↓ New nodes join cluster
+      ↓ Pending tasks placed on new nodes
+
+Traffic spike → App CPU rises → Application Auto Scaling fires (Fargate)
+  ↓ Increases desired task count
+  ↓ Fargate immediately provisions microVMs (~10-30s)
+  ↓ Tasks placed and running
+  ↓ No node scaling step at all</span></pre>
+
+</div>
+
+<!-- ======================================================= S10: ECS + FARGATE -->
+<div id="s10" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 4.5 · Section 10</span>
+  <h1>The AWS-Managed Path: ECS + Fargate</h1>
+  <p class="subtitle">The most common path for new AWS projects. Zero infrastructure management — you think only about containers, not servers. How it works end-to-end.</p>
+</div>
+
+<h2>Why Fargate Changes Everything</h2>
+<p>With EC2 + ASG, you have three things to think about: your container, the orchestrator (ECS/K8s), and the infrastructure fleet (EC2 instances, capacity, instance types, patching). Fargate removes the infrastructure layer entirely. You only think about containers.</p>
+
+<div class="compare-row">
+  <div class="cmp-a">
+    <div class="cmp-label">ECS + EC2 — you manage infrastructure</div>
+    <p style="font-size:12.5px;color:var(--text2)">
+      Define containers (task def) ✓<br>
+      Choose EC2 instance type<br>
+      Create ASG and Launch Template<br>
+      Configure cluster capacity providers<br>
+      Patch OS on EC2 nodes<br>
+      Handle node upgrades<br>
+      Manage reserved instances/savings plans<br>
+      Scale nodes in/out (3-5 min lag)<br>
+    </p>
+  </div>
+  <div class="cmp-b">
+    <div class="cmp-label">ECS + Fargate — AWS manages infrastructure</div>
+    <p style="font-size:12.5px;color:var(--text2)">
+      Define containers (task def) ✓<br>
+      Specify CPU and memory per task ✓<br>
+      Deploy ✓<br>
+      <br>
+      Everything else: AWS handles it<br>
+      No instances to manage<br>
+      No patching (AWS updates Fargate platform)<br>
+      Scale in 10-30 seconds<br>
+    </p>
+  </div>
+</div>
+
+<h2>Full Fargate Deployment — End to End</h2>
+
+<div class="steps">
+  <div class="step"><div class="step-num">1</div><div class="step-content">
+    <div class="step-title">Create an ECR repository and push your image</div>
+    <div class="step-body">Your Docker image lives in ECR (private registry). Fargate pulls from ECR when starting tasks. The task execution role needs ECR pull permissions.</div>
+  </div></div>
+  <div class="step"><div class="step-num">2</div><div class="step-content">
+    <div class="step-title">Define a Task Definition (the "what to run")</div>
+    <div class="step-body">JSON document specifying: which image, CPU/memory, port mappings, environment variables (from Secrets Manager), IAM task role, log configuration (CloudWatch). One task definition = one unit of work.</div>
+  </div></div>
+  <div class="step"><div class="step-num">3</div><div class="step-content">
+    <div class="step-title">Create an ECS Service (the "how many to run")</div>
+    <div class="step-body">Service says: run 6 tasks using this task definition, in these private subnets, with this security group, attached to this ALB target group. ECS keeps 6 tasks running at all times.</div>
+  </div></div>
+  <div class="step"><div class="step-num">4</div><div class="step-content">
+    <div class="step-title">Fargate provisions microVMs automatically</div>
+    <div class="step-body">ECS tells Fargate: start 6 tasks with 0.5 vCPU and 1GB RAM each. Fargate creates 6 isolated microVMs in your VPC subnets. Each gets its own ENI, private IP, security group. Your task definition's Docker image is pulled and started in each.</div>
+  </div></div>
+  <div class="step"><div class="step-num">5</div><div class="step-content">
+    <div class="step-title">Tasks register with ALB, traffic flows</div>
+    <div class="step-body">As each task passes its health check, ECS registers its private IP:port with the ALB target group. ALB starts distributing traffic. No manual load balancer configuration.</div>
+  </div></div>
+  <div class="step"><div class="step-num">6</div><div class="step-content">
+    <div class="step-title">Application Auto Scaling manages task count</div>
+    <div class="step-body">CPU above 60%? Scale to 12 tasks. Fargate provisions 6 more microVMs in ~20 seconds. No waiting for EC2 instances to boot. Scale-in: tasks drain, Fargate reclaims the microVMs.</div>
+  </div></div>
+</div>
+
+<h2>When Fargate Costs More</h2>
+<pre><span class="cm">## Fargate pricing vs EC2 (approximate, us-east-1):
+# Fargate:  $0.04048/vCPU-hour + $0.004445/GB-hour
+# EC2 m7g.large (2vCPU, 8GB): $0.0816/hour
+
+# Running 10 tasks with 0.5 vCPU, 1GB each:
+# Fargate: (10 × 0.5 × $0.04048) + (10 × 1 × $0.004445) = $0.2469/hour
+# EC2 m7g.large (all 10 tasks fit on 2-3 instances): ~$0.25/hour
+# Roughly similar at this scale
+
+# Running 2 tasks (low traffic night):
+# Fargate: (2 × 0.5 × $0.04048) + (2 × 1 × $0.004445) = $0.0494/hour
+# EC2: minimum 2 instances (HA) = $0.1632/hour (pays even when idle)
+# Fargate wins at low utilisation
+
+# Running 100 tasks sustained (high traffic):
+# Fargate: $2.47/hour
+# EC2 r-family with reserved pricing: ~$0.8/hour
+# EC2 wins at consistently high sustained load
+
+## Rule: Fargate is cost-efficient for variable/intermittent workloads.
+## EC2 is cost-efficient for steady, sustained high utilisation.
+## Spot Instances with EC2 can be 60-90% cheaper for fault-tolerant tasks.</span></pre>
+
+<div class="refs">
+  <a class="ref" href="https://aws.amazon.com/fargate/pricing/" target="_blank">Fargate Pricing</a>
+  <a class="ref" href="https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html" target="_blank">ECS + Fargate</a>
+</div>
+</div>
+
+<!-- ======================================================= S11: EKS + EC2 + ASG -->
+<div id="s11" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 4.5 · Section 11</span>
+  <h1>Self-Managed Path: EKS + EC2 + ASG</h1>
+  <p class="subtitle">When you want Kubernetes (portability, ecosystem, complex scheduling) with your own EC2 fleet. Maximum power, maximum complexity.</p>
+</div>
+
+<h2>What EKS Gives You</h2>
+<p>EKS (Elastic Kubernetes Service) is managed Kubernetes on AWS. AWS manages the control plane (API server, etcd, scheduler) — you never touch master nodes. You manage worker nodes (EC2 instances that join the cluster) and all the Kubernetes add-ons.</p>
+
+<div class="grid2">
+  <div class="card" style="border-color:#14532d">
+    <div class="card-title" style="color:var(--green-light)">What AWS manages (EKS control plane)</div>
+    <div class="card-body" style="line-height:2">
+      ✓ API Server (3 replicas across AZs)<br>
+      ✓ etcd (K8s state store)<br>
+      ✓ Scheduler<br>
+      ✓ Controller Manager<br>
+      ✓ Control plane upgrades<br>
+      ✓ Control plane HA
+    </div>
+  </div>
+  <div class="card" style="border-color:#5a1a1a">
+    <div class="card-title" style="color:var(--red-light)">What YOU manage (worker nodes + add-ons)</div>
+    <div class="card-body" style="line-height:2">
+      ✗ Worker node EC2 instances<br>
+      ✗ Worker node upgrades (K8s version)<br>
+      ✗ CNI plugin (VPC networking)<br>
+      ✗ CoreDNS (cluster DNS)<br>
+      ✗ kube-proxy<br>
+      ✗ Load balancer controller (for ALB)<br>
+      ✗ Cluster Autoscaler or Karpenter<br>
+      ✗ Metrics server (for HPA)<br>
+      ✗ cert-manager, external-dns, etc.
+    </div>
+  </div>
+</div>
+
+<h2>EKS Node Groups — The Infrastructure Layer</h2>
+<pre><span class="cm"># Create a managed node group (EKS manages the ASG for you)</span>
+aws eks create-nodegroup \
+  --cluster-name production \
+  --nodegroup-name app-nodes \
+  --scaling-config minSize=3,maxSize=20,desiredSize=5 \
+  --instance-types m7g.large m7g.xlarge \    <span class="cm"># multiple types for availability</span>
+  --ami-type AL2_ARM_64 \                    <span class="cm"># Amazon Linux 2, ARM (Graviton)</span>
+  --capacity-type ON_DEMAND \                <span class="cm"># or SPOT for 60-90% savings</span>
+  --disk-size 50 \
+  --subnets subnet-0app1a subnet-0app1b subnet-0app1c \
+  --node-role arn:aws:iam::123:role/EKSNodeRole
+
+<span class="cm"># Separate node group for Spot Instances (fault-tolerant workloads)</span>
+aws eks create-nodegroup \
+  --nodegroup-name spot-nodes \
+  --capacity-type SPOT \
+  --instance-types c6g.large c6g.xlarge c5.large c5.xlarge \  <span class="cm"># diversity = fewer interruptions</span>
+  --scaling-config minSize=0,maxSize=100,desiredSize=0 \
+  ...
+<span class="cm"># Use taints/tolerations to schedule batch jobs only on spot nodes</span></pre>
+
+<h2>Karpenter — Replacing ASG for Node Scaling</h2>
+<pre><span class="cm"># Karpenter NodePool — defines what types of nodes to provision</span>
+apiVersion: karpenter.sh/v1beta1
+kind: NodePool
+metadata:
+  name: default
+spec:
+  template:
+    spec:
+      requirements:
+        - key: karpenter.sh/capacity-type
+          operator: In
+          values: [<span class="str">"on-demand"</span>, <span class="str">"spot"</span>]          <span class="cm"># prefer spot, fall back to on-demand</span>
+        - key: kubernetes.io/arch
+          operator: In
+          values: [<span class="str">"arm64"</span>]                      <span class="cm"># Graviton only</span>
+        - key: node.kubernetes.io/instance-type
+          operator: In
+          values: [<span class="str">"m7g.medium"</span>, <span class="str">"m7g.large"</span>, <span class="str">"m7g.xlarge"</span>]
+  limits:
+    cpu: <span class="num">200</span>                               <span class="cm"># max total CPU across all Karpenter nodes</span>
+  disruption:
+    consolidationPolicy: WhenUnderutilized <span class="cm"># remove empty/underused nodes</span>
+
+<span class="cm"># Karpenter flow:
+# 1. Pod requests 0.5 CPU, 1GB RAM
+# 2. No existing node fits it
+# 3. Karpenter calculates: m7g.medium fits perfectly
+# 4. Karpenter launches m7g.medium via EC2 API directly (~30 seconds)
+# 5. Pod scheduled on new node
+# 6. When pod terminates, if node is empty, Karpenter terminates the EC2 instance</span></pre>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/eks/latest/userguide/what-is-eks.html" target="_blank">EKS Documentation</a>
+  <a class="ref" href="https://karpenter.sh/docs/getting-started/" target="_blank">Karpenter Getting Started</a>
+  <a class="ref" href="https://aws.amazon.com/eks/pricing/" target="_blank">EKS Pricing</a>
+</div>
+</div>
+
+<!-- ======================================================= S12: WHY TEAMS SKIP ASG -->
+<div id="s12" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 4.5 · Section 12</span>
+  <h1>Why Teams Skip ASG (or Work Around It)</h1>
+  <p class="subtitle">You asked about this specifically. Here's the honest picture of why mature engineering teams often bypass or supplement ASG with custom logic.</p>
+</div>
+
+<h2>The Core Problems with Pure ASG for Container Workloads</h2>
+
+<h3>Problem 1: 3-5 Minute Scale-Out Lag</h3>
+<p>The biggest limitation. When traffic spikes, the chain is: CloudWatch alarm (1-2 min) → ASG decision → EC2 launch → AMI boot → OS startup → ECS/K8s agent registers → orchestrator places containers → health check → traffic. Total: 3-8 minutes. By then, your users are already seeing errors.</p>
+
+<pre><span class="cm">## How teams work around this:</span>
+
+<span class="cm"># 1. Over-provisioning baseline</span>
+<span class="cm"># Keep nodes at 40-50% capacity instead of 70-80%</span>
+<span class="cm"># Extra capacity absorbs spikes without needing new nodes</span>
+<span class="cm"># Cost: you're paying for idle capacity, but cheaper than user-facing outages</span>
+
+<span class="cm"># 2. Container-level pre-scaling</span>
+<span class="cm"># Scale CONTAINERS first (seconds), not nodes (minutes)</span>
+<span class="cm"># If nodes have spare capacity, containers scale immediately</span>
+<span class="cm"># Only need new nodes if all existing capacity is exhausted</span>
+
+<span class="cm"># 3. Scheduled pre-scaling</span>
+aws autoscaling put-scheduled-update-group-action \
+  --auto-scaling-group-name app-nodes-asg \
+  --scheduled-action-name morning-scale-up \
+  --recurrence "0 7 * * MON-FRI" \
+  --desired-capacity 12     <span class="cm"># scale up BEFORE users arrive (8am traffic)</span>
+
+aws autoscaling put-scheduled-update-group-action \
+  --scheduled-action-name night-scale-down \
+  --recurrence "0 20 * * MON-FRI" \
+  --desired-capacity 4      <span class="cm"># scale down after hours</span>
+
+<span class="cm"># 4. Use Fargate for burst capacity</span>
+<span class="cm"># EC2 for baseline (cheaper), Fargate for overflow (fast scale)</span>
+<span class="cm"># ECS Capacity Providers support mixed strategies:</span>
+{
+  <span class="jk">"capacityProviders"</span>: [
+    {<span class="jk">"capacityProvider"</span>: <span class="jv">"my-ec2-cap-provider"</span>, <span class="jk">"base"</span>: <span class="num">5</span>, <span class="jk">"weight"</span>: <span class="num">80</span>},
+    {<span class="jk">"capacityProvider"</span>: <span class="jv">"FARGATE"</span>, <span class="jk">"weight"</span>: <span class="num">20</span>}
+  ]
+}
+<span class="cm"># Base 5 tasks on EC2 always. Additional tasks: 80% EC2, 20% Fargate.
+# During sudden spikes, Fargate handles the overflow while EC2 catches up.</span></pre>
+
+<h3>Problem 2: ASG Doesn't Know About Container Bin-Packing</h3>
+<p>ASG scales based on CPU/memory of EC2 instances. But if you have 4 EC2 instances each at 30% CPU and 90% memory, ASG thinks everything is fine (CPU is low). But the orchestrator can't place new containers (memory full). The signals don't align.</p>
+
+<pre><span class="cm">## Solution: Capacity Provider's own utilisation metric</span>
+<span class="cm"># ECS Capacity Providers use "CapacityProviderReservation" metric</span>
+<span class="cm"># This counts: (reserved capacity / available capacity) across the cluster</span>
+<span class="cm"># Scale-out when this > 80% (regardless of CPU/memory split)</span>
+
+<span class="cm">## Solution: Karpenter bin-packing</span>
+<span class="cm"># Karpenter provisions nodes based on actual pod requests, not instance CPU%</span>
+<span class="cm"># "This pod needs 2.5 vCPU and 5GB — provision a c6g.xlarge"</span>
+<span class="cm"># Much smarter than ASG target tracking on instance CPU</span></pre>
+
+<h3>Problem 3: Slow Scale-In (Overspend)</h3>
+<p>After traffic drops, ASG is conservative about terminating instances — it doesn't want to accidentally under-provision. Default scale-in cooldown is 300 seconds. Karpenter consolidates more aggressively — if two nodes could be merged into one, it does it automatically, saving money.</p>
+
+<h2>The Reality of What Teams Actually Use</h2>
+<table>
+  <tr><th>Team Size/Stage</th><th>Typical Approach</th></tr>
+  <tr><td>Startup / early stage</td><td>ECS + Fargate. Zero infrastructure management. Fast to ship.</td></tr>
+  <tr><td>Mid-size, cost-conscious</td><td>ECS + EC2 + Capacity Providers. Spot Instances for 60% savings. Scheduled scaling for predictable peaks.</td></tr>
+  <tr><td>Large scale, K8s users</td><td>EKS + Karpenter (replaces traditional ASG). Karpenter's smart bin-packing + consolidation + Spot diversity.</td></tr>
+  <tr><td>Enterprise, multi-cloud</td><td>EKS + Karpenter or managed node groups. K8s portability matters for running the same workloads across clouds.</td></tr>
+  <tr><td>ML/GPU workloads</td><td>EKS + Karpenter + GPU node pools. Karpenter provisions g5 instances exactly when GPU pods are scheduled.</td></tr>
+</table>
+
+<div class="refs">
+  <a class="ref" href="https://aws.amazon.com/blogs/containers/amazon-eks-with-spot-instances/" target="_blank">EKS with Spot Instances</a>
+  <a class="ref" href="https://karpenter.sh/docs/concepts/disruption/" target="_blank">Karpenter Consolidation</a>
+</div>
+</div>
+
+<!-- ======================================================= S13: ECS VS EKS -->
+<div id="s13" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 4.5 · Section 13</span>
+  <h1>ECS vs EKS — Decision Guide</h1>
+  <p class="subtitle">Both are AWS container orchestrators. This is one of the most common architecture questions. Here's a clear framework.</p>
+</div>
+
+<h2>The Core Trade-off</h2>
+<div class="grid2">
+  <div class="card">
+    <div class="card-title" style="color:var(--orange-light)">ECS — AWS-Native Simplicity</div>
+    <div class="card-body">
+      Fewer concepts, less YAML. Fully AWS-integrated — IAM roles per task, native CloudWatch Logs, Secrets Manager, ALB integration, all first-class with no add-ons. Faster to get productive. No control plane concerns. Lower operational burden.<br><br>
+      <strong>Con:</strong> AWS-specific. If you move to GCP or Azure, you can't take ECS knowledge with you. Fewer advanced scheduling capabilities than K8s.
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--blue-light)">EKS — Kubernetes Ecosystem</div>
+    <div class="card-body">
+      Industry-standard API — same manifests work on GKE, AKS, on-premises. Huge ecosystem (Helm, ArgoCD, Istio, Prometheus operator, etc.). Advanced features: custom schedulers, Pod Disruption Budgets, affinity rules, sidecars, init containers.<br><br>
+      <strong>Con:</strong> More complex. More to manage even with managed control plane. Steeper learning curve. Higher cost (~$0.10/hour for control plane).
+    </div>
+  </div>
+</div>
+
+<h2>Decision Criteria</h2>
+<table>
+  <tr><th>Choose ECS when</th><th>Choose EKS when</th></tr>
+  <tr><td>Starting fresh on AWS with no K8s experience</td><td>Team has existing K8s expertise</td></tr>
+  <tr><td>Staying on AWS long-term (no multi-cloud plans)</td><td>Need portability (multi-cloud or on-premises)</td></tr>
+  <tr><td>Simplicity and developer experience matter most</td><td>Need advanced K8s features (custom schedulers, CRDs, complex networking)</td></tr>
+  <tr><td>Fargate is the primary launch type</td><td>Need complex GPU scheduling, custom node configurations</td></tr>
+  <tr><td>Small/medium teams without dedicated platform engineering</td><td>Large platform team that can invest in K8s operations</td></tr>
+  <tr><td>AWS-native tooling is fine (CloudWatch, X-Ray)</td><td>Need standard K8s observability (Prometheus, Jaeger, Grafana)</td></tr>
+  <tr><td>Cost is a significant factor (EKS: +$72/month per cluster)</td><td>Ecosystem (Helm charts, ArgoCD, Istio) is important</td></tr>
+</table>
+
+<h2>The Honest Assessment</h2>
+<p>For most applications built and run primarily on AWS by teams without existing Kubernetes expertise: <strong>start with ECS</strong>. It's simpler, cheaper, and deeply integrated with AWS. You can always migrate to EKS later if you genuinely need K8s features — and it's not a one-way door.</p>
+
+<p>For organisations that run workloads across multiple clouds, have experienced platform engineers, or are building large-scale platforms where K8s ecosystem tooling matters: <strong>EKS makes sense</strong>. The operational investment pays off at sufficient scale and complexity.</p>
+
+<div class="refs">
+  <a class="ref" href="https://aws.amazon.com/blogs/containers/amazon-ecs-vs-amazon-eks-making-sense-of-aws-container-services/" target="_blank">AWS: ECS vs EKS</a>
+  <a class="ref" href="https://learnk8s.io/ecs-vs-kubernetes" target="_blank">ECS vs Kubernetes Comparison</a>
+</div>
+</div>
+
+<!-- ======================================================= S14: INTERVIEW Q&A -->
+<div id="s14" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 4.5 · Interview Q&amp;A</span>
+  <h1>Interview Questions — Containers &amp; Scaling</h1>
+  <p class="subtitle">12 questions covering the concepts from this module.</p>
+</div>
+
+<h2 style="color:var(--green-light)">Conceptual</h2>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">What is the difference between a Docker image and a container? <span class="qa-arrow">▼</span></div><div class="qa-a">An image is a read-only, immutable template — a frozen snapshot of your application and all its dependencies, built by a Dockerfile. It's stored in a registry (ECR, Docker Hub) and can be versioned and tagged. A container is a running instance of an image — it has its own process space, network interface, and a thin writable layer on top of the read-only image. You can run many containers from the same image simultaneously — they're all independent. Analogy: the image is a class in OOP; a container is an object instance. Multiple objects, same class.</div></div>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">Why are containers faster to start than virtual machines? <span class="qa-arrow">▼</span></div><div class="qa-a">VMs virtualise the entire hardware stack — they boot a full OS kernel, run an init system, start system services. This takes 30-90 seconds minimum. Containers share the host OS kernel — no kernel boot needed. The container runtime (Docker) uses Linux kernel features (namespaces for isolation, cgroups for resource limits) to create an isolated process. The container starts as fast as your application process starts — typically 1-5 seconds. The file system is assembled from image layers, which are cached and don't need to be copied. The trade-off: containers have weaker isolation (shared kernel) compared to VMs (hardware-level). AWS Fargate uses Firecracker microVMs — boots a minimal kernel in ~125ms, giving near-container speed with hardware-level isolation.</div></div>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">Explain the three layers of a container platform and what each one does. <span class="qa-arrow">▼</span></div><div class="qa-a"><strong>Layer 1 — Packaging (Docker):</strong> Packages your application and all its dependencies (JRE, libraries, config) into a portable container image. Solves "works on my machine." The image runs identically everywhere. <strong>Layer 2 — Orchestration (ECS, Kubernetes):</strong> Manages containers at scale. Decides which container runs on which machine (scheduling), monitors health (restarts failed containers), handles rolling deployments (zero downtime updates), auto-scales container count based on load, provides service discovery (stable DNS names across container restarts). <strong>Layer 3 — Infrastructure (EC2 + ASG, or Fargate):</strong> The actual compute capacity that containers run on. ASG provisions and scales EC2 instances. Capacity Providers/Karpenter scale nodes when orchestrator can't place containers. Fargate abstracts this layer entirely — AWS provisions microVMs on demand, invisible to you.</div></div>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">What is the difference between scaling containers and scaling nodes? Why does it matter? <span class="qa-arrow">▼</span></div><div class="qa-a">Scaling containers (application scaling): orchestrator increases the number of running containers for your service. Takes seconds. Limited by available capacity on existing nodes. Managed by Application Auto Scaling (ECS) or HPA (K8s). Scaling nodes (infrastructure scaling): ASG or Karpenter provisions more EC2 instances. Takes 3-5 minutes. Needed when no existing node has sufficient CPU/memory for new containers. These are independent. You can scale containers without scaling nodes (if nodes have spare capacity). You can scale nodes without scaling containers (pre-warming infrastructure). The latency difference matters: application scaling is instant; infrastructure scaling takes minutes. This is why teams use Fargate (removes node scaling delay) or maintain over-provisioned nodes (containers always have room to scale).</div></div>
+
+<h2 style="color:var(--yellow-light)">Practical</h2>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">What is Docker layer caching and how do you optimise a Dockerfile for it? <span class="qa-arrow">▼</span></div><div class="qa-a">Docker builds images layer by layer. Each instruction creates a layer. A layer is only rebuilt if it changes OR if any layer above it changes. Optimisation: put instructions that change rarely at the top, instructions that change often at the bottom. For a Java app: (1) FROM base image — rarely changes. (2) Install system deps (apk/apt) — rarely changes. (3) COPY pom.xml and download dependencies (mvn dependency:go-offline) — changes when you add/update dependencies, not on every code commit. (4) COPY src and compile — changes on every commit. Without this ordering: every code change would retrigger dependency download (minutes). With correct ordering: only the compilation layer rebuilds (seconds), because layers 1-3 are cached. Multi-stage builds further optimise: final image only contains runtime artifacts (JAR + JRE), not build tools (Maven, JDK), reducing image size from ~600MB to ~150MB.</div></div>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">What is a Kubernetes Deployment and how does a rolling update work? <span class="qa-arrow">▼</span></div><div class="qa-a">A Deployment is a K8s controller that manages a ReplicaSet — ensuring a specified number of identical Pods are always running. Rolling update flow: you change the Deployment's image tag. K8s creates a new ReplicaSet with the new version. It starts bringing up new pods one by one (or a configured batch). Each new pod must pass its readinessProbe before K8s considers it healthy. As new pods become ready, K8s removes old pods. With maxUnavailable=0 and maxSurge=2: you always have at least the original replica count running (100% capacity maintained), temporarily running at 100%+surge. If new pods fail readiness: K8s stops the rollout (Deployment circuit breaker). kubectl rollout undo to revert. At no point during a successful rolling update are all instances the old version or all the new version — there's a gradual transition while traffic flows to healthy pods only.</div></div>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">When would you choose ECS over EKS? <span class="qa-arrow">▼</span></div><div class="qa-a">Choose ECS when: (1) Building on AWS long-term without multi-cloud requirements — ECS is deeply integrated with AWS services (IAM, CloudWatch, Secrets Manager, ALB) natively, no add-ons needed. (2) Team has limited or no Kubernetes experience — ECS has fewer concepts and less YAML, faster to become productive. (3) Fargate is your primary launch type — Fargate integration is simpler in ECS. (4) Cost sensitivity at small scale — EKS charges $0.10/hour (~$72/month) per cluster for the control plane; ECS control plane is free. (5) Simplicity over ecosystem — ECS deploys and scales reliably without managing add-ons (CoreDNS, load balancer controller, metrics server, etc.). Choose EKS when your team has K8s expertise, you need portability across clouds, you need advanced K8s features (CRDs, complex scheduling), or you need the K8s ecosystem (Helm, ArgoCD, Istio, Prometheus operator).</div></div>
+
+<h2 style="color:var(--orange-light)">Advanced</h2>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">A company's ECS service isn't scaling fast enough during traffic spikes. Walk through your diagnosis and solutions. <span class="qa-arrow">▼</span></div><div class="qa-a">Diagnosis: (1) Check what's slow — Application Auto Scaling taking too long to fire? (CloudWatch metrics granularity, alarm evaluation period). Container scaling fast but nodes not available? (ECS task PROVISIONING vs RUNNING states). (2) Check capacity: are tasks stuck in PROVISIONING? If yes: capacity problem — nodes full or no nodes. If no: containers are scaling but app is still slow — different problem. Solutions by root cause: (A) Container scaling too slow: reduce CloudWatch alarm evaluation period (minimum 1 period of 1 min), use target tracking instead of step scaling (more responsive), lower target value (60% → 50% CPU triggers sooner). (B) Node capacity bottleneck with EC2: Use Fargate for overflow (mixed Capacity Provider strategy). Pre-scale nodes via scheduled action before expected peaks. Use Karpenter (30s node provisioning vs 3-5min ASG). Over-provision nodes to 50% utilisation baseline. (C) Best long-term: Migrate burst capacity to Fargate. EC2 for predictable baseline (cost-efficient), Fargate for elastic overflow (fast).</div></div>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">Explain how you'd run a Java microservice on ECS Fargate — from code to production traffic. <span class="qa-arrow">▼</span></div><div class="qa-a">(1) Write a Dockerfile: multi-stage (Maven builder → JRE runtime), non-root user, HEALTHCHECK, UseContainerSupport JVM flag, MaxRAMPercentage=75. (2) CI/CD: on git push, run tests, docker build for linux/arm64 (Graviton), push to ECR. (3) Task Definition: image from ECR, 0.5 vCPU, 1GB RAM, port 8080, env vars from Secrets Manager via ARN reference, awslogs log driver (CloudWatch), IAM task role with DynamoDB/S3 permissions, execution role with ECR pull + Secrets Manager access. (4) ECS Service: desired count=3, Fargate launch type, private app subnets, sg-app security group, target group registered on ALB port 8080, health check on /actuator/health, deployment circuit breaker enabled with rollback, Application Auto Scaling target tracking 60% CPU. (5) ALB: HTTPS listener port 443, forwards to target group, health check /actuator/health 2xx. (6) Deploy new version: update task definition with new image tag, ecs update-service, rolling update with zero downtime. Traffic flows within minutes.</div></div>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">What is Karpenter and how is it different from Cluster Autoscaler for EKS node scaling? <span class="qa-arrow">▼</span></div><div class="qa-a"><strong>Cluster Autoscaler (CA):</strong> Traditional approach. Scales pre-defined ASG node groups up or down by count. When pods are unschedulable, CA picks which node group to scale up. Scale-out: ~3-5 minutes (EC2 boot + join cluster). Reactive — waits for pending pods. Can only use the instance types defined in its node groups. Scale-in: conservative, slow. <strong>Karpenter:</strong> Modern alternative. Instead of incrementing a node group count, Karpenter directly calls EC2 APIs to launch exactly the right instance type for pending pods. Looks at pending pod's CPU/memory requests and picks the optimal (cheapest/fastest) instance type. No pre-defined node groups needed. Scale-out: ~30 seconds (Karpenter skips ASG overhead). Consolidation: proactively merges underutilised nodes (evicts pods, terminates node, reschedules pods on remaining nodes) → saves money. Spot diversity: can use 20+ instance types simultaneously to minimise interruptions. Karpenter is AWS-maintained and is now the recommended approach for EKS node scaling.</div></div>
+
+</div>
+</main>
+</div>
+
+<script>
+function show(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.currentTarget.classList.add('active');
+  window.scrollTo(0, 0);
+}
+function toggleQA(el) {
+  const ans = el.nextElementSibling;
+  const arrow = el.querySelector('.qa-arrow');
+  ans.classList.toggle('open');
+  arrow.classList.toggle('open');
+}
+</script>
+</body>
+</html>

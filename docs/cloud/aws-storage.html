@@ -1,0 +1,1728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>AWS Module 5 — Storage</title>
+<style>
+:root{--bg:#0c1117;--bg2:#131a24;--bg3:#1a2332;--bg4:#1f2b3d;--border:#243048;--border2:#2e3d55;--text:#e2e8f0;--text2:#94a3b8;--text3:#5a6a82;--orange:#f97316;--orange-bg:#2a1500;--orange-light:#fdba74;--blue:#3b82f6;--blue-bg:#0f2340;--blue-light:#93c5fd;--green:#22c55e;--green-bg:#0a2414;--green-light:#86efac;--red:#ef4444;--red-bg:#2a0a0a;--red-light:#fca5a5;--yellow:#f59e0b;--yellow-bg:#2a1800;--yellow-light:#fcd34d;--purple:#a855f7;--purple-bg:#1e0a35;--purple-light:#d8b4fe;--teal:#14b8a6;--teal-bg:#021e1c;--teal-light:#5eead4;--aws:#ff9900;--aws-bg:#1a0f00;--radius:8px;--radius-lg:12px;--mono:'Fira Code','Cascadia Code','Consolas',monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;line-height:1.7}
+.layout{display:flex;min-height:100vh}
+.sidebar{width:250px;min-width:250px;background:var(--bg2);border-right:1px solid var(--border);position:sticky;top:0;height:100vh;overflow-y:auto}
+.sidebar-header{padding:16px 20px;border-bottom:1px solid var(--border)}
+.sidebar-mod{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--aws);margin-bottom:3px}
+.sidebar-title{font-size:14px;font-weight:700;color:var(--text)}
+.sidebar-sub{font-size:11px;color:var(--text3);margin-top:2px}
+.nav-item{display:flex;align-items:center;gap:8px;padding:8px 20px;cursor:pointer;font-size:12.5px;color:var(--text2);transition:all .15s;border-left:3px solid transparent}
+.nav-item:hover{background:var(--bg3);color:var(--text)}
+.nav-item.active{background:var(--bg3);color:var(--orange-light);border-left-color:var(--aws)}
+.nav-dot{width:5px;height:5px;border-radius:50%;background:var(--border2);flex-shrink:0}
+.nav-item.active .nav-dot{background:var(--aws)}
+.nav-badge{font-size:9.5px;padding:1px 6px;border-radius:10px;background:var(--bg4);color:var(--text3);margin-left:auto}
+.nav-item.active .nav-badge{background:var(--aws-bg);color:var(--orange-light)}
+.nav-group-label{font-size:9.5px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.9px;padding:12px 20px 4px}
+.main{flex:1;padding:44px 52px;max-width:960px;overflow-x:hidden}
+.section{display:none}.section.active{display:block}
+h1{font-size:27px;font-weight:700;margin-bottom:8px;line-height:1.25}
+h2{font-size:19px;font-weight:600;margin:36px 0 14px;color:var(--text)}
+h3{font-size:15px;font-weight:600;margin:22px 0 10px;color:var(--text)}
+h4{font-size:13px;font-weight:600;margin:14px 0 6px;color:var(--orange-light)}
+p{color:var(--text2);margin-bottom:12px;line-height:1.78}
+strong{color:var(--text);font-weight:600}
+a{color:var(--blue-light);text-decoration:none}
+.subtitle{color:var(--text3);font-size:14px;margin-bottom:26px;line-height:1.65}
+pre{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px;font-family:var(--mono);font-size:12.5px;line-height:1.72;overflow-x:auto;margin:14px 0}
+code{font-family:var(--mono);font-size:12px;background:var(--bg3);padding:2px 6px;border-radius:4px;color:var(--teal-light)}
+.cm{color:var(--text3)}.kw{color:var(--purple-light)}.str{color:var(--green-light)}.ty{color:var(--blue-light)}.ak{color:var(--orange-light)}.num{color:var(--yellow-light)}.fn{color:var(--teal-light)}.jk{color:var(--orange-light)}.jv{color:var(--green-light)}.allow{color:#86efac}.deny{color:#fca5a5}
+.card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px;margin-bottom:14px}
+.card-title{font-size:13.5px;font-weight:600;margin-bottom:8px}
+.card-body{font-size:13px;color:var(--text2);line-height:1.75}
+.alert{border-radius:var(--radius);padding:13px 16px;margin:16px 0;font-size:13px;border-left:3px solid;line-height:1.7}
+.a-orange{background:var(--orange-bg);border-color:var(--orange);color:var(--orange-light)}
+.a-blue{background:var(--blue-bg);border-color:var(--blue);color:var(--blue-light)}
+.a-green{background:var(--green-bg);border-color:var(--green);color:var(--green-light)}
+.a-red{background:var(--red-bg);border-color:var(--red);color:var(--red-light)}
+.a-yellow{background:var(--yellow-bg);border-color:var(--yellow);color:var(--yellow-light)}
+.a-purple{background:var(--purple-bg);border-color:var(--purple);color:var(--purple-light)}
+.alert strong{color:inherit}
+.refs{margin:12px 0 16px;display:flex;flex-wrap:wrap;gap:6px}
+.ref{display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:3px 10px;border-radius:10px;background:var(--bg4);color:var(--text3);border:1px solid var(--border);text-decoration:none;transition:all .15s}
+.ref:hover{background:var(--bg3);color:var(--text2)}
+table{width:100%;border-collapse:collapse;margin:14px 0;font-size:13px}
+th{background:var(--bg3);color:var(--text);font-weight:600;padding:10px 14px;text-align:left;border-bottom:1px solid var(--border2)}
+td{padding:9px 14px;border-bottom:1px solid var(--border);color:var(--text2);vertical-align:top}
+tr:hover td{background:var(--bg3)}
+.qa{border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:10px;overflow:hidden}
+.qa-q{padding:13px 18px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;background:var(--bg3);font-size:13px;font-weight:500;transition:background .15s;user-select:none;gap:12px}
+.qa-q:hover{background:var(--bg4)}
+.qa-a{display:none;padding:16px 18px;font-size:13px;color:var(--text2);line-height:1.8;background:var(--bg2);border-top:1px solid var(--border)}
+.qa-a.open{display:block}.qa-arrow{transition:transform .2s;color:var(--text3);font-size:11px;flex-shrink:0}.qa-arrow.open{transform:rotate(180deg)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin:14px 0}
+.pros-cons{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0}
+.pros{background:#061a0d;border:1px solid #14532d;border-radius:var(--radius-lg);padding:16px}
+.cons{background:#1a0606;border:1px solid #5a1a1a;border-radius:var(--radius-lg);padding:16px}
+.pros-title{color:var(--green);font-weight:600;font-size:13px;margin-bottom:10px}
+.cons-title{color:var(--red);font-weight:600;font-size:13px;margin-bottom:10px}
+.pros ul,.cons ul{padding-left:16px}.pros li,.cons li{font-size:12.5px;color:var(--text2);margin-bottom:5px;line-height:1.6}
+.badge{display:inline-flex;align-items:center;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;margin:2px}
+.badge-orange{background:var(--aws-bg);color:var(--orange-light)}.badge-blue{background:var(--blue-bg);color:var(--blue-light)}.badge-green{background:var(--green-bg);color:var(--green-light)}.badge-red{background:var(--red-bg);color:var(--red-light)}.badge-yellow{background:var(--yellow-bg);color:var(--yellow-light)}.badge-purple{background:var(--purple-bg);color:var(--purple-light)}.badge-teal{background:var(--teal-bg);color:var(--teal-light)}
+.section-header{padding-bottom:18px;border-bottom:1px solid var(--border);margin-bottom:26px}
+.mod-badge{font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;display:inline-block;margin-bottom:10px;background:var(--aws-bg);color:var(--aws)}
+.steps{counter-reset:step}
+.step{display:flex;gap:14px;margin-bottom:16px}
+.step-num{counter-increment:step;width:26px;height:26px;min-width:26px;background:var(--aws-bg);color:var(--aws);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;margin-top:2px;border:1px solid var(--orange)}
+.step-content{flex:1}.step-title{font-weight:600;font-size:13px;margin-bottom:3px}.step-body{font-size:13px;color:var(--text2);line-height:1.65}
+.scenario{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:18px 20px;margin:16px 0}
+.scenario-label{font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;color:var(--aws);margin-bottom:6px}
+.scenario-title{font-size:14px;font-weight:600;margin-bottom:10px}
+.compare-row{display:flex;gap:0;margin:14px 0;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+.cmp-a{flex:1;background:var(--red-bg);padding:16px;border-right:1px solid var(--border)}
+.cmp-b{flex:1;background:var(--green-bg);padding:16px}
+.cmp-label{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px}
+.cmp-a .cmp-label{color:var(--red)}.cmp-b .cmp-label{color:var(--green)}
+.storage-class{border-left:4px solid;padding:14px 16px;margin-bottom:10px;border-radius:0 var(--radius) var(--radius) 0;background:var(--bg3)}
+.sc-std{border-color:var(--green)}
+.sc-ia{border-color:var(--blue)}
+.sc-one{border-color:var(--yellow)}
+.sc-glacier{border-color:var(--purple)}
+.sc-deep{border-color:var(--red)}
+.sc-int{border-color:var(--teal)}
+.sc-title{font-weight:600;font-size:13px;margin-bottom:4px}
+.sc-std .sc-title{color:var(--green-light)}
+.sc-ia .sc-title{color:var(--blue-light)}
+.sc-one .sc-title{color:var(--yellow-light)}
+.sc-glacier .sc-title{color:var(--purple-light)}
+.sc-deep .sc-title{color:var(--red-light)}
+.sc-int .sc-title{color:var(--teal-light)}
+.sc-meta{font-size:12px;color:var(--text3);margin-bottom:6px}
+.sc-body{font-size:12.5px;color:var(--text2);line-height:1.65}
+.traffic-flow{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin:14px 0}
+.traffic-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text3);margin-bottom:12px}
+.traffic-step{display:flex;align-items:flex-start;gap:12px;margin-bottom:10px;font-size:13px}
+.traffic-num{width:22px;height:22px;min-width:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;margin-top:1px}
+.t-green{background:#061a0d;color:var(--green-light);border:1px solid #14532d}
+.t-blue{background:var(--blue-bg);color:var(--blue-light);border:1px solid var(--blue)}
+.t-orange{background:var(--aws-bg);color:var(--aws);border:1px solid var(--orange)}
+.t-purple{background:var(--purple-bg);color:var(--purple-light);border:1px solid var(--purple)}
+.ebs-type{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:8px}
+.ebs-name{font-size:13px;font-weight:700;margin-bottom:4px}
+.ebs-specs{font-size:11px;color:var(--text3);font-family:var(--mono);margin-bottom:6px}
+.ebs-use{font-size:12.5px;color:var(--text2)}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-mod">Module 5</div>
+    <div class="sidebar-title">Storage</div>
+    <div class="sidebar-sub">S3 · EBS · EFS · Instance Store</div>
+  </div>
+  <div class="nav-group-label">The Three Storage Types</div>
+  <div class="nav-item active" onclick="show('s0')"><span class="nav-dot"></span>0. Storage Types — Start Here</div>
+  <div class="nav-group-label">S3 — Object Storage</div>
+  <div class="nav-item" onclick="show('s1')"><span class="nav-dot"></span>1. What is S3?</div>
+  <div class="nav-item" onclick="show('s2')"><span class="nav-dot"></span>2. Buckets, Keys &amp; Objects</div>
+  <div class="nav-item" onclick="show('s3')"><span class="nav-dot"></span>3. Storage Classes &amp; Costs</div>
+  <div class="nav-item" onclick="show('s4')"><span class="nav-dot"></span>4. Versioning &amp; Lifecycle</div>
+  <div class="nav-item" onclick="show('s5')"><span class="nav-dot"></span>5. Security — Policies &amp; Encryption</div>
+  <div class="nav-item" onclick="show('s6')"><span class="nav-dot"></span>6. Presigned URLs &amp; Events <span class="nav-badge">Key</span></div>
+  <div class="nav-item" onclick="show('s7')"><span class="nav-dot"></span>7. Multipart, Replication &amp; Transfer</div>
+  <div class="nav-item" onclick="show('s8')"><span class="nav-dot"></span>8. Real-World S3 Patterns</div>
+  <div class="nav-group-label">EBS — Block Storage</div>
+  <div class="nav-item" onclick="show('s9')"><span class="nav-dot"></span>9. What is EBS?</div>
+  <div class="nav-item" onclick="show('s10')"><span class="nav-dot"></span>10. Volume Types &amp; When to Use</div>
+  <div class="nav-item" onclick="show('s11')"><span class="nav-dot"></span>11. Snapshots, Encryption &amp; Multi-attach</div>
+  <div class="nav-group-label">EFS &amp; Others</div>
+  <div class="nav-item" onclick="show('s12')"><span class="nav-dot"></span>12. EFS — Shared File System</div>
+  <div class="nav-item" onclick="show('s13')"><span class="nav-dot"></span>13. Instance Store</div>
+  <div class="nav-item" onclick="show('s14')"><span class="nav-dot"></span>14. Storage Decision Guide</div>
+  <div class="nav-item" onclick="show('s15')"><span class="nav-dot"></span>Interview Q&amp;A <span class="nav-badge">16 Qs</span></div>
+</aside>
+
+<main class="main">
+
+<!-- ===== S0: THREE STORAGE TYPES ===== -->
+<div id="s0" class="section active">
+<div class="section-header">
+  <span class="mod-badge">Module 5 · Section 0</span>
+  <h1>The Three Fundamental Storage Types</h1>
+  <p class="subtitle">Before diving into S3, EBS, or EFS, you need a mental model for the three fundamentally different ways data can be stored. Every storage service in AWS — and in computing generally — falls into one of these three categories.</p>
+</div>
+
+<h2>The Three Types — What They Actually Are</h2>
+<div class="grid3">
+  <div class="card" style="border-color:#1a3a2a">
+    <div class="card-title" style="color:var(--green-light)">Object Storage</div>
+    <div class="card-body">
+      Stores data as flat <strong>objects</strong> — a blob of bytes with a unique key and metadata. No folders, no hierarchy, no concept of "edit a part of the file." Read the whole thing or write a new version.<br><br>
+      <strong>Think:</strong> A giant key-value store where values are files.<br><br>
+      <strong>AWS service:</strong> S3<br>
+      <strong>Access:</strong> HTTP API (GET, PUT, DELETE by key)
+    </div>
+  </div>
+  <div class="card" style="border-color:#1a2a3a">
+    <div class="card-title" style="color:var(--blue-light)">Block Storage</div>
+    <div class="card-body">
+      Stores data as fixed-size <strong>blocks</strong> on a virtual disk. The OS manages the filesystem on top. You can read/write at any byte offset — overwrite individual blocks without rewriting the whole file.<br><br>
+      <strong>Think:</strong> A hard drive attached to a server.<br><br>
+      <strong>AWS service:</strong> EBS<br>
+      <strong>Access:</strong> Mount as disk, OS reads/writes blocks
+    </div>
+  </div>
+  <div class="card" style="border-color:#1a1a3a">
+    <div class="card-title" style="color:var(--purple-light)">File Storage</div>
+    <div class="card-body">
+      Stores data as <strong>files in a hierarchy</strong> (folders within folders). Multiple servers can mount and share the same filesystem simultaneously — shared access with POSIX semantics.<br><br>
+      <strong>Think:</strong> A shared network drive (NFS).<br><br>
+      <strong>AWS service:</strong> EFS<br>
+      <strong>Access:</strong> Mount as NFS, standard filesystem calls
+    </div>
+  </div>
+</div>
+
+<h2>The Analogy That Makes It Stick</h2>
+<div class="scenario">
+  <div class="scenario-label">Analogy — A Library</div>
+  <div class="scenario-title">Object vs Block vs File Storage</div>
+  <p><strong>Object storage (S3)</strong> = A warehouse full of sealed boxes. Each box has a unique barcode (key). You can only get a whole box out or put a whole box in. You can't open a box and change just one item inside — you take the box out, unpack it, modify it, and put an entirely new box back.</p>
+  <p style="margin-top:8px"><strong>Block storage (EBS)</strong> = A personal bookshelf. Your OS organises the books (files) however it wants. You can open a book to any page and read or write just that page without touching other pages. The shelf is dedicated to you — no one else can use it simultaneously.</p>
+  <p style="margin-top:8px"><strong>File storage (EFS)</strong> = A shared library. Multiple people can walk in and browse the same collection simultaneously. Files are in organised folders. Everyone sees the same data. Change a file — everyone reading it sees the change.</p>
+</div>
+
+<h2>When to Use Which — Quick Reference</h2>
+<table>
+  <tr><th>Use Case</th><th>Storage Type</th><th>Service</th><th>Why</th></tr>
+  <tr><td>User profile photos, product images</td><td>Object</td><td>S3</td><td>Static files, HTTP access, infinite scale</td></tr>
+  <tr><td>Application database files (MySQL, Postgres)</td><td>Block</td><td>EBS</td><td>Random read/write, OS-level disk needed</td></tr>
+  <tr><td>Video files for streaming</td><td>Object</td><td>S3 + CloudFront</td><td>CDN delivery, HTTP range requests</td></tr>
+  <tr><td>OS root volume for EC2</td><td>Block</td><td>EBS</td><td>Boot disk, OS requires block device</td></tr>
+  <tr><td>Shared config files for multiple app servers</td><td>File</td><td>EFS</td><td>Multiple EC2 instances need same files</td></tr>
+  <tr><td>Data lake / raw data storage</td><td>Object</td><td>S3</td><td>Cost, infinite scale, Athena/Glue integration</td></tr>
+  <tr><td>Container shared storage (ECS/K8s)</td><td>File</td><td>EFS</td><td>Multiple containers mounting same volume</td></tr>
+  <tr><td>Temporary high-speed scratch space</td><td>Block (local)</td><td>Instance Store</td><td>Extreme IOPS, ephemeral is ok</td></tr>
+</table>
+
+<div class="refs">
+  <a class="ref" href="https://aws.amazon.com/what-is/object-storage/" target="_blank">What is Object Storage?</a>
+  <a class="ref" href="https://aws.amazon.com/what-is/block-storage/" target="_blank">What is Block Storage?</a>
+  <a class="ref" href="https://aws.amazon.com/what-is/nas/" target="_blank">What is File/NAS Storage?</a>
+</div>
+</div>
+
+<!-- ===== S1: WHAT IS S3 ===== -->
+<div id="s1" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 5 · S3 · Section 1</span>
+  <h1>What is S3?</h1>
+  <p class="subtitle">Simple Storage Service — the most used AWS service. Infinite capacity, 99.999999999% (11 nines) durability, and HTTP access from anywhere. Understanding S3 deeply is fundamental to almost every AWS architecture.</p>
+</div>
+
+<h2>S3 From First Principles</h2>
+<p>S3 is a <strong>global object store</strong> accessible via HTTP. It was one of the first AWS services launched (2006) and is arguably the most important. Almost every AWS service either reads from or writes to S3: Lambda packages live there, CloudFormation templates, EC2 AMI snapshots, CloudWatch Logs archives, Athena query results, ML training data.</p>
+
+<p>The most important things to understand about S3 before going deeper:</p>
+
+<div class="grid3">
+  <div class="card">
+    <div class="card-title" style="color:var(--orange-light)">Infinite scale</div>
+    <div class="card-body">S3 can store an unlimited number of objects. There is no capacity planning. A single bucket can hold a single file or 100 trillion files. Each object can be up to 5 TB. You never provision storage — it grows automatically.</div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--orange-light)">11 nines durability</div>
+    <div class="card-body">99.999999999% — this means if you stored 10 million objects, you'd expect to lose one object every 10,000 years. S3 achieves this by storing data redundantly across at least 3 Availability Zones, checksumming data, and continuously verifying integrity.</div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--orange-light)">HTTP access</div>
+    <div class="card-body">Every S3 object has a URL. Read, write, and delete via standard HTTP GET/PUT/DELETE requests. No database driver, no protocol to learn. Any language, any tool that can make HTTP calls can use S3.</div>
+  </div>
+</div>
+
+<h2>The S3 Data Model — What You're Actually Working With</h2>
+<p>S3 has a deliberately simple data model. Understanding it prevents confusion about "folders" and helps you design efficient key structures.</p>
+
+<div class="card">
+  <div class="card-title">S3 Data Hierarchy</div>
+  <div style="font-family:var(--mono);font-size:12.5px;line-height:2.2;color:var(--text2)">
+    <span style="color:var(--aws)">S3 (Global Service)</span><br>
+    └── <span style="color:var(--blue-light)">Bucket</span> (globally unique name, tied to a specific region)<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;└── <span style="color:var(--green-light)">Object</span> (key + value + metadata + version ID)<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── <span style="color:var(--teal-light)">Key</span>: "photos/users/alice/profile.jpg"<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── <span style="color:var(--teal-light)">Value</span>: raw bytes (the actual image data)<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── <span style="color:var(--teal-light)">Size</span>: up to 5 TB per object<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── <span style="color:var(--teal-light)">Metadata</span>: Content-Type, custom headers, user-defined<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── <span style="color:var(--teal-light)">Version ID</span>: if versioning is enabled
+  </div>
+</div>
+
+<div class="alert a-blue">
+  <strong>There are no real folders in S3.</strong> S3 is a flat key-value store. "Folders" are an illusion — the console just groups objects whose keys share the same prefix before a <code>/</code> character. The key <code>photos/users/alice/profile.jpg</code> is one long string — not a file in three nested folders. This matters for performance: all objects with the same prefix go to the same partition. Heavy traffic to one prefix can cause throttling.
+</div>
+
+<h2>S3 Consistency Model</h2>
+<p>Since December 2020, S3 provides <strong>strong read-after-write consistency</strong> for all operations in all regions. Before this, there was eventual consistency for overwrites and deletes. This change means:</p>
+
+<pre><span class="cm"># Before Dec 2020 (eventual consistency):
+s3.putObject(bucket, "config.json", newData)
+Thread.sleep(500)  <span class="cm">// had to wait — immediately reading might return old data</span>
+s3.getObject(bucket, "config.json")  // might still get old version!
+
+// After Dec 2020 (strong consistency):
+s3.putObject(bucket, "config.json", newData)
+s3.getObject(bucket, "config.json")  // GUARANTEED to return new data
+// No sleep needed. Any list operation will also include the new object.</span></pre>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html" target="_blank">S3 Documentation</a>
+  <a class="ref" href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html#ConsistencyModel" target="_blank">S3 Consistency Model</a>
+  <a class="ref" href="https://aws.amazon.com/s3/faqs/" target="_blank">S3 FAQ</a>
+</div>
+</div>
+
+<!-- ===== S2: BUCKETS, KEYS, OBJECTS ===== -->
+<div id="s2" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 5 · S3 · Section 2</span>
+  <h1>Buckets, Keys &amp; Objects</h1>
+  <p class="subtitle">The mechanics of working with S3 — naming rules, key design patterns, how to structure your data, and the operations you'll use daily.</p>
+</div>
+
+<h2>Buckets — The Container</h2>
+<p>A bucket is a container for objects. You create a bucket in a specific region and give it a name. That name must be <strong>globally unique across all AWS accounts</strong> — not just your account. If someone else has a bucket called <code>my-photos</code>, you can't create one with the same name.</p>
+
+<pre><span class="cm"># Bucket naming rules:
+# - 3 to 63 characters
+# - Lowercase letters, numbers, hyphens only
+# - Must start with a letter or number
+# - Cannot be formatted as an IP address (e.g., 192.168.0.1)
+# - Globally unique across ALL AWS accounts</span>
+
+<span class="cm"># Good bucket names (company-environment-purpose pattern):</span>
+acme-production-user-uploads
+acme-dev-lambda-artifacts
+acme-prod-data-lake-raw
+acme-prod-static-website
+
+<span class="cm"># Create a bucket</span>
+aws s3api create-bucket \
+  --bucket acme-production-user-uploads \
+  --region us-east-1
+
+<span class="cm"># For regions OTHER than us-east-1, must specify LocationConstraint</span>
+aws s3api create-bucket \
+  --bucket acme-eu-user-uploads \
+  --region eu-west-1 \
+  --create-bucket-configuration LocationConstraint=eu-west-1
+
+<span class="cm"># Block all public access immediately (always do this first)</span>
+aws s3api put-public-access-block \
+  --bucket acme-production-user-uploads \
+  --public-access-block-configuration \
+    "BlockPublicAcls=true,IgnorePublicAcls=true,\
+     BlockPublicPolicy=true,RestrictPublicBuckets=true"</pre>
+
+<h2>Object Keys — Design Them Carefully</h2>
+<p>The key is the full path of the object within the bucket. How you design keys affects performance, cost, and queryability. S3 partitions data by key prefix — high-traffic prefixes can hit S3's per-prefix throughput limit (3,500 PUT/s, 5,500 GET/s per prefix partition).</p>
+
+<pre><span class="cm">## Pattern 1: Date-based partitioning (for time-series data)</span>
+logs/2024/01/15/app-server-1.log
+logs/2024/01/15/app-server-2.log
+logs/2024/01/16/app-server-1.log
+<span class="cm"># Good for: archiving, querying by date range with Athena
+# Bad for: high-volume writes to the same date prefix cause throttling</span>
+
+<span class="cm">## Pattern 2: ID-based (for user/entity data)</span>
+users/a3f7b291/profile-photo.jpg
+users/b8d2c490/profile-photo.jpg
+users/c1e9f344/profile-photo.jpg
+<span class="cm"># User IDs as UUIDs naturally distribute across partitions
+# S3 hashes key prefixes to determine partition
+# Random-looking prefixes = better distribution</span>
+
+<span class="cm">## Pattern 3: Environment separation</span>
+production/uploads/users/photo.jpg
+staging/uploads/users/photo.jpg
+<span class="cm"># One bucket per environment vs prefix-based separation
+# Security: prefix-based is harder to lock down per team
+# Recommend: separate buckets per environment</span>
+
+<span class="cm">## Pattern 4: Old anti-pattern (pre-2018 S3) — random prefix</span>
+<span class="cm"># Before S3 automatic partitioning improvements, teams used to add
+# random prefix to avoid hot partitions:
+3a7f/logs/2024/01/15/app.log  ← random hash prefix
+<span class="cm"># No longer needed. Modern S3 handles this automatically.
+# Don't add random prefixes — they hurt readability for no benefit</span></span></pre>
+
+<h2>Core S3 Operations — SDK Examples</h2>
+<pre><span class="ty">S3Client</span> s3 = <span class="ty">S3Client</span>.<span class="fn">builder</span>().<span class="fn">region</span>(<span class="ty">Region</span>.US_EAST_1).<span class="fn">build</span>();
+
+<span class="cm">// Upload an object</span>
+s3.<span class="fn">putObject</span>(
+    <span class="ty">PutObjectRequest</span>.<span class="fn">builder</span>()
+        .<span class="fn">bucket</span>(<span class="str">"acme-production-user-uploads"</span>)
+        .<span class="fn">key</span>(<span class="str">"users/a3f7b291/profile-photo.jpg"</span>)
+        .<span class="fn">contentType</span>(<span class="str">"image/jpeg"</span>)
+        .<span class="fn">serverSideEncryption</span>(<span class="ty">ServerSideEncryption</span>.AWS_KMS)
+        .<span class="fn">metadata</span>(<span class="ty">Map</span>.<span class="fn">of</span>(<span class="str">"userId"</span>, <span class="str">"a3f7b291"</span>, <span class="str">"uploadedAt"</span>, Instant.<span class="fn">now</span>().<span class="fn">toString</span>()))
+        .<span class="fn">build</span>(),
+    <span class="ty">RequestBody</span>.<span class="fn">fromBytes</span>(imageBytes)
+);
+
+<span class="cm">// Download an object</span>
+<span class="ty">ResponseBytes</span>&lt;<span class="ty">GetObjectResponse</span>&gt; result = s3.<span class="fn">getObjectAsBytes</span>(
+    <span class="ty">GetObjectRequest</span>.<span class="fn">builder</span>()
+        .<span class="fn">bucket</span>(<span class="str">"acme-production-user-uploads"</span>)
+        .<span class="fn">key</span>(<span class="str">"users/a3f7b291/profile-photo.jpg"</span>)
+        .<span class="fn">build</span>()
+);
+<span class="kw">byte</span>[] imageData = result.<span class="fn">asByteArray</span>();
+<span class="ty">String</span> contentType = result.<span class="fn">response</span>().<span class="fn">contentType</span>(); <span class="cm">// "image/jpeg"</span>
+
+<span class="cm">// List objects with a prefix</span>
+<span class="ty">ListObjectsV2Response</span> listing = s3.<span class="fn">listObjectsV2</span>(
+    <span class="ty">ListObjectsV2Request</span>.<span class="fn">builder</span>()
+        .<span class="fn">bucket</span>(<span class="str">"acme-production-user-uploads"</span>)
+        .<span class="fn">prefix</span>(<span class="str">"users/a3f7b291/"</span>)  <span class="cm">// list all of user a3f7b291's objects</span>
+        .<span class="fn">maxKeys</span>(<span class="num">100</span>)
+        .<span class="fn">build</span>()
+);
+listing.<span class="fn">contents</span>().<span class="fn">forEach</span>(obj ->
+    System.out.<span class="fn">println</span>(obj.<span class="fn">key</span>() + <span class="str">" - "</span> + obj.<span class="fn">size</span>() + <span class="str">" bytes"</span>));
+
+<span class="cm">// Delete an object</span>
+s3.<span class="fn">deleteObject</span>(<span class="ty">DeleteObjectRequest</span>.<span class="fn">builder</span>()
+    .<span class="fn">bucket</span>(<span class="str">"acme-production-user-uploads"</span>)
+    .<span class="fn">key</span>(<span class="str">"users/a3f7b291/profile-photo.jpg"</span>)
+    .<span class="fn">build</span>());
+
+<span class="cm">// Check if object exists (without downloading it)</span>
+<span class="kw">try</span> {
+    <span class="ty">HeadObjectResponse</span> head = s3.<span class="fn">headObject</span>(<span class="ty">HeadObjectRequest</span>.<span class="fn">builder</span>()
+        .<span class="fn">bucket</span>(<span class="str">"acme-production-user-uploads"</span>)
+        .<span class="fn">key</span>(<span class="str">"users/a3f7b291/profile-photo.jpg"</span>)
+        .<span class="fn">build</span>());
+    <span class="kw">long</span> size = head.<span class="fn">contentLength</span>(); <span class="cm">// Just metadata, no download</span>
+} <span class="kw">catch</span> (<span class="ty">NoSuchKeyException</span> e) {
+    <span class="cm">// Object doesn't exist</span>
+}</pre>
+
+<div class="alert a-orange">
+  <strong>Use HeadObject to check existence, not GetObject.</strong> HeadObject fetches only metadata headers — no body download. GetObject downloads the entire object. If you're checking whether a 5GB file exists, HeadObject costs ~$0 extra. GetObject would charge you for 5GB of data transfer.
+</div>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-keys.html" target="_blank">S3 Object Keys</a>
+  <a class="ref" href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/optimizing-performance.html" target="_blank">S3 Performance Optimization</a>
+  <a class="ref" href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/request-rate-perf-considerations.html" target="_blank">Request Rate Considerations</a>
+</div>
+</div>
+
+<!-- ===== S3: STORAGE CLASSES ===== -->
+<div id="s3" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 5 · S3 · Section 3</span>
+  <h1>Storage Classes &amp; Costs</h1>
+  <p class="subtitle">S3 offers 7 storage classes at dramatically different price points. Choosing correctly can reduce storage costs by 80–95%. Each class trades retrieval speed and cost against storage price.</p>
+</div>
+
+<h2>Why Storage Classes Exist</h2>
+<p>Not all data needs to be instantly accessible. A user profile photo that's loaded on every page view needs millisecond retrieval. A compliance audit log from 5 years ago that no one has opened in 3 years could take hours to retrieve — and that's fine. S3 charges less per GB for less immediately accessible data.</p>
+
+<h2>The Six Storage Classes — Detailed</h2>
+
+<div class="storage-class sc-std">
+  <div class="sc-title">S3 Standard</div>
+  <div class="sc-meta">~$0.023/GB/month · Retrieval: milliseconds · Min duration: none</div>
+  <div class="sc-body">The default. Data stored in 3+ AZs. Designed for frequently accessed data that needs immediate retrieval. No minimum storage duration — delete after 1 second and you pay for 1 second. <strong>Use for:</strong> website assets, active user data, application data accessed daily.</div>
+</div>
+
+<div class="storage-class sc-int">
+  <div class="sc-title">S3 Intelligent-Tiering</div>
+  <div class="sc-meta">~$0.023/GB (frequent) → $0.0125/GB (infrequent) · Monitoring fee: $0.0025/1000 objects</div>
+  <div class="sc-body">AWS automatically moves objects between Frequent Access and Infrequent Access tiers based on usage patterns (30 days without access → moves to IA tier, restoring to Frequent on next access). <strong>Use for:</strong> unpredictable access patterns where you don't know which objects will be hot vs cold. Good default for most production data.</div>
+</div>
+
+<div class="storage-class sc-ia">
+  <div class="sc-title">S3 Standard-IA (Infrequent Access)</div>
+  <div class="sc-meta">~$0.0125/GB/month storage · $0.01/GB retrieval · Min: 30 days · Min object: 128KB</div>
+  <div class="sc-body">Lower storage price but you pay per retrieval. 3 AZs. 30-day minimum billing — if you delete an object in 5 days, you're charged for 30. <strong>Use for:</strong> backups, disaster recovery data, files accessed once a month or less. <strong>Trap:</strong> if you access data frequently, retrieval fees make it MORE expensive than Standard.</div>
+</div>
+
+<div class="storage-class sc-one">
+  <div class="sc-title">S3 One Zone-IA</div>
+  <div class="sc-meta">~$0.01/GB/month · $0.01/GB retrieval · Min: 30 days · Only 1 AZ</div>
+  <div class="sc-body">Like Standard-IA but stored in ONE AZ only. 20% cheaper. If that AZ fails, your data could be lost. <strong>Use for:</strong> re-creatable data (thumbnails, transcoded video, data that can be regenerated), secondary backups. <strong>Never for:</strong> primary data you can't afford to lose.</div>
+</div>
+
+<div class="storage-class sc-glacier">
+  <div class="sc-title">S3 Glacier Instant Retrieval</div>
+  <div class="sc-meta">~$0.004/GB/month · Retrieval: milliseconds · Min: 90 days</div>
+  <div class="sc-body">Archive storage with instant retrieval. Cheapest option that still provides millisecond access. 90-day minimum. <strong>Use for:</strong> medical images, news media, data accessed once per quarter but needing immediate access when needed.</div>
+</div>
+
+<div class="storage-class sc-glacier">
+  <div class="sc-title">S3 Glacier Flexible Retrieval (formerly Glacier)</div>
+  <div class="sc-meta">~$0.0036/GB/month · Retrieval: minutes to hours · Min: 90 days</div>
+  <div class="sc-body">Archival storage — retrieval takes 1–12 hours (Expedited: 1–5 min, Standard: 3–5 hours, Bulk: 5–12 hours). <strong>Use for:</strong> annual financial data, compliance records, data you access once per year. Classic Glacier use case.</div>
+</div>
+
+<div class="storage-class sc-deep">
+  <div class="sc-title">S3 Glacier Deep Archive</div>
+  <div class="sc-meta">~$0.00099/GB/month · Retrieval: 12–48 hours · Min: 180 days</div>
+  <div class="sc-body">Cheapest AWS storage tier. Magnetic tape equivalent. Retrieval takes 12–48 hours. 180-day minimum. <strong>Use for:</strong> data that must be retained for legal/compliance reasons (7-10 years) but will almost never be accessed. Medical records, financial records required by regulation.</div>
+</div>
+
+<h2>Cost Comparison — Real Numbers</h2>
+<pre><span class="cm"># Storing 100 TB of data for 1 year (approximate, us-east-1)</span>
+
+Standard:               $0.023 × 100,000 GB × 12 = $27,600/year
+Intelligent-Tiering:    $0.023 (frequently) or $0.0125 (infrequently)
+Standard-IA:            $0.0125 × 100,000 × 12 = $15,000/year (+ retrieval)
+One Zone-IA:            $0.01 × 100,000 × 12   = $12,000/year (+ retrieval, one AZ)
+Glacier Instant:        $0.004 × 100,000 × 12   = $4,800/year (+ retrieval)
+Glacier Flexible:       $0.0036 × 100,000 × 12  = $4,320/year (+ retrieval)
+Glacier Deep Archive:   $0.00099 × 100,000 × 12 = $1,188/year (+ retrieval)
+
+<span class="cm"># Moving 100TB of compliance logs from Standard to Glacier Deep Archive:
+# Saves $26,412/year — but only valid if you access it < once/year</span></pre>
+
+<h2>Setting the Storage Class</h2>
+<pre><span class="cm"># At upload time</span>
+aws s3api put-object \
+  --bucket acme-production-user-uploads \
+  --key logs/2022/report.csv \
+  --body report.csv \
+  --storage-class STANDARD_IA    <span class="cm"># STANDARD, STANDARD_IA, ONEZONE_IA,
+                                  # INTELLIGENT_TIERING, GLACIER,
+                                  # GLACIER_IR, DEEP_ARCHIVE</span>
+
+<span class="cm"># Change existing object's storage class</span>
+aws s3 cp s3://my-bucket/old-log.csv s3://my-bucket/old-log.csv \
+  --storage-class GLACIER
+
+<span class="cm"># In Java SDK</span>
+<span class="ty">PutObjectRequest</span> req = <span class="ty">PutObjectRequest</span>.<span class="fn">builder</span>()
+    .<span class="fn">bucket</span>(<span class="str">"acme-archive"</span>)
+    .<span class="fn">key</span>(<span class="str">"compliance/2022/annual-report.pdf"</span>)
+    .<span class="fn">storageClass</span>(<span class="ty">StorageClass</span>.GLACIER_IR)
+    .<span class="fn">build</span>();</pre>
+
+<div class="refs">
+  <a class="ref" href="https://aws.amazon.com/s3/storage-classes/" target="_blank">S3 Storage Classes</a>
+  <a class="ref" href="https://aws.amazon.com/s3/pricing/" target="_blank">S3 Pricing</a>
+  <a class="ref" href="https://aws.amazon.com/s3/storage-classes/glacier/" target="_blank">S3 Glacier</a>
+</div>
+</div>
+
+<!-- ===== S4: VERSIONING & LIFECYCLE ===== -->
+<div id="s4" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 5 · S3 · Section 4</span>
+  <h1>Versioning &amp; Lifecycle Policies</h1>
+  <p class="subtitle">Versioning keeps every version of every object — protecting against overwrites and deletes. Lifecycle policies automatically transition or expire objects — managing cost without manual work.</p>
+</div>
+
+<h2>Versioning — Every Change Preserved</h2>
+<p>When versioning is enabled on a bucket, S3 preserves every version of every object. Overwriting an object creates a new version — the old one is retained. "Deleting" an object creates a <strong>delete marker</strong> — the object isn't actually removed, just hidden. You can restore any previous version.</p>
+
+<div class="scenario">
+  <div class="scenario-label">Real-World Use Case</div>
+  <div class="scenario-title">Developer accidentally overwrites a production config file</div>
+  <p>Without versioning: the previous config is gone. You're recovering from memory or a separate backup. With versioning: the previous version is right there. Restore with one API call. Takes seconds.</p>
+  <p style="margin-top:8px">Other use cases: document management (keep all revisions of a contract), audit requirements (prove what a file contained at a specific point in time), website assets (roll back a CSS file that broke the site).</p>
+</div>
+
+<pre><span class="cm"># Enable versioning on a bucket</span>
+aws s3api put-bucket-versioning \
+  --bucket acme-production-user-uploads \
+  --versioning-configuration Status=Enabled
+
+<span class="cm"># Now uploading the same key creates a NEW version:</span>
+aws s3api put-object --bucket acme-prod --key config.json --body v1.json
+<span class="cm"># VersionId: 111aaa</span>
+aws s3api put-object --bucket acme-prod --key config.json --body v2.json
+<span class="cm"># VersionId: 222bbb</span>
+
+<span class="cm"># List ALL versions of an object</span>
+aws s3api list-object-versions \
+  --bucket acme-prod \
+  --prefix config.json
+<span class="cm"># Returns both versions with their IDs and LastModified timestamps</span>
+
+<span class="cm"># Get a specific version</span>
+aws s3api get-object \
+  --bucket acme-prod \
+  --key config.json \
+  --version-id 111aaa \    <span class="cm"># explicitly request v1</span>
+  config-v1-restored.json
+
+<span class="cm"># "Delete" with versioning enabled → creates delete marker</span>
+aws s3api delete-object --bucket acme-prod --key config.json
+<span class="cm"># DeleteMarkerVersionId: 333ccc — object appears deleted but both versions exist</span>
+
+<span class="cm"># Restore: delete the delete marker</span>
+aws s3api delete-object \
+  --bucket acme-prod \
+  --key config.json \
+  --version-id 333ccc      <span class="cm"># delete the DELETE MARKER — object is restored</span>
+
+<span class="cm"># Permanently delete a specific version</span>
+aws s3api delete-object \
+  --bucket acme-prod \
+  --key config.json \
+  --version-id 111aaa      <span class="cm"># actually removes v1 permanently</span></pre>
+
+<div class="alert a-yellow">
+  <strong>Versioning and cost.</strong> With versioning enabled, every version of every object takes up storage and is billed. A frequently updated 1GB file with 100 versions = 100GB billed. Combine versioning with lifecycle policies to expire old versions automatically — keep the latest 5 versions, delete the rest after 30 days.
+</div>
+
+<h2>Lifecycle Policies — Automated Object Management</h2>
+<p>Lifecycle policies define rules that S3 applies automatically to objects: transition them to cheaper storage classes as they age, or expire (delete) them after a set time. Set it once, S3 runs it every day.</p>
+
+<pre><span class="cm"># Complete lifecycle policy — real production example</span>
+aws s3api put-bucket-lifecycle-configuration \
+  --bucket acme-production-logs \
+  --lifecycle-configuration '{
+    "Rules": [
+      {
+        "ID": "application-logs-tiering",
+        "Status": "Enabled",
+        "Filter": {"Prefix": "app-logs/"},
+        "Transitions": [
+          {
+            "Days": 30,
+            "StorageClass": "STANDARD_IA"
+          },
+          {
+            "Days": 90,
+            "StorageClass": "GLACIER"
+          },
+          {
+            "Days": 365,
+            "StorageClass": "DEEP_ARCHIVE"
+          }
+        ],
+        "Expiration": {
+          "Days": 2555    
+        }
+      },
+      {
+        "ID": "delete-old-versions",
+        "Status": "Enabled",
+        "Filter": {},
+        "NoncurrentVersionTransitions": [
+          {
+            "NoncurrentDays": 30,
+            "StorageClass": "STANDARD_IA"
+          }
+        ],
+        "NoncurrentVersionExpiration": {
+          "NoncurrentDays": 90
+        }
+      },
+      {
+        "ID": "clean-up-incomplete-multipart",
+        "Status": "Enabled",
+        "Filter": {},
+        "AbortIncompleteMultipartUpload": {
+          "DaysAfterInitiation": 7
+        }
+      }
+    ]
+  }'</pre>
+
+<pre><span class="cm">## What this policy does:
+#
+# Rule 1 — app-logs/ prefix:
+#   Day 0:    Upload → S3 Standard ($0.023/GB)
+#   Day 30:   → Standard-IA ($0.0125/GB) — probably not checking logs daily
+#   Day 90:   → Glacier ($0.0036/GB) — unlikely to review 3-month-old logs
+#   Day 365:  → Deep Archive ($0.00099/GB) — compliance retention only
+#   Day 2555: DELETE (7 years — meets most compliance requirements)
+#
+# Rule 2 — Old versions:
+#   After 30 days: non-current versions → Standard-IA
+#   After 90 days: non-current versions DELETED
+#   Prevents versioning from accumulating unlimited storage cost
+#
+# Rule 3 — Incomplete multipart uploads:
+#   Abandon incomplete uploads after 7 days
+#   Without this, partial uploads accumulate forever and are billed</span></pre>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/versioning-workflows.html" target="_blank">S3 Versioning</a>
+  <a class="ref" href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lifecycle-mgmt.html" target="_blank">S3 Lifecycle Management</a>
+</div>
+</div>
+
+<!-- ===== S5: SECURITY ===== -->
+<div id="s5" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 5 · S3 · Section 5</span>
+  <h1>S3 Security — Policies, Encryption &amp; Block Public Access</h1>
+  <p class="subtitle">S3 security has multiple overlapping layers. Understanding which layer controls what — and how they interact — prevents the most common AWS security breaches.</p>
+</div>
+
+<h2>The Three Access Control Layers</h2>
+<p>S3 has three mechanisms for controlling access. They work together — a request must pass all applicable checks.</p>
+
+<div class="grid3">
+  <div class="card">
+    <div class="card-title" style="color:var(--orange-light)">IAM Policies (identity)</div>
+    <div class="card-body">Attached to a user, role, or group. Controls what that identity can do across all S3 buckets. Covered in Module 2. "This role can read from any bucket with the 'data-science' tag."</div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--blue-light)">Bucket Policies (resource)</div>
+    <div class="card-body">Attached to the bucket itself. Controls who can access THIS bucket. Can grant access to other AWS accounts, specific roles, or even public access. Includes a Principal element (unlike IAM policies).</div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--red-light)">Block Public Access (account/bucket)</div>
+    <div class="card-body">A hard override that prevents any public access regardless of bucket policies. Set at account level to protect all buckets, or per bucket. Most important safety setting.</div>
+  </div>
+</div>
+
+<h2>Bucket Policy — Real Production Examples</h2>
+<pre><span class="cm">## Example 1: Allow only a specific IAM role to read objects</span>
+{
+  <span class="jk">"Version"</span>: <span class="jv">"2012-10-17"</span>,
+  <span class="jk">"Statement"</span>: [
+    {
+      <span class="jk">"Sid"</span>: <span class="jv">"AllowAppRead"</span>,
+      <span class="jk">"Effect"</span>: <span class="allow">"Allow"</span>,
+      <span class="jk">"Principal"</span>: {
+        <span class="jk">"AWS"</span>: <span class="jv">"arn:aws:iam::123456789012:role/AppServerRole"</span>
+      },
+      <span class="jk">"Action"</span>: [<span class="jv">"s3:GetObject"</span>, <span class="jv">"s3:ListBucket"</span>],
+      <span class="jk">"Resource"</span>: [
+        <span class="jv">"arn:aws:s3:::acme-production-data"</span>,
+        <span class="jv">"arn:aws:s3:::acme-production-data/*"</span>
+      ]
+    },
+    {
+      <span class="jk">"Sid"</span>: <span class="jv">"DenyHTTP"</span>,
+      <span class="jk">"Effect"</span>: <span class="deny">"Deny"</span>,
+      <span class="jk">"Principal"</span>: <span class="jv">"*"</span>,
+      <span class="jk">"Action"</span>: <span class="jv">"s3:*"</span>,
+      <span class="jk">"Resource"</span>: [
+        <span class="jv">"arn:aws:s3:::acme-production-data"</span>,
+        <span class="jv">"arn:aws:s3:::acme-production-data/*"</span>
+      ],
+      <span class="jk">"Condition"</span>: {
+        <span class="jk">"Bool"</span>: {<span class="jv">"aws:SecureTransport"</span>: <span class="jv">"false"</span>}
+      }
+    }
+  ]
+}
+
+<span class="cm">## Example 2: Cross-account access — allow Account B to write logs</span>
+{
+  <span class="jk">"Statement"</span>: [{
+    <span class="jk">"Effect"</span>: <span class="allow">"Allow"</span>,
+    <span class="jk">"Principal"</span>: {<span class="jk">"AWS"</span>: <span class="jv">"arn:aws:iam::ACCOUNT-B-ID:root"</span>},
+    <span class="jk">"Action"</span>: <span class="jv">"s3:PutObject"</span>,
+    <span class="jk">"Resource"</span>: <span class="jv">"arn:aws:s3:::central-logs/account-b/*"</span>
+  }]
+}
+
+<span class="cm">## Example 3: Public static website (specific use case — CloudFront OAC preferred)</span>
+{
+  <span class="jk">"Statement"</span>: [{
+    <span class="jk">"Effect"</span>: <span class="allow">"Allow"</span>,
+    <span class="jk">"Principal"</span>: <span class="jv">"*"</span>,
+    <span class="jk">"Action"</span>: <span class="jv">"s3:GetObject"</span>,
+    <span class="jk">"Resource"</span>: <span class="jv">"arn:aws:s3:::acme-public-website/*"</span>
+  }]
+}
+<span class="cm"># This requires Block Public Access to be disabled — only for truly public sites</span></pre>
+
+<h2>Block Public Access — The Safety Net</h2>
+<p>Block Public Access is a feature that overrides bucket and object ACL settings to prevent public access — even if a bucket policy accidentally grants it. It exists because S3 bucket misconfigurations have caused some of the largest data breaches in history.</p>
+
+<pre><span class="cm"># 4 settings — apply at account level for organisation-wide protection</span>
+aws s3control put-public-access-block \
+  --account-id 123456789012 \
+  --public-access-block-configuration \
+    "BlockPublicAcls=true,\    <span class="cm"># rejects PUT with public ACL</span>
+     IgnorePublicAcls=true,\   <span class="cm"># ignores any existing public ACLs</span>
+     BlockPublicPolicy=true,\  <span class="cm"># rejects bucket policies granting public access</span>
+     RestrictPublicBuckets=true" <span class="cm"># restricts access to buckets with public policies</span>
+
+<span class="cm"># Account-level BPA overrides per-bucket settings
+# If you need ONE public bucket (e.g., website), disable BPA at bucket level
+# while keeping it on at account level is NOT possible
+# Solution: use CloudFront as the public-facing layer — S3 stays private</span></pre>
+
+<h2>Encryption — At Rest and In Transit</h2>
+<pre><span class="cm">## Three encryption options for data at rest:</span>
+
+<span class="cm"># 1. SSE-S3 (simplest) — AWS manages keys, AES-256, no extra cost</span>
+aws s3api put-object \
+  --bucket acme-data \
+  --key file.csv \
+  --body file.csv \
+  --server-side-encryption AES256
+
+<span class="cm"># 2. SSE-KMS (most control) — your KMS key, audit trail in CloudTrail</span>
+aws s3api put-object \
+  --server-side-encryption aws:kms \
+  --ssekms-key-id arn:aws:kms:us-east-1:123:key/mrk-abc123 \
+  ...
+<span class="cm"># Every read/write creates a CloudTrail entry → full audit of who accessed what
+# KMS has a request rate limit — for very high throughput, use SSE-S3</span>
+
+<span class="cm"># 3. SSE-C (client-provided key) — you manage keys, you send key on every request
+# Rarely used — you must handle key management entirely</span>
+
+<span class="cm">## Enforce encryption via bucket policy (deny unencrypted puts)</span>
+{
+  <span class="jk">"Effect"</span>: <span class="deny">"Deny"</span>,
+  <span class="jk">"Principal"</span>: <span class="jv">"*"</span>,
+  <span class="jk">"Action"</span>: <span class="jv">"s3:PutObject"</span>,
+  <span class="jk">"Resource"</span>: <span class="jv">"arn:aws:s3:::acme-sensitive-data/*"</span>,
+  <span class="jk">"Condition"</span>: {
+    <span class="jk">"StringNotEquals"</span>: {
+      <span class="jv">"s3:x-amz-server-side-encryption"</span>: <span class="jv">"aws:kms"</span>
+    }
+  }
+}
+<span class="cm"># Anyone who tries to upload without KMS encryption gets denied</span>
+
+<span class="cm">## In transit — always use HTTPS
+# Enforce via DenyHTTP condition (shown in bucket policy examples above)</span></pre>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/security-best-practices.html" target="_blank">S3 Security Best Practices</a>
+  <a class="ref" href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-control-block-public-access.html" target="_blank">Block Public Access</a>
+  <a class="ref" href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingEncryption.html" target="_blank">S3 Encryption</a>
+</div>
+</div>
+
+<!-- ===== S6: PRESIGNED & EVENTS ===== -->
+<div id="s6" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 5 · S3 · Section 6</span>
+  <h1>Presigned URLs &amp; S3 Event Notifications</h1>
+  <p class="subtitle">Two of the most important S3 features for building real applications — presigned URLs for secure direct client access, and events for reactive, event-driven architectures.</p>
+</div>
+
+<h2>Presigned URLs — Secure Time-Limited Access</h2>
+<p>A presigned URL is an S3 URL that grants temporary permission to perform a specific action (upload or download) on a specific object, without requiring the requester to have AWS credentials. The permissions and expiry are cryptographically embedded in the URL itself.</p>
+
+<h3>Upload flow — browser directly to S3 (the right way)</h3>
+<div class="traffic-flow">
+  <div class="traffic-label">User uploads a profile photo — frontend never touches your server's bandwidth</div>
+  <div class="traffic-step"><div class="traffic-num t-orange">1</div><div>User selects photo in browser. JavaScript calls <strong>your backend API</strong>: <code>POST /api/upload-url</code> with filename and content type.</div></div>
+  <div class="traffic-step"><div class="traffic-num t-blue">2</div><div>Your backend (Lambda/ECS) calls S3Presigner to generate a presigned PUT URL valid for 5 minutes for that specific key. Returns the URL to the frontend.</div></div>
+  <div class="traffic-step"><div class="traffic-num t-green">3</div><div>JavaScript does a direct HTTP PUT to the presigned S3 URL. The photo goes straight from the user's browser to S3. Your server is not involved. Zero bandwidth on your servers.</div></div>
+  <div class="traffic-step"><div class="traffic-num t-green">4</div><div>S3 validates the signature, accepts the upload. Your backend is notified via an S3 Event Notification that the upload completed.</div></div>
+</div>
+
+<pre><span class="cm">// Backend: generate presigned upload URL</span>
+<span class="kw">public class</span> <span class="ty">UploadController</span> {
+
+    <span class="kw">private static final</span> <span class="ty">S3Presigner</span> presigner = <span class="ty">S3Presigner</span>.<span class="fn">create</span>();
+
+    <span class="kw">public</span> <span class="ty">UploadUrlResponse</span> <span class="fn">getUploadUrl</span>(<span class="ty">String</span> userId, <span class="ty">String</span> contentType) {
+        <span class="ty">String</span> key = <span class="str">"users/"</span> + userId + <span class="str">"/profile."</span> + <span class="fn">getExtension</span>(contentType);
+
+        <span class="ty">PresignedPutObjectRequest</span> presigned = presigner.<span class="fn">presignPutObject</span>(
+            <span class="ty">PutObjectPresignRequest</span>.<span class="fn">builder</span>()
+                .<span class="fn">signatureDuration</span>(<span class="ty">Duration</span>.<span class="fn">ofMinutes</span>(<span class="num">5</span>))
+                .<span class="fn">putObjectRequest</span>(r -> r
+                    .<span class="fn">bucket</span>(<span class="str">"acme-production-user-uploads"</span>)
+                    .<span class="fn">key</span>(key)
+                    .<span class="fn">contentType</span>(contentType)
+                    .<span class="fn">metadata</span>(<span class="ty">Map</span>.<span class="fn">of</span>(<span class="str">"userId"</span>, userId)))
+                .<span class="fn">build</span>()
+        );
+
+        <span class="kw">return new</span> <span class="ty">UploadUrlResponse</span>(
+            presigned.<span class="fn">url</span>().<span class="fn">toString</span>(),   <span class="cm">// The presigned PUT URL</span>
+            key,                             <span class="cm">// So frontend knows the final key</span>
+            <span class="ty">Instant</span>.<span class="fn">now</span>().<span class="fn">plusSeconds</span>(<span class="num">300</span>) <span class="cm">// Expiry time</span>
+        );
+    }
+
+    <span class="kw">public</span> <span class="ty">String</span> <span class="fn">getDownloadUrl</span>(<span class="ty">String</span> userId) {
+        <span class="cm">// Generate time-limited download URL for private document</span>
+        <span class="kw">return</span> presigner.<span class="fn">presignGetObject</span>(
+            <span class="ty">GetObjectPresignRequest</span>.<span class="fn">builder</span>()
+                .<span class="fn">signatureDuration</span>(<span class="ty">Duration</span>.<span class="fn">ofHours</span>(<span class="num">1</span>))  <span class="cm">// 1 hour download window</span>
+                .<span class="fn">getObjectRequest</span>(r -> r
+                    .<span class="fn">bucket</span>(<span class="str">"acme-private-docs"</span>)
+                    .<span class="fn">key</span>(<span class="str">"contracts/"</span> + userId + <span class="str">"/agreement.pdf"</span>))
+                .<span class="fn">build</span>()
+        ).<span class="fn">url</span>().<span class="fn">toString</span>();
+    }
+}
+
+<span class="cm">// Frontend JavaScript — upload directly to S3</span>
+<span class="kw">async function</span> <span class="fn">uploadPhoto</span>(file) {
+  <span class="cm">// Step 1: Get presigned URL from backend</span>
+  const { uploadUrl, key } = await fetch(<span class="str">'/api/upload-url'</span>, {
+    method: <span class="str">'POST'</span>,
+    body: JSON.stringify({ contentType: file.type })
+  }).<span class="fn">then</span>(r => r.json());
+
+  <span class="cm">// Step 2: Upload DIRECTLY to S3 — no backend bandwidth used</span>
+  await fetch(uploadUrl, {
+    method: <span class="str">'PUT'</span>,
+    body: file,
+    headers: { <span class="str">'Content-Type'</span>: file.type }
+  });
+
+  console.log(<span class="str">'Uploaded to S3 key:'</span>, key);
+}</pre>
+
+<h2>S3 Event Notifications — React to What Happens in S3</h2>
+<p>S3 can fire events when objects are created, deleted, restored, or fail replication. These events trigger Lambda, SQS, or SNS automatically. This is the foundation of event-driven data processing pipelines.</p>
+
+<pre><span class="cm">## Common S3 event types:</span>
+s3:ObjectCreated:*          <span class="cm">← any create (Put, Post, Copy, multipart)</span>
+s3:ObjectCreated:Put        <span class="cm">← specifically a PUT operation</span>
+s3:ObjectCreated:Copy       <span class="cm">← object was copied from another location</span>
+s3:ObjectRemoved:*          <span class="cm">← object deleted</span>
+s3:ObjectRemoved:Delete     <span class="cm">← permanent delete</span>
+s3:ObjectRemoved:DeleteMarkerCreated  <span class="cm">← versioned delete</span>
+s3:ObjectRestore:Post       <span class="cm">← Glacier restore initiated</span>
+s3:ObjectRestore:Completed  <span class="cm">← Glacier restore finished</span>
+s3:ReducedRedundancyLostObject  <span class="cm">← object lost (RRS - rare)</span></pre>
+
+<pre><span class="cm">## Real pipeline: CSV uploads → Lambda → DynamoDB</span>
+<span class="cm"># Configure S3 to trigger Lambda when a CSV is uploaded</span>
+aws s3api put-bucket-notification-configuration \
+  --bucket acme-data-imports \
+  --notification-configuration '{
+    "LambdaFunctionConfigurations": [
+      {
+        "LambdaFunctionArn": "arn:aws:lambda:us-east-1:123:function:CSVProcessor",
+        "Events": ["s3:ObjectCreated:*"],
+        "Filter": {
+          "Key": {
+            "FilterRules": [
+              {"Name": "suffix", "Value": ".csv"},
+              {"Name": "prefix", "Value": "uploads/"}
+            ]
+          }
+        }
+      }
+    ],
+    "QueueConfigurations": [
+      {
+        "QueueArn": "arn:aws:sqs:us-east-1:123:failed-uploads",
+        "Events": ["s3:ObjectRemoved:*"]
+      }
+    ]
+  }'</pre>
+
+<pre><span class="cm">// Lambda handler receiving S3 event</span>
+<span class="kw">public class</span> <span class="ty">CSVProcessor</span> <span class="kw">implements</span> <span class="ty">RequestHandler</span>&lt;<span class="ty">S3Event</span>, <span class="ty">Void</span>&gt; {
+
+    <span class="kw">private static final</span> <span class="ty">S3Client</span> s3 = <span class="ty">S3Client</span>.<span class="fn">create</span>();
+    <span class="kw">private static final</span> <span class="ty">DynamoDbClient</span> ddb = <span class="ty">DynamoDbClient</span>.<span class="fn">create</span>();
+
+    <span class="kw">public</span> <span class="ty">Void</span> <span class="fn">handleRequest</span>(<span class="ty">S3Event</span> event, <span class="ty">Context</span> ctx) {
+        event.<span class="fn">getRecords</span>().<span class="fn">forEach</span>(record -> {
+            <span class="ty">String</span> bucket = record.<span class="fn">getS3</span>().<span class="fn">getBucket</span>().<span class="fn">getName</span>();
+            <span class="ty">String</span> key = <span class="ty">URLDecoder</span>.<span class="fn">decode</span>(
+                record.<span class="fn">getS3</span>().<span class="fn">getObject</span>().<span class="fn">getKey</span>(), StandardCharsets.UTF_8);
+
+            log.<span class="fn">info</span>(<span class="str">"Processing: {}/{}"</span>, bucket, key);
+
+            <span class="cm">// Download CSV</span>
+            <span class="ty">ResponseInputStream</span>&lt;<span class="ty">GetObjectResponse</span>&gt; stream =
+                s3.<span class="fn">getObject</span>(<span class="ty">GetObjectRequest</span>.<span class="fn">builder</span>()
+                    .<span class="fn">bucket</span>(bucket).<span class="fn">key</span>(key).<span class="fn">build</span>());
+
+            <span class="cm">// Parse and write to DynamoDB</span>
+            <span class="kw">try</span> (<span class="ty">CSVReader</span> csv = <span class="kw">new</span> <span class="ty">CSVReader</span>(<span class="kw">new</span> <span class="ty">InputStreamReader</span>(stream))) {
+                csv.<span class="fn">readAll</span>().<span class="fn">forEach</span>(row -> ddb.<span class="fn">putItem</span>(<span class="fn">buildRequest</span>(row)));
+            }
+
+            <span class="cm">// Move processed file to archive prefix</span>
+            s3.<span class="fn">copyObject</span>(<span class="ty">CopyObjectRequest</span>.<span class="fn">builder</span>()
+                .<span class="fn">sourceBucket</span>(bucket).<span class="fn">sourceKey</span>(key)
+                .<span class="fn">destinationBucket</span>(bucket)
+                .<span class="fn">destinationKey</span>(key.<span class="fn">replace</span>(<span class="str">"uploads/"</span>, <span class="str">"processed/"</span>))
+                .<span class="fn">build</span>());
+            s3.<span class="fn">deleteObject</span>(<span class="ty">DeleteObjectRequest</span>.<span class="fn">builder</span>()
+                .<span class="fn">bucket</span>(bucket).<span class="fn">key</span>(key).<span class="fn">build</span>());
+        });
+        <span class="kw">return null</span>;
+    }
+}</pre>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/NotificationHowTo.html" target="_blank">S3 Event Notifications</a>
+  <a class="ref" href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/PresignedUrlUploadObject.html" target="_blank">Presigned URLs</a>
+</div>
+</div>
+
+<!-- ===== S7: MULTIPART & REPLICATION ===== -->
+<div id="s7" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 5 · S3 · Section 7</span>
+  <h1>Multipart Upload, Replication &amp; Transfer Acceleration</h1>
+  <p class="subtitle">Handling large files efficiently, copying data across regions, and speeding up uploads from anywhere in the world.</p>
+</div>
+
+<h2>Multipart Upload — For Files Over 100MB</h2>
+<p>For large files (AWS recommends for anything over 100MB, required for files over 5GB), multipart upload splits the file into parts that are uploaded in parallel, then combined on S3. Benefits: faster uploads, resume failed uploads, better reliability on unreliable networks.</p>
+
+<pre><span class="cm">// Java SDK — TransferManager handles multipart automatically</span>
+<span class="ty">S3TransferManager</span> transferManager = <span class="ty">S3TransferManager</span>.<span class="fn">builder</span>()
+    .<span class="fn">s3Client</span>(<span class="ty">S3AsyncClient</span>.<span class="fn">builder</span>()
+        .<span class="fn">multipartEnabled</span>(<span class="kw">true</span>)
+        .<span class="fn">multipartConfiguration</span>(cfg -> cfg
+            .<span class="fn">minimumPartSizeInBytes</span>(<span class="num">10</span> * <span class="num">1024</span> * <span class="num">1024L</span>)  <span class="cm">// 10MB parts</span>
+            .<span class="fn">thresholdInBytes</span>(<span class="num">100</span> * <span class="num">1024</span> * <span class="num">1024L</span>))       <span class="cm">// use multipart above 100MB</span>
+        .<span class="fn">build</span>())
+    .<span class="fn">build</span>();
+
+<span class="cm">// Upload a large file — SDK handles multipart transparently</span>
+<span class="ty">FileUpload</span> upload = transferManager.<span class="fn">uploadFile</span>(req -> req
+    .<span class="fn">source</span>(<span class="ty">Path</span>.<span class="fn">of</span>(<span class="str">"/data/large-dataset.parquet"</span>))  <span class="cm">// could be 10GB</span>
+    .<span class="fn">putObjectRequest</span>(p -> p
+        .<span class="fn">bucket</span>(<span class="str">"acme-data-lake"</span>)
+        .<span class="fn">key</span>(<span class="str">"raw/dataset-2024-01.parquet"</span>)));
+
+upload.<span class="fn">completionFuture</span>().<span class="fn">join</span>(); <span class="cm">// wait for completion</span>
+
+<span class="cm">// Download a large file — also multipart under the hood</span>
+<span class="ty">FileDownload</span> download = transferManager.<span class="fn">downloadFile</span>(req -> req
+    .<span class="fn">getObjectRequest</span>(g -> g
+        .<span class="fn">bucket</span>(<span class="str">"acme-data-lake"</span>)
+        .<span class="fn">key</span>(<span class="str">"raw/dataset-2024-01.parquet"</span>))
+    .<span class="fn">destination</span>(<span class="ty">Path</span>.<span class="fn">of</span>(<span class="str">"/tmp/dataset.parquet"</span>)));</pre>
+
+<h2>Cross-Region Replication (CRR)</h2>
+<p>Automatically copies objects from a source bucket in one region to a destination bucket in another region. Used for disaster recovery, geographic compliance, and latency reduction.</p>
+
+<pre><span class="cm"># Setup: replicate prod us-east-1 bucket to eu-west-1 for EU compliance
+# Prerequisite: versioning must be enabled on BOTH buckets</span>
+
+aws s3api put-bucket-replication \
+  --bucket acme-production-data \       <span class="cm"># source bucket (us-east-1)</span>
+  --replication-configuration '{
+    "Role": "arn:aws:iam::123:role/S3ReplicationRole",
+    "Rules": [{
+      "ID": "replicate-all-to-eu",
+      "Status": "Enabled",
+      "Filter": {},
+      "Destination": {
+        "Bucket": "arn:aws:s3:::acme-eu-replica",
+        "StorageClass": "STANDARD_IA",
+        "ReplicationTime": {
+          "Status": "Enabled",
+          "Time": {"Minutes": 15}
+        },
+        "Metrics": {
+          "Status": "Enabled",
+          "EventThreshold": {"Minutes": 15}
+        }
+      },
+      "DeleteMarkerReplication": {"Status": "Enabled"}
+    }]
+  }'
+
+<span class="cm"># ReplicationTime value (RTV): guarantees 99.99% of objects replicated in 15 min
+# Without RTV: eventual replication (usually seconds but no guarantee)
+# Delete markers replicated too (optional) — keeps EU in sync with deletions</span>
+
+<span class="cm"># Important: CRR only replicates NEW objects after replication is configured
+# Existing objects are NOT retroactively replicated
+# Use S3 Batch Operations to copy existing objects if needed</span></pre>
+
+<h2>S3 Transfer Acceleration</h2>
+<p>Transfer Acceleration uses CloudFront's edge network to speed up uploads. Instead of uploading directly to the S3 region, data goes to the nearest CloudFront edge location over optimised AWS backbone. Useful for users uploading from far away (e.g., users in Australia uploading to us-east-1).</p>
+
+<pre><span class="cm"># Enable on a bucket</span>
+aws s3api put-bucket-accelerate-configuration \
+  --bucket acme-global-uploads \
+  --accelerate-configuration Status=Enabled
+
+<span class="cm"># Use the accelerated endpoint instead of standard:</span>
+<span class="cm"># Standard:     acme-global-uploads.s3.amazonaws.com</span>
+<span class="cm"># Accelerated:  acme-global-uploads.s3-accelerate.amazonaws.com</span>
+
+<span class="cm"># In SDK</span>
+<span class="ty">S3Client</span> s3 = <span class="ty">S3Client</span>.<span class="fn">builder</span>()
+    .<span class="fn">serviceConfiguration</span>(<span class="ty">S3Configuration</span>.<span class="fn">builder</span>()
+        .<span class="fn">accelerateModeEnabled</span>(<span class="kw">true</span>)
+        .<span class="fn">build</span>())
+    .<span class="fn">build</span>();
+<span class="cm">// Now all operations automatically use the accelerated endpoint</span>
+
+<span class="cm"># Cost: ~$0.04/GB for accelerated transfer (on top of standard transfer costs)
+# Benefit: 50-500% faster for cross-region uploads
+# Use the speed comparison tool: https://s3-accelerate-speedtest.s3-accelerate.amazonaws.com/</span></pre>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/mpuoverview.html" target="_blank">Multipart Upload</a>
+  <a class="ref" href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication.html" target="_blank">S3 Replication</a>
+  <a class="ref" href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/transfer-acceleration.html" target="_blank">Transfer Acceleration</a>
+</div>
+</div>
+
+<!-- ===== S8: REAL-WORLD PATTERNS ===== -->
+<div id="s8" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 5 · S3 · Section 8</span>
+  <h1>Real-World S3 Patterns</h1>
+  <p class="subtitle">How S3 is actually used in production systems — the patterns every backend developer encounters when building on AWS.</p>
+</div>
+
+<h2>Pattern 1: Static Website Hosting + CloudFront</h2>
+<p>Host a React/Vue/Angular app on S3 and serve it globally via CloudFront. Zero servers, infinite scale, ~$1/month at moderate traffic.</p>
+
+<pre><span class="cm"># 1. Create bucket for website (bucket name = domain name convention)</span>
+aws s3api create-bucket --bucket www.acme.com --region us-east-1
+
+<span class="cm"># 2. Enable static website hosting</span>
+aws s3api put-bucket-website --bucket www.acme.com \
+  --website-configuration '{
+    "IndexDocument": {"Suffix": "index.html"},
+    "ErrorDocument": {"Key": "index.html"}   <span class="cm"># SPA routing: send all 404s to index.html</span>
+  }'
+
+<span class="cm"># 3. Upload built React app</span>
+aws s3 sync ./build s3://www.acme.com \
+  --delete \                         <span class="cm"># remove files not in build output</span>
+  --cache-control "max-age=31536000" <span class="cm"># long cache for hashed assets</span>
+
+<span class="cm"># 4. Upload index.html with no-cache (it has the asset hashes)</span>
+aws s3 cp ./build/index.html s3://www.acme.com/index.html \
+  --cache-control "no-cache,no-store,must-revalidate"
+
+<span class="cm"># 5. CloudFront origin = S3 (using Origin Access Control — bucket stays private)
+# CloudFront distributes globally, handles HTTPS, caches at edge</span></pre>
+
+<h2>Pattern 2: Data Lake Architecture</h2>
+<p>S3 is the foundation of most AWS data lakes. Raw data lands in S3, Glue crawlers discover the schema, Athena queries it directly, and Glue ETL transforms it — all without loading data into a database.</p>
+
+<pre><span class="cm"># S3 data lake structure — partition data for Athena performance</span>
+s3://acme-data-lake/
+  raw/
+    events/
+      year=2024/month=01/day=15/        <span class="cm">← Hive partition format</span>
+        events-2024-01-15-00.parquet    <span class="cm">← Parquet files (columnar, compressed)</span>
+        events-2024-01-15-01.parquet
+      year=2024/month=01/day=16/
+  processed/
+    user-summary/
+      year=2024/month=01/
+  reference/
+    product-catalog/
+
+<span class="cm"># Athena query — directly against S3 files, no database load</span>
+SELECT
+  user_id,
+  COUNT(*) as events,
+  SUM(purchase_amount) as total_revenue
+FROM "data_lake"."events"
+WHERE year='2024' AND month='01'  <span class="cm">← partition pruning: only reads Jan files</span>
+  AND event_type = 'purchase'
+GROUP BY user_id
+HAVING total_revenue > 100
+<span class="cm"># Cost: $5 per TB scanned — Parquet + partitioning reduces this dramatically</span></pre>
+
+<h2>Pattern 3: Application Asset Pipeline</h2>
+<pre><span class="cm">## A complete user media pipeline:
+# 
+# User uploads photo → S3 (presigned URL)
+#   → S3 Event triggers Lambda (image processing)
+#   → Lambda resizes to multiple dimensions
+#   → Lambda stores thumbnails in S3
+#   → Lambda updates DynamoDB with image metadata
+#   → CloudFront serves images with edge caching</span>
+
+<span class="cm">## Bucket structure for media pipeline:</span>
+s3://acme-media-originals/    <span class="cm">← user uploads go here (private, versioned)</span>
+  users/{userId}/original.jpg
+
+s3://acme-media-processed/    <span class="cm">← processed variants (private, behind CloudFront)</span>
+  users/{userId}/thumb-100x100.jpg
+  users/{userId}/medium-800x600.jpg
+  users/{userId}/large-1920x1080.jpg</pre>
+
+<h2>Pattern 4: S3 as Deployment Artifact Store</h2>
+<pre><span class="cm"># CI/CD pipeline stores build artifacts in S3
+# CodePipeline, CodeBuild, Terraform state, Lambda ZIPs all live here</span>
+
+s3://acme-deployment-artifacts/
+  lambda/
+    order-processor/
+      v1.2.3.jar
+      v1.2.2.jar  <span class="cm">← keep previous versions for rollback</span>
+  cloudformation/
+    templates/
+      vpc.yaml
+      app-stack.yaml
+  terraform/
+    state/
+      production.tfstate  <span class="cm">← Terraform remote state</span></pre>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/WebsiteHosting.html" target="_blank">S3 Static Website Hosting</a>
+  <a class="ref" href="https://aws.amazon.com/big-data/datalakes-and-analytics/datalakes/" target="_blank">AWS Data Lake Overview</a>
+</div>
+</div>
+
+<!-- ===== S9: WHAT IS EBS ===== -->
+<div id="s9" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 5 · EBS · Section 9</span>
+  <h1>What is EBS?</h1>
+  <p class="subtitle">Elastic Block Store — network-attached block storage for EC2. It's the virtual hard drive your EC2 instance boots from and your databases write to. Understanding EBS is essential for any stateful workload.</p>
+</div>
+
+<h2>What Makes EBS Different From S3</h2>
+<p>EBS gives you a raw block device — like a hard drive. You format it with a filesystem (ext4, xfs, NTFS), mount it on an EC2 instance, and use it like a local disk. Your database writes to it, your OS boots from it, your application writes log files to it. The key properties:</p>
+
+<div class="grid2">
+  <div class="card">
+    <div class="card-title" style="color:var(--blue-light)">Network-attached but feels local</div>
+    <div class="card-body">EBS volumes are physically separate from your EC2 instance — they connect over AWS's high-speed internal network. But from the OS perspective, they look and feel like a local disk device (<code>/dev/xvda</code>, <code>/dev/nvme0n1</code>). You format it, mount it, run <code>ls</code> — it's just a disk.</div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--blue-light)">AZ-specific</div>
+    <div class="card-body">An EBS volume exists in exactly one Availability Zone. An EC2 instance in us-east-1a can only attach an EBS volume also in us-east-1a. To move a volume to another AZ: take a snapshot, create a new volume from the snapshot in the target AZ.</div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--green-light)">Persistent across instance stop/start</div>
+    <div class="card-body">When you stop an EC2 instance, EBS volumes persist. The data is still there when you restart. This is the fundamental difference from instance store — EBS data survives instance lifecycle events.</div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--green-light)">Detachable and reattachable</div>
+    <div class="card-body">You can detach an EBS volume from one instance and attach it to another (within the same AZ). Useful for: disaster recovery (attach failed instance's disk to a new instance), moving data between instances, forensic analysis.</div>
+  </div>
+</div>
+
+<h2>The EBS Volume Lifecycle</h2>
+<pre><span class="cm"># Create a volume</span>
+aws ec2 create-volume \
+  --availability-zone us-east-1a \    <span class="cm"># must match the EC2 instance's AZ</span>
+  --size 100 \                        <span class="cm"># GB</span>
+  --volume-type gp3 \
+  --encrypted \                       <span class="cm"># always encrypt</span>
+  --kms-key-id arn:aws:kms:...:key/xxx
+<span class="cm"># Returns: VolumeId=vol-0abc123def456789</span>
+
+<span class="cm"># Attach to a running EC2 instance</span>
+aws ec2 attach-volume \
+  --volume-id vol-0abc123def456789 \
+  --instance-id i-0abc123def456789 \
+  --device /dev/sdf                   <span class="cm"># name the device</span>
+
+<span class="cm"># On the EC2 instance — format and mount the new volume</span>
+lsblk                               <span class="cm"># see: nvme1n1 (the new volume)</span>
+sudo mkfs.xfs /dev/nvme1n1          <span class="cm"># format with XFS filesystem</span>
+sudo mkdir -p /data                 <span class="cm"># create mount point</span>
+sudo mount /dev/nvme1n1 /data       <span class="cm"># mount it</span>
+
+<span class="cm"># Make it persist across reboots (/etc/fstab)</span>
+UUID=$(sudo blkid -s UUID -o value /dev/nvme1n1)
+echo "UUID=$UUID  /data  xfs  defaults,nofail  0  2" | sudo tee -a /etc/fstab
+
+<span class="cm"># Resize an existing volume online (no downtime!)</span>
+aws ec2 modify-volume \
+  --volume-id vol-0abc123def456789 \
+  --size 200 \          <span class="cm"># increase from 100GB to 200GB</span>
+  --volume-type gp3     <span class="cm"># can also change type online</span>
+
+<span class="cm"># After AWS completes the modification, resize the filesystem too</span>
+sudo growpart /dev/nvme1n1 1   <span class="cm"># extend the partition</span>
+sudo xfs_growfs /data          <span class="cm"># extend the filesystem (XFS)</span>
+<span class="cm"># ext4: sudo resize2fs /dev/nvme1n1</span>
+<span class="cm"># No reboot required — filesystem now shows 200GB</span></pre>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AmazonEBS.html" target="_blank">EBS Documentation</a>
+  <a class="ref" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-volume-types.html" target="_blank">EBS Volume Types</a>
+</div>
+</div>
+
+<!-- ===== S10: VOLUME TYPES ===== -->
+<div id="s10" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 5 · EBS · Section 10</span>
+  <h1>EBS Volume Types &amp; When to Use Each</h1>
+  <p class="subtitle">Five volume types with dramatically different performance characteristics. Picking wrong costs money or hurts performance. Understanding IOPS, throughput, and latency is essential.</p>
+</div>
+
+<h2>Key Metrics Before We Start</h2>
+<div class="grid3">
+  <div class="card">
+    <div class="card-title" style="color:var(--orange-light)">IOPS (I/O Operations Per Second)</div>
+    <div class="card-body">How many read/write operations per second. Critical for databases doing many small random reads/writes (8KB-16KB). A MySQL server doing heavy transactional work needs high IOPS.</div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--orange-light)">Throughput (MB/s)</div>
+    <div class="card-body">How many megabytes per second can flow. Critical for sequential workloads — streaming large files, log processing, data warehouse scans. Hadoop reading 1GB files cares about throughput, not IOPS.</div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--orange-light)">Latency</div>
+    <div class="card-body">Time for a single I/O operation to complete. Critical for latency-sensitive databases (Redis on disk, PostgreSQL with write-ahead log). io2 Block Express: &lt;1ms latency. gp3: single-digit milliseconds.</div>
+  </div>
+</div>
+
+<h2>The Five Volume Types</h2>
+
+<div class="ebs-type" style="border-left:4px solid var(--green)">
+  <div class="ebs-name" style="color:var(--green-light)">gp3 — General Purpose SSD (the default, recommended)</div>
+  <div class="ebs-specs">3,000 IOPS baseline · Up to 16,000 IOPS · 125 MB/s baseline · Up to 1,000 MB/s · $0.08/GB-month</div>
+  <div class="ebs-use">The best choice for most workloads. IOPS and throughput can be configured independently — you can increase throughput without adding more IOPS (unlike gp2). 20% cheaper than gp2. <strong>Use for:</strong> OS boot volumes, dev/test databases, small-to-medium production databases, ECS task storage.</div>
+</div>
+
+<div class="ebs-type" style="border-left:4px solid var(--blue)">
+  <div class="ebs-name" style="color:var(--blue-light)">io2 Block Express — Provisioned IOPS SSD (maximum performance)</div>
+  <div class="ebs-specs">Up to 256,000 IOPS · Up to 4,000 MB/s · Sub-millisecond latency · $0.125/GB + $0.065/provisioned IOPS</div>
+  <div class="ebs-use">Maximum performance for the most demanding databases. 99.999% durability (vs 99.8-99.9% for other types). Sub-millisecond latency. Can be attached to multiple instances simultaneously (Multi-Attach). <strong>Use for:</strong> large production databases (Oracle, SAP HANA, large PostgreSQL/MySQL), I/O-intensive workloads where performance directly impacts revenue.</div>
+</div>
+
+<div class="ebs-type" style="border-left:4px solid var(--yellow)">
+  <div class="ebs-name" style="color:var(--yellow-light)">st1 — Throughput Optimised HDD (large sequential reads)</div>
+  <div class="ebs-specs">Max 500 IOPS · Up to 500 MB/s · $0.045/GB-month · Cannot be boot volume</div>
+  <div class="ebs-use">Magnetic HDD — low IOPS but high throughput for big sequential reads. Much cheaper per GB than SSDs. <strong>Use for:</strong> log processing, data warehousing, Hadoop HDFS, Kafka brokers, any workload that reads/writes large files sequentially. <strong>Not for:</strong> any database that does random access.</div>
+</div>
+
+<div class="ebs-type" style="border-left:4px solid var(--red)">
+  <div class="ebs-name" style="color:var(--red-light)">sc1 — Cold HDD (archived, rarely accessed)</div>
+  <div class="ebs-specs">Max 250 IOPS · Up to 250 MB/s · $0.015/GB-month · Cheapest EBS option</div>
+  <div class="ebs-use">Lowest cost EBS option. For cold data that is accessed infrequently. <strong>Use for:</strong> archives, compliance data, rarely accessed backups on EC2. If data is accessed more than a few times per month, st1 or gp3 is better.</div>
+</div>
+
+<h2>Choosing the Right Type — Decision Guide</h2>
+<table>
+  <tr><th>Workload</th><th>Type</th><th>Why</th></tr>
+  <tr><td>EC2 OS boot volume</td><td>gp3</td><td>Cost-effective, sufficient IOPS for OS</td></tr>
+  <tr><td>MySQL/PostgreSQL (medium)</td><td>gp3 (16,000 IOPS)</td><td>Random I/O, sufficient for most</td></tr>
+  <tr><td>MySQL/PostgreSQL (large prod)</td><td>io2 Block Express</td><td>High IOPS, sub-ms latency, 99.999% durability</td></tr>
+  <tr><td>RDS (AWS manages it)</td><td>gp3 or io1/io2</td><td>RDS lets you choose when creating</td></tr>
+  <tr><td>Kafka brokers</td><td>st1</td><td>Sequential log writes, cheap, high throughput</td></tr>
+  <tr><td>Hadoop/HDFS data nodes</td><td>st1</td><td>Large sequential reads of big files</td></tr>
+  <tr><td>Cold data archive</td><td>sc1</td><td>Cheapest EBS option</td></tr>
+  <tr><td>ECS/Fargate volumes</td><td>gp3</td><td>Balanced, default for containers</td></tr>
+</table>
+
+<div class="alert a-orange">
+  <strong>gp2 is legacy — always use gp3.</strong> gp3 replaced gp2 as the default SSD type. gp3 is 20% cheaper and lets you scale IOPS and throughput independently. In gp2, IOPS scales with volume size (3 IOPS/GB). In gp3, you configure IOPS independently — you can have a 10GB volume with 16,000 IOPS. Always choose gp3 for new volumes.
+</div>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-volume-types.html" target="_blank">EBS Volume Types</a>
+  <a class="ref" href="https://aws.amazon.com/ebs/pricing/" target="_blank">EBS Pricing</a>
+</div>
+</div>
+
+<!-- ===== S11: SNAPSHOTS ===== -->
+<div id="s11" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 5 · EBS · Section 11</span>
+  <h1>Snapshots, Encryption &amp; Multi-Attach</h1>
+  <p class="subtitle">EBS snapshots are incremental backups stored in S3. Encryption protects data at rest. Multi-Attach enables high-availability cluster patterns.</p>
+</div>
+
+<h2>EBS Snapshots — Incremental Backups to S3</h2>
+<p>Snapshots capture the state of an EBS volume and store it in S3 (you can't access the S3 bucket directly — AWS manages it). They're incremental: the first snapshot copies all data, subsequent snapshots copy only changed blocks. You pay only for the changed data each snapshot.</p>
+
+<pre><span class="cm"># Take a snapshot</span>
+aws ec2 create-snapshot \
+  --volume-id vol-0abc123def456789 \
+  --description "prod-db-before-major-update-2024-01-15" \
+  --tag-specifications 'ResourceType=snapshot,Tags=[{Key=Name,Value=prod-db-backup}]'
+<span class="cm"># Returns: SnapshotId=snap-0abc123 (initially "pending", becomes "completed")</span>
+
+<span class="cm"># Create volume from snapshot (same or different AZ/region)</span>
+aws ec2 create-volume \
+  --snapshot-id snap-0abc123 \
+  --availability-zone us-east-1b \   <span class="cm"># can be different AZ from source</span>
+  --volume-type gp3 \
+  --size 100                         <span class="cm"># can be larger than original but not smaller</span>
+
+<span class="cm"># Copy snapshot to another region (for DR)</span>
+aws ec2 copy-snapshot \
+  --source-region us-east-1 \
+  --source-snapshot-id snap-0abc123 \
+  --destination-region eu-west-1 \
+  --description "DR copy for production database" \
+  --encrypted                        <span class="cm"># re-encrypt with destination region's KMS key</span>
+
+<span class="cm"># Automate snapshots with Data Lifecycle Manager (DLM)</span>
+aws dlm create-lifecycle-policy \
+  --description "Daily snapshots, keep 7 days" \
+  --state ENABLED \
+  --execution-role-arn arn:aws:iam::123:role/DLMRole \
+  --policy-details '{
+    "PolicyType": "EBS_SNAPSHOT_MANAGEMENT",
+    "ResourceTypes": ["VOLUME"],
+    "TargetTags": [{"Key": "Backup", "Value": "daily"}],
+    "Schedules": [{
+      "Name": "Daily",
+      "CreateRule": {"Interval": 24, "IntervalUnit": "HOURS", "Times": ["03:00"]},
+      "RetainRule": {"Count": 7},
+      "CopyTags": true
+    }]
+  }'
+
+<span class="cm"># Tag your volumes and DLM automatically backs them up daily, keeps 7</span>
+aws ec2 create-tags \
+  --resources vol-0abc123def456789 \
+  --tags Key=Backup,Value=daily</pre>
+
+<h2>EBS Encryption</h2>
+<pre><span class="cm"># Encrypt by default for all new volumes (account-level setting)</span>
+aws ec2 enable-ebs-encryption-by-default --region us-east-1
+
+<span class="cm"># Or specify when creating</span>
+aws ec2 create-volume \
+  --encrypted \
+  --kms-key-id arn:aws:kms:us-east-1:123:key/mrk-abc123 \
+  ...
+
+<span class="cm"># Encrypt an unencrypted existing volume (no direct path):</span>
+<span class="cm"># 1. Take snapshot of unencrypted volume</span>
+<span class="cm"># 2. Copy snapshot with --encrypted flag (creates encrypted copy)</span>
+<span class="cm"># 3. Create new volume from encrypted snapshot</span>
+<span class="cm"># 4. Detach old volume, attach new encrypted volume</span>
+<span class="cm"># 5. Delete old unencrypted volume</span>
+<span class="cm"># There is no in-place encryption path</span>
+
+<span class="cm"># What's encrypted:
+# - Data at rest on the volume
+# - Data in transit between the volume and the instance
+# - Snapshots created from the volume
+# - Volumes created from encrypted snapshots</span></pre>
+
+<h2>Multi-Attach — Share One Volume Between Instances</h2>
+<p>io1/io2 volumes support Multi-Attach — attaching one volume to up to 16 instances simultaneously within the same AZ. Used for building high-availability clusters where multiple nodes need to share data.</p>
+
+<pre><span class="cm"># Enable multi-attach when creating (io1 or io2 only)</span>
+aws ec2 create-volume \
+  --availability-zone us-east-1a \
+  --volume-type io2 \
+  --iops 10000 \
+  --size 100 \
+  --multi-attach-enabled \
+  --encrypted
+
+<span class="cm"># Attach to multiple instances
+# CRITICAL: You must use a cluster-aware filesystem (GFS2, OCFS2)
+# or application-level locking. Standard filesystems (ext4, xfs) do NOT
+# support concurrent writes from multiple instances — data corruption!</span>
+
+<span class="cm"># Use cases:
+# - Oracle RAC (Real Application Clusters)
+# - DRBD (Distributed Replicated Block Device) clusters
+# - Custom high-availability database clusters
+# NOT for: random shared file access — use EFS for that</span></pre>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSSnapshots.html" target="_blank">EBS Snapshots</a>
+  <a class="ref" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSEncryption.html" target="_blank">EBS Encryption</a>
+  <a class="ref" href="https://docs.aws.amazon.com/dlm/latest/APIReference/Welcome.html" target="_blank">Data Lifecycle Manager</a>
+</div>
+</div>
+
+<!-- ===== S12: EFS ===== -->
+<div id="s12" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 5 · EFS · Section 12</span>
+  <h1>EFS — Elastic File System</h1>
+  <p class="subtitle">A fully managed NFS (Network File System) that multiple EC2 instances and ECS containers can mount simultaneously. Elastic capacity — grows and shrinks automatically.</p>
+</div>
+
+<h2>What Problem EFS Solves</h2>
+<p>EBS volumes can only be attached to one EC2 instance at a time (except Multi-Attach which is complex). S3 is object storage — no filesystem semantics. If you need multiple EC2 instances to share the same filesystem simultaneously with standard POSIX file operations — that's EFS.</p>
+
+<div class="scenario">
+  <div class="scenario-label">Real Use Cases</div>
+  <div class="scenario-title">When you actually need EFS</div>
+  <p><strong>Web server fleet sharing content:</strong> 10 EC2 instances serving a WordPress site. All need read/write access to the same uploads folder. EFS mounts as <code>/var/www/html/uploads</code> on all 10 — they all see the same files simultaneously.</p>
+  <p style="margin-top:8px"><strong>ECS container shared storage:</strong> Multiple ECS tasks need access to shared configuration files or a shared cache directory on disk. EFS provides an NFS mount that all containers can access.</p>
+  <p style="margin-top:8px"><strong>Dev environments:</strong> Multiple developers' Lambda functions or ECS tasks share a common code repository or ML model files during development.</p>
+</div>
+
+<h2>EFS Architecture</h2>
+<pre><span class="cm"># EFS creates "mount targets" in each AZ of your VPC
+# EC2 instances mount the filesystem via NFS from the mount target in their AZ</span>
+
+<span class="cm"># Create EFS filesystem</span>
+aws efs create-file-system \
+  --performance-mode generalPurpose \  <span class="cm"># generalPurpose or maxIO</span>
+  --throughput-mode elastic \          <span class="cm"># elastic (automatic) or provisioned</span>
+  --encrypted \
+  --tags Key=Name,Value=shared-content
+<span class="cm"># Returns: FileSystemId=fs-0abc123456</span>
+
+<span class="cm"># Create mount targets (one per AZ)</span>
+aws efs create-mount-target \
+  --file-system-id fs-0abc123456 \
+  --subnet-id subnet-0app1a \
+  --security-groups sg-0efs123
+<span class="cm"># Repeat for subnet-0app1b and subnet-0app1c</span>
+
+<span class="cm"># Security group for EFS mount target:
+# Inbound: TCP 2049 (NFS) from sg-app (EC2 app servers)
+# Outbound: none needed</span>
+
+<span class="cm"># Mount on EC2 (using AWS EFS mount helper — handles TLS and retries)</span>
+sudo dnf install -y amazon-efs-utils
+sudo mkdir -p /mnt/shared
+sudo mount -t efs -o tls fs-0abc123456:/ /mnt/shared
+<span class="cm"># tls = encrypt in transit
+# All instances in all AZs connecting to the same fs-id see the same files</span>
+
+<span class="cm"># Persistent mount in /etc/fstab</span>
+echo "fs-0abc123456:/ /mnt/shared efs _netdev,tls 0 0" | sudo tee -a /etc/fstab</pre>
+
+<h2>EFS in ECS Task Definitions</h2>
+<pre><span class="cm">// ECS task definition — mount EFS volume into container</span>
+{
+  <span class="jk">"family"</span>: <span class="jv">"wordpress"</span>,
+  <span class="jk">"volumes"</span>: [{
+    <span class="jk">"name"</span>: <span class="jv">"wordpress-uploads"</span>,
+    <span class="jk">"efsVolumeConfiguration"</span>: {
+      <span class="jk">"fileSystemId"</span>: <span class="jv">"fs-0abc123456"</span>,
+      <span class="jk">"rootDirectory"</span>: <span class="jv">/wordpress/uploads"</span>,
+      <span class="jk">"transitEncryption"</span>: <span class="jv">"ENABLED"</span>,
+      <span class="jk">"authorizationConfig"</span>: {
+        <span class="jk">"accessPointId"</span>: <span class="jv">"fsap-0abc123"</span>,  <span class="cm">// EFS Access Point for per-path permissions</span>
+        <span class="jk">"iam"</span>: <span class="jv">"ENABLED"</span>
+      }
+    }
+  }],
+  <span class="jk">"containerDefinitions"</span>: [{
+    <span class="jk">"name"</span>: <span class="jv">"wordpress"</span>,
+    <span class="jk">"mountPoints"</span>: [{
+      <span class="jk">"sourceVolume"</span>: <span class="jv">"wordpress-uploads"</span>,
+      <span class="jk">"containerPath"</span>: <span class="jv">"/var/www/html/wp-content/uploads"</span>,
+      <span class="jk">"readOnly"</span>: <span class="jv">false</span>
+    }]
+  }]
+}</pre>
+
+<h2>EFS vs EBS — Quick Decision</h2>
+<table>
+  <tr><th>Dimension</th><th>EFS</th><th>EBS</th></tr>
+  <tr><td>Multiple instances</td><td>Yes — thousands simultaneously</td><td>No (one instance, except Multi-Attach io2)</td></tr>
+  <tr><td>Protocol</td><td>NFS (standard POSIX)</td><td>Block device (formatted as ext4, xfs, etc.)</td></tr>
+  <tr><td>Capacity</td><td>Elastic — grows automatically</td><td>Fixed — must provision size</td></tr>
+  <tr><td>Cost</td><td>~$0.30/GB/month</td><td>$0.08/GB (gp3)</td></tr>
+  <tr><td>Performance</td><td>Lower IOPS, higher latency than EBS</td><td>Higher IOPS, lower latency</td></tr>
+  <tr><td>Use for databases</td><td>No — too slow for most DBs</td><td>Yes — preferred for all databases</td></tr>
+  <tr><td>AZ constraint</td><td>Multi-AZ (one filesystem across all AZs)</td><td>Single AZ</td></tr>
+</table>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/efs/latest/ug/whatisefs.html" target="_blank">EFS Documentation</a>
+  <a class="ref" href="https://docs.aws.amazon.com/efs/latest/ug/performance.html" target="_blank">EFS Performance</a>
+  <a class="ref" href="https://aws.amazon.com/efs/pricing/" target="_blank">EFS Pricing</a>
+</div>
+</div>
+
+<!-- ===== S13: INSTANCE STORE ===== -->
+<div id="s13" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 5 · Section 13</span>
+  <h1>Instance Store — Ephemeral Local Storage</h1>
+  <p class="subtitle">Physical NVMe SSDs soldered directly to the host machine your EC2 runs on. Blazing fast — and completely gone when your instance stops.</p>
+</div>
+
+<h2>What is Instance Store?</h2>
+<p>Instance store volumes are physical storage devices attached directly to the host server your EC2 instance runs on. Unlike EBS (network-attached), instance store is truly local. The data travels microseconds, not milliseconds. But it's tied to the physical machine — stop, hibernate, or if the underlying host fails, the data is gone permanently.</p>
+
+<div class="compare-row">
+  <div class="cmp-a">
+    <div class="cmp-label">Instance Store — Extreme Speed, Ephemeral</div>
+    <p style="font-size:12.5px;color:var(--text2)">
+      i3en.6xlarge: 2 × 7,500 GB NVMe SSDs · 1,600,000 IOPS · 16 GB/s throughput<br><br>
+      Data is LOST when instance stops, hibernates, terminates, or the underlying host fails.
+      Data SURVIVES reboots (same physical host, same drives).
+    </p>
+  </div>
+  <div class="cmp-b">
+    <div class="cmp-label">EBS — Persistent, Network-Attached</div>
+    <p style="font-size:12.5px;color:var(--text2)">
+      io2 Block Express: up to 256,000 IOPS · 4 GB/s throughput<br><br>
+      Data PERSISTS across all instance states. Data survives instance failure.
+      Can be detached and reattached to another instance.
+    </p>
+  </div>
+</div>
+
+<h2>When to Use Instance Store</h2>
+<div class="grid2">
+  <div class="card" style="border-color:#14532d">
+    <div class="card-title" style="color:var(--green-light)">Good use cases</div>
+    <div class="card-body">
+      <strong>Buffer/cache:</strong> Memcached cache that can be cold-started from the database<br><br>
+      <strong>Temporary data:</strong> ML training intermediate results, video transcoding scratch space<br><br>
+      <strong>Replicated data:</strong> Cassandra or HDFS where data is replicated across multiple nodes — losing one node's disk is tolerable<br><br>
+      <strong>Streaming logs:</strong> Buffer before shipping to S3/CloudWatch
+    </div>
+  </div>
+  <div class="card" style="border-color:#5a1a1a">
+    <div class="card-title" style="color:var(--red-light)">Never use for</div>
+    <div class="card-body">
+      <strong>Databases (primary):</strong> Any data you can't afford to lose<br><br>
+      <strong>Application state:</strong> Session data, shopping carts, anything a user cares about<br><br>
+      <strong>Anything requiring persistence:</strong> If the host fails you lose data with no recovery path<br><br>
+      <strong>Source of truth:</strong> Store originals on S3/EBS, use instance store as a fast local copy
+    </div>
+  </div>
+</div>
+
+<pre><span class="cm"># Instance families with instance store (NVMe SSDs):
+i3, i3en  — storage optimised: 1–60 TB NVMe, 3.3M IOPS
+d3, d3en  — dense storage: up to 336 TB HDD (cheap per TB, low IOPS)
+r5d, r5ad — memory + NVMe SSD
+m5d, m5ad — general purpose + NVMe SSD
+c5d       — compute + NVMe SSD
+
+# Check instance store size in instance type details:
+aws ec2 describe-instance-types \
+  --instance-types i3en.xlarge \
+  --query "InstanceTypes[0].InstanceStorageInfo"</pre>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/InstanceStorage.html" target="_blank">EC2 Instance Store</a>
+  <a class="ref" href="https://aws.amazon.com/ec2/instance-types/i3/" target="_blank">I3 Storage Optimized Instances</a>
+</div>
+</div>
+
+<!-- ===== S14: DECISION GUIDE ===== -->
+<div id="s14" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 5 · Section 14</span>
+  <h1>Storage Decision Guide</h1>
+  <p class="subtitle">A complete reference for choosing the right storage service and configuration for any workload.</p>
+</div>
+
+<h2>The Top-Level Decision</h2>
+<table>
+  <tr><th>Need</th><th>Service</th><th>Key Reason</th></tr>
+  <tr><td>Files accessible via HTTP (images, videos, docs)</td><td>S3</td><td>HTTP access, infinite scale, CDN integration</td></tr>
+  <tr><td>Database storage (MySQL, PostgreSQL, MongoDB)</td><td>EBS (gp3 or io2)</td><td>Block device needed for OS-level filesystem</td></tr>
+  <tr><td>Shared files across multiple servers/containers</td><td>EFS</td><td>Multi-mount NFS filesystem</td></tr>
+  <tr><td>Temporary ultra-fast scratch space</td><td>Instance Store</td><td>Extreme IOPS, cost-free (included with instance)</td></tr>
+  <tr><td>Data archive (7-year retention)</td><td>S3 Glacier Deep Archive</td><td>$0.001/GB/month — cheapest reliable storage</td></tr>
+  <tr><td>Data lake / analytics</td><td>S3</td><td>Athena, Glue, EMR all read S3 natively</td></tr>
+  <tr><td>Root OS volume for EC2</td><td>EBS gp3</td><td>Required — EC2 must have a block device to boot</td></tr>
+  <tr><td>Container volume (single container)</td><td>EBS gp3 or Fargate ephemeral</td><td>Attached to task, not shared</td></tr>
+  <tr><td>Container volume (shared between containers)</td><td>EFS</td><td>Multi-mount support</td></tr>
+</table>
+
+<h2>S3 Storage Class Decision</h2>
+<pre><span class="cm">Access pattern decision tree:
+
+"How often do you access this object?"
+
+&gt; Once/day (active data)        → S3 Standard
+Don't know                       → S3 Intelligent-Tiering
+Once/month (infrequent)          → S3 Standard-IA
+Once/year (archive)              → S3 Glacier Instant Retrieval
+Once/year (archive, OK to wait)  → S3 Glacier Flexible Retrieval
+Almost never, compliance only    → S3 Glacier Deep Archive
+Derived/re-creatable data?       → S3 One Zone-IA (saves 20%, loses AZ resilience)</span></pre>
+
+<h2>EBS Volume Type Decision</h2>
+<pre><span class="cm">What does your workload do?
+
+Random small I/O (database)
+  → &lt; 16,000 IOPS needed? → gp3 (cost-effective, configure IOPS as needed)
+  → &gt; 16,000 IOPS needed? → io2 Block Express (provision up to 256K IOPS)
+  → &lt; 1ms latency critical? → io2 Block Express
+
+Sequential large I/O (analytics, log processing)
+  → Throughput matters more than IOPS → st1 (up to 500 MB/s, cheap)
+  → Rarely accessed cold data → sc1 (cheapest, 250 MB/s)
+
+Dev/test environments → gp3 (default, cost-effective)
+Boot volumes → gp3 (always)
+Shared cluster storage → io2 with Multi-Attach</pre>
+
+<h2>The Full Cost Comparison (100 GB for 1 month, us-east-1)</h2>
+<table>
+  <tr><th>Storage</th><th>Monthly Cost</th><th>Notes</th></tr>
+  <tr><td>S3 Standard</td><td>~$2.30</td><td>Plus request and transfer costs</td></tr>
+  <tr><td>S3 Intelligent-Tiering</td><td>~$2.30 to $1.25</td><td>Depends on access frequency</td></tr>
+  <tr><td>S3 Standard-IA</td><td>~$1.25 + retrieval</td><td>Min 30 days, min 128KB object</td></tr>
+  <tr><td>S3 Glacier Deep Archive</td><td>~$0.10</td><td>12-48h retrieval, min 180 days</td></tr>
+  <tr><td>EBS gp3</td><td>~$8.00</td><td>Provisioned capacity always billed</td></tr>
+  <tr><td>EBS io2 (3,000 IOPS)</td><td>~$12.50 + IOPS cost</td><td>$0.125/GB + $0.065/provisioned IOPS</td></tr>
+  <tr><td>EBS st1</td><td>~$4.50</td><td>Minimum 125 GB</td></tr>
+  <tr><td>EFS Standard</td><td>~$30.00</td><td>More expensive but elastic and multi-mount</td></tr>
+  <tr><td>EFS Infrequent Access</td><td>~$1.60 + retrieval</td><td>Auto-tiering with Intelligent Tiering</td></tr>
+  <tr><td>Instance Store (NVMe)</td><td>$0 (included)</td><td>Ephemeral — data lost on stop/failure</td></tr>
+</table>
+
+<div class="refs">
+  <a class="ref" href="https://aws.amazon.com/s3/pricing/" target="_blank">S3 Pricing</a>
+  <a class="ref" href="https://aws.amazon.com/ebs/pricing/" target="_blank">EBS Pricing</a>
+  <a class="ref" href="https://aws.amazon.com/efs/pricing/" target="_blank">EFS Pricing</a>
+</div>
+</div>
+
+<!-- ===== S15: INTERVIEW ===== -->
+<div id="s15" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 5 · Interview Q&amp;A</span>
+  <h1>Interview Questions — Storage</h1>
+  <p class="subtitle">16 questions from beginner to architect. Storage questions appear in almost every AWS interview. Click to reveal answers.</p>
+</div>
+
+<h2 style="color:var(--green-light)">Beginner</h2>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">What is the difference between S3, EBS, and EFS? When would you use each? <span class="qa-arrow">▼</span></div><div class="qa-a"><strong>S3</strong>: Object storage. Key-value store for files. Access via HTTP API. Infinite scale. 11 nines durability. Use for: static assets, backups, data lakes, anything you access via URL. No filesystem — can't run a database on it.<br><br><strong>EBS</strong>: Block storage. Virtual hard drive attached to one EC2 instance. Filesystem on top (ext4, xfs). High IOPS, low latency. Use for: database storage, EC2 root volumes, any app needing a traditional filesystem with random read/write. AZ-specific — can't share between instances (except Multi-Attach io2).<br><br><strong>EFS</strong>: File storage. NFS-based shared filesystem. Multiple EC2 instances and ECS containers can mount it simultaneously. Elastic capacity. More expensive than EBS per GB. Use for: shared content (WordPress uploads), ML model sharing, developer shared environments. Not for databases (too slow for random I/O).</div></div>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">What are S3 storage classes and why do they exist? <span class="qa-arrow">▼</span></div><div class="qa-a">S3 storage classes exist because different data has different access patterns, and charging the same price for all data wastes money. Standard (~$0.023/GB) is for frequently accessed data. Standard-IA (~$0.0125/GB + retrieval fee) for monthly access. Glacier ($0.0036/GB) for annual access, retrieving in minutes-hours. Deep Archive (~$0.001/GB) for 7-10 year compliance archives with 12-48h retrieval. Intelligent-Tiering automatically moves objects between tiers based on actual usage. The key insight: a 5-year-old audit log taking hours to retrieve is fine. A product image that loads on every page view must return in milliseconds. Matching storage class to access pattern can reduce storage costs by 90%.</div></div>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">What is an EBS snapshot and how does incremental snapshotting work? <span class="qa-arrow">▼</span></div><div class="qa-a">An EBS snapshot is a point-in-time backup of an EBS volume stored in S3 (AWS-managed, not your own bucket). Incremental means: the first snapshot copies all data blocks. Each subsequent snapshot copies ONLY the blocks that changed since the last snapshot. All snapshots appear complete — when you restore from any snapshot, AWS assembles all the blocks needed. You only pay for what changed. Example: a 100GB volume with 5% daily change rate — first snapshot: 100GB. Each daily snapshot after: ~5GB. Delete old snapshots without affecting newer ones. Use cases: pre-change backup ("snapshot before this database migration"), disaster recovery (cross-region copy), creating new volumes from a known-good state.</div></div>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">What is a presigned URL in S3 and when would you use it? <span class="qa-arrow">▼</span></div><div class="qa-a">A presigned URL grants temporary permission to perform a specific S3 operation (GET or PUT) without requiring the requester to have AWS credentials. The permissions, expiry time, and specific resource are cryptographically embedded in the URL — anyone with the URL can perform the operation until expiry. Use cases: (1) Direct browser-to-S3 uploads: your backend generates a presigned PUT URL, returns it to the frontend, the browser uploads directly to S3 without your server handling any file data. Saves bandwidth and cost. (2) Secure file sharing: generate a presigned GET URL for a private document, email it to a client. They can download it without having AWS access. URL expires in 1 hour. (3) Authorised downloads from private buckets: your app server authorises the download request, generates a short-lived presigned URL, redirects the client to it.</div></div>
+
+<h2 style="color:var(--yellow-light)">Intermediate</h2>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">What is S3 versioning and what problem does it solve? What's the cost implication? <span class="qa-arrow">▼</span></div><div class="qa-a">S3 versioning preserves every version of every object. When you PUT an object that already exists, instead of overwriting it, a new version is created and the old one is retained. Deleting an object creates a "delete marker" — the object appears deleted but all versions are still stored. The problem it solves: (1) accidental overwrites — restore previous version in seconds, (2) accidental deletes — remove the delete marker to restore, (3) audit trail — prove what a file contained at any point in time, (4) rollback capability — revert a changed config or document. Cost implication: every version takes up storage and is billed. A 1MB file updated 100 times = 100MB billed. Best practice: combine versioning with a lifecycle policy to expire non-current versions after 30-90 days to avoid unbounded storage growth.</div></div>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">How would you securely allow users to upload files directly to S3 from a React web app? <span class="qa-arrow">▼</span></div><div class="qa-a">Never expose AWS credentials to the browser. The correct pattern: (1) User selects a file in the browser. (2) Browser calls your backend API (e.g., POST /api/presigned-upload with filename and content type). (3) Backend validates the request (authentication, file type check, size limits), generates a presigned PUT URL using S3Presigner with a short expiry (5 minutes), returns the URL and the expected S3 key. (4) Browser does a direct PUT to the presigned URL with the file as the body. (5) S3 validates the signature and accepts the upload — no data ever goes through your backend. (6) S3 event notification triggers a Lambda to validate the uploaded file (virus scan, image validation), then moves it from a staging prefix to the final location. This pattern: keeps your servers free of file upload bandwidth, is scalable to any number of concurrent uploads, and keeps credentials server-side.</div></div>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">A DBA complains that the database is running slow. You suspect it's an I/O bottleneck on EBS. How do you diagnose and fix it? <span class="qa-arrow">▼</span></div><div class="qa-a">Diagnose: (1) CloudWatch EBS metrics: VolumeReadOps/WriteOps (IOPS consumed), VolumeReadBytes/WriteBytes (throughput), VolumeQueueLength (should be near 0, queuing = saturated). (2) If VolumeQueueLength is consistently > 1 or IOPS consumed = provisioned maximum → I/O bottleneck confirmed. (3) On the EC2 instance: <code>iostat -x 1</code> to see real-time I/O utilisation, %util near 100% confirms bottleneck. Fix options: (1) gp3 volume — increase provisioned IOPS up to 16,000 (free up to 3,000 IOPS base, ~$0.005/IOPS/month above that). No downtime — modify the volume in place, filesystem recognises it immediately. (2) If you need >16,000 IOPS — migrate to io2 Block Express (up to 256,000 IOPS, higher cost). (3) Also check query patterns — often adding a database index reduces I/O more than any hardware change. (4) If reads are the bottleneck — add a read replica (RDS) or Redis cache to offload read traffic.</div></div>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">What are S3 lifecycle policies and how would you design one for an application log bucket? <span class="qa-arrow">▼</span></div><div class="qa-a">Lifecycle policies automate transitions between storage classes and object expiration. For application logs: logs from today are frequently accessed for debugging. After 30 days they're rarely needed. After a year, probably just for compliance. Design: (1) Day 0-30: Standard — active debugging, fast access needed. (2) Day 31-90: Standard-IA — monthly access pattern, retrieval fee acceptable. (3) Day 91-365: Glacier Flexible — quarterly access at most, hours to retrieve is fine. (4) Day 366-2555 (7 years): Deep Archive — compliance retention only, 48-hour retrieval acceptable. (5) Day 2555+: Delete — regulatory retention period met. Additionally: configure NoncurrentVersionExpiration to delete old versions after 90 days (prevent versioning cost explosion), and AbortIncompleteMultipartUpload after 7 days (clean up abandoned uploads). Result: 90%+ cost reduction vs keeping everything in Standard.</div></div>
+
+<h2 style="color:var(--orange-light)">Advanced</h2>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">What is the S3 consistency model and how did it change in December 2020? <span class="qa-arrow">▼</span></div><div class="qa-a">Before December 2020, S3 had eventual consistency for overwrite PUTs and DELETEs. This meant: if you wrote a new version of an object and immediately read it, you might get the old version. If you deleted an object and listed the bucket, the deleted object might still appear. Application code needed defensive sleeps or retries. After December 2020: S3 provides strong read-after-write consistency for ALL S3 operations: PUTs, DELETEs, and list operations. After a successful PUT, any subsequent GET will return the new object. After a successful DELETE, the object won't appear in lists. This is now a fundamental guarantee — no more defensive retries or sleep calls for consistency. The implementation is backed by an internal consensus layer that S3 added. Performance is unchanged — there's no latency cost for strong consistency.</div></div>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">How does Block Public Access interact with bucket policies? What's the difference between account-level and bucket-level BPA? <span class="qa-arrow">▼</span></div><div class="qa-a">Block Public Access (BPA) is a hard override for public access settings, evaluated before bucket policies. If BPA is enabled, even a bucket policy that says "Allow Principal: *" (everyone) is blocked. The four BPA settings: BlockPublicAcls (rejects requests with public ACLs), IgnorePublicAcls (ignores existing public ACLs), BlockPublicPolicy (rejects bucket policies that grant public access), RestrictPublicBuckets (restricts access even if policy allows public). Account-level BPA applies to ALL buckets in the account — even new ones created later. Bucket-level BPA applies to a specific bucket only. Important interaction: account-level BPA cannot be overridden by bucket-level settings. If account-level BPA is on, you cannot make any bucket public regardless of bucket-level settings. If you NEED one public bucket (e.g., a website), the recommended pattern is: disable account-level BPA for just that capability, keep bucket-level BPA on all private buckets, and use CloudFront with Origin Access Control as the public-facing layer so the S3 bucket itself stays private.</div></div>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">Design a complete media storage system for a video platform with 100 million users. Include storage strategy, lifecycle management, and delivery architecture. <span class="qa-arrow">▼</span></div><div class="qa-a">Architecture: (1) <strong>Ingestion:</strong> Users upload via presigned PUT URL to S3 <code>raw-uploads/</code> prefix. S3 event triggers Lambda for validation. Lambda starts an MediaConvert transcoding job to create multiple quality levels (1080p, 720p, 480p, 360p) in HLS/DASH format. (2) <strong>Storage tiers:</strong> <code>transcoded/</code> — S3 Standard (actively streamed, 2-3 years). <code>archive/</code> — S3 Glacier Instant Retrieval for videos with views < 100/month. S3 Intelligent-Tiering auto-manages the Standard↔Archive boundary. (3) <strong>Lifecycle:</strong> Videos not viewed in 12 months → Glacier. Not viewed in 3 years → Deep Archive. Deleted by user → delete marker + 30-day expiry. (4) <strong>Delivery:</strong> CloudFront CDN in front of S3. HLS manifest (.m3u8) served from CloudFront edge. Signed cookies for subscriber-only content (not presigned URLs — cookies work for multi-file HLS streams). Custom origin for adaptive bitrate. (5) <strong>Cost optimisation:</strong> S3 Intelligent-Tiering for transcoded videos (most only popular for weeks). EFS for shared ML thumbnail generation pipeline. 6-region replication for top 1% of videos by views. (6) <strong>Metadata:</strong> DynamoDB for video metadata (title, duration, views, state). OpenSearch for search. CloudWatch + custom metrics for view counts.</div></div>
+
+</div>
+</main>
+</div>
+
+<script>
+function show(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.currentTarget.classList.add('active');
+  window.scrollTo(0, 0);
+}
+function toggleQA(el) {
+  const ans = el.nextElementSibling;
+  const arrow = el.querySelector('.qa-arrow');
+  ans.classList.toggle('open');
+  arrow.classList.toggle('open');
+}
+</script>
+</body>
+</html>

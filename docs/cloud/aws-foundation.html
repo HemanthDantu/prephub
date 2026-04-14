@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>AWS Module 1 — Foundation</title>
+<style>
+:root{--bg:#0c1117;--bg2:#131a24;--bg3:#1a2332;--bg4:#1f2b3d;--border:#243048;--border2:#2e3d55;--text:#e2e8f0;--text2:#94a3b8;--text3:#5a6a82;--orange:#f97316;--orange-bg:#2a1500;--orange-light:#fdba74;--blue:#3b82f6;--blue-bg:#0f2340;--blue-light:#93c5fd;--green:#22c55e;--green-bg:#0a2414;--green-light:#86efac;--red:#ef4444;--red-bg:#2a0a0a;--red-light:#fca5a5;--yellow:#f59e0b;--yellow-bg:#2a1800;--yellow-light:#fcd34d;--purple:#a855f7;--purple-bg:#1e0a35;--purple-light:#d8b4fe;--teal:#14b8a6;--teal-bg:#021e1c;--teal-light:#5eead4;--aws:#ff9900;--aws-bg:#1a0f00;--radius:8px;--radius-lg:12px;--mono:'Fira Code','Cascadia Code','Consolas',monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;line-height:1.7}
+.layout{display:flex;min-height:100vh}
+.sidebar{width:240px;min-width:240px;background:var(--bg2);border-right:1px solid var(--border);position:sticky;top:0;height:100vh;overflow-y:auto}
+.sidebar-header{padding:16px 20px;border-bottom:1px solid var(--border)}
+.sidebar-mod{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--aws);margin-bottom:4px}
+.sidebar-title{font-size:14px;font-weight:700;color:var(--text)}
+.nav-item{display:flex;align-items:center;gap:8px;padding:8px 20px;cursor:pointer;font-size:12.5px;color:var(--text2);transition:all .15s;border-left:3px solid transparent}
+.nav-item:hover{background:var(--bg3);color:var(--text)}
+.nav-item.active{background:var(--bg3);color:var(--orange-light);border-left-color:var(--aws)}
+.nav-dot{width:5px;height:5px;border-radius:50%;background:var(--border2);flex-shrink:0}
+.nav-item.active .nav-dot{background:var(--aws)}
+.nav-group-label{font-size:9.5px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.9px;padding:14px 20px 4px}
+.main{flex:1;padding:44px 52px;max-width:940px;overflow-x:hidden}
+.section{display:none}.section.active{display:block}
+h1{font-size:27px;font-weight:700;margin-bottom:8px;line-height:1.25}
+h2{font-size:19px;font-weight:600;margin:36px 0 14px;color:var(--text)}
+h3{font-size:15px;font-weight:600;margin:22px 0 10px;color:var(--text)}
+p{color:var(--text2);margin-bottom:12px;line-height:1.78}
+strong{color:var(--text);font-weight:600}
+a{color:var(--blue-light);text-decoration:none}.a:hover{text-decoration:underline}
+.subtitle{color:var(--text3);font-size:14px;margin-bottom:26px;line-height:1.65}
+pre{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px;font-family:var(--mono);font-size:12.5px;line-height:1.72;overflow-x:auto;margin:14px 0}
+code{font-family:var(--mono);font-size:12px;background:var(--bg3);padding:2px 6px;border-radius:4px;color:var(--teal-light)}
+.cm{color:var(--text3)}.kw{color:var(--purple-light)}.str{color:var(--green-light)}.type{color:var(--blue-light)}.ak{color:var(--orange-light)}.num{color:var(--yellow-light)}.fn{color:var(--teal-light)}
+.card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px;margin-bottom:14px}
+.card-title{font-size:13.5px;font-weight:600;margin-bottom:8px}
+.card-body{font-size:13px;color:var(--text2);line-height:1.75}
+.alert{border-radius:var(--radius);padding:13px 16px;margin:16px 0;font-size:13px;border-left:3px solid;line-height:1.7}
+.a-orange{background:var(--orange-bg);border-color:var(--orange);color:var(--orange-light)}
+.a-blue{background:var(--blue-bg);border-color:var(--blue);color:var(--blue-light)}
+.a-green{background:var(--green-bg);border-color:var(--green);color:var(--green-light)}
+.a-red{background:var(--red-bg);border-color:var(--red);color:var(--red-light)}
+.a-yellow{background:var(--yellow-bg);border-color:var(--yellow);color:var(--yellow-light)}
+.a-purple{background:var(--purple-bg);border-color:var(--purple);color:var(--purple-light)}
+.alert strong{color:inherit}
+.refs{margin:12px 0 16px;display:flex;flex-wrap:wrap;gap:6px}
+.ref{display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:3px 10px;border-radius:10px;background:var(--bg4);color:var(--text3);border:1px solid var(--border);text-decoration:none;transition:all .15s}
+.ref:hover{background:var(--bg3);color:var(--text2);border-color:var(--border2)}
+.ref-icon{font-size:10px}
+table{width:100%;border-collapse:collapse;margin:14px 0;font-size:13px}
+th{background:var(--bg3);color:var(--text);font-weight:600;padding:10px 14px;text-align:left;border-bottom:1px solid var(--border2)}
+td{padding:9px 14px;border-bottom:1px solid var(--border);color:var(--text2);vertical-align:top}
+tr:hover td{background:var(--bg3)}
+.qa{border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:10px;overflow:hidden}
+.qa-q{padding:13px 18px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;background:var(--bg3);font-size:13px;font-weight:500;transition:background .15s;user-select:none;gap:12px}
+.qa-q:hover{background:var(--bg4)}
+.qa-a{display:none;padding:16px 18px;font-size:13px;color:var(--text2);line-height:1.8;background:var(--bg2);border-top:1px solid var(--border)}
+.qa-a.open{display:block}.qa-arrow{transition:transform .2s;color:var(--text3);font-size:11px;flex-shrink:0}.qa-arrow.open{transform:rotate(180deg)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin:14px 0}
+.pros-cons{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0}
+.pros{background:#061a0d;border:1px solid #14532d;border-radius:var(--radius-lg);padding:16px}
+.cons{background:#1a0606;border:1px solid #5a1a1a;border-radius:var(--radius-lg);padding:16px}
+.pros-title{color:var(--green);font-weight:600;font-size:13px;margin-bottom:10px}
+.cons-title{color:var(--red);font-weight:600;font-size:13px;margin-bottom:10px}
+.pros ul,.cons ul{padding-left:16px}.pros li,.cons li{font-size:12.5px;color:var(--text2);margin-bottom:5px;line-height:1.6}
+.badge{display:inline-flex;align-items:center;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;margin:2px}
+.badge-orange{background:var(--aws-bg);color:var(--orange-light)}.badge-blue{background:var(--blue-bg);color:var(--blue-light)}.badge-green{background:var(--green-bg);color:var(--green-light)}.badge-red{background:var(--red-bg);color:var(--red-light)}.badge-yellow{background:var(--yellow-bg);color:var(--yellow-light)}.badge-purple{background:var(--purple-bg);color:var(--purple-light)}.badge-teal{background:var(--teal-bg);color:var(--teal-light)}
+.section-header{padding-bottom:18px;border-bottom:1px solid var(--border);margin-bottom:26px}
+.mod-badge{font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;display:inline-block;margin-bottom:10px;background:var(--aws-bg);color:var(--aws);letter-spacing:.3px}
+.steps{counter-reset:step}
+.step{display:flex;gap:14px;margin-bottom:16px}
+.step-num{counter-increment:step;width:26px;height:26px;min-width:26px;background:var(--aws-bg);color:var(--aws);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;margin-top:2px;border:1px solid var(--orange)}
+.step-content{flex:1}.step-title{font-weight:600;font-size:13px;margin-bottom:3px}.step-body{font-size:13px;color:var(--text2);line-height:1.65}
+.scenario{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:18px 20px;margin:16px 0}
+.scenario-label{font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;color:var(--aws);margin-bottom:6px}
+.scenario-title{font-size:14px;font-weight:600;margin-bottom:10px}
+.flow{display:flex;align-items:center;flex-wrap:wrap;gap:4px;margin:14px 0;padding:14px 16px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg)}
+.fbox{background:var(--bg4);border:1px solid var(--border2);border-radius:var(--radius);padding:8px 14px;font-size:12px;font-weight:600;white-space:nowrap}
+.farr{padding:0 6px;color:var(--aws);font-size:18px;font-weight:700;line-height:1}
+.compare-row{display:flex;gap:0;margin:14px 0;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+.cmp-a{flex:1;background:var(--red-bg);padding:16px;border-right:1px solid var(--border)}
+.cmp-b{flex:1;background:var(--green-bg);padding:16px}
+.cmp-label{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px}
+.cmp-a .cmp-label{color:var(--red)}.cmp-b .cmp-label{color:var(--green)}
+.region-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0}
+.region-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px}
+.region-name{font-size:12px;font-weight:600;color:var(--aws);margin-bottom:2px}
+.region-code{font-size:11px;color:var(--text3);font-family:var(--mono)}
+.region-azs{font-size:11px;color:var(--text2);margin-top:4px}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+</style>
+</head>
+<body>
+<div class="layout">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-mod">Module 1</div>
+    <div class="sidebar-title">AWS Foundation</div>
+  </div>
+  <div class="nav-group-label">Sections</div>
+  <div class="nav-item active" onclick="show('s1')"><span class="nav-dot"></span>What is AWS &amp; Cloud</div>
+  <div class="nav-item" onclick="show('s2')"><span class="nav-dot"></span>Global Infrastructure</div>
+  <div class="nav-item" onclick="show('s3')"><span class="nav-dot"></span>Shared Responsibility</div>
+  <div class="nav-item" onclick="show('s4')"><span class="nav-dot"></span>How AWS APIs Work</div>
+  <div class="nav-group-label">Quick Access</div>
+  <div class="nav-item" onclick="show('s5')"><span class="nav-dot"></span>Interview Q&amp;A</div>
+</aside>
+
+<main class="main">
+
+<!-- ===== S1: WHAT IS AWS ===== -->
+<div id="s1" class="section active">
+<div class="section-header">
+  <span class="mod-badge">Module 1 · Section 1</span>
+  <h1>What is AWS &amp; Cloud Computing?</h1>
+  <p class="subtitle">The fundamental shift — from owning hardware to renting capability. Why cloud exists, what it truly solves, and the mental model every developer needs before writing a single line of AWS code.</p>
+</div>
+
+<h2>The World Before Cloud — The Real Pain</h2>
+<p>To understand AWS deeply, you first need to feel the pain it solved. Imagine it's 2004 and you're building a web application. Here's what stood between your idea and production:</p>
+
+<div class="grid3">
+  <div class="card">
+    <div class="card-title" style="color:var(--red-light)">Physical procurement</div>
+    <div class="card-body">You submit a PO for servers. Finance approves it. Vendor ships in 4-6 weeks. You rack and cable it yourself or pay someone to. You've spent $100K before writing a line of production code.</div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--red-light)">Capacity guessing</div>
+    <div class="card-body">How much traffic will you get in 18 months? Over-provision and you've wasted money. Under-provision and your site crashes on launch day. You're always wrong. The cost of being wrong is enormous.</div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--red-light)">Undifferentiated work</div>
+    <div class="card-body">Your engineers spend time on network switches, RAID configuration, OS patching, physical security, data center contracts. None of this helps your customers. It's pure overhead.</div>
+  </div>
+</div>
+
+<p>Amazon built AWS initially to solve its own problem — every internal team at Amazon was reinventing the same infrastructure. In 2006, they opened it to the public. The core insight: <strong>infrastructure is a utility, like electricity</strong>. You don't generate your own power — you plug into the grid.</p>
+
+<h2>The Cloud Value Proposition — Precisely</h2>
+<p>Cloud isn't just "someone else's computers." That misses the point entirely. Here's what actually changed:</p>
+
+<table>
+  <tr><th>Old World (On-Prem)</th><th>Cloud (AWS)</th><th>Why It Matters</th></tr>
+  <tr><td>Capital expense upfront</td><td>Operational expense, pay-per-use</td><td>Lower barrier to experiment; no sunk cost</td></tr>
+  <tr><td>6–8 week provisioning</td><td>Seconds via API</td><td>Ship faster; respond to demand in real time</td></tr>
+  <tr><td>Fixed capacity</td><td>Elastic — scale up or down</td><td>Match cost to actual demand</td></tr>
+  <tr><td>Manage everything</td><td>Choose your abstraction level</td><td>Focus engineering on business logic</td></tr>
+  <tr><td>One location (or expensive DR)</td><td>Global in minutes</td><td>Low latency everywhere; built-in resilience</td></tr>
+  <tr><td>Your security expertise</td><td>AWS + your shared responsibility</td><td>Leverage AWS's full-time security teams</td></tr>
+</table>
+
+<h2>The Three Service Models — With Real AWS Examples</h2>
+<p>This distinction matters because it tells you exactly how much you're responsible for:</p>
+
+<div class="grid3">
+  <div class="card">
+    <div class="card-title" style="color:var(--blue-light)">IaaS — Infrastructure as a Service</div>
+    <div class="card-body">
+      AWS gives you raw infrastructure. You control everything from the OS up.<br><br>
+      <strong>AWS examples:</strong> EC2 (virtual machines), EBS (block storage), VPC (networking)<br><br>
+      <strong>You manage:</strong> OS patching, runtime installation, app deployment, security configuration<br><br>
+      <strong>Use when:</strong> You need full control, have specific OS requirements, or running legacy software
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--green-light)">PaaS — Platform as a Service</div>
+    <div class="card-body">
+      AWS manages the platform — OS, runtime, patching. You deploy code and configure.<br><br>
+      <strong>AWS examples:</strong> RDS (managed DB), Elastic Beanstalk, Lambda<br><br>
+      <strong>You manage:</strong> Application code, data, configuration<br><br>
+      <strong>Use when:</strong> You want to focus on business logic and let AWS handle operational overhead
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--orange-light)">SaaS — Software as a Service</div>
+    <div class="card-body">
+      Fully managed end-to-end product. You configure and use it.<br><br>
+      <strong>AWS examples:</strong> Amazon WorkMail, AWS Chime, Cognito (as a service)<br><br>
+      <strong>You manage:</strong> Data and configuration only<br><br>
+      <strong>Use when:</strong> The service does exactly what you need and flexibility isn't required
+    </div>
+  </div>
+</div>
+
+<h2>Five Key Cloud Characteristics (NIST Definition)</h2>
+<p>The National Institute of Standards and Technology defines cloud computing with five characteristics. Understanding these helps you reason about any cloud service:</p>
+
+<div class="steps">
+  <div class="step"><div class="step-num">1</div><div class="step-content"><div class="step-title">On-demand self-service</div><div class="step-body">Provision compute, storage, databases — without human interaction from the provider. You click or call an API; it's done in seconds. No sales calls, no tickets, no waiting.</div></div></div>
+  <div class="step"><div class="step-num">2</div><div class="step-content"><div class="step-title">Broad network access</div><div class="step-body">Access over standard networks (internet or private connections) from any device. AWS services are accessible via HTTPS from anywhere.</div></div></div>
+  <div class="step"><div class="step-num">3</div><div class="step-content"><div class="step-title">Resource pooling</div><div class="step-body">AWS serves thousands of customers from the same hardware using multi-tenancy. This is how AWS achieves economies of scale — your S3 bucket and Netflix's S3 bucket run on the same physical infrastructure, completely isolated.</div></div></div>
+  <div class="step"><div class="step-num">4</div><div class="step-content"><div class="step-title">Rapid elasticity</div><div class="step-body">Capacity scales up or down automatically or on-demand. From the outside it appears infinite. You never think "do we have enough servers" — you think "what should the auto-scaling policy be."</div></div></div>
+  <div class="step"><div class="step-num">5</div><div class="step-content"><div class="step-title">Measured service</div><div class="step-body">Usage is monitored, measured, and reported. You pay for exactly what you consume — GB-hours of storage, request counts, compute-seconds. No flat fee for unused capacity.</div></div></div>
+</div>
+
+<h2>AWS Account — The Container for Everything</h2>
+<p>Every resource in AWS lives inside an <strong>AWS Account</strong>. Think of it as a completely isolated container with its own resources, billing, and identity boundaries.</p>
+
+<div class="card">
+  <div class="card-title">AWS Account — What it contains</div>
+  <div class="card-body">
+    <strong>Root user:</strong> The email/password combination used to create the account. Has unrestricted access to everything. Should be locked away — use IAM users for daily work.<br><br>
+    <strong>Resources:</strong> All your EC2 instances, S3 buckets, databases, Lambda functions, etc. live inside the account.<br><br>
+    <strong>Billing:</strong> All charges accrue to the account. One credit card, one invoice.<br><br>
+    <strong>IAM principals:</strong> Users, roles, and groups that can access the account's resources.<br><br>
+    <strong>Default limits (Service Quotas):</strong> Every service has default limits (e.g. 5 VPCs per region). You can request increases.
+  </div>
+</div>
+
+<div class="alert a-red">
+  <strong>Root user warning:</strong> The root user can do anything — including actions that cannot be done by any IAM user, like closing the account or changing support plans. Best practice: create root user, immediately create an IAM admin user, enable MFA on root, then never use root again. Lock the root credentials in a vault.
+</div>
+
+<h2>How You Interact With AWS</h2>
+<p>Every interaction with AWS — whether from the console, CLI, or SDK — ultimately becomes an <strong>HTTPS API call</strong> to an AWS endpoint. There is no magic. The console is just a web UI making API calls on your behalf.</p>
+
+<table>
+  <tr><th>Method</th><th>Best For</th><th>Under the Hood</th></tr>
+  <tr><td><strong>AWS Console</strong></td><td>Exploration, learning, one-off tasks, visualisation</td><td>React UI making signed HTTPS API calls</td></tr>
+  <tr><td><strong>AWS CLI</strong></td><td>Scripting, automation, quick one-liners from terminal</td><td>Python tool (aws-cli) wrapping API calls</td></tr>
+  <tr><td><strong>AWS SDKs</strong> (Java, Python, JS, Go…)</td><td>Application code, programmatic access</td><td>HTTPS clients with SigV4 signing built in</td></tr>
+  <tr><td><strong>IaC</strong> (CDK, CloudFormation, Terraform)</td><td>Reproducible infrastructure, version controlled</td><td>Templates/code compiled to API calls</td></tr>
+  <tr><td><strong>REST / HTTP directly</strong></td><td>Any language, curl, testing, learning internals</td><td>Raw HTTPS with Signature V4 authentication</td></tr>
+</table>
+
+<pre><span class="cm"># CLI example — every command is an API call</span>
+aws s3 ls                           <span class="cm"># calls ListBuckets API</span>
+aws ec2 describe-instances          <span class="cm"># calls DescribeInstances API</span>
+aws iam get-user                    <span class="cm"># calls GetUser API</span>
+
+<span class="cm"># SDK example — Java</span>
+<span class="type">S3Client</span> s3 = <span class="type">S3Client</span>.<span class="fn">builder</span>()
+    .<span class="fn">region</span>(<span class="type">Region</span>.US_EAST_1)
+    .<span class="fn">build</span>();
+<span class="type">ListBucketsResponse</span> resp = s3.<span class="fn">listBuckets</span>();  <span class="cm">// HTTPS to s3.amazonaws.com</span></pre>
+
+<div class="refs">
+  <span class="ref-icon">📖</span><strong style="font-size:11px;color:var(--text3);margin-right:4px">References:</strong>
+  <a class="ref" href="https://aws.amazon.com/what-is-aws/" target="_blank"><span class="ref-icon">🔗</span>AWS: What is AWS?</a>
+  <a class="ref" href="https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-145.pdf" target="_blank"><span class="ref-icon">📄</span>NIST Cloud Definition</a>
+  <a class="ref" href="https://aws.amazon.com/getting-started/cloud-essentials/" target="_blank"><span class="ref-icon">🔗</span>AWS Cloud Essentials</a>
+  <a class="ref" href="https://docs.aws.amazon.com/accounts/latest/reference/root-user-tasks.html" target="_blank"><span class="ref-icon">📄</span>Root User Tasks</a>
+</div>
+</div>
+
+<!-- ===== S2: GLOBAL INFRASTRUCTURE ===== -->
+<div id="s2" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 1 · Section 2</span>
+  <h1>Global Infrastructure</h1>
+  <p class="subtitle">Regions, Availability Zones, Edge Locations — the physical backbone of AWS and why this architecture is the foundation of every resilient system you'll build.</p>
+</div>
+
+<h2>The Three Layers of AWS Infrastructure</h2>
+<p>AWS physical infrastructure is organised into three layers, each serving a different purpose. Understanding these is critical because almost every architectural decision you make depends on it.</p>
+
+<div class="grid3">
+  <div class="card">
+    <div class="card-title" style="color:var(--orange-light)">Regions</div>
+    <div class="card-body">Geographic area containing multiple data centres. Completely isolated from other regions — no data crosses region boundaries unless you explicitly configure it. 33+ regions globally as of 2024. <em>You choose which region to deploy to.</em></div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--blue-light)">Availability Zones (AZs)</div>
+    <div class="card-body">One or more discrete data centres within a Region, each with independent power, cooling, and networking. Connected to each other via low-latency, high-bandwidth private fibre links. Typically 3–6 per Region. <em>This is where fault isolation lives.</em></div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--green-light)">Edge Locations</div>
+    <div class="card-body">Points of Presence (PoPs) at internet exchange points globally — 400+ locations. Used by CloudFront (CDN), Route 53 (DNS), WAF. Serve cached content close to users. <em>Not full regions — just content delivery and DNS.</em></div>
+  </div>
+</div>
+
+<h2>Regions — Deep Dive</h2>
+<p>A Region is the highest-level unit of AWS infrastructure. Each region is completely independent — it has its own control plane, its own endpoints, and its own copy of every service. AWS never moves your data between regions automatically.</p>
+
+<div class="scenario">
+  <div class="scenario-label">Why Regions Exist</div>
+  <div class="scenario-title">Data residency, latency, and fault isolation</div>
+  <p><strong>Data residency:</strong> GDPR requires EU citizen data to stay in the EU. You deploy to eu-west-1 (Ireland) or eu-central-1 (Frankfurt). AWS guarantees your data never leaves that region without your explicit action.</p>
+  <p style="margin-top:8px"><strong>Latency:</strong> Your users are in Tokyo. You deploy to ap-northeast-1 (Tokyo). 30ms round-trip instead of 180ms from us-east-1. The difference is noticeable to users.</p>
+  <p style="margin-top:8px"><strong>Fault isolation:</strong> If a catastrophic event (hurricane, power grid failure, fibre cut) hits us-east-1, your ap-southeast-1 deployment is completely unaffected.</p>
+</div>
+
+<h3>Key regions and their codes (memorise these)</h3>
+<div class="region-grid">
+  <div class="region-card"><div class="region-name">US East (N. Virginia)</div><div class="region-code">us-east-1</div><div class="region-azs">6 AZs · Services launch here first</div></div>
+  <div class="region-card"><div class="region-name">US East (Ohio)</div><div class="region-code">us-east-2</div><div class="region-azs">3 AZs</div></div>
+  <div class="region-card"><div class="region-name">US West (Oregon)</div><div class="region-code">us-west-2</div><div class="region-azs">4 AZs</div></div>
+  <div class="region-card"><div class="region-name">EU (Ireland)</div><div class="region-code">eu-west-1</div><div class="region-azs">3 AZs</div></div>
+  <div class="region-card"><div class="region-name">EU (Frankfurt)</div><div class="region-code">eu-central-1</div><div class="region-azs">3 AZs</div></div>
+  <div class="region-card"><div class="region-name">AP (Tokyo)</div><div class="region-code">ap-northeast-1</div><div class="region-azs">4 AZs</div></div>
+  <div class="region-card"><div class="region-name">AP (Singapore)</div><div class="region-code">ap-southeast-1</div><div class="region-azs">3 AZs</div></div>
+  <div class="region-card"><div class="region-name">AP (Sydney)</div><div class="region-code">ap-southeast-2</div><div class="region-azs">3 AZs</div></div>
+  <div class="region-card"><div class="region-name">SA (São Paulo)</div><div class="region-code">sa-east-1</div><div class="region-azs">3 AZs</div></div>
+</div>
+
+<div class="alert a-orange">
+  <strong>Important:</strong> <code>us-east-1</code> is special — it's where AWS launches new services first, where global IAM, Route 53, CloudFront, and billing data live. Some global services have their endpoints in us-east-1 even though they serve globally.
+</div>
+
+<h2>Availability Zones — The Key to High Availability</h2>
+<p>This is where the real engineering happens. AZs are isolated failure domains within a region. If data centre A catches fire, data centres B and C in the same region continue running. The AZ names (<code>us-east-1a</code>, <code>us-east-1b</code>) are logical names — the actual physical mapping varies per account (AWS shuffles them to prevent everyone deploying to "1a").</p>
+
+<div class="compare-row">
+  <div class="cmp-a">
+    <div class="cmp-label">❌ Single-AZ deployment</div>
+    <p style="font-size:12.5px;color:var(--text2)">All resources in <code>us-east-1a</code>. If that AZ has a power failure, cooling issue, or network partition, your entire application is down. AWS SLA doesn't cover single-AZ failures — those happen.</p>
+  </div>
+  <div class="cmp-b">
+    <div class="cmp-label">✅ Multi-AZ deployment</div>
+    <p style="font-size:12.5px;color:var(--text2)">App servers in 1a, 1b, and 1c. Load balancer spans all three. RDS standby in 1b. If 1a fails, traffic automatically routes to 1b and 1c — zero downtime. This is the minimum for any production system.</p>
+  </div>
+</div>
+
+<h3>AZ selection in practice</h3>
+<pre><span class="cm"># Always spread across AZs. Example with EC2 Auto Scaling:</span>
+aws autoscaling create-auto-scaling-group \
+  --auto-scaling-group-name my-app-asg \
+  --availability-zones us-east-1a us-east-1b us-east-1c \  <span class="cm"># spread instances</span>
+  --min-size 3 --max-size 12 --desired-capacity 6
+
+<span class="cm"># RDS Multi-AZ — primary in 1a, standby in 1b, automatic failover</span>
+aws rds create-db-instance \
+  --db-instance-identifier mydb \
+  --multi-az \           <span class="cm"># this flag is all you need</span>
+  --db-instance-class db.t3.medium \
+  --engine postgres</pre>
+
+<h2>Edge Locations &amp; CloudFront</h2>
+<p>Edge Locations are <strong>not full regions</strong> — they don't run EC2 or RDS. They serve one purpose: get content close to users. When a user in Mumbai requests your website hosted in us-east-1, CloudFront serves cached content from the Mumbai Edge Location — ~10ms instead of ~200ms.</p>
+
+<div class="grid2">
+  <div class="card">
+    <div class="card-title" style="color:var(--teal-light)">What runs at Edge Locations</div>
+    <div class="card-body">
+      CloudFront (CDN) — cached static assets, APIs<br>
+      Route 53 — DNS resolution worldwide<br>
+      AWS WAF — web application firewall<br>
+      Lambda@Edge — code executed at edge<br>
+      AWS Shield — DDoS protection
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--purple-light)">What doesn't run at Edge</div>
+    <div class="card-body">
+      EC2 instances — compute only in regions<br>
+      RDS databases — only in regions<br>
+      Lambda (standard) — only in regions<br>
+      S3 buckets — only in regions (though cached by CF)<br>
+      VPCs — only in regions
+    </div>
+  </div>
+</div>
+
+<h2>Regional vs Global Services</h2>
+<p>This is a common source of confusion. Some AWS services are <strong>regional</strong> (you specify a region when you create resources), while others are <strong>global</strong> (one instance serves everywhere).</p>
+
+<table>
+  <tr><th>Global Services</th><th>Regional Services</th></tr>
+  <tr><td>IAM (users, roles, policies)</td><td>EC2 (instances per region)</td></tr>
+  <tr><td>Route 53 (DNS)</td><td>VPC (one per region)</td></tr>
+  <tr><td>CloudFront (distributions)</td><td>S3 (buckets in specific regions)</td></tr>
+  <tr><td>AWS Organizations</td><td>RDS, DynamoDB, Lambda</td></tr>
+  <tr><td>AWS Billing &amp; Cost Explorer</td><td>CloudWatch (per region)</td></tr>
+</table>
+
+<div class="alert a-blue">
+  <strong>Practical implication:</strong> When you switch regions in the AWS Console, your EC2 instances, RDS databases, and VPCs change. But your IAM users and Route 53 hosted zones stay the same — they're global. This confuses many beginners who can't find their EC2 instance after accidentally switching regions.
+</div>
+
+<h2>Local Zones &amp; Wavelength Zones</h2>
+<p>Beyond standard Regions and AZs, AWS has two extensions for specialised use cases:</p>
+<div class="grid2">
+  <div class="card">
+    <div class="card-title" style="color:var(--yellow-light)">Local Zones</div>
+    <div class="card-body">Extensions of a Region placed closer to large population centres (e.g., Los Angeles, Chicago, Boston). Run EC2, EBS, RDS with single-digit millisecond latency to that metro area. Useful for video production, gaming, financial trading near specific cities.</div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--yellow-light)">Wavelength Zones</div>
+    <div class="card-body">AWS infrastructure embedded within telecom providers' 5G networks. Sub-millisecond latency to mobile devices. Used for AR/VR, real-time gaming, autonomous vehicle data processing directly at the 5G edge.</div>
+  </div>
+</div>
+
+<div class="refs">
+  <span style="font-size:11px;color:var(--text3);margin-right:4px">📖 References:</span>
+  <a class="ref" href="https://aws.amazon.com/about-aws/global-infrastructure/" target="_blank"><span class="ref-icon">🔗</span>AWS Global Infrastructure</a>
+  <a class="ref" href="https://infrastructure.aws/" target="_blank"><span class="ref-icon">🗺</span>Interactive Infrastructure Map</a>
+  <a class="ref" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html" target="_blank"><span class="ref-icon">📄</span>Regions and AZs Docs</a>
+  <a class="ref" href="https://aws.amazon.com/about-aws/global-infrastructure/localzones/" target="_blank"><span class="ref-icon">🔗</span>Local Zones</a>
+</div>
+</div>
+
+<!-- ===== S3: SHARED RESPONSIBILITY ===== -->
+<div id="s3" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 1 · Section 3</span>
+  <h1>Shared Responsibility Model</h1>
+  <p class="subtitle">The most important mental model in AWS security — knowing exactly what AWS owns vs what you own. Every security incident involves someone misunderstanding this boundary.</p>
+</div>
+
+<h2>The Core Concept</h2>
+<p>AWS does not secure everything for you. Security in the cloud is a <strong>shared responsibility</strong>. AWS secures the infrastructure. You secure everything built on top of it. This isn't fine print — it's the foundational principle you must understand before building anything production-ready.</p>
+
+<div class="card" style="border-color:var(--aws);background:var(--aws-bg)">
+  <div style="text-align:center;padding:8px 0">
+    <div style="font-size:13px;font-weight:700;color:var(--aws);margin-bottom:16px">THE SHARED RESPONSIBILITY MODEL</div>
+    <div style="background:var(--aws-bg);border:1px solid var(--orange);border-radius:var(--radius);padding:14px;margin-bottom:8px">
+      <div style="font-size:11px;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px">YOU ARE RESPONSIBLE FOR (Security IN the cloud)</div>
+      <div style="font-size:12.5px;color:var(--text2);display:flex;flex-wrap:wrap;gap:8px;justify-content:center">
+        <span class="badge badge-orange">Customer Data</span>
+        <span class="badge badge-orange">Encryption (your keys)</span>
+        <span class="badge badge-orange">IAM configuration</span>
+        <span class="badge badge-orange">OS patching (EC2)</span>
+        <span class="badge badge-orange">Network / Firewall config</span>
+        <span class="badge badge-orange">Application security</span>
+        <span class="badge badge-orange">Platform config</span>
+      </div>
+    </div>
+    <div style="background:var(--blue-bg);border:1px solid var(--blue);border-radius:var(--radius);padding:14px">
+      <div style="font-size:11px;font-weight:700;color:var(--blue-light);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px">AWS IS RESPONSIBLE FOR (Security OF the cloud)</div>
+      <div style="font-size:12.5px;color:var(--text2);display:flex;flex-wrap:wrap;gap:8px;justify-content:center">
+        <span class="badge badge-blue">Physical datacentres</span>
+        <span class="badge badge-blue">Hardware</span>
+        <span class="badge badge-blue">Network infrastructure</span>
+        <span class="badge badge-blue">Hypervisor / virtualisation</span>
+        <span class="badge badge-blue">Managed service software</span>
+        <span class="badge badge-blue">Global network</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h2>How the Boundary Shifts With Service Type</h2>
+<p>The critical insight is that the boundary moves depending on <em>which type of service</em> you use. The more managed the service, the more AWS takes responsibility for:</p>
+
+<table>
+  <tr><th>Service</th><th>AWS Manages</th><th>You Manage</th></tr>
+  <tr><td><strong>EC2</strong> (IaaS)</td><td>Physical host, hypervisor, network fabric</td><td>OS, patches, runtime, app code, IAM, security groups, data encryption</td></tr>
+  <tr><td><strong>RDS</strong> (PaaS)</td><td>+ OS, database engine, automated backups, patches</td><td>DB configuration, access control, schema, data encryption, instance type, VPC placement</td></tr>
+  <tr><td><strong>Lambda</strong> (Serverless)</td><td>+ Runtime, OS, scaling, execution environment isolation</td><td>Function code, IAM permissions, memory/timeout, environment variables, data</td></tr>
+  <tr><td><strong>DynamoDB</strong> (Fully Managed)</td><td>+ Hardware provisioning, data replication, availability</td><td>Table design, access policies, encryption settings, data in tables</td></tr>
+  <tr><td><strong>S3</strong> (Object Storage)</td><td>Durability (11 9s), hardware, replication</td><td>Bucket policies, access control, encryption keys, public access settings, versioning</td></tr>
+</table>
+
+<h2>Real-World Violations — Where Things Go Wrong</h2>
+<p>Every major AWS security breach in the news violated the customer's side of the shared responsibility model. AWS's infrastructure was never compromised:</p>
+
+<div class="grid2">
+  <div class="card" style="border-color:#5a1a1a">
+    <div class="card-title" style="color:var(--red-light)">S3 bucket exposed publicly</div>
+    <div class="card-body">Company stored customer data in S3. Bucket policy allowed <code>*</code> (everyone) to read. Data leaked. <strong>AWS's fault?</strong> No — AWS gave you the tool (bucket policies). You misconfigured it. AWS has "Block Public Access" settings specifically to prevent this.</div>
+  </div>
+  <div class="card" style="border-color:#5a1a1a">
+    <div class="card-title" style="color:var(--red-light)">IAM credentials in GitHub</div>
+    <div class="card-body">Developer committed AWS access keys to a public GitHub repo. Attacker found them via automated scanning, spun up 10,000 EC2 instances for crypto mining in minutes. <strong>AWS's fault?</strong> No — AWS provided IAM. Developer leaked their own credentials.</div>
+  </div>
+  <div class="card" style="border-color:#5a1a1a">
+    <div class="card-title" style="color:var(--red-light)">EC2 instance compromised</div>
+    <div class="card-body">EC2 running old, unpatched OS. Attacker exploited known vulnerability via public IP. <strong>AWS's fault?</strong> No — AWS manages the hypervisor. The OS on the instance is your responsibility to patch. (This would be different with RDS — AWS patches the DB engine.)</div>
+  </div>
+  <div class="card" style="border-color:#5a1a1a">
+    <div class="card-title" style="color:var(--red-light)">Unencrypted sensitive data</div>
+    <div class="card-body">Company stored PII in DynamoDB without encryption. <strong>AWS's fault?</strong> No — DynamoDB offers encryption at rest, but you must enable it. If you don't configure encryption, AWS doesn't force it (though modern DynamoDB enables encryption by default now).</div>
+  </div>
+</div>
+
+<h2>Your Key Responsibilities — Checklist Mindset</h2>
+<div class="steps">
+  <div class="step"><div class="step-num">1</div><div class="step-content"><div class="step-title">Identity &amp; Access (IAM)</div><div class="step-body">Who can access what? Least privilege principle. No wildcard (*) permissions in production. Rotate credentials. Use roles not users for services. Enable MFA everywhere.</div></div></div>
+  <div class="step"><div class="step-num">2</div><div class="step-content"><div class="step-title">Data protection</div><div class="step-body">Encrypt data at rest (KMS) and in transit (TLS). You choose encryption — AWS provides the tools. You own the decision to use them.</div></div></div>
+  <div class="step"><div class="step-num">3</div><div class="step-content"><div class="step-title">OS &amp; patch management</div><div class="step-body">For EC2: your OS, your patches. Keep AMIs current. Use AWS Systems Manager Patch Manager for automation. For managed services (RDS, Lambda): AWS handles this for you.</div></div></div>
+  <div class="step"><div class="step-num">4</div><div class="step-content"><div class="step-title">Network controls</div><div class="step-body">Security Groups, NACLs, VPC design — you configure these. Block all inbound by default. Only allow what's needed. No 0.0.0.0/0 inbound on SSH/RDP in production.</div></div></div>
+  <div class="step"><div class="step-num">5</div><div class="step-content"><div class="step-title">Application security</div><div class="step-body">Your application code is entirely your responsibility. SQL injection, XSS, insecure deserialization — AWS cannot protect you from bugs in your own code (though WAF can help at the perimeter).</div></div></div>
+</div>
+
+<div class="alert a-green">
+  <strong>Key insight for architects:</strong> When designing a system, ask "which tier of service gives me the right responsibility balance?" If your team has security expertise and needs control → EC2 (IaaS). If you want to focus on product → Lambda/RDS (PaaS). The less you manage, the faster you move — but you give up some flexibility.
+</div>
+
+<div class="refs">
+  <span style="font-size:11px;color:var(--text3);margin-right:4px">📖 References:</span>
+  <a class="ref" href="https://aws.amazon.com/compliance/shared-responsibility-model/" target="_blank"><span class="ref-icon">🔗</span>AWS Shared Responsibility Model</a>
+  <a class="ref" href="https://docs.aws.amazon.com/wellarchitected/latest/security-pillar/shared-responsibility.html" target="_blank"><span class="ref-icon">📄</span>Well-Architected Security Pillar</a>
+  <a class="ref" href="https://aws.amazon.com/blogs/security/the-aws-shared-responsibility-model-and-gdpr/" target="_blank"><span class="ref-icon">🔗</span>Shared Responsibility &amp; GDPR</a>
+</div>
+</div>
+
+<!-- ===== S4: HOW AWS APIS WORK ===== -->
+<div id="s4" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 1 · Section 4</span>
+  <h1>How AWS APIs Work</h1>
+  <p class="subtitle">Every interaction with AWS — console click, CLI command, SDK call — is an HTTPS request. Understanding the request lifecycle, Signature V4, and endpoints is foundational for debugging, building, and understanding IAM.</p>
+</div>
+
+<h2>Every AWS Interaction is an HTTP Request</h2>
+<p>This is the most important mechanical fact about AWS. There is no special protocol. The AWS Console, CLI, and SDKs all make signed HTTPS requests to AWS service endpoints. Understanding this unlocks your ability to debug any AWS issue.</p>
+
+<div class="flow">
+  <div class="fbox">Your Code / CLI / Console</div>
+  <div class="farr">→</div>
+  <div class="fbox">Build HTTP Request</div>
+  <div class="farr">→</div>
+  <div class="fbox">Sign with SigV4</div>
+  <div class="farr">→</div>
+  <div class="fbox">HTTPS to AWS Endpoint</div>
+  <div class="farr">→</div>
+  <div class="fbox">IAM Authenticates</div>
+  <div class="farr">→</div>
+  <div class="fbox">IAM Authorises</div>
+  <div class="farr">→</div>
+  <div class="fbox">Service Executes</div>
+  <div class="farr">→</div>
+  <div class="fbox">HTTP Response</div>
+</div>
+
+<h2>AWS Service Endpoints</h2>
+<p>Each AWS service in each region has a predictable DNS endpoint. All follow the same pattern:</p>
+
+<pre><span class="cm"># Format: {service}.{region}.amazonaws.com</span>
+
+ec2.us-east-1.amazonaws.com          <span class="cm"># EC2 API, us-east-1</span>
+s3.us-east-1.amazonaws.com           <span class="cm"># S3 regional endpoint</span>
+s3.amazonaws.com                      <span class="cm"># S3 global endpoint (routes to us-east-1)</span>
+rds.eu-west-1.amazonaws.com          <span class="cm"># RDS, Ireland</span>
+lambda.ap-southeast-1.amazonaws.com  <span class="cm"># Lambda, Singapore</span>
+iam.amazonaws.com                     <span class="cm"># IAM is global — no region in URL</span>
+route53.amazonaws.com                 <span class="cm"># Route53 is global</span></pre>
+
+<h2>Anatomy of an AWS API Call</h2>
+<p>Let's look at what a real AWS API call looks like at the HTTP level. This is what the SDK does behind the scenes when you call <code>s3.listBuckets()</code>:</p>
+
+<pre><span class="cm"># Raw HTTP request to list S3 buckets</span>
+GET / HTTP/1.1
+Host: s3.amazonaws.com
+X-Amz-Date: 20240115T103045Z
+X-Amz-Security-Token: <span class="str">AQoXnyc4...</span>    <span class="cm"># only for temporary credentials</span>
+Authorization: AWS4-HMAC-SHA256        <span class="cm"># Signature Version 4</span>
+    Credential=<span class="ak">AKIAIOSFODNN7EXAMPLE</span>/<span class="num">20240115</span>/us-east-1/s3/aws4_request,
+    SignedHeaders=host;x-amz-date,
+    Signature=<span class="str">fe5f80f77d5fa3beca038a248ff027d0445342fe2855ddc963176630326f1024</span>
+
+<span class="cm"># Response</span>
+HTTP/1.1 200 OK
+Content-Type: application/xml
+
+&lt;ListAllMyBucketsResult&gt;
+  &lt;Buckets&gt;
+    &lt;Bucket&gt;&lt;Name&gt;my-bucket&lt;/Name&gt;&lt;/Bucket&gt;
+  &lt;/Buckets&gt;
+&lt;/ListAllMyBucketsResult&gt;</pre>
+
+<h2>Signature Version 4 (SigV4) — How Authentication Works</h2>
+<p>AWS uses <strong>Signature Version 4 (SigV4)</strong> to authenticate every request. This is a HMAC-SHA256 signing process that proves the request came from someone with valid credentials — without ever sending the secret access key over the wire.</p>
+
+<h3>Why not just send username + password?</h3>
+<p>Passwords over HTTP are interceptable. SigV4 works differently: you <em>sign</em> the request with your secret key, AWS verifies the signature. The secret key never travels. Also: the signature includes the request body and timestamp, so signatures can't be replayed or tampered with.</p>
+
+<h3>The 4 steps of SigV4 signing</h3>
+<div class="steps">
+  <div class="step"><div class="step-num">1</div><div class="step-content"><div class="step-title">Create a canonical request</div><div class="step-body">Normalise the HTTP request into a consistent string: HTTP method + URI + query string + headers + hash of body. This string is deterministic — the same request always produces the same canonical form.</div></div></div>
+  <div class="step"><div class="step-num">2</div><div class="step-content"><div class="step-title">Create a string to sign</div><div class="step-body">Combine: algorithm name (<code>AWS4-HMAC-SHA256</code>), timestamp, credential scope (date/region/service), and SHA256 hash of the canonical request from step 1.</div></div></div>
+  <div class="step"><div class="step-num">3</div><div class="step-content"><div class="step-title">Calculate the signing key</div><div class="step-body">Derive a signing key from your secret access key + date + region + service + "aws4_request". This key is unique to this day/region/service — even if one derived key leaked, it couldn't be used for other services.</div></div></div>
+  <div class="step"><div class="step-num">4</div><div class="step-content"><div class="step-title">Calculate the signature</div><div class="step-body">HMAC-SHA256(signing key, string to sign). Add this signature to the <code>Authorization</code> header. AWS performs the same calculation on their side with the secret key stored for your access key ID. If signatures match → authenticated.</div></div></div>
+</div>
+
+<pre><span class="cm"># Pseudocode for SigV4 (the SDKs do this automatically)</span>
+secret_key = <span class="str">"wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"</span>
+
+<span class="cm"># Step 3: Derive signing key</span>
+date_key    = HMAC(<span class="str">"AWS4"</span> + secret_key, <span class="str">"20240115"</span>)
+region_key  = HMAC(date_key, <span class="str">"us-east-1"</span>)
+service_key = HMAC(region_key, <span class="str">"s3"</span>)
+signing_key = HMAC(service_key, <span class="str">"aws4_request"</span>)
+
+<span class="cm"># Step 4: Final signature</span>
+signature = HMAC(signing_key, string_to_sign)
+
+<span class="cm"># Authorization header format</span>
+Authorization: AWS4-HMAC-SHA256
+  Credential=&lt;AccessKeyId&gt;/&lt;Date&gt;/&lt;Region&gt;/&lt;Service&gt;/aws4_request,
+  SignedHeaders=&lt;list of headers included in signature&gt;,
+  Signature=&lt;hex-encoded signature&gt;</pre>
+
+<div class="alert a-blue">
+  <strong>You almost never implement SigV4 manually.</strong> AWS SDKs sign every request automatically using your configured credentials. Understanding SigV4 matters for: debugging auth failures, building custom HTTP clients, understanding what IAM actually validates, and implementing presigned URLs.
+</div>
+
+<h2>Credentials — Where They Come From</h2>
+<p>The SDK needs credentials (Access Key ID + Secret Access Key, optionally + Session Token) to sign requests. It looks for them in this priority order:</p>
+
+<div class="steps">
+  <div class="step"><div class="step-num">1</div><div class="step-content"><div class="step-title">Environment variables</div><div class="step-body"><code>AWS_ACCESS_KEY_ID</code>, <code>AWS_SECRET_ACCESS_KEY</code>, <code>AWS_SESSION_TOKEN</code>. Highest priority — useful for CI/CD pipelines.</div></div></div>
+  <div class="step"><div class="step-num">2</div><div class="step-content"><div class="step-title">Java system properties (Java SDK only)</div><div class="step-body"><code>aws.accessKeyId</code>, <code>aws.secretAccessKey</code>. Passed via <code>-D</code> flags.</div></div></div>
+  <div class="step"><div class="step-num">3</div><div class="step-content"><div class="step-title">AWS credentials file</div><div class="step-body"><code>~/.aws/credentials</code> — set by <code>aws configure</code>. Profiles let you have multiple credential sets. Use with profile selection.</div></div></div>
+  <div class="step"><div class="step-num">4</div><div class="step-content"><div class="step-title">AWS config file / Instance profile / IAM role</div><div class="step-body">When running on EC2, ECS, Lambda — the SDK automatically fetches temporary credentials from the instance metadata service (IMDS). <strong>This is the preferred method for production.</strong> No credentials stored anywhere.</div></div></div>
+</div>
+
+<pre><span class="cm"># ~/.aws/credentials (created by 'aws configure')</span>
+[default]
+aws_access_key_id = AKIAIOSFODNN7EXAMPLE
+aws_secret_access_key = wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+
+[production]
+aws_access_key_id = AKIAI44QH8DHBEXAMPLE
+aws_secret_access_key = je7MtGbClwBF/2Zp9Utk/h3yCo8nvbEXAMPLEKEY
+
+<span class="cm"># Use a specific profile</span>
+aws s3 ls --profile production
+export AWS_PROFILE=production  <span class="cm"># or set for session</span>
+
+<span class="cm"># On EC2/Lambda — SDK calls this URL automatically for creds</span>
+http://169.254.169.254/latest/meta-data/iam/security-credentials/{role-name}
+<span class="cm"># Returns temporary AccessKeyId + SecretAccessKey + SessionToken
+# Auto-refreshed before expiry — you never manage rotation</span></pre>
+
+<h2>Request Errors — Reading AWS Error Responses</h2>
+<p>AWS returns errors as structured HTTP responses. Learning to read them saves hours of debugging:</p>
+
+<pre><span class="cm"># 403 Forbidden — authentication or authorisation failure</span>
+HTTP/1.1 403 Forbidden
+{
+  <span class="str">"Code"</span>: <span class="str">"AccessDenied"</span>,
+  <span class="str">"Message"</span>: <span class="str">"User: arn:aws:iam::123456789:user/alice is not authorized
+             to perform: s3:GetObject on resource: arn:aws:s3:::my-bucket/file.txt"</span>
+}
+<span class="cm"># This error tells you EXACTLY what: which principal, which action, which resource
+# → Debug: check Alice's IAM policies, check bucket policy, check S3 Block Public Access</span>
+
+<span class="cm"># 401 — Invalid credentials</span>
+{<span class="str">"Code"</span>:<span class="str">"InvalidClientTokenId"</span>, <span class="str">"Message"</span>:<span class="str">"The security token included in the request is invalid."</span>}
+<span class="cm"># → Credentials are wrong or expired</span>
+
+<span class="cm"># 400 — Request validation failure</span>
+{<span class="str">"Code"</span>:<span class="str">"ValidationError"</span>, <span class="str">"Message"</span>:<span class="str">"Value 'xyz' at 'instanceType' failed to satisfy constraint..."</span>}
+<span class="cm"># → Your request parameters are wrong</span>
+
+<span class="cm"># Throttling</span>
+{<span class="str">"Code"</span>:<span class="str">"ThrottlingException"</span>, <span class="str">"Message"</span>:<span class="str">"Rate exceeded"</span>}
+<span class="cm"># → Implement exponential backoff and retry</span></pre>
+
+<div class="refs">
+  <span style="font-size:11px;color:var(--text3);margin-right:4px">📖 References:</span>
+  <a class="ref" href="https://docs.aws.amazon.com/general/latest/gr/signing_aws_api_requests.html" target="_blank"><span class="ref-icon">📄</span>SigV4 Signing Process</a>
+  <a class="ref" href="https://docs.aws.amazon.com/general/latest/gr/aws-apis.html" target="_blank"><span class="ref-icon">📄</span>AWS API Concepts</a>
+  <a class="ref" href="https://docs.aws.amazon.com/sdkref/latest/guide/standardized-credentials.html" target="_blank"><span class="ref-icon">📄</span>SDK Credential Provider Chain</a>
+  <a class="ref" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-metadata.html" target="_blank"><span class="ref-icon">📄</span>EC2 Instance Metadata (IMDS)</a>
+  <a class="ref" href="https://aws.amazon.com/premiumsupport/knowledge-center/http-5xx-errors-s3/" target="_blank"><span class="ref-icon">🔗</span>Debugging HTTP Errors</a>
+</div>
+</div>
+
+<!-- ===== S5: INTERVIEW Q&A ===== -->
+<div id="s5" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 1 · Interview Q&amp;A</span>
+  <h1>Interview Questions — Foundation</h1>
+  <p class="subtitle">Questions you'll face for any AWS role — from junior cloud developer to senior architect. Click to reveal detailed answers.</p>
+</div>
+
+<h2 style="color:var(--green-light)">Conceptual / Beginner</h2>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">What is the difference between a Region, Availability Zone, and Edge Location? <span class="qa-arrow">▼</span></div><div class="qa-a"><strong>Region:</strong> A geographic area (e.g., us-east-1, eu-west-1) containing multiple data centres. Completely isolated — data never crosses regions automatically. You deploy resources to a region. <strong>AZ:</strong> One or more physical data centres within a region, each with independent power/cooling/networking. AZs within a region are connected via low-latency private fibre. You deploy across multiple AZs for high availability. <strong>Edge Location:</strong> Points of Presence (400+) at internet exchange points globally. Used only for CDN (CloudFront), DNS (Route 53), and WAF. Not full regions — you can't run EC2 there. They serve cached content close to users for low latency.</div></div>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">Why would you use multiple AWS accounts instead of one? <span class="qa-arrow">▼</span></div><div class="qa-a">Multiple accounts provide: (1) <strong>Blast radius isolation</strong> — if prod account is compromised, dev account is unaffected. Resources are completely isolated by default. (2) <strong>Billing separation</strong> — easy to see exactly what each team/environment costs. (3) <strong>Permission isolation</strong> — different teams can't accidentally access each other's resources. (4) <strong>Service limit isolation</strong> — dev workloads can't exhaust prod's EC2 limits. Typical pattern: separate accounts for prod, staging, dev, security, logging, shared services. Managed via AWS Organizations with consolidated billing.</div></div>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">What is the AWS Shared Responsibility Model? Give a concrete example. <span class="qa-arrow">▼</span></div><div class="qa-a">AWS is responsible for security <em>of</em> the cloud — physical hardware, hypervisor, global network, managed service software. You are responsible for security <em>in</em> the cloud — data, IAM configuration, network controls, OS patching (for EC2), application security. <strong>Example:</strong> You run an RDS PostgreSQL database. AWS manages: the hardware, the host OS, the PostgreSQL software updates, automated backups, multi-AZ replication. You manage: who can connect (security groups, IAM), what data is stored, encryption keys, instance sizing, parameter groups. If someone accesses your database because you misconfigured the security group to allow 0.0.0.0/0 — that's your fault, not AWS's.</div></div>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">What is the difference between IaaS, PaaS, and SaaS? Give AWS examples. <span class="qa-arrow">▼</span></div><div class="qa-a"><strong>IaaS (Infrastructure as a Service):</strong> You get raw infrastructure. AWS manages hardware/network/virtualisation. You manage everything from OS up. Example: EC2, EBS, VPC. You install the OS, install your runtime, deploy your app, patch the OS. <strong>PaaS (Platform as a Service):</strong> AWS manages OS, runtime, patching. You deploy code and configure. Example: Lambda (no OS at all), RDS (AWS patches the DB engine), Elastic Beanstalk. <strong>SaaS (Software as a Service):</strong> Fully managed software product. You configure and use it. Example: Amazon WorkMail, Cognito, SES (you just call the email API). Key insight: as you move from IaaS → PaaS → SaaS, you give up control but gain operational simplicity.</div></div>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">What is SigV4 and why does AWS use it instead of just an API key in the header? <span class="qa-arrow">▼</span></div><div class="qa-a">Signature Version 4 (SigV4) is AWS's request authentication method. It works by signing the request using HMAC-SHA256 with your secret access key — the key itself is never sent. <strong>Why not just send an API key?</strong> Three reasons: (1) <strong>No secret transmission</strong> — if someone intercepts the request, they see only the signature, not the secret key that generated it. (2) <strong>Request integrity</strong> — the signature covers the request body and headers, so any tampering makes the signature invalid. (3) <strong>Replay protection</strong> — the signature includes a timestamp; requests older than 15 minutes are rejected, so a captured request can't be replayed later. AWS SDKs handle SigV4 automatically — you only need to understand it for debugging auth failures, implementing presigned URLs, or building custom HTTP clients.</div></div>
+
+<h2 style="color:var(--yellow-light)">Intermediate</h2>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">How does the AWS SDK credential provider chain work? In what order does it look for credentials? <span class="qa-arrow">▼</span></div><div class="qa-a">The SDK checks these sources in order, using the first one that provides valid credentials: (1) <strong>Environment variables</strong> — AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_SESSION_TOKEN. (2) <strong>Java system properties</strong> (Java SDK) — aws.accessKeyId, aws.secretAccessKey. (3) <strong>AWS credentials file</strong> — ~/.aws/credentials, configured via `aws configure`. (4) <strong>ECS container credentials</strong> — for ECS tasks with a task role assigned. (5) <strong>EC2 instance metadata service (IMDS)</strong> — for EC2 instances with an IAM instance profile. The IMDS approach is best practice for production: no credentials stored on disk or in environment variables. The SDK calls http://169.254.169.254/latest/meta-data/iam/security-credentials/{role-name} automatically and refreshes temporary credentials before they expire.</div></div>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">You run an EC2 instance in us-east-1 and need to access S3 in the same region. Should you route through the public internet or use a VPC Endpoint? Why? <span class="qa-arrow">▼</span></div><div class="qa-a">Use a <strong>VPC Endpoint (Gateway Endpoint for S3)</strong>. Reasons: (1) <strong>Security</strong> — traffic stays within AWS's private network, never touches the public internet. No exposure to internet threats. (2) <strong>Cost</strong> — data transfer to/from S3 via internet has outbound data transfer charges. VPC Gateway Endpoints are free. (3) <strong>Performance</strong> — private network is lower latency and more reliable than routing through internet gateway. (4) <strong>No need for NAT Gateway</strong> — instances in private subnets can reach S3 without a NAT Gateway (which costs money per GB). A Gateway Endpoint is a route table entry — traffic destined for S3's prefix list is routed via the endpoint instead of the internet gateway. Zero configuration in your application code.</div></div>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">What's the difference between an S3 bucket in us-east-1 and one in eu-west-1? Can an app in us-east-1 access both? <span class="qa-arrow">▼</span></div><div class="qa-a">Both are S3 buckets — same service, same API. The differences: (1) <strong>Data residency</strong> — data in eu-west-1 physically stays in Ireland. GDPR-relevant. Data in us-east-1 stays in N. Virginia. (2) <strong>Latency</strong> — an app in us-east-1 will have much lower latency accessing the us-east-1 bucket (~1-5ms) vs the eu-west-1 bucket (~80-100ms). (3) <strong>Data transfer costs</strong> — accessing the eu-west-1 bucket from us-east-1 incurs inter-region data transfer fees (~$0.02/GB). Same-region transfers are free. Yes, an app in us-east-1 can absolutely access both buckets — S3 is accessible over HTTPS from anywhere. The API call just goes to different endpoints: s3.us-east-1.amazonaws.com vs s3.eu-west-1.amazonaws.com.</div></div>
+
+<h2 style="color:var(--orange-light)">Advanced / Architect Level</h2>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">How would you design an AWS architecture to ensure zero data loss and &lt;1 minute RTO (Recovery Time Objective) if an entire AWS Region goes down? <span class="qa-arrow">▼</span></div><div class="qa-a">This requires an active-active or active-passive multi-region architecture: <strong>Database:</strong> Aurora Global Database (replication lag &lt;1s) or DynamoDB Global Tables (multi-master, active-active). RDS cross-region read replica with manual promotion for active-passive. <strong>Application:</strong> Deploy identical stacks in two regions (e.g., us-east-1 and us-west-2). Use Auto Scaling Groups and identical infrastructure in both. <strong>Traffic routing:</strong> Route 53 with health checks and failover routing policy. Health checks detect regional failure and automatically update DNS within 30-60 seconds. <strong>State/Sessions:</strong> ElastiCache cross-region replication or DynamoDB for session state — nothing stored in local application memory. <strong>Storage:</strong> S3 Cross-Region Replication (CRR) with same-object names so no app code changes needed. <strong>Secrets:</strong> Secrets Manager with cross-region replication. Key trade-off: this architecture costs 2x+ and significantly complicates operations. Ensure the business actually needs this SLA before building it.</div></div>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">Explain what happens at the infrastructure level when you click "Launch Instance" in the EC2 console. <span class="qa-arrow">▼</span></div><div class="qa-a">At a high level: (1) <strong>Console → API</strong>: Browser sends a signed HTTPS POST to ec2.{region}.amazonaws.com with a RunInstances API call, including your AMI ID, instance type, subnet, security groups, key pair, and IAM instance profile. (2) <strong>IAM authentication &amp; authorisation</strong>: AWS authenticates the SigV4 signature (you are who you claim). IAM evaluates your policies to check you have ec2:RunInstances permission on the requested resources. (3) <strong>EC2 control plane</strong>: EC2 scheduling system selects a physical host in the AZ you specified (or across AZs if you didn't specify). The host must have capacity for your instance type. (4) <strong>Hypervisor</strong>: AWS's Nitro hypervisor creates an isolated virtual machine on the selected physical host. Nitro is custom hardware — a dedicated card handles virtualisation, giving near-bare-metal performance. (5) <strong>Networking</strong>: A virtual network interface (ENI) is created and attached. The physical host's NIC is configured with your VPC routing rules via the Nitro card. Security group rules are implemented at the hypervisor level — not in the OS. (6) <strong>AMI boot</strong>: The root EBS volume is created from your AMI snapshot. Instance boots, runs user data script if provided. (7) <strong>IMDS</strong>: The instance metadata service is available at 169.254.169.254. If you assigned an IAM role, the role's temporary credentials are available here. Total time: typically 30-90 seconds.</div></div>
+
+</div>
+
+</main>
+</div>
+
+<script>
+function show(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.currentTarget.classList.add('active');
+  window.scrollTo(0, 0);
+}
+function toggleQA(el) {
+  const ans = el.nextElementSibling;
+  const arrow = el.querySelector('.qa-arrow');
+  ans.classList.toggle('open');
+  arrow.classList.toggle('open');
+}
+</script>
+</body>
+</html>

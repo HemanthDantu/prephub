@@ -1,0 +1,2025 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>AWS Module 4 — Compute</title>
+<style>
+:root{--bg:#0c1117;--bg2:#131a24;--bg3:#1a2332;--bg4:#1f2b3d;--border:#243048;--border2:#2e3d55;--text:#e2e8f0;--text2:#94a3b8;--text3:#5a6a82;--orange:#f97316;--orange-bg:#2a1500;--orange-light:#fdba74;--blue:#3b82f6;--blue-bg:#0f2340;--blue-light:#93c5fd;--green:#22c55e;--green-bg:#0a2414;--green-light:#86efac;--red:#ef4444;--red-bg:#2a0a0a;--red-light:#fca5a5;--yellow:#f59e0b;--yellow-bg:#2a1800;--yellow-light:#fcd34d;--purple:#a855f7;--purple-bg:#1e0a35;--purple-light:#d8b4fe;--teal:#14b8a6;--teal-bg:#021e1c;--teal-light:#5eead4;--aws:#ff9900;--aws-bg:#1a0f00;--radius:8px;--radius-lg:12px;--mono:'Fira Code','Cascadia Code','Consolas',monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;line-height:1.7}
+.layout{display:flex;min-height:100vh}
+.sidebar{width:250px;min-width:250px;background:var(--bg2);border-right:1px solid var(--border);position:sticky;top:0;height:100vh;overflow-y:auto}
+.sidebar-header{padding:16px 20px;border-bottom:1px solid var(--border)}
+.sidebar-mod{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--aws);margin-bottom:3px}
+.sidebar-title{font-size:14px;font-weight:700;color:var(--text)}
+.sidebar-sub{font-size:11px;color:var(--text3);margin-top:2px}
+.nav-item{display:flex;align-items:center;gap:8px;padding:8px 20px;cursor:pointer;font-size:12.5px;color:var(--text2);transition:all .15s;border-left:3px solid transparent}
+.nav-item:hover{background:var(--bg3);color:var(--text)}
+.nav-item.active{background:var(--bg3);color:var(--orange-light);border-left-color:var(--aws)}
+.nav-dot{width:5px;height:5px;border-radius:50%;background:var(--border2);flex-shrink:0}
+.nav-item.active .nav-dot{background:var(--aws)}
+.nav-badge{font-size:9.5px;padding:1px 6px;border-radius:10px;background:var(--bg4);color:var(--text3);margin-left:auto}
+.nav-item.active .nav-badge{background:var(--aws-bg);color:var(--orange-light)}
+.nav-group-label{font-size:9.5px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.9px;padding:12px 20px 4px}
+.main{flex:1;padding:44px 52px;max-width:960px;overflow-x:hidden}
+.section{display:none}.section.active{display:block}
+h1{font-size:27px;font-weight:700;margin-bottom:8px;line-height:1.25}
+h2{font-size:19px;font-weight:600;margin:36px 0 14px;color:var(--text)}
+h3{font-size:15px;font-weight:600;margin:22px 0 10px;color:var(--text)}
+h4{font-size:13px;font-weight:600;margin:14px 0 6px;color:var(--orange-light)}
+p{color:var(--text2);margin-bottom:12px;line-height:1.78}
+strong{color:var(--text);font-weight:600}
+a{color:var(--blue-light);text-decoration:none}
+.subtitle{color:var(--text3);font-size:14px;margin-bottom:26px;line-height:1.65}
+pre{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px;font-family:var(--mono);font-size:12.5px;line-height:1.72;overflow-x:auto;margin:14px 0}
+code{font-family:var(--mono);font-size:12px;background:var(--bg3);padding:2px 6px;border-radius:4px;color:var(--teal-light)}
+.cm{color:var(--text3)}.kw{color:var(--purple-light)}.str{color:var(--green-light)}.ty{color:var(--blue-light)}.ak{color:var(--orange-light)}.num{color:var(--yellow-light)}.fn{color:var(--teal-light)}.jk{color:var(--orange-light)}.jv{color:var(--green-light)}.jb{color:var(--purple-light)}.allow{color:#86efac}.deny{color:#fca5a5}
+.card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px;margin-bottom:14px}
+.card-title{font-size:13.5px;font-weight:600;margin-bottom:8px}
+.card-body{font-size:13px;color:var(--text2);line-height:1.75}
+.alert{border-radius:var(--radius);padding:13px 16px;margin:16px 0;font-size:13px;border-left:3px solid;line-height:1.7}
+.a-orange{background:var(--orange-bg);border-color:var(--orange);color:var(--orange-light)}
+.a-blue{background:var(--blue-bg);border-color:var(--blue);color:var(--blue-light)}
+.a-green{background:var(--green-bg);border-color:var(--green);color:var(--green-light)}
+.a-red{background:var(--red-bg);border-color:var(--red);color:var(--red-light)}
+.a-yellow{background:var(--yellow-bg);border-color:var(--yellow);color:var(--yellow-light)}
+.a-purple{background:var(--purple-bg);border-color:var(--purple);color:var(--purple-light)}
+.alert strong{color:inherit}
+.refs{margin:12px 0 16px;display:flex;flex-wrap:wrap;gap:6px}
+.ref{display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:3px 10px;border-radius:10px;background:var(--bg4);color:var(--text3);border:1px solid var(--border);text-decoration:none;transition:all .15s}
+.ref:hover{background:var(--bg3);color:var(--text2)}
+table{width:100%;border-collapse:collapse;margin:14px 0;font-size:13px}
+th{background:var(--bg3);color:var(--text);font-weight:600;padding:10px 14px;text-align:left;border-bottom:1px solid var(--border2)}
+td{padding:9px 14px;border-bottom:1px solid var(--border);color:var(--text2);vertical-align:top}
+tr:hover td{background:var(--bg3)}
+.qa{border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:10px;overflow:hidden}
+.qa-q{padding:13px 18px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;background:var(--bg3);font-size:13px;font-weight:500;transition:background .15s;user-select:none;gap:12px}
+.qa-q:hover{background:var(--bg4)}
+.qa-a{display:none;padding:16px 18px;font-size:13px;color:var(--text2);line-height:1.8;background:var(--bg2);border-top:1px solid var(--border)}
+.qa-a.open{display:block}.qa-arrow{transition:transform .2s;color:var(--text3);font-size:11px;flex-shrink:0}.qa-arrow.open{transform:rotate(180deg)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin:14px 0}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0}
+.pros-cons{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0}
+.pros{background:#061a0d;border:1px solid #14532d;border-radius:var(--radius-lg);padding:16px}
+.cons{background:#1a0606;border:1px solid #5a1a1a;border-radius:var(--radius-lg);padding:16px}
+.pros-title{color:var(--green);font-weight:600;font-size:13px;margin-bottom:10px}
+.cons-title{color:var(--red);font-weight:600;font-size:13px;margin-bottom:10px}
+.pros ul,.cons ul{padding-left:16px}.pros li,.cons li{font-size:12.5px;color:var(--text2);margin-bottom:5px;line-height:1.6}
+.badge{display:inline-flex;align-items:center;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;margin:2px}
+.badge-orange{background:var(--aws-bg);color:var(--orange-light)}.badge-blue{background:var(--blue-bg);color:var(--blue-light)}.badge-green{background:var(--green-bg);color:var(--green-light)}.badge-red{background:var(--red-bg);color:var(--red-light)}.badge-yellow{background:var(--yellow-bg);color:var(--yellow-light)}.badge-purple{background:var(--purple-bg);color:var(--purple-light)}.badge-teal{background:var(--teal-bg);color:var(--teal-light)}
+.section-header{padding-bottom:18px;border-bottom:1px solid var(--border);margin-bottom:26px}
+.mod-badge{font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;display:inline-block;margin-bottom:10px;background:var(--aws-bg);color:var(--aws)}
+.steps{counter-reset:step}
+.step{display:flex;gap:14px;margin-bottom:16px}
+.step-num{counter-increment:step;width:26px;height:26px;min-width:26px;background:var(--aws-bg);color:var(--aws);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;margin-top:2px;border:1px solid var(--orange)}
+.step-content{flex:1}.step-title{font-weight:600;font-size:13px;margin-bottom:3px}.step-body{font-size:13px;color:var(--text2);line-height:1.65}
+.scenario{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:18px 20px;margin:16px 0}
+.scenario-label{font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;color:var(--aws);margin-bottom:6px}
+.scenario-title{font-size:14px;font-weight:600;margin-bottom:10px}
+.compare-row{display:flex;gap:0;margin:14px 0;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+.cmp-a{flex:1;background:var(--red-bg);padding:16px;border-right:1px solid var(--border)}
+.cmp-b{flex:1;background:var(--green-bg);padding:16px}
+.cmp-label{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px}
+.cmp-a .cmp-label{color:var(--red)}.cmp-b .cmp-label{color:var(--green)}
+.traffic-flow{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin:14px 0}
+.traffic-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text3);margin-bottom:12px}
+.traffic-step{display:flex;align-items:flex-start;gap:12px;margin-bottom:10px;font-size:13px}
+.traffic-num{width:22px;height:22px;min-width:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;margin-top:1px}
+.t-green{background:#061a0d;color:var(--green-light);border:1px solid #14532d}
+.t-blue{background:var(--blue-bg);color:var(--blue-light);border:1px solid var(--blue)}
+.t-red{background:var(--red-bg);color:var(--red-light);border:1px solid var(--red)}
+.t-orange{background:var(--aws-bg);color:var(--aws);border:1px solid var(--orange)}
+.t-purple{background:var(--purple-bg);color:var(--purple-light);border:1px solid var(--purple)}
+.t-yellow{background:var(--yellow-bg);color:var(--yellow-light);border:1px solid var(--yellow)}
+.instance-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0}
+.instance-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:12px}
+.instance-family{font-size:16px;font-weight:700;color:var(--aws);margin-bottom:4px}
+.instance-name{font-size:11px;font-weight:600;color:var(--text);margin-bottom:4px}
+.instance-use{font-size:11px;color:var(--text3);line-height:1.5}
+.lambda-box{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:16px;margin:8px 0}
+.lambda-phase{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px}
+.cold{border-left:3px solid var(--red);background:var(--red-bg)}
+.cold .lambda-phase{color:var(--red-light)}
+.warm{border-left:3px solid var(--green);background:var(--green-bg)}
+.warm .lambda-phase{color:var(--green-light)}
+.timeline-bar{height:28px;border-radius:4px;display:flex;align-items:center;padding:0 8px;font-size:11px;font-weight:600;margin:3px 0;white-space:nowrap}
+.ecs-arch{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;margin:14px 0}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-mod">Module 4</div>
+    <div class="sidebar-title">Compute</div>
+    <div class="sidebar-sub">EC2 · Lambda · ECS</div>
+  </div>
+  <div class="nav-group-label">EC2</div>
+  <div class="nav-item active" onclick="show('s1')"><span class="nav-dot"></span>1. What is EC2?</div>
+  <div class="nav-item" onclick="show('s2')"><span class="nav-dot"></span>2. Instance Types &amp; Sizing</div>
+  <div class="nav-item" onclick="show('s3')"><span class="nav-dot"></span>3. AMIs — Machine Images</div>
+  <div class="nav-item" onclick="show('s4')"><span class="nav-dot"></span>4. EC2 Lifecycle &amp; States</div>
+  <div class="nav-item" onclick="show('s5')"><span class="nav-dot"></span>5. User Data &amp; Metadata</div>
+  <div class="nav-item" onclick="show('s6')"><span class="nav-dot"></span>6. Auto Scaling Groups</div>
+  <div class="nav-item" onclick="show('s7')"><span class="nav-dot"></span>7. EC2 Pricing Models</div>
+  <div class="nav-group-label">Lambda</div>
+  <div class="nav-item" onclick="show('s8')"><span class="nav-dot"></span>8. What is Lambda?</div>
+  <div class="nav-item" onclick="show('s9')"><span class="nav-dot"></span>9. Cold Starts Deep Dive <span class="nav-badge">Key</span></div>
+  <div class="nav-item" onclick="show('s10')"><span class="nav-dot"></span>10. Event Sources &amp; Triggers</div>
+  <div class="nav-item" onclick="show('s11')"><span class="nav-dot"></span>11. Concurrency Model</div>
+  <div class="nav-item" onclick="show('s12')"><span class="nav-dot"></span>12. Lambda Layers &amp; Config</div>
+  <div class="nav-group-label">ECS</div>
+  <div class="nav-item" onclick="show('s13')"><span class="nav-dot"></span>13. What is ECS?</div>
+  <div class="nav-item" onclick="show('s14')"><span class="nav-dot"></span>14. Fargate vs EC2 Launch</div>
+  <div class="nav-item" onclick="show('s15')"><span class="nav-dot"></span>15. Task Definitions &amp; Services</div>
+  <div class="nav-item" onclick="show('s16')"><span class="nav-dot"></span>16. ECS + ALB + Auto Scaling</div>
+  <div class="nav-group-label">Comparison</div>
+  <div class="nav-item" onclick="show('s17')"><span class="nav-dot"></span>17. EC2 vs Lambda vs ECS</div>
+  <div class="nav-item" onclick="show('s18')"><span class="nav-dot"></span>Interview Q&amp;A <span class="nav-badge">18 Qs</span></div>
+</aside>
+
+<main class="main">
+
+<!-- ======================================================= S1: WHAT IS EC2 -->
+<div id="s1" class="section active">
+<div class="section-header">
+  <span class="mod-badge">Module 4 · EC2 · Section 1</span>
+  <h1>What is EC2?</h1>
+  <p class="subtitle">Elastic Compute Cloud — virtual machines on demand. The most foundational AWS service. Understanding EC2 well means understanding how most AWS services are built behind the scenes.</p>
+</div>
+
+<h2>EC2 From First Principles</h2>
+<p>Before EC2, if your company needed to run software you physically owned servers. You bought a Dell PowerEdge, racked it in a data centre, configured it, and ran your app on it. The hardware was dedicated to you — expensive, inflexible, slow to provision.</p>
+
+<p>EC2 (Elastic Compute Cloud) virtualises this. On a single physical host machine, AWS runs a <strong>hypervisor</strong> — software that divides the physical hardware into many isolated virtual machines. Your EC2 instance is one of those VMs. You get what feels like a dedicated server: your own CPU, RAM, disk, network interface. But underneath, it's sharing physical hardware with hundreds of other customers' instances — completely isolated.</p>
+
+<div class="scenario">
+  <div class="scenario-label">Analogy</div>
+  <div class="scenario-title">EC2 is like renting an apartment vs buying a house</div>
+  <p>Owning a physical server = buying a house. High upfront cost. You own it but maintain everything. Stuck with the size you bought. EC2 = renting an apartment. Pay monthly (or hourly). Move to a bigger apartment when needed. Building maintenance (hardware, hypervisor) is someone else's problem. Walk away when done. And AWS has 1000s of apartments in the same building — economies of scale mean the cost per room is far lower than building your own house.</p>
+</div>
+
+<h2>What You Actually Get with an EC2 Instance</h2>
+<div class="grid2">
+  <div class="card">
+    <div class="card-title" style="color:var(--orange-light)">Compute resources</div>
+    <div class="card-body">
+      <strong>vCPU:</strong> Virtual CPU cores — fraction of a physical CPU's time. A c6i.2xlarge gives you 8 vCPUs.<br><br>
+      <strong>RAM:</strong> Dedicated memory, not shared. A r6i.large gives you 16 GB RAM.<br><br>
+      <strong>Network:</strong> A virtual network interface (ENI) attached to your VPC subnet with a private IP. Optionally a public IP.
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--blue-light)">Storage options</div>
+    <div class="card-body">
+      <strong>EBS (default):</strong> Network-attached block storage. Persists after instance stop/restart. Like a hard drive you can detach and reattach.<br><br>
+      <strong>Instance store:</strong> Physical disk on the host machine. Extremely fast. BUT: data is LOST when instance stops or fails. Use only for temp data, caches.<br><br>
+      <strong>EFS/FSx:</strong> Shared filesystem mounted by multiple instances.
+    </div>
+  </div>
+</div>
+
+<h2>AWS Nitro — What Powers EC2 Under the Hood</h2>
+<p>Starting in 2017, AWS replaced its Xen-based hypervisor with the <strong>Nitro System</strong> — custom hardware AWS designed themselves. This matters because:</p>
+
+<div class="grid3">
+  <div class="card">
+    <div class="card-title" style="color:var(--teal-light)">Near bare-metal performance</div>
+    <div class="card-body">Nitro offloads virtualisation to dedicated hardware cards. The CPU is almost entirely available for your workload — virtualization overhead is near zero (~0.1%).</div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--teal-light)">Enhanced networking</div>
+    <div class="card-body">Network I/O is handled by a separate Nitro card — up to 100 Gbps bandwidth on some instance types. Storage IOPS (EBS) is also offloaded to a dedicated controller.</div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--teal-light)">Security isolation</div>
+    <div class="card-body">Security group rules are enforced at the Nitro hardware level — not in software that runs in your VM. This means even if someone compromised the guest OS, the network rules can't be bypassed.</div>
+  </div>
+</div>
+
+<h2>Key Concepts Before Going Deeper</h2>
+<table>
+  <tr><th>Concept</th><th>What it is</th><th>Analogy</th></tr>
+  <tr><td><strong>Instance type</strong></td><td>Predefined combination of vCPU + RAM + network performance (e.g. t3.medium = 2 vCPU, 4 GB RAM)</td><td>Apartment size: studio / 1-bed / 2-bed</td></tr>
+  <tr><td><strong>AMI</strong></td><td>Amazon Machine Image — the OS template your instance boots from</td><td>Apartment comes pre-furnished (OS + software)</td></tr>
+  <tr><td><strong>Key pair</strong></td><td>SSH public/private key for logging into Linux instances</td><td>Door key to your apartment</td></tr>
+  <tr><td><strong>Security group</strong></td><td>Virtual firewall controlling inbound/outbound traffic</td><td>Building security — who can enter</td></tr>
+  <tr><td><strong>IAM instance profile</strong></td><td>Assigns an IAM role to the instance for AWS API access</td><td>Employee badge (what services the instance can access)</td></tr>
+  <tr><td><strong>User data</strong></td><td>Script that runs on first boot (bootstrap)</td><td>Moving instructions: install furniture when you arrive</td></tr>
+  <tr><td><strong>Elastic IP</strong></td><td>Static public IP address you own (survives instance stop/start)</td><td>Reserved parking space number that stays yours</td></tr>
+</table>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/concepts.html" target="_blank">EC2 Concepts</a>
+  <a class="ref" href="https://aws.amazon.com/ec2/nitro/" target="_blank">AWS Nitro System</a>
+  <a class="ref" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-types.html" target="_blank">Instance Types</a>
+</div>
+</div>
+
+<!-- ======================================================= S2: INSTANCE TYPES -->
+<div id="s2" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 4 · EC2 · Section 2</span>
+  <h1>Instance Types &amp; Sizing</h1>
+  <p class="subtitle">AWS has 700+ instance types across dozens of families. You don't need to memorise them all — you need to understand the naming system and pick the right family for your workload.</p>
+</div>
+
+<h2>The Naming System — Decode Any Instance Type</h2>
+<p>Every EC2 instance type name follows a pattern: <strong>Family + Generation + Attributes + Size</strong></p>
+
+<pre><span class="cm"># Format: {family}{generation}{attributes}.{size}</span>
+
+m7g.2xlarge
+│││ └── .2xlarge = 8 vCPU, 32 GB RAM (size multiplier)
+││└──── g = Graviton (AWS-designed ARM processor)
+│└───── 7 = 7th generation (newer = faster + cheaper)
+└────── m = general purpose (the family)
+
+c6i.4xlarge
+│││ └── .4xlarge = 16 vCPU, 32 GB RAM
+││└──── i = Intel processor (vs g=Graviton, a=AMD, d=local NVMe)
+│└───── 6 = 6th generation
+└────── c = compute optimised
+
+r6g.xlarge
+│││ └── .xlarge = 4 vCPU, 32 GB RAM
+││└──── g = Graviton
+│└───── 6 = 6th generation
+└────── r = memory optimised (high RAM ratio)</pre>
+
+<h2>Size Multipliers — How They Scale</h2>
+<table>
+  <tr><th>Size</th><th>vCPU</th><th>RAM (m-family)</th><th>RAM (r-family)</th></tr>
+  <tr><td><code>nano</code></td><td>2</td><td>0.5 GB</td><td>—</td></tr>
+  <tr><td><code>micro</code></td><td>2</td><td>1 GB</td><td>—</td></tr>
+  <tr><td><code>small</code></td><td>2</td><td>2 GB</td><td>—</td></tr>
+  <tr><td><code>medium</code></td><td>2</td><td>4 GB</td><td>—</td></tr>
+  <tr><td><code>large</code></td><td>2</td><td>8 GB</td><td>16 GB</td></tr>
+  <tr><td><code>xlarge</code></td><td>4</td><td>16 GB</td><td>32 GB</td></tr>
+  <tr><td><code>2xlarge</code></td><td>8</td><td>32 GB</td><td>64 GB</td></tr>
+  <tr><td><code>4xlarge</code></td><td>16</td><td>64 GB</td><td>128 GB</td></tr>
+  <tr><td><code>8xlarge</code></td><td>32</td><td>128 GB</td><td>256 GB</td></tr>
+  <tr><td><code>metal</code></td><td>96+</td><td>384+ GB</td><td>—</td></tr>
+</table>
+
+<h2>Instance Families — Know These 6</h2>
+<div class="instance-grid">
+  <div class="instance-card">
+    <div class="instance-family">T</div>
+    <div class="instance-name">Burstable</div>
+    <div class="instance-use">Dev/test, low traffic sites, small APIs. Earns CPU credits when idle, spends them on bursts. Cheapest option. <em>Never for production under load.</em></div>
+  </div>
+  <div class="instance-card">
+    <div class="instance-family">M</div>
+    <div class="instance-name">General Purpose</div>
+    <div class="instance-use">Balanced CPU/RAM. Web servers, app servers, databases. Safe default when you don't have specific needs. m6i / m7g most common.</div>
+  </div>
+  <div class="instance-card">
+    <div class="instance-family">C</div>
+    <div class="instance-name">Compute Optimised</div>
+    <div class="instance-use">More CPU relative to RAM. CPU-intensive workloads: batch processing, video encoding, gaming servers, scientific modelling.</div>
+  </div>
+  <div class="instance-card">
+    <div class="instance-family">R</div>
+    <div class="instance-name">Memory Optimised</div>
+    <div class="instance-use">High RAM relative to CPU. In-memory databases (Redis), large datasets, real-time analytics, SAP HANA. r6i/r7g most common.</div>
+  </div>
+  <div class="instance-card">
+    <div class="instance-family">G / P</div>
+    <div class="instance-name">GPU Instances</div>
+    <div class="instance-use">Machine learning training/inference (p-family), graphics rendering, video processing (g-family). Extremely expensive — only use when genuinely needed.</div>
+  </div>
+  <div class="instance-card">
+    <div class="instance-family">I</div>
+    <div class="instance-name">Storage Optimised</div>
+    <div class="instance-use">Local NVMe SSDs with extreme IOPS. NoSQL databases, data warehousing, distributed file systems (HDFS). i3en is common.</div>
+  </div>
+</div>
+
+<div class="alert a-orange">
+  <strong>Graviton (g) = best value in most cases.</strong> AWS's custom ARM processors (Graviton2, Graviton3) deliver 20–40% better price/performance than Intel/AMD equivalents. If your application runs on Linux and is compatible with ARM, choose Graviton. Most modern Java, Python, Go, Node.js apps work perfectly. Always test first — some native libraries may not have ARM builds.
+</div>
+
+<h2>How to Pick the Right Instance Type</h2>
+<div class="steps">
+  <div class="step"><div class="step-num">1</div><div class="step-content">
+    <div class="step-title">Start with M-family</div>
+    <div class="step-body">For any new workload you don't have data on: start with m6i.large or m7g.large. It's a safe balanced choice. Collect CPU and memory metrics for 1-2 weeks.</div>
+  </div></div>
+  <div class="step"><div class="step-num">2</div><div class="step-content">
+    <div class="step-title">Analyse CloudWatch metrics</div>
+    <div class="step-body">CPU consistently above 70%? Move to C-family (more CPU). Memory constantly high? Move to R-family (more RAM). Both low? Downsize to save money. This is how you right-size.</div>
+  </div></div>
+  <div class="step"><div class="step-num">3</div><div class="step-content">
+    <div class="step-title">Consider Graviton</div>
+    <div class="step-body">Switch <code>m6i</code> to <code>m7g</code> — same price or cheaper, 20-40% better performance. Test your application, run load tests, compare results. Most apps work with no code changes.</div>
+  </div></div>
+  <div class="step"><div class="step-num">4</div><div class="step-content">
+    <div class="step-title">Use AWS Compute Optimizer</div>
+    <div class="step-body">AWS's free service that analyses your actual utilisation and recommends right-sized instances. Catches over-provisioned instances wasting money.</div>
+  </div></div>
+</div>
+
+<div class="refs">
+  <a class="ref" href="https://instances.vantage.sh/" target="_blank">EC2 Instance Comparison (Vantage)</a>
+  <a class="ref" href="https://aws.amazon.com/ec2/instance-types/" target="_blank">AWS Instance Types</a>
+  <a class="ref" href="https://aws.amazon.com/compute-optimizer/" target="_blank">AWS Compute Optimizer</a>
+  <a class="ref" href="https://aws.amazon.com/ec2/graviton/" target="_blank">Graviton Processors</a>
+</div>
+</div>
+
+<!-- ======================================================= S3: AMIs -->
+<div id="s3" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 4 · EC2 · Section 3</span>
+  <h1>AMIs — Amazon Machine Images</h1>
+  <p class="subtitle">An AMI is the template your EC2 instance boots from. It contains the OS, pre-installed software, configuration, and the initial EBS volume snapshots. Understanding AMIs is essential for automation and scaling.</p>
+</div>
+
+<h2>What an AMI Contains</h2>
+<p>Think of an AMI as a <strong>complete snapshot of a machine at a point in time</strong>. When you launch an EC2 instance from an AMI, AWS creates a new EBS volume from the AMI's snapshot and boots from it. Every instance launched from the same AMI starts in the exact same state.</p>
+
+<div class="card">
+  <div class="card-title">AMI Components</div>
+  <div class="card-body">
+    <strong>Root volume snapshot:</strong> EBS snapshot of the OS and all installed software at the time the AMI was created. This becomes the root EBS volume of your new instance.<br><br>
+    <strong>Launch permissions:</strong> Controls who can use the AMI — private (only your account), shared (specific accounts), or public (anyone on AWS).<br><br>
+    <strong>Block device mapping:</strong> Defines what volumes to attach and how — root volume size, additional data volumes, instance store volumes.<br><br>
+    <strong>Virtualisation type:</strong> HVM (Hardware Virtual Machine) — the modern standard that supports Nitro instances.
+  </div>
+</div>
+
+<h2>AMI Sources — Where to Get Them</h2>
+<table>
+  <tr><th>Source</th><th>Description</th><th>Use Case</th></tr>
+  <tr><td><strong>AWS-provided</strong></td><td>Amazon Linux 2023, Ubuntu, RHEL, Windows Server, Debian. Maintained and patched by AWS.</td><td>Starting point for most deployments. Amazon Linux 2023 is optimised for AWS.</td></tr>
+  <tr><td><strong>AWS Marketplace</strong></td><td>Pre-configured commercial or open-source software (Nginx Plus, deep learning frameworks, firewall appliances)</td><td>When you need commercial software or a complex stack pre-installed</td></tr>
+  <tr><td><strong>Custom AMIs</strong></td><td>You create from your own EC2 instance after installing and configuring software</td><td>Production gold images — bake everything in so instances start fast</td></tr>
+  <tr><td><strong>Community AMIs</strong></td><td>Shared by other AWS users publicly — free but use with caution</td><td>Testing and experimentation only — audit before production</td></tr>
+</table>
+
+<h2>Golden AMI Pattern — The Right Way to Scale</h2>
+<p>The <strong>Golden AMI pattern</strong> is how professional teams handle EC2 scaling. Instead of booting bare OS instances and installing software on startup (slow, fragile), you pre-bake everything into an AMI. New instances start in seconds because nothing needs to be installed.</p>
+
+<div class="compare-row">
+  <div class="cmp-a">
+    <div class="cmp-label">❌ Anti-pattern: Install on boot</div>
+    <pre style="background:transparent;border:none;padding:0;font-size:12px;color:var(--text2)"># User data script runs at boot:
+yum install -y java-17
+aws s3 cp s3://my-bucket/app.jar .
+java -jar app.jar
+
+# Problems:
+# - Takes 3-5 minutes to boot
+# - yum install fails if internet is slow
+# - S3 download fails if IAM not ready
+# - S3 bucket might be down
+# - 3min before instance is healthy
+#   = slow auto scaling response</pre>
+  </div>
+  <div class="cmp-b">
+    <div class="cmp-label">✅ Golden AMI: Everything pre-baked</div>
+    <pre style="background:transparent;border:none;padding:0;font-size:12px;color:var(--text2)"># AMI was built with:
+# - Java 17 already installed
+# - App jar already present
+# - systemd service configured
+
+# User data only:
+#!/bin/bash
+# Pull config from Parameter Store
+APP_ENV=$(aws ssm get-parameter ...)
+echo "APP_ENV=${APP_ENV}" >> /etc/environment
+systemctl start myapp
+
+# Benefits:
+# - Boots in 30-60 seconds
+# - No external dependencies
+# - Reliable, repeatable, fast scaling
+# - Rollback = use previous AMI version</pre>
+  </div>
+</div>
+
+<h2>Creating a Custom AMI — Full Workflow</h2>
+<pre><span class="cm"># Step 1: Start with a base EC2 instance</span>
+aws ec2 run-instances \
+  --image-id ami-0c02fb55956c7d316 \  <span class="cm"># Amazon Linux 2023</span>
+  --instance-type t3.medium \
+  --key-name my-key-pair \
+  --subnet-id subnet-0pub1a \
+  --security-group-ids sg-0base \
+  --iam-instance-profile Name=EC2BuildRole
+
+<span class="cm"># Step 2: SSH in and install everything</span>
+ssh -i my-key.pem ec2-user@54.x.x.x
+
+sudo dnf install -y java-17-amazon-corretto
+sudo mkdir -p /opt/myapp
+sudo aws s3 cp s3://build-artifacts/myapp-1.2.3.jar /opt/myapp/app.jar
+
+<span class="cm"># Create systemd service</span>
+sudo tee /etc/systemd/system/myapp.service &lt;&lt;EOF
+[Unit]
+Description=My Application
+After=network.target
+
+[Service]
+User=ec2-user
+WorkingDirectory=/opt/myapp
+ExecStart=/usr/bin/java -Xmx2g -jar app.jar
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+sudo systemctl enable myapp  <span class="cm"># start on boot</span>
+sudo systemctl start myapp   <span class="cm"># verify it works</span>
+
+<span class="cm"># Clean up before imaging (remove logs, temp files, SSH keys)</span>
+sudo rm -rf /var/log/* /tmp/* ~/.bash_history
+sudo shred -u ~/.ssh/authorized_keys
+
+<span class="cm"># Step 3: Create the AMI</span>
+aws ec2 create-image \
+  --instance-id i-0abc123def456789 \
+  --name "myapp-v1.2.3-$(date +%Y%m%d-%H%M)" \
+  --description "MyApp 1.2.3 on Amazon Linux 2023" \
+  --no-reboot  <span class="cm"># don't reboot (faster but risk of filesystem inconsistency)</span>
+               <span class="cm"># Remove --no-reboot for critical production images</span>
+
+<span class="cm"># AMI ID returned: ami-0newimage123456
+# Step 4: Update your Launch Template/Auto Scaling Group to use new AMI
+# Step 5: Instance refresh — gradually replace running instances</span>
+aws autoscaling start-instance-refresh \
+  --auto-scaling-group-name my-app-asg \
+  --preferences '{"MinHealthyPercentage":90,"InstanceWarmup":60}'</pre>
+
+<h2>AMI and Auto Scaling — The Connection</h2>
+<p>AMIs are central to Auto Scaling. Your Auto Scaling Group uses a <strong>Launch Template</strong> that specifies the AMI ID. When the ASG scales out, it launches new instances from that AMI. When you deploy a new version, you create a new AMI and update the Launch Template — then trigger an instance refresh to roll out gradually.</p>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AMIs.html" target="_blank">AMI Documentation</a>
+  <a class="ref" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/create-ami.html" target="_blank">Creating an AMI</a>
+  <a class="ref" href="https://aws.amazon.com/blogs/devops/how-to-create-a-golden-ami-pipeline/" target="_blank">Golden AMI Pipeline Blog</a>
+</div>
+</div>
+
+<!-- ======================================================= S4: EC2 LIFECYCLE -->
+<div id="s4" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 4 · EC2 · Section 4</span>
+  <h1>EC2 Lifecycle &amp; States</h1>
+  <p class="subtitle">An EC2 instance goes through distinct states from launch to termination. Understanding what happens at each state — especially the billing and data implications — prevents expensive surprises.</p>
+</div>
+
+<h2>The Instance State Machine</h2>
+<pre><span class="cm">                    [Launch]
+                       │
+                  ┌────▼─────┐
+                  │ pending  │  ← booting, no billing yet
+                  └────┬─────┘
+                       │
+                  ┌────▼─────┐
+             ┌────│ running  │────┐  ← billing per second
+             │    └────┬─────┘   │
+             │stop     │reboot   │terminate
+             │         │         │
+        ┌────▼──────┐  │  ┌──────▼──────┐
+        │ stopping  │  │  │ shutting-   │
+        └────┬──────┘  │  │ down        │
+             │         │  └──────┬──────┘
+        ┌────▼──────┐  │         │
+        │ stopped   │──┘  ┌──────▼──────┐
+        └────┬──────┘     │ terminated  │  ← gone forever
+             │start       └─────────────┘
+             │
+        ┌────▼──────┐
+        │ pending   │
+        └───────────┘</pre>
+
+<h2>State-by-State Breakdown</h2>
+<table>
+  <tr><th>State</th><th>What's happening</th><th>Billing</th><th>Data on EBS</th><th>Public IP</th></tr>
+  <tr><td><strong>pending</strong></td><td>Instance provisioning, AMI copying, hardware allocation</td><td>No charge yet</td><td>Preserved</td><td>Not assigned yet</td></tr>
+  <tr><td><strong>running</strong></td><td>OS booted, your app can be running</td><td><span style="color:var(--red-light)">Billing per second</span></td><td>Preserved</td><td>Assigned (if configured)</td></tr>
+  <tr><td><strong>stopping</strong></td><td>OS shutting down gracefully</td><td>No charge</td><td>Preserved</td><td>Released</td></tr>
+  <tr><td><strong>stopped</strong></td><td>Instance off. EBS volumes still exist.</td><td>Only EBS storage cost</td><td><span style="color:var(--green-light)">Preserved</span></td><td><span style="color:var(--red-light)">Released (if not Elastic IP)</span></td></tr>
+  <tr><td><strong>terminated</strong></td><td>Instance and root EBS volume deleted (unless you changed DeleteOnTermination)</td><td>No charge</td><td><span style="color:var(--red-light)">Deleted (by default)</span></td><td>Released</td></tr>
+</table>
+
+<div class="alert a-red">
+  <strong>Stop vs Terminate — critical difference:</strong> Stop = hibernate (EBS data preserved, resume later). Terminate = delete (instance and root EBS gone, all RAM gone, any instance store gone). Most "delete instance" UX errors are actually someone terminating instead of stopping. Enable <strong>termination protection</strong> on production instances: <code>aws ec2 modify-instance-attribute --instance-id i-xxx --disable-api-termination</code>.
+</div>
+
+<h2>What Happens on Stop and Start</h2>
+<div class="steps">
+  <div class="step"><div class="step-num">1</div><div class="step-content">
+    <div class="step-title">Instance stops</div>
+    <div class="step-body">OS receives shutdown signal. Processes terminate. Kernel unmounts filesystems. Power off. Billing stops immediately. Instance store data is LOST (NVMe drives wiped). EBS volumes persist.</div>
+  </div></div>
+  <div class="step"><div class="step-num">2</div><div class="step-content">
+    <div class="step-title">Instance may move to a different physical host</div>
+    <div class="step-body">This is important: when you start a stopped instance, it may boot on a completely different physical host. The Nitro hypervisor remounts your EBS volumes to the new host. This is how AWS does hardware maintenance.</div>
+  </div></div>
+  <div class="step"><div class="step-num">3</div><div class="step-content">
+    <div class="step-title">Public IP changes</div>
+    <div class="step-body">Each time you stop and start an instance, it gets a new public IP address (unless you have an Elastic IP). This is why hardcoding public IPs breaks. Use DNS names instead, or assign an Elastic IP for a stable address.</div>
+  </div></div>
+  <div class="step"><div class="step-num">4</div><div class="step-content">
+    <div class="step-title">Private IP stays the same</div>
+    <div class="step-body">The private IP address from the VPC subnet is retained across stop/start. Your internal services referencing this IP keep working.</div>
+  </div></div>
+</div>
+
+<h2>Instance Metadata — How Your Instance Knows About Itself</h2>
+<p>The Instance Metadata Service (IMDS) is a local HTTP endpoint available inside every EC2 instance. It provides information about the instance without any authentication. It also provides IAM credentials for the attached role.</p>
+
+<pre><span class="cm"># IMDS is available at 169.254.169.254 — only from within the instance</span>
+<span class="cm"># Using IMDSv2 (required in modern setups — token-based for security)</span>
+
+<span class="cm"># Step 1: Get a session token (expires after TTL)</span>
+TOKEN=$(curl -X PUT "http://169.254.169.254/latest/api/token" \
+  -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
+
+<span class="cm"># Step 2: Use token to query metadata</span>
+<span class="cm"># Instance ID</span>
+curl -H "X-aws-ec2-metadata-token: $TOKEN" \
+  http://169.254.169.254/latest/meta-data/instance-id
+<span class="cm"># i-0abc123def456789</span>
+
+<span class="cm"># Current AZ (useful for AZ-aware routing in your app)</span>
+curl -H "X-aws-ec2-metadata-token: $TOKEN" \
+  http://169.254.169.254/latest/meta-data/placement/availability-zone
+<span class="cm"># us-east-1a</span>
+
+<span class="cm"># Instance type</span>
+curl -H "X-aws-ec2-metadata-token: $TOKEN" \
+  http://169.254.169.254/latest/meta-data/instance-type
+<span class="cm"># m7g.2xlarge</span>
+
+<span class="cm"># IAM role credentials (this is how the SDK gets temp credentials)</span>
+curl -H "X-aws-ec2-metadata-token: $TOKEN" \
+  http://169.254.169.254/latest/meta-data/iam/security-credentials/MyRole
+<span class="cm"># Returns: AccessKeyId, SecretAccessKey, Token, Expiration</span>
+
+<span class="cm"># User data script (your bootstrap script)</span>
+curl -H "X-aws-ec2-metadata-token: $TOKEN" \
+  http://169.254.169.254/latest/user-data
+
+<span class="cm"># Private IP address</span>
+curl -H "X-aws-ec2-metadata-token: $TOKEN" \
+  http://169.254.169.254/latest/meta-data/local-ipv4
+<span class="cm"># 10.0.11.45</span></pre>
+
+<div class="alert a-blue">
+  <strong>IMDSv2 vs v1:</strong> IMDSv1 is unauthenticated — any process inside the VM can query metadata. In SSRF (Server-Side Request Forgery) attacks, an attacker tricks your app into fetching metadata and stealing IAM credentials. IMDSv2 requires a session token (PUT request first) which is SSRF-resistant. Enforce IMDSv2 only in production: <code>--metadata-options HttpTokens=required</code> at launch or via policy.
+</div>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-lifecycle.html" target="_blank">EC2 Instance Lifecycle</a>
+  <a class="ref" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-metadata.html" target="_blank">EC2 Instance Metadata</a>
+  <a class="ref" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/configuring-instance-metadata-service.html" target="_blank">Configuring IMDSv2</a>
+</div>
+</div>
+
+<!-- ======================================================= S5: USER DATA -->
+<div id="s5" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 4 · EC2 · Section 5</span>
+  <h1>User Data &amp; Bootstrapping</h1>
+  <p class="subtitle">User data is a script that runs exactly once — on the very first boot of a new instance. It's how you automate configuration, software installation, and application startup.</p>
+</div>
+
+<h2>How User Data Works</h2>
+<p>When EC2 launches an instance, the cloud-init service detects user data in the instance metadata and executes it. Important rules:</p>
+
+<div class="grid3">
+  <div class="card">
+    <div class="card-title" style="color:var(--orange-light)">Runs once only</div>
+    <div class="card-body">User data runs on the first boot after launch. If you stop and start the instance, it does NOT run again (unless you force re-execution with cloud-init config).</div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--orange-light)">Runs as root</div>
+    <div class="card-body">The script executes as the root user. No sudo needed. But be careful — mistakes have full system access. Use <code>runuser -l ec2-user -c</code> to run commands as a specific user.</div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--orange-light)">Logs at /var/log</div>
+    <div class="card-body">Check <code>/var/log/cloud-init-output.log</code> for all output from user data execution. Check <code>/var/log/cloud-init.log</code> for cloud-init metadata. Essential for debugging startup failures.</div>
+  </div>
+</div>
+
+<h2>Real-World User Data Scripts</h2>
+
+<h3>Example 1: Spring Boot app server</h3>
+<pre><span class="cm">#!/bin/bash
+# Log everything for debugging
+exec > >(tee /var/log/user-data.log) 2>&1
+set -euxo pipefail   # exit on error, log commands</span>
+
+<span class="cm"># 1. System updates</span>
+dnf update -y
+dnf install -y amazon-cloudwatch-agent
+
+<span class="cm"># 2. Fetch config from Systems Manager Parameter Store</span>
+<span class="cm"># (Instance role must have ssm:GetParameter permission)</span>
+ENVIRONMENT=$(<span class="fn">aws ssm get-parameter</span> \
+  --name "/myapp/environment" \
+  --query "Parameter.Value" \
+  --output text)
+
+DB_URL=$(<span class="fn">aws ssm get-parameter</span> \
+  --name "/myapp/$ENVIRONMENT/db-url" \
+  --with-decryption \
+  --query "Parameter.Value" \
+  --output text)
+
+<span class="cm"># 3. Configure the application</span>
+<span class="fn">cat</span> &gt; /opt/myapp/application.properties &lt;&lt;EOF
+spring.datasource.url=${DB_URL}
+server.port=8080
+spring.profiles.active=${ENVIRONMENT}
+EOF
+
+<span class="cm"># 4. Configure CloudWatch agent (ship logs to CloudWatch)</span>
+<span class="fn">cat</span> &gt; /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json &lt;&lt;'CWEOF'
+{
+  "logs": {
+    "logs_collected": {
+      "files": {
+        "collect_list": [{
+          "file_path": "/opt/myapp/logs/application.log",
+          "log_group_name": "/myapp/application",
+          "log_stream_name": "{instance_id}"
+        }]
+      }
+    }
+  }
+}
+CWEOF
+/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
+  -a fetch-config -m ec2 -s \
+  -c file:/opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json
+
+<span class="cm"># 5. Start the application</span>
+<span class="fn">systemctl</span> enable myapp
+<span class="fn">systemctl</span> start myapp
+
+<span class="cm"># 6. Signal Auto Scaling that instance is ready (if using lifecycle hooks)</span>
+INSTANCE_ID=$(<span class="fn">curl</span> -s http://169.254.169.254/latest/meta-data/instance-id)
+ASG_NAME=$(<span class="fn">aws ec2 describe-instances</span> --instance-ids $INSTANCE_ID \
+  --query "Reservations[0].Instances[0].Tags[?Key=='aws:autoscaling:groupName'].Value" \
+  --output text)
+<span class="fn">aws autoscaling</span> complete-lifecycle-action \
+  --lifecycle-action-result CONTINUE \
+  --instance-id $INSTANCE_ID \
+  --auto-scaling-group-name $ASG_NAME \
+  --lifecycle-hook-name instance-launching</pre>
+
+<h2>Launch Templates — Reusable Configuration</h2>
+<p>Instead of specifying all EC2 options every time you launch an instance (or configure an ASG), a Launch Template stores the configuration: AMI, instance type, security groups, user data, IAM profile, etc. It's versioned — roll back to a previous version if a new AMI causes issues.</p>
+
+<pre><span class="cm"># Create a Launch Template</span>
+aws ec2 create-launch-template \
+  --launch-template-name myapp-lt \
+  --version-description "v1.2.3 - Java 21" \
+  --launch-template-data '{
+    "ImageId": "ami-0new123456",
+    "InstanceType": "m7g.large",
+    "IamInstanceProfile": {"Name": "MyAppInstanceProfile"},
+    "SecurityGroupIds": ["sg-0app123"],
+    "UserData": "'$(base64 -w0 user-data.sh)'",
+    "MetadataOptions": {"HttpTokens": "required"},
+    "BlockDeviceMappings": [{
+      "DeviceName": "/dev/xvda",
+      "Ebs": {
+        "VolumeSize": 30,
+        "VolumeType": "gp3",
+        "Encrypted": true,
+        "DeleteOnTermination": true
+      }
+    }],
+    "TagSpecifications": [{
+      "ResourceType": "instance",
+      "Tags": [
+        {"Key": "Name", "Value": "myapp-server"},
+        {"Key": "Environment", "Value": "production"}
+      ]
+    }]
+  }'
+
+<span class="cm"># Update ASG to use new Launch Template version</span>
+aws autoscaling update-auto-scaling-group \
+  --auto-scaling-group-name my-app-asg \
+  --launch-template LaunchTemplateName=myapp-lt,Version='$Latest'
+
+<span class="cm"># Gradually replace instances with new template (rolling update)</span>
+aws autoscaling start-instance-refresh \
+  --auto-scaling-group-name my-app-asg \
+  --preferences '{"MinHealthyPercentage":80,"InstanceWarmup":120}'</pre>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html" target="_blank">User Data Documentation</a>
+  <a class="ref" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-launch-templates.html" target="_blank">Launch Templates</a>
+  <a class="ref" href="https://cloudinit.readthedocs.io/en/latest/" target="_blank">cloud-init Documentation</a>
+</div>
+</div>
+
+<!-- ======================================================= S6: AUTO SCALING -->
+<div id="s6" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 4 · EC2 · Section 6</span>
+  <h1>Auto Scaling Groups</h1>
+  <p class="subtitle">Auto Scaling Groups (ASGs) automatically add or remove EC2 instances based on demand. This is how you achieve elasticity — the core cloud benefit of matching capacity to load.</p>
+</div>
+
+<h2>What an ASG Does</h2>
+<p>An ASG maintains a fleet of EC2 instances between a minimum and maximum count. It monitors health checks and replaces unhealthy instances automatically. It scales out (adds instances) when load increases and scales in (removes instances) when load decreases — following rules you define.</p>
+
+<div class="grid3">
+  <div class="card">
+    <div class="card-title" style="color:var(--green-light)">Min / Desired / Max</div>
+    <div class="card-body"><strong>Min:</strong> never go below this (floor). <strong>Desired:</strong> target count right now. <strong>Max:</strong> never exceed this (ceiling). Example: min=2, desired=4, max=20. ASG maintains 4 instances. Scaling events change desired between min and max.</div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--blue-light)">Health checks</div>
+    <div class="card-body">EC2 health check: is the instance running? ALB health check: is the app responding on /health? If an instance fails health — ASG terminates it and launches a replacement. Self-healing infrastructure.</div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--purple-light)">Multi-AZ spread</div>
+    <div class="card-body">Configure ASG with subnets across multiple AZs. ASG automatically balances instances across AZs. If one AZ fails, instances in other AZs keep serving traffic.</div>
+  </div>
+</div>
+
+<h2>Scaling Policies — When to Scale</h2>
+<pre><span class="cm">## 1. Target Tracking (simplest, recommended)</span>
+<span class="cm"># "Keep average CPU at 60%"</span>
+<span class="cm"># ASG automatically adds/removes instances to maintain this target</span>
+aws autoscaling put-scaling-policy \
+  --auto-scaling-group-name my-app-asg \
+  --policy-name cpu-target-tracking \
+  --policy-type TargetTrackingScaling \
+  --target-tracking-configuration '{
+    "PredefinedMetricSpecification": {
+      "PredefinedMetricType": "ASGAverageCPUUtilization"
+    },
+    "TargetValue": 60.0,
+    "ScaleInCooldown": 300,
+    "ScaleOutCooldown": 60
+  }'
+
+<span class="cm">## 2. Step Scaling (fine-grained)</span>
+<span class="cm"># CPU 70-80%: add 1 instance; CPU 80-90%: add 2; CPU >90%: add 4</span>
+aws autoscaling put-scaling-policy \
+  --policy-type StepScaling \
+  --adjustment-type ChangeInCapacity \
+  --step-adjustments '[
+    {"MetricIntervalLowerBound":0,"MetricIntervalUpperBound":10,"ScalingAdjustment":1},
+    {"MetricIntervalLowerBound":10,"MetricIntervalUpperBound":20,"ScalingAdjustment":2},
+    {"MetricIntervalLowerBound":20,"ScalingAdjustment":4}
+  ]'
+
+<span class="cm">## 3. Scheduled Scaling (predictable load)</span>
+<span class="cm"># Scale up every weekday at 8am, scale down at 8pm</span>
+aws autoscaling put-scheduled-update-group-action \
+  --auto-scaling-group-name my-app-asg \
+  --scheduled-action-name scale-up-morning \
+  --recurrence "0 8 * * MON-FRI" \
+  --desired-capacity 10 --min-size 6
+
+aws autoscaling put-scheduled-update-group-action \
+  --scheduled-action-name scale-down-evening \
+  --recurrence "0 20 * * MON-FRI" \
+  --desired-capacity 4 --min-size 2
+
+<span class="cm">## 4. Predictive Scaling (ML-based)</span>
+<span class="cm"># AWS analyses historical metrics and scales proactively</span>
+<span class="cm"># Useful when load spikes are predictable (lunch hour, end-of-day)</span></pre>
+
+<h2>Lifecycle Hooks — Taking Action During Scale Events</h2>
+<p>Lifecycle hooks pause the instance in a state (Pending:Wait or Terminating:Wait) to let you run custom actions before the instance enters service or before it's terminated.</p>
+
+<pre><span class="cm"># Scale-out lifecycle hook: wait for app to register with service discovery
+# Instance boots → enters Pending:Wait → your Lambda runs registration
+# → completes hook → instance enters InService</span>
+
+<span class="cm"># Scale-in hook: drain connections before termination
+# Scale-in triggered → Terminating:Wait → ALB drains connections
+# → your hook completes → instance terminated</span>
+
+aws autoscaling put-lifecycle-hook \
+  --auto-scaling-group-name my-app-asg \
+  --lifecycle-hook-name launch-hook \
+  --lifecycle-transition autoscaling:EC2_INSTANCE_LAUNCHING \
+  --default-result CONTINUE \
+  --heartbeat-timeout 300  <span class="cm"># 5 minutes to complete</span>
+
+aws autoscaling put-lifecycle-hook \
+  --lifecycle-hook-name terminate-hook \
+  --lifecycle-transition autoscaling:EC2_INSTANCE_TERMINATING \
+  --default-result CONTINUE \
+  --heartbeat-timeout 60   <span class="cm"># 1 min to drain</span></pre>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/autoscaling/ec2/userguide/what-is-amazon-ec2-auto-scaling.html" target="_blank">EC2 Auto Scaling</a>
+  <a class="ref" href="https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-target-tracking.html" target="_blank">Target Tracking Scaling</a>
+</div>
+</div>
+
+<!-- ======================================================= S7: PRICING -->
+<div id="s7" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 4 · EC2 · Section 7</span>
+  <h1>EC2 Pricing Models</h1>
+  <p class="subtitle">EC2 has four pricing models with dramatically different costs. Choosing correctly can save 60-90% vs always using On-Demand. Most production systems use a mix of all four.</p>
+</div>
+
+<h2>The Four Pricing Models</h2>
+<table>
+  <tr><th>Model</th><th>Commitment</th><th>Savings vs On-Demand</th><th>Best For</th></tr>
+  <tr><td><strong style="color:var(--orange-light)">On-Demand</strong></td><td>None — pay by the second</td><td>0% (baseline)</td><td>Unpredictable workloads, testing, new apps</td></tr>
+  <tr><td><strong style="color:var(--blue-light)">Reserved Instances</strong></td><td>1 or 3 year commitment</td><td>30-60% savings</td><td>Steady-state baseline capacity (production databases, always-on services)</td></tr>
+  <tr><td><strong style="color:var(--green-light)">Savings Plans</strong></td><td>1 or 3 year $ commitment</td><td>30-66% savings</td><td>Flexible — applies to EC2, Lambda, Fargate. More flexible than Reserved.</td></tr>
+  <tr><td><strong style="color:var(--purple-light)">Spot Instances</strong></td><td>None — AWS can reclaim with 2-min notice</td><td>60-90% savings</td><td>Fault-tolerant workloads: batch jobs, data processing, CI/CD, ML training</td></tr>
+</table>
+
+<h2>Spot Instances — The 90% Discount with a Catch</h2>
+<p>Spot Instances use spare AWS capacity. You bid on unused EC2 capacity at a huge discount. But AWS can <strong>reclaim the instance with only 2 minutes warning</strong> when they need the capacity back. This sounds scary — but with the right architecture, it's perfectly safe.</p>
+
+<pre><span class="cm"># The 2-minute warning — handle gracefully</span>
+<span class="cm"># When AWS decides to reclaim your Spot Instance, it:</span>
+<span class="cm"># 1. Sets a metadata flag you can poll</span>
+<span class="cm"># 2. Sends an EC2 instance action event to EventBridge</span>
+<span class="cm"># 3. 2 minutes later: terminates or stops the instance</span>
+
+<span class="cm"># Poll for interruption notice (from within the instance)</span>
+TOKEN=$(curl -s -X PUT "http://169.254.169.254/latest/api/token" \
+  -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
+
+SPOT_NOTICE=$(curl -s -H "X-aws-ec2-metadata-token: $TOKEN" \
+  http://169.254.169.254/latest/meta-data/spot/instance-action \
+  -o /dev/null -w "%{http_code}")
+
+if [ "$SPOT_NOTICE" = "200" ]; then
+  echo "Spot interruption incoming! Draining work..."
+  # Save state, checkpoint progress, dequeue in-progress work
+  # Signal load balancer to stop sending traffic
+  # Graceful shutdown in 2 minutes
+fi
+
+<span class="cm"># ASG Spot strategy: use capacity-optimized to minimise interruptions</span>
+<span class="cm"># Mix Spot and On-Demand: 70% Spot, 30% On-Demand base</span>
+<span class="cm"># If Spot instances are interrupted → On-Demand base keeps serving</span></pre>
+
+<h2>The Mix Strategy — What Production Uses</h2>
+<div class="scenario">
+  <div class="scenario-label">Real Production Strategy</div>
+  <div class="scenario-title">E-commerce platform handling 1,000–50,000 requests/minute</div>
+  <p><strong>Always-on minimum (Reserved/Savings Plan):</strong> 4 × m7g.xlarge Reserved (3-year, 60% savings). These handle baseline load even at 3am. Never scaled below this.</p>
+  <p style="margin-top:8px"><strong>Dynamic scaling (On-Demand via ASG):</strong> ASG min=4, max=30. Scales 4→30 with target tracking at 60% CPU. On-Demand pricing but only pay for what you use.</p>
+  <p style="margin-top:8px"><strong>Batch processing (Spot):</strong> Separate ASG for background jobs (order analytics, email sending, report generation). 100% Spot Instances — if one gets interrupted, the job retries on another. 80% cost savings on this fleet.</p>
+</div>
+
+<div class="refs">
+  <a class="ref" href="https://aws.amazon.com/ec2/pricing/" target="_blank">EC2 Pricing</a>
+  <a class="ref" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-spot-instances.html" target="_blank">Spot Instances Guide</a>
+  <a class="ref" href="https://aws.amazon.com/savingsplans/" target="_blank">Savings Plans</a>
+</div>
+</div>
+
+<!-- ======================================================= S8: WHAT IS LAMBDA -->
+<div id="s8" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 4 · Lambda · Section 8</span>
+  <h1>What is Lambda?</h1>
+  <p class="subtitle">AWS Lambda is serverless compute — you write a function, AWS runs it when something triggers it. No servers to provision, no OS to patch, no capacity to plan. You only pay for execution time to the millisecond.</p>
+</div>
+
+<h2>The Serverless Mental Shift</h2>
+<p>With EC2 you think: "I need 4 servers running my app, always on, watching for requests." With Lambda you think: "Here's what to run WHEN an event happens. I don't care how many instances run it." The infrastructure scales automatically — from 0 to thousands of concurrent executions.</p>
+
+<div class="compare-row">
+  <div class="cmp-a">
+    <div class="cmp-label">EC2 Model — Always Provisioned</div>
+    <p style="font-size:12.5px;color:var(--text2)">4 EC2 instances running 24/7. At 3am with 5 users, you're paying for 4 full servers doing nothing. At noon with 50,000 users, you must wait for Auto Scaling to spin up more servers (2-3 minutes). Billing: 24 hours × 4 instances × $0.08/hr = ~$7.68/day regardless of traffic.</p>
+  </div>
+  <div class="cmp-b">
+    <div class="cmp-label">Lambda Model — Event-Driven</div>
+    <p style="font-size:12.5px;color:var(--text2)">At 3am with 5 users: 5 Lambda containers running, ~5ms each. At noon with 50,000 simultaneous users: 50,000 Lambda containers, no warmup wait. Billing: you pay for those 5ms × 5 invocations at 3am and those execution-ms × 50,000 at noon. Idle time = $0.</p>
+  </div>
+</div>
+
+<h2>Lambda Execution Model — What Actually Happens</h2>
+<p>Lambda does NOT run "serverlessly" — it runs in containers (microVMs actually, using AWS Firecracker). You just don't manage them. Understanding the execution model is critical for designing Lambda-based systems.</p>
+
+<div class="steps">
+  <div class="step"><div class="step-num">1</div><div class="step-content">
+    <div class="step-title">Trigger arrives</div>
+    <div class="step-body">An event source (API Gateway, SQS message, S3 event, scheduled cron) sends an event to Lambda. Lambda service receives it.</div>
+  </div></div>
+  <div class="step"><div class="step-num">2</div><div class="step-content">
+    <div class="step-title">Lambda finds or creates an execution environment</div>
+    <div class="step-body">Lambda maintains a pool of "warm" execution environments from recent invocations. If one is available (warm), it reuses it immediately. If not (cold start), it must create a new one — this takes 100ms to several seconds depending on runtime and package size.</div>
+  </div></div>
+  <div class="step"><div class="step-num">3</div><div class="step-content">
+    <div class="step-title">Function handler runs</div>
+    <div class="step-body">Your handler function (<code>handleRequest</code>) is called with the event payload. It executes, calls other services, writes to databases, etc.</div>
+  </div></div>
+  <div class="step"><div class="step-num">4</div><div class="step-content">
+    <div class="step-title">Environment stays warm (for a while)</div>
+    <div class="step-body">After your handler returns, the execution environment stays alive (frozen, not billed) waiting for the next invocation — typically 5-15 minutes. If a new invocation arrives, it reuses this environment with no cold start. This is "warm start."</div>
+  </div></div>
+  <div class="step"><div class="step-num">5</div><div class="step-content">
+    <div class="step-title">Environment is recycled</div>
+    <div class="step-body">After sufficient idle time, AWS recycles the execution environment. The next invocation starts fresh with a cold start.</div>
+  </div></div>
+</div>
+
+<h2>Lambda Configuration</h2>
+<pre><span class="cm"># Create a Lambda function</span>
+aws lambda create-function \
+  --function-name OrderProcessor \
+  --runtime java21 \
+  --role arn:aws:iam::123456789012:role/OrderProcessorRole \
+  --handler com.myapp.OrderHandler::handleRequest \
+  --code S3Bucket=deployment-bucket,S3Key=order-processor-1.0.jar \
+  --timeout 30 \               <span class="cm"># seconds — max 900 (15 min)</span>
+  --memory-size 1024 \         <span class="cm"># MB — also scales CPU proportionally</span>
+  --environment "Variables={
+    ENVIRONMENT=production,
+    TABLE_NAME=Orders
+  }" \
+  --vpc-config "SubnetIds=subnet-0app1a,subnet-0app1b,SecurityGroupIds=sg-0lambda" \
+  --tracing-config Mode=Active  <span class="cm"># X-Ray tracing</span>
+
+<span class="cm"># Key limits to know</span>
+<span class="cm">Max memory:      10,240 MB (10 GB)</span>
+<span class="cm">Max timeout:     900 seconds (15 minutes)</span>
+<span class="cm">Max package:     50 MB (zipped), 250 MB (unzipped), 10 GB (container image)</span>
+<span class="cm">Max tmp storage: 10 GB (/tmp)</span>
+<span class="cm">Max env vars:    4 KB total</span>
+
+<span class="cm"># Memory also controls CPU: 1792 MB = 1 full vCPU, 3584 MB = 2 vCPUs</span>
+<span class="cm"># For CPU-bound Java apps: try 1769 MB or 3008 MB</span></pre>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/lambda/latest/dg/welcome.html" target="_blank">Lambda Documentation</a>
+  <a class="ref" href="https://aws.amazon.com/blogs/compute/operating-lambda-performance-optimization-part-1/" target="_blank">Lambda Performance Optimization</a>
+  <a class="ref" href="https://firecracker-microvm.github.io/" target="_blank">Firecracker MicroVMs</a>
+</div>
+</div>
+
+<!-- ======================================================= S9: COLD STARTS -->
+<div id="s9" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 4 · Lambda · Section 9</span>
+  <h1>Cold Starts — Deep Dive</h1>
+  <p class="subtitle">Cold starts are the most misunderstood aspect of Lambda. Understanding exactly what happens, how long each phase takes, and every technique to reduce them is essential for production Lambda systems.</p>
+</div>
+
+<h2>What is a Cold Start — Precisely</h2>
+<p>A cold start is what happens when Lambda has no warm execution environment available and must create a new one from scratch. It involves downloading your code, initialising the runtime, and running your initialisation code — before even touching your handler function.</p>
+
+<h2>The Cold Start Timeline — Phase by Phase</h2>
+
+<div class="lambda-box cold">
+  <div class="lambda-phase">❄️ COLD START (everything below runs)</div>
+  <div style="margin-bottom:8px">
+    <div class="timeline-bar" style="background:#2a0a0a;color:var(--red-light);border:1px solid #5a1a1a;width:30%">
+      ① Download code package · 50–500ms
+    </div>
+    <div style="font-size:11px;color:var(--text3);padding:2px 0 6px 8px">Lambda downloads your deployment package or container image. Large packages = longer download. Java 50MB JAR → longer than Node 1MB ZIP.</div>
+
+    <div class="timeline-bar" style="background:#1e0a35;color:var(--purple-light);border:1px solid #5a2a8a;width:20%">
+      ② Start Firecracker microVM · 10–50ms
+    </div>
+    <div style="font-size:11px;color:var(--text3);padding:2px 0 6px 8px">AWS Firecracker starts a new microVM for isolation. Very fast — Firecracker boots in ~125ms including Linux kernel.</div>
+
+    <div class="timeline-bar" style="background:#0f2340;color:var(--blue-light);border:1px solid #1a4080;width:40%">
+      ③ Start language runtime (JVM) · 200ms–2,000ms
+    </div>
+    <div style="font-size:11px;color:var(--text3);padding:2px 0 6px 8px">THIS IS THE BIG ONE for Java. JVM startup: load JVM, load classes, run bytecode verifier. Java cold starts are 1–3 seconds. Node.js/Python: ~100ms. Go/Rust: ~10ms.</div>
+
+    <div class="timeline-bar" style="background:#2a1800;color:var(--yellow-light);border:1px solid #6a4000;width:50%">
+      ④ Run your init code · 100ms–5,000ms (your fault!)
+    </div>
+    <div style="font-size:11px;color:var(--text3);padding:2px 0 6px 8px">Code OUTSIDE your handler runs here: Spring context init, DynamoDB client creation, database connection pool, reading SSM parameters. This is where most cold start time hides.</div>
+  </div>
+</div>
+
+<div class="lambda-box warm" style="margin-top:12px">
+  <div class="lambda-phase">🔥 WARM START (only this runs)</div>
+  <div class="timeline-bar" style="background:#061a0d;color:var(--green-light);border:1px solid #14532d;width:15%">
+    ⑤ Your handler function · 1ms–500ms
+  </div>
+  <div style="font-size:11px;color:var(--text3);padding:2px 0 4px 8px">On warm start: phases ①–④ already done. Execution environment reused. Only your handler code runs. This is why warm starts are so much faster.</div>
+</div>
+
+<h2>Cold Start Times by Runtime (Measured Averages)</h2>
+<table>
+  <tr><th>Runtime</th><th>Typical Cold Start</th><th>Why</th></tr>
+  <tr><td>Java 21 (standard)</td><td>1,000 – 3,000ms</td><td>JVM startup + class loading is inherently slow</td></tr>
+  <tr><td>Java 21 + SnapStart</td><td>200 – 500ms</td><td>JVM snapshot restored — skips most JVM init</td></tr>
+  <tr><td>Java 21 + GraalVM native</td><td>10 – 100ms</td><td>Compiled to native — no JVM at all</td></tr>
+  <tr><td>Python 3.12</td><td>100 – 400ms</td><td>Interpreter startup, module imports</td></tr>
+  <tr><td>Node.js 20</td><td>50 – 200ms</td><td>V8 engine is fast to start, module imports</td></tr>
+  <tr><td>Go 1.x</td><td>10 – 80ms</td><td>Compiled, no runtime to start</td></tr>
+  <tr><td>Rust</td><td>5 – 50ms</td><td>Compiled, minimal runtime</td></tr>
+</table>
+
+<h2>Reducing Cold Starts — Every Technique</h2>
+
+<h3>1. Lambda SnapStart (Java-specific, best option)</h3>
+<pre><span class="cm"># SnapStart: AWS takes a snapshot of the JVM after init
+# On cold start: restore from snapshot instead of booting JVM from scratch
+# 90% cold start reduction for Java functions</span>
+
+aws lambda create-function \
+  --function-name OrderProcessor \
+  --runtime java21 \
+  --snap-start ApplyOn=PublishedVersions \    <span class="cm"># enable SnapStart</span>
+  ...
+
+<span class="cm"># SnapStart caveat: must implement CacheInterface to exclude non-serialisable
+# objects from snapshot (file handles, network connections, random seeds)</span>
+
+<span class="kw">import</span> com.amazonaws.services.lambda.crac.*;
+
+<span class="kw">public class</span> <span class="ty">OrderHandler</span> <span class="kw">implements</span> <span class="ty">RequestHandler</span>, <span class="ty">Resource</span> {
+
+    <span class="kw">private</span> <span class="ty">DynamoDbClient</span> dynamoDB;
+
+    <span class="kw">public</span> <span class="ty">OrderHandler</span>() {
+        Core.<span class="fn">getGlobalContext</span>().<span class="fn">register</span>(<span class="kw">this</span>);
+        <span class="cm">// init DynamoDB client here — will be snapshotted</span>
+        dynamoDB = <span class="ty">DynamoDbClient</span>.<span class="fn">create</span>();
+    }
+
+    <span class="kw">public void</span> <span class="fn">beforeCheckpoint</span>(<span class="ty">Context</span> ctx) {
+        <span class="cm">// Close any connections that can't survive snapshot</span>
+        dynamoDB.<span class="fn">close</span>();
+    }
+
+    <span class="kw">public void</span> <span class="fn">afterRestore</span>(<span class="ty">Context</span> ctx) {
+        <span class="cm">// Re-open connections after restoring from snapshot</span>
+        dynamoDB = <span class="ty">DynamoDbClient</span>.<span class="fn">create</span>();
+    }
+}</pre>
+
+<h3>2. Provisioned Concurrency — Pre-warmed instances</h3>
+<pre><span class="cm"># Keep N execution environments warm and ready
+# Cold starts for those N concurrencies: zero
+# Cost: pay for idle warm environments (significant cost for high counts)</span>
+
+aws lambda put-provisioned-concurrency-config \
+  --function-name OrderProcessor \
+  --qualifier production \      <span class="cm"># alias or version</span>
+  --provisioned-concurrent-executions 10
+
+<span class="cm"># Auto-scale provisioned concurrency with Application Auto Scaling</span>
+aws application-autoscaling register-scalable-target \
+  --service-namespace lambda \
+  --resource-id function:OrderProcessor:production \
+  --scalable-dimension lambda:function:ProvisionedConcurrency \
+  --min-capacity 5 --max-capacity 50
+
+<span class="cm"># Scale based on utilisation: scale up when provisioned concurrency is 70% used</span>
+aws application-autoscaling put-scaling-policy \
+  --policy-type TargetTrackingScaling \
+  --target-tracking-scaling-policy-configuration '{
+    "TargetValue": 0.7,
+    "PredefinedMetricSpecification": {
+      "PredefinedMetricType": "LambdaProvisionedConcurrencyUtilization"
+    }
+  }'</pre>
+
+<h3>3. Minimise init code outside handler</h3>
+<pre><span class="ty">// What runs on EVERY cold start (outside handler)</span>
+<span class="kw">public class</span> <span class="ty">OrderHandler</span> <span class="kw">implements</span> <span class="ty">RequestHandler</span>&lt;<span class="ty">SQSEvent</span>, <span class="ty">Void</span>&gt; {
+
+    <span class="cm">// ❌ BAD: creates a new Spring ApplicationContext (3-10 seconds!)</span>
+    <span class="kw">private static final</span> <span class="ty">ApplicationContext</span> ctx =
+        <span class="kw">new</span> <span class="ty">SpringApplication</span>(<span class="ty">AppConfig</span>.<span class="kw">class</span>).<span class="fn">run</span>();
+
+    <span class="cm">// ✅ GOOD: create lightweight clients only</span>
+    <span class="kw">private static final</span> <span class="ty">DynamoDbClient</span> dynamoDB =
+        <span class="ty">DynamoDbClient</span>.<span class="fn">create</span>();   <span class="cm">// ~200ms init, cached for warm starts</span>
+
+    <span class="kw">private static final</span> <span class="ty">SnsClient</span> sns =
+        <span class="ty">SnsClient</span>.<span class="fn">create</span>();        <span class="cm">// cached client</span>
+
+    <span class="cm">// Static block — runs once at class load</span>
+    <span class="kw">static</span> {
+        <span class="cm">// Read env vars here (not in handler — avoid repeated calls)</span>
+        TABLE_NAME = System.<span class="fn">getenv</span>(<span class="str">"TABLE_NAME"</span>);
+    }
+
+    <span class="kw">public</span> <span class="ty">Void</span> <span class="fn">handleRequest</span>(<span class="ty">SQSEvent</span> event, <span class="ty">Context</span> ctx) {
+        <span class="cm">// Runs on EVERY invocation (warm or cold)
+        // Keep this lean — avoid creating clients here</span>
+        <span class="kw">for</span> (<span class="kw">var</span> msg : event.<span class="fn">getRecords</span>()) {
+            <span class="fn">processOrder</span>(msg.<span class="fn">getBody</span>(), dynamoDB);
+        }
+        <span class="kw">return null</span>;
+    }
+}</pre>
+
+<h3>4. Keep packages small</h3>
+<pre><span class="cm"># Fat JAR with all dependencies = longer cold start download
+# Solutions:
+
+# Option A: Lambda Layers for shared dependencies
+# (covered in Section 12)
+
+# Option B: Custom runtime container image
+# Only include what you need — no entire Spring ecosystem
+
+# Option C: GraalVM Native compilation
+# Compiles Java to native binary — ~10x smaller, near-zero cold start
+# Trade-off: slower build, reflection config required</span>
+
+<span class="cm"># Measure your cold start with AWS Lambda Power Tuning tool</span>
+<span class="cm"># Tests different memory configs to find optimal cost/performance</span></pre>
+
+<div class="alert a-blue">
+  <strong>Cold start reality check:</strong> Cold starts only affect a small fraction of invocations — only when there's no warm environment. High-traffic APIs see cold starts rarely (&lt;1% of invocations). The pain is felt most at: (1) low-traffic functions that go cold between invocations, (2) large-scale-out events (thousands of new instances needed simultaneously), (3) deployments that cause all environments to be recycled.
+</div>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/lambda/latest/dg/snapstart.html" target="_blank">Lambda SnapStart</a>
+  <a class="ref" href="https://docs.aws.amazon.com/lambda/latest/dg/provisioned-concurrency.html" target="_blank">Provisioned Concurrency</a>
+  <a class="ref" href="https://aws.amazon.com/blogs/compute/optimizing-aws-lambda-function-performance-for-java/" target="_blank">Java Lambda Performance</a>
+  <a class="ref" href="https://github.com/alexcasalboni/aws-lambda-power-tuning" target="_blank">Lambda Power Tuning Tool</a>
+</div>
+</div>
+
+<!-- ======================================================= S10: EVENT SOURCES -->
+<div id="s10" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 4 · Lambda · Section 10</span>
+  <h1>Event Sources &amp; Triggers</h1>
+  <p class="subtitle">Lambda is always triggered by an event. Understanding exactly how each event source delivers events — what the payload looks like, how errors are handled, how retries work — determines whether your system is reliable or loses data.</p>
+</div>
+
+<h2>Three Invocation Models</h2>
+<div class="grid3">
+  <div class="card">
+    <div class="card-title" style="color:var(--blue-light)">Synchronous (request/response)</div>
+    <div class="card-body">
+      Caller waits for Lambda to finish and return a response. If Lambda fails, the error is returned to the caller — no automatic retry.<br><br>
+      <strong>Sources:</strong> API Gateway, ALB, SDK direct invocation, Cognito triggers
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--orange-light)">Asynchronous (fire and forget)</div>
+    <div class="card-body">
+      Event is placed in Lambda's internal queue. Lambda retries up to 2 times on failure. After 3 total failures, event goes to Dead Letter Queue (DLQ).<br><br>
+      <strong>Sources:</strong> S3, SNS, EventBridge, CloudWatch Events, Cognito
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--green-light)">Polling (Lambda pulls)</div>
+    <div class="card-body">
+      Lambda polls the source for new records. You don't trigger Lambda — Lambda reads from the source continuously.<br><br>
+      <strong>Sources:</strong> SQS, Kinesis, DynamoDB Streams, Kafka (MSK)
+    </div>
+  </div>
+</div>
+
+<h2>SQS → Lambda (Most Common Pattern)</h2>
+<p>Lambda polls an SQS queue using an <strong>Event Source Mapping (ESM)</strong>. Lambda reads messages in batches, invokes your function with a batch, and deletes the messages from SQS only if your function succeeds. If it fails, messages become visible again after the visibility timeout and will be retried.</p>
+
+<pre><span class="cm"># Create the ESM — Lambda polls SQS automatically</span>
+aws lambda create-event-source-mapping \
+  --function-name OrderProcessor \
+  --event-source-arn arn:aws:sqs:us-east-1:123456789012:orders-queue \
+  --batch-size 10 \                        <span class="cm"># process 10 messages per invocation</span>
+  --maximum-batching-window-in-seconds 5 \ <span class="cm"># wait up to 5s to fill a batch</span>
+  --function-response-types ReportBatchItemFailures  <span class="cm"># report partial failures</span>
+
+<span class="cm"># Your handler receives a batch of SQS messages</span></pre>
+
+<pre><span class="kw">public class</span> <span class="ty">OrderHandler</span> <span class="kw">implements</span> <span class="ty">RequestHandler</span>&lt;<span class="ty">SQSEvent</span>, <span class="ty">SQSBatchResponse</span>&gt; {
+
+    <span class="kw">public</span> <span class="ty">SQSBatchResponse</span> <span class="fn">handleRequest</span>(<span class="ty">SQSEvent</span> event, <span class="ty">Context</span> ctx) {
+        <span class="ty">List</span>&lt;<span class="ty">SQSBatchResponse</span>.<span class="ty">BatchItemFailure</span>&gt; failures = <span class="kw">new</span> <span class="ty">ArrayList</span>&lt;&gt;();
+
+        <span class="kw">for</span> (<span class="ty">SQSEvent.SQSMessage</span> msg : event.<span class="fn">getRecords</span>()) {
+            <span class="kw">try</span> {
+                <span class="ty">Order</span> order = <span class="fn">parseOrder</span>(msg.<span class="fn">getBody</span>());
+                orderService.<span class="fn">process</span>(order);
+                <span class="cm">// Success — SQS will delete this message</span>
+            } <span class="kw">catch</span> (<span class="ty">Exception</span> e) {
+                log.<span class="fn">error</span>(<span class="str">"Failed to process order: {}"</span>, msg.<span class="fn">getMessageId</span>(), e);
+                <span class="cm">// Report this specific message as failed</span>
+                <span class="cm">// Other messages in batch still succeed (partial batch response)</span>
+                failures.<span class="fn">add</span>(<span class="ty">SQSBatchResponse</span>.<span class="ty">BatchItemFailure</span>.<span class="fn">builder</span>()
+                    .<span class="fn">withItemIdentifier</span>(msg.<span class="fn">getMessageId</span>())
+                    .<span class="fn">build</span>());
+            }
+        }
+
+        <span class="cm">// Return failed message IDs → only those messages go back to queue</span>
+        <span class="cm">// Successful messages are deleted from SQS</span>
+        <span class="kw">return</span> <span class="ty">SQSBatchResponse</span>.<span class="fn">builder</span>()
+            .<span class="fn">withBatchItemFailures</span>(failures)
+            .<span class="fn">build</span>();
+    }
+}</pre>
+
+<h2>S3 → Lambda (Event Notifications)</h2>
+<pre><span class="cm"># S3 triggers Lambda when files are created/deleted
+# Use case: process uploaded images, validate CSV files, trigger ETL</span>
+
+<span class="cm"># Allow S3 to invoke Lambda</span>
+aws lambda add-permission \
+  --function-name ImageResizer \
+  --action lambda:InvokeFunction \
+  --principal s3.amazonaws.com \
+  --source-arn arn:aws:s3:::user-uploads-bucket \
+  --statement-id s3-invoke
+
+<span class="cm"># Configure S3 notification</span>
+aws s3api put-bucket-notification-configuration \
+  --bucket user-uploads-bucket \
+  --notification-configuration '{
+    "LambdaFunctionConfigurations": [{
+      "LambdaFunctionArn": "arn:aws:lambda:us-east-1:123:function:ImageResizer",
+      "Events": ["s3:ObjectCreated:*"],
+      "Filter": {
+        "Key": {
+          "FilterRules": [
+            {"Name": "prefix", "Value": "uploads/"},
+            {"Name": "suffix", "Value": ".jpg"}
+          ]
+        }
+      }
+    }]
+  }'</pre>
+
+<pre><span class="kw">public class</span> <span class="ty">ImageResizer</span> <span class="kw">implements</span> <span class="ty">RequestHandler</span>&lt;<span class="ty">S3Event</span>, <span class="ty">Void</span>&gt; {
+
+    <span class="kw">private static final</span> <span class="ty">S3Client</span> s3 = <span class="ty">S3Client</span>.<span class="fn">create</span>();
+
+    <span class="kw">public</span> <span class="ty">Void</span> <span class="fn">handleRequest</span>(<span class="ty">S3Event</span> event, <span class="ty">Context</span> ctx) {
+        <span class="kw">for</span> (<span class="ty">S3EventNotification.S3EventNotificationRecord</span> record : event.<span class="fn">getRecords</span>()) {
+            <span class="ty">String</span> bucket = record.<span class="fn">getS3</span>().<span class="fn">getBucket</span>().<span class="fn">getName</span>();
+            <span class="ty">String</span> key = record.<span class="fn">getS3</span>().<span class="fn">getObject</span>().<span class="fn">getKey</span>();
+            <span class="ty">String</span> decodedKey = <span class="ty">URLDecoder</span>.<span class="fn">decode</span>(key, StandardCharsets.UTF_8);
+
+            log.<span class="fn">info</span>(<span class="str">"Processing uploaded image: {}/{}"</span>, bucket, decodedKey);
+
+            <span class="cm">// Download, resize, re-upload to thumbnails/ prefix</span>
+            <span class="kw">byte</span>[] original = <span class="fn">downloadFromS3</span>(s3, bucket, decodedKey);
+            <span class="kw">byte</span>[] thumbnail = <span class="fn">resize</span>(original, <span class="num">200</span>, <span class="num">200</span>);
+            <span class="fn">uploadToS3</span>(s3, bucket, <span class="str">"thumbnails/"</span> + decodedKey, thumbnail);
+        }
+        <span class="kw">return null</span>;
+    }
+}</pre>
+
+<h2>API Gateway → Lambda (Synchronous HTTP)</h2>
+<pre><span class="kw">// API Gateway sends the HTTP request as a structured event</span>
+<span class="kw">public class</span> <span class="ty">ApiHandler</span> <span class="kw">implements</span>
+    <span class="ty">RequestHandler</span>&lt;<span class="ty">APIGatewayProxyRequestEvent</span>, <span class="ty">APIGatewayProxyResponseEvent</span>&gt; {
+
+    <span class="kw">public</span> <span class="ty">APIGatewayProxyResponseEvent</span> <span class="fn">handleRequest</span>(
+            <span class="ty">APIGatewayProxyRequestEvent</span> request, <span class="ty">Context</span> ctx) {
+
+        <span class="ty">String</span> userId = request.<span class="fn">getPathParameters</span>().<span class="fn">get</span>(<span class="str">"userId"</span>);
+        <span class="ty">String</span> authHeader = request.<span class="fn">getHeaders</span>().<span class="fn">get</span>(<span class="str">"Authorization"</span>);
+        <span class="ty">String</span> body = request.<span class="fn">getBody</span>();  <span class="cm">// JSON string</span>
+
+        <span class="kw">try</span> {
+            <span class="ty">User</span> user = userService.<span class="fn">getUser</span>(userId);
+            <span class="kw">return new</span> <span class="ty">APIGatewayProxyResponseEvent</span>()
+                .<span class="fn">withStatusCode</span>(<span class="num">200</span>)
+                .<span class="fn">withHeaders</span>(<span class="ty">Map</span>.<span class="fn">of</span>(<span class="str">"Content-Type"</span>, <span class="str">"application/json"</span>))
+                .<span class="fn">withBody</span>(objectMapper.<span class="fn">writeValueAsString</span>(user));
+        } <span class="kw">catch</span> (<span class="ty">UserNotFoundException</span> e) {
+            <span class="kw">return new</span> <span class="ty">APIGatewayProxyResponseEvent</span>()
+                .<span class="fn">withStatusCode</span>(<span class="num">404</span>)
+                .<span class="fn">withBody</span>(<span class="str">"{\"error\":\"User not found\"}"</span>);
+        }
+    }
+}</pre>
+
+<h2>Event Source Summary</h2>
+<table>
+  <tr><th>Trigger</th><th>Model</th><th>Retries on failure</th><th>Event type</th></tr>
+  <tr><td>API Gateway / ALB</td><td>Synchronous</td><td>None (error returned to caller)</td><td>APIGatewayProxyRequestEvent</td></tr>
+  <tr><td>SQS</td><td>Polling</td><td>Visibility timeout → DLQ</td><td>SQSEvent</td></tr>
+  <tr><td>S3</td><td>Async</td><td>2 retries → DLQ</td><td>S3Event</td></tr>
+  <tr><td>SNS</td><td>Async</td><td>2 retries → DLQ</td><td>SNSEvent</td></tr>
+  <tr><td>EventBridge</td><td>Async</td><td>2 retries → DLQ</td><td>Map&lt;String, Object&gt;</td></tr>
+  <tr><td>DynamoDB Streams</td><td>Polling</td><td>Retry until success or record expires</td><td>DynamodbEvent</td></tr>
+  <tr><td>Kinesis</td><td>Polling</td><td>Retry until success or record expires</td><td>KinesisEvent</td></tr>
+  <tr><td>CloudWatch Scheduled</td><td>Async</td><td>2 retries</td><td>ScheduledEvent</td></tr>
+</table>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/lambda/latest/dg/invocation-eventsourcemapping.html" target="_blank">Event Source Mappings</a>
+  <a class="ref" href="https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html" target="_blank">Lambda with SQS</a>
+  <a class="ref" href="https://docs.aws.amazon.com/lambda/latest/dg/with-s3.html" target="_blank">Lambda with S3</a>
+</div>
+</div>
+
+<!-- ======================================================= S11: CONCURRENCY -->
+<div id="s11" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 4 · Lambda · Section 11</span>
+  <h1>Lambda Concurrency Model</h1>
+  <p class="subtitle">Concurrency in Lambda is completely different from threads in a traditional app. Understanding it prevents your functions from throttling each other and helps you design reliable event-driven systems.</p>
+</div>
+
+<h2>What is Lambda Concurrency?</h2>
+<p>In a traditional server, concurrency = threads running simultaneously inside ONE process. In Lambda, concurrency = number of <strong>execution environments running simultaneously</strong>, each handling ONE request at a time. Lambda does NOT share an environment between concurrent requests.</p>
+
+<div class="scenario">
+  <div class="scenario-label">Mental Model</div>
+  <div class="scenario-title">Lambda concurrency = number of workers, not threads per worker</div>
+  <p>Traditional server: 1 server with 100 threads, each handling a request simultaneously. Lambda: 100 separate worker instances (execution environments), each handling 1 request. If 101 requests arrive simultaneously, Lambda spins up a 101st environment (or throttles if you've hit limits).</p>
+</div>
+
+<pre><span class="cm"># Concurrency = simultaneous executions at any given moment
+# Formula: Concurrency = (requests per second) × (avg duration in seconds)
+# Example:
+#   1000 req/sec × 0.1 sec avg = 100 concurrent executions
+#   10 req/sec × 5 sec avg = 50 concurrent executions</span>
+
+<span class="cm"># Account default limit: 1000 concurrent executions per region (soft limit)
+# Can be increased by requesting a service quota increase</span>
+
+<span class="cm"># Types of concurrency limits:</span>
+
+<span class="cm"># 1. Reserved Concurrency — guarantees AND caps a function</span>
+aws lambda put-function-concurrency \
+  --function-name CriticalOrderProcessor \
+  --reserved-concurrent-executions 200
+<span class="cm"># This function ALWAYS has 200 concurrency available (reserved from pool)
+# It NEVER exceeds 200 (protection against runaway scaling)</span>
+
+<span class="cm"># 2. Unreserved Concurrency — shared pool minus reservations
+# All functions without reserved concurrency share what's left</span>
+
+<span class="cm"># 3. Provisioned Concurrency — pre-warmed environments
+# (Covered in Cold Starts section)</span></pre>
+
+<h2>Throttling — When Concurrency Limit is Hit</h2>
+<pre><span class="cm"># When a function hits its concurrency limit:
+# - Synchronous invocations (API Gateway, ALB): return 429 TooManyRequests immediately
+# - Async invocations (S3, SNS): Lambda retries for up to 6 hours
+# - Polling (SQS, Kinesis): Lambda stops reading from source until concurrency frees up</span>
+
+<span class="cm"># Detect throttles in CloudWatch</span>
+aws cloudwatch get-metric-statistics \
+  --namespace AWS/Lambda \
+  --metric-name Throttles \
+  --dimensions Name=FunctionName,Value=OrderProcessor \
+  --start-time 2024-01-15T00:00:00 \
+  --end-time 2024-01-16T00:00:00 \
+  --period 3600 \
+  --statistics Sum
+
+<span class="cm"># In your code — handle 429 from synchronous invocations</span>
+<span class="cm"># (SDK handles it with exponential backoff by default for retryable errors)</span></pre>
+
+<h2>Reserved Concurrency as a Rate Limiter</h2>
+<p>Set reserved concurrency to <code>0</code> to completely <strong>disable</strong> a function temporarily without deleting it — useful for emergency incident response.</p>
+
+<pre><span class="cm"># Disable a runaway Lambda immediately (incident response)</span>
+aws lambda put-function-concurrency \
+  --function-name ProblematicFunction \
+  --reserved-concurrent-executions 0   <span class="cm"># effectively disabled</span>
+
+<span class="cm"># Re-enable later</span>
+aws lambda delete-function-concurrency \
+  --function-name ProblematicFunction  <span class="cm"># returns to unreserved pool</span></pre>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/lambda/latest/dg/configuration-concurrency.html" target="_blank">Lambda Concurrency</a>
+  <a class="ref" href="https://aws.amazon.com/blogs/compute/understanding-aws-lambda-scaling-and-throughput/" target="_blank">Lambda Scaling Deep Dive</a>
+</div>
+</div>
+
+<!-- ======================================================= S12: LAYERS & CONFIG -->
+<div id="s12" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 4 · Lambda · Section 12</span>
+  <h1>Lambda Layers, Extensions &amp; Configuration</h1>
+  <p class="subtitle">Layers let you share code and dependencies across functions. Extensions run alongside your function. Together they reduce cold starts and enable observability without changing function code.</p>
+</div>
+
+<h2>Lambda Layers — Shared Dependencies</h2>
+<p>A Lambda Layer is a ZIP archive containing libraries, custom runtimes, or other dependencies. You publish a layer once and reference it in multiple functions. The layer contents are extracted to <code>/opt/</code> in the execution environment. Up to 5 layers per function, 250 MB total.</p>
+
+<pre><span class="cm"># Why layers? Problem: every Java Lambda function ships its own copy of
+# AWS SDK (20MB), Jackson (5MB), logging (2MB). 10 functions = 10 copies.
+# With layers: shared dependencies in one layer, functions are tiny.</span>
+
+<span class="cm"># Create a layer with shared dependencies</span>
+<span class="cm"># Build your shared-deps.jar or ZIP</span>
+zip -r shared-deps.zip java/lib/
+
+aws lambda publish-layer-version \
+  --layer-name shared-java-deps \
+  --description "AWS SDK, Jackson, common utilities" \
+  --zip-file fileb://shared-deps.zip \
+  --compatible-runtimes java21 \
+  --compatible-architectures arm64
+
+<span class="cm"># Returns: LayerVersionArn: arn:aws:lambda:us-east-1:123:layer:shared-java-deps:1</span>
+
+<span class="cm"># Attach layer to functions</span>
+aws lambda update-function-configuration \
+  --function-name OrderProcessor \
+  --layers \
+    arn:aws:lambda:us-east-1:123:layer:shared-java-deps:1 \
+    arn:aws:lambda:us-east-1:123:layer:datadog-extension:65
+
+<span class="cm"># Layer contents are available at /opt/java/lib/ at runtime
+# In Java: add /opt/java/lib/*.jar to classpath</span></pre>
+
+<h2>Lambda Environment Variables</h2>
+<pre><span class="cm"># Set at function level — available as System.getenv() in code</span>
+aws lambda update-function-configuration \
+  --function-name OrderProcessor \
+  --environment "Variables={
+    ENVIRONMENT=production,
+    TABLE_NAME=Orders,
+    TOPIC_ARN=arn:aws:sns:...,
+    LOG_LEVEL=INFO
+  }"
+
+<span class="cm"># Encrypt sensitive values with KMS</span>
+aws lambda update-function-configuration \
+  --function-name OrderProcessor \
+  --kms-key-arn arn:aws:kms:us-east-1:123:key/mrk-abc123 \
+  --environment "Variables={
+    STRIPE_API_KEY=encrypted-value-here
+  }"
+
+<span class="cm"># In code — read env vars OUTSIDE handler (runs once at cold start)</span>
+<span class="kw">public class</span> <span class="ty">OrderHandler</span> {
+    <span class="kw">private static final</span> <span class="ty">String</span> TABLE_NAME = System.<span class="fn">getenv</span>(<span class="str">"TABLE_NAME"</span>);
+    <span class="kw">private static final</span> <span class="ty">String</span> TOPIC_ARN  = System.<span class="fn">getenv</span>(<span class="str">"TOPIC_ARN"</span>);
+    <span class="cm">// Reads once at class load — not on every invocation</span>
+}</pre>
+
+<h2>Lambda Destinations — What Happens After</h2>
+<pre><span class="cm"># For ASYNC invocations: configure where to send success/failure results
+# More powerful than DLQ: carries full event + response context</span>
+
+aws lambda put-function-event-invoke-config \
+  --function-name OrderProcessor \
+  --maximum-retry-attempts 2 \
+  --destination-config '{
+    "OnSuccess": {
+      "Destination": "arn:aws:sqs:us-east-1:123:orders-success-queue"
+    },
+    "OnFailure": {
+      "Destination": "arn:aws:sqs:us-east-1:123:orders-dlq"
+    }
+  }'
+
+<span class="cm"># DLQ (simpler, older approach):
+# --dead-letter-config TargetArn=arn:aws:sqs:...:orders-dlq</span>
+
+<span class="cm"># OnFailure destination vs DLQ:
+# DLQ: only the original event, limited metadata
+# Destination: original event + Lambda response + error details + context</span></pre>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/lambda/latest/dg/chapter-layers.html" target="_blank">Lambda Layers</a>
+  <a class="ref" href="https://docs.aws.amazon.com/lambda/latest/dg/invocation-async.html#invocation-async-destinations" target="_blank">Lambda Destinations</a>
+</div>
+</div>
+
+<!-- ======================================================= S13: WHAT IS ECS -->
+<div id="s13" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 4 · ECS · Section 13</span>
+  <h1>What is ECS?</h1>
+  <p class="subtitle">Elastic Container Service — AWS's container orchestration platform. Runs Docker containers at scale. Think of it as "Kubernetes but simpler and AWS-native."</p>
+</div>
+
+<h2>Containers vs VMs — The Context</h2>
+<p>Before ECS makes sense, you need to understand WHY containers exist. A virtual machine (EC2) virtualises the entire hardware — you get a full OS, kernel, everything. A container virtualises only the application layer — it packages your app and its dependencies but shares the host OS kernel. This makes containers much lighter, faster to start, and more portable.</p>
+
+<div class="compare-row">
+  <div class="cmp-a">
+    <div class="cmp-label">Virtual Machine (EC2)</div>
+    <p style="font-size:12px;color:var(--text2)">
+      Full OS (1–2GB), boots in 30–90 seconds, strong hardware-level isolation.<br><br>
+      Good for: OS-level dependencies, mixed workloads, legacy software, full isolation requirements.
+    </p>
+  </div>
+  <div class="cmp-b">
+    <div class="cmp-label">Container (Docker)</div>
+    <p style="font-size:12px;color:var(--text2)">
+      Just your app + runtime dependencies, starts in 0.5–3 seconds, shares host kernel.<br><br>
+      Good for: microservices, consistent environments, fast scaling, CI/CD, portable workloads.
+    </p>
+  </div>
+</div>
+
+<h2>ECS Core Concepts</h2>
+<table>
+  <tr><th>Concept</th><th>What It Is</th><th>Analogy</th></tr>
+  <tr><td><strong>Cluster</strong></td><td>Logical grouping of tasks and services. The "scope" for ECS operations.</td><td>A data centre floor</td></tr>
+  <tr><td><strong>Task Definition</strong></td><td>Blueprint for a task — which Docker image(s), CPU, memory, ports, environment variables, IAM role, log config</td><td>A recipe / job description</td></tr>
+  <tr><td><strong>Task</strong></td><td>One running instance of a task definition. One or more containers running together.</td><td>One running instance of the recipe</td></tr>
+  <tr><td><strong>Service</strong></td><td>Maintains a specified number of tasks running. Replaces failed tasks. Integrates with ALB for load balancing.</td><td>A manager ensuring N workers are always working</td></tr>
+  <tr><td><strong>Container Registry (ECR)</strong></td><td>AWS's Docker Hub — stores your Docker images. Private, integrated with IAM.</td><td>A Docker image warehouse</td></tr>
+</table>
+
+<h2>ECS Architecture</h2>
+<div class="ecs-arch">
+  <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px">ECS Production Architecture</div>
+  <div style="display:grid;grid-template-columns:1fr 2fr;gap:16px">
+    <div>
+      <div style="background:var(--aws-bg);border:1px solid var(--orange);border-radius:var(--radius);padding:10px;margin-bottom:8px">
+        <div style="font-size:11px;font-weight:700;color:var(--aws)">ECR Repository</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:3px">myapp:v1.2.3</div>
+        <div style="font-size:11px;color:var(--text3)">myapp:latest</div>
+      </div>
+      <div style="background:var(--blue-bg);border:1px solid var(--blue);border-radius:var(--radius);padding:10px;margin-bottom:8px">
+        <div style="font-size:11px;font-weight:700;color:var(--blue-light)">Task Definition</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:3px">myapp:5</div>
+        <div style="font-size:11px;color:var(--text3)">0.5 vCPU / 1 GB</div>
+        <div style="font-size:11px;color:var(--text3)">Port 8080</div>
+      </div>
+    </div>
+    <div>
+      <div style="background:var(--bg4);border:1px solid var(--border2);border-radius:var(--radius);padding:12px">
+        <div style="font-size:11px;font-weight:700;color:var(--text);margin-bottom:8px">ECS Cluster: production</div>
+        <div style="background:var(--green-bg);border:1px solid #14532d;border-radius:6px;padding:8px;margin-bottom:6px">
+          <div style="font-size:10px;font-weight:700;color:var(--green-light)">Service: myapp-service (desired: 6)</div>
+          <div style="display:flex;gap:4px;margin-top:6px;flex-wrap:wrap">
+            <div style="background:var(--bg4);border:1px solid #14532d;border-radius:4px;padding:3px 8px;font-size:10px;color:var(--green-light)">Task 1 · 10.0.11.45:8080</div>
+            <div style="background:var(--bg4);border:1px solid #14532d;border-radius:4px;padding:3px 8px;font-size:10px;color:var(--green-light)">Task 2 · 10.0.11.67:8080</div>
+            <div style="background:var(--bg4);border:1px solid #14532d;border-radius:4px;padding:3px 8px;font-size:10px;color:var(--green-light)">Task 3 · 10.0.12.33:8080</div>
+            <div style="background:var(--bg4);border:1px solid #14532d;border-radius:4px;padding:3px 8px;font-size:10px;color:var(--green-light)">Task 4 · 10.0.12.56:8080</div>
+            <div style="background:var(--bg4);border:1px solid #14532d;border-radius:4px;padding:3px 8px;font-size:10px;color:var(--green-light)">Task 5 · 10.0.13.12:8080</div>
+            <div style="background:var(--bg4);border:1px solid #14532d;border-radius:4px;padding:3px 8px;font-size:10px;color:var(--green-light)">Task 6 · 10.0.13.44:8080</div>
+          </div>
+        </div>
+        <div style="font-size:10px;color:var(--text3)">ALB target group → all 6 tasks</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/AmazonECS/latest/developerguide/Welcome.html" target="_blank">ECS Documentation</a>
+  <a class="ref" href="https://docs.aws.amazon.com/AmazonECR/latest/userguide/what-is-ecr.html" target="_blank">ECR Documentation</a>
+</div>
+</div>
+
+<!-- ======================================================= S14: FARGATE VS EC2 -->
+<div id="s14" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 4 · ECS · Section 14</span>
+  <h1>Fargate vs EC2 Launch Type</h1>
+  <p class="subtitle">ECS can run containers on two backends — Fargate (AWS manages the server) or EC2 (you provide and manage the servers). This is the most fundamental ECS decision.</p>
+</div>
+
+<h2>The Core Difference</h2>
+<div class="compare-row">
+  <div class="cmp-a">
+    <div class="cmp-label">EC2 Launch Type — You Manage the Servers</div>
+    <p style="font-size:12.5px;color:var(--text2)">You run an ECS Agent on EC2 instances in your cluster. ECS places containers on those instances. You are responsible for the EC2 fleet: sizing, patching, capacity planning, replacing unhealthy instances, OS updates.</p>
+    <p style="font-size:12px;color:var(--text3);margin-top:8px">✓ Lower per-unit cost at scale. ✓ Control over instance type. ✓ Spot Instances for cost savings. ✗ Operational overhead. ✗ Must manage cluster capacity.</p>
+  </div>
+  <div class="cmp-b">
+    <div class="cmp-label">Fargate — Serverless Containers</div>
+    <p style="font-size:12.5px;color:var(--text2)">You define CPU and memory per task. AWS allocates a dedicated microVM, runs your container, and you pay per task-second. No EC2 instances to manage. No capacity planning. No OS patches.</p>
+    <p style="font-size:12px;color:var(--text3);margin-top:8px">✓ Zero server management. ✓ Scale to zero when no tasks. ✓ Pay per task (not per idle server). ✗ Higher per-unit cost vs EC2. ✗ Cold start (~30s to start a task).</p>
+  </div>
+</div>
+
+<h2>Fargate — How It Works</h2>
+<p>With Fargate, you specify CPU and memory in your task definition. When ECS needs to run a task, Fargate allocates a dedicated microVM (using Firecracker, same as Lambda) just for that task. The task runs in complete isolation — no other customer's tasks share that microVM.</p>
+
+<pre><span class="cm"># Fargate task definition excerpt</span>
+{
+  <span class="jk">"family"</span>: <span class="jv">"myapp-task"</span>,
+  <span class="jk">"networkMode"</span>: <span class="jv">"awsvpc"</span>,           <span class="cm">// Required for Fargate — task gets its own ENI</span>
+  <span class="jk">"requiresCompatibilities"</span>: [<span class="jv">"FARGATE"</span>],
+  <span class="jk">"cpu"</span>: <span class="jv">"512"</span>,                       <span class="cm">// 0.5 vCPU</span>
+  <span class="jk">"memory"</span>: <span class="jv">"1024"</span>,                   <span class="cm">// 1 GB</span>
+  <span class="jk">"taskRoleArn"</span>: <span class="jv">"arn:...:role/MyAppTaskRole"</span>,
+  <span class="jk">"executionRoleArn"</span>: <span class="jv">"arn:...:role/ECSTaskExecutionRole"</span>,
+  <span class="jk">"containerDefinitions"</span>: [{
+    <span class="jk">"name"</span>: <span class="jv">"myapp"</span>,
+    <span class="jk">"image"</span>: <span class="jv">"123456789012.dkr.ecr.us-east-1.amazonaws.com/myapp:v1.2.3"</span>,
+    <span class="jk">"portMappings"</span>: [{<span class="jk">"containerPort"</span>: <span class="num">8080</span>, <span class="jk">"protocol"</span>: <span class="jv">"tcp"</span>}],
+    <span class="jk">"environment"</span>: [
+      {<span class="jk">"name"</span>: <span class="jv">"ENVIRONMENT"</span>, <span class="jk">"value"</span>: <span class="jv">"production"</span>}
+    ],
+    <span class="jk">"secrets"</span>: [{                        <span class="cm">// Pulled from Secrets Manager at startup</span>
+      <span class="jk">"name"</span>: <span class="jv">"DB_PASSWORD"</span>,
+      <span class="jk">"valueFrom"</span>: <span class="jv">"arn:aws:secretsmanager:...:secret:myapp/db-password"</span>
+    }],
+    <span class="jk">"logConfiguration"</span>: {
+      <span class="jk">"logDriver"</span>: <span class="jv">"awslogs"</span>,
+      <span class="jk">"options"</span>: {
+        <span class="jk">"awslogs-group"</span>: <span class="jv">"/ecs/myapp"</span>,
+        <span class="jk">"awslogs-region"</span>: <span class="jv">"us-east-1"</span>,
+        <span class="jk">"awslogs-stream-prefix"</span>: <span class="jv">"myapp"</span>
+      }
+    },
+    <span class="jk">"healthCheck"</span>: {
+      <span class="jk">"command"</span>: [<span class="jv">"CMD-SHELL"</span>, <span class="jv">"curl -f http://localhost:8080/health || exit 1"</span>],
+      <span class="jk">"interval"</span>: <span class="num">30</span>, <span class="jk">"timeout"</span>: <span class="num">10</span>, <span class="jk">"retries"</span>: <span class="num">3</span>, <span class="jk">"startPeriod"</span>: <span class="num">60</span>
+    }
+  }]
+}</pre>
+
+<h2>Fargate CPU and Memory Combinations</h2>
+<table>
+  <tr><th>CPU (vCPU)</th><th>Valid Memory Ranges</th></tr>
+  <tr><td>0.25</td><td>0.5 GB, 1 GB, 2 GB</td></tr>
+  <tr><td>0.5</td><td>1 GB – 4 GB (1 GB increments)</td></tr>
+  <tr><td>1</td><td>2 GB – 8 GB (1 GB increments)</td></tr>
+  <tr><td>2</td><td>4 GB – 16 GB (1 GB increments)</td></tr>
+  <tr><td>4</td><td>8 GB – 30 GB (1 GB increments)</td></tr>
+  <tr><td>8</td><td>16 GB – 60 GB</td></tr>
+  <tr><td>16</td><td>32 GB – 120 GB</td></tr>
+</table>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html" target="_blank">Fargate Documentation</a>
+  <a class="ref" href="https://aws.amazon.com/fargate/pricing/" target="_blank">Fargate Pricing</a>
+</div>
+</div>
+
+<!-- ======================================================= S15: TASK DEFS & SERVICES -->
+<div id="s15" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 4 · ECS · Section 15</span>
+  <h1>Task Definitions &amp; Services</h1>
+  <p class="subtitle">Task definitions are versioned blueprints. Services maintain running counts of tasks, handle deployments, and wire to load balancers. These two together are the heart of ECS.</p>
+</div>
+
+<h2>Task Definition — Everything About How to Run</h2>
+<p>A Task Definition is a JSON document that describes how to run one or more containers together. It's versioned — each change creates a new revision. Your service runs a specific revision. Rollback = change the service to a previous revision.</p>
+
+<pre><span class="cm"># Register a task definition (creates revision 1, or increments revision number)</span>
+aws ecs register-task-definition \
+  --cli-input-json file://myapp-task-definition.json
+
+<span class="cm"># List task definition revisions</span>
+aws ecs list-task-definitions --family-prefix myapp-task
+<span class="cm"># Returns:
+# arn:aws:ecs:us-east-1:123:task-definition/myapp-task:1
+# arn:aws:ecs:us-east-1:123:task-definition/myapp-task:2
+# arn:aws:ecs:us-east-1:123:task-definition/myapp-task:3  ← current</span>
+
+<span class="cm"># Rollback: update service to use previous revision</span>
+aws ecs update-service \
+  --cluster production \
+  --service myapp-service \
+  --task-definition myapp-task:2   <span class="cm"># roll back to revision 2</span></pre>
+
+<h2>ECS Service — The Service Manager</h2>
+<p>An ECS Service ensures that a specified number of task instances are always running. It starts new tasks when existing ones fail, integrates with ALB for load balancing, and controls deployments (rolling updates, blue/green).</p>
+
+<pre><span class="cm"># Create a Fargate service with ALB integration</span>
+aws ecs create-service \
+  --cluster production \
+  --service-name myapp-service \
+  --task-definition myapp-task:3 \
+  --desired-count 6 \
+  --launch-type FARGATE \
+  --network-configuration "awsvpcConfiguration={
+    subnets=[subnet-0app1a,subnet-0app1b,subnet-0app1c],
+    securityGroups=[sg-0app123],
+    assignPublicIp=DISABLED
+  }" \
+  --load-balancers "targetGroupArn=arn:aws:elasticloadbalancing:...,
+                    containerName=myapp,
+                    containerPort=8080" \
+  --deployment-configuration '{
+    "deploymentCircuitBreaker": {"enable": true, "rollback": true},
+    "minimumHealthyPercent": 100,
+    "maximumPercent": 200
+  }' \
+  --health-check-grace-period-seconds 120
+
+<span class="cm"># minimumHealthyPercent=100, maximumPercent=200 means:
+# During deployment: start new tasks BEFORE removing old ones
+# Total tasks may reach 12 (200% of desired=6) during the update
+# Ensures no reduction in capacity during deployment</span>
+
+<span class="cm"># Deployment Circuit Breaker:
+# If new tasks fail health checks → automatically roll back to previous revision
+# No manual intervention needed</span>
+
+<span class="cm"># Rolling deployment — update to new task definition version</span>
+aws ecs update-service \
+  --cluster production \
+  --service myapp-service \
+  --task-definition myapp-task:4 \
+  --force-new-deployment
+<span class="cm"># ECS starts new tasks with myapp-task:4, stops old tasks gradually
+# ALB only routes to tasks that pass health checks
+# Unhealthy deployment → circuit breaker rolls back to myapp-task:3</span></pre>
+
+<h2>ECR — Storing Docker Images</h2>
+<pre><span class="cm"># Create a private ECR repository</span>
+aws ecr create-repository \
+  --repository-name myapp \
+  --image-scanning-configuration scanOnPush=true \
+  --encryption-configuration encryptionType=AES256
+
+<span class="cm"># Login Docker to ECR (get temporary credentials)</span>
+aws ecr get-login-password --region us-east-1 | \
+  docker login --username AWS --password-stdin \
+  123456789012.dkr.ecr.us-east-1.amazonaws.com
+
+<span class="cm"># Build and push image</span>
+docker build -t myapp:v1.2.3 .
+docker tag myapp:v1.2.3 \
+  123456789012.dkr.ecr.us-east-1.amazonaws.com/myapp:v1.2.3
+docker push \
+  123456789012.dkr.ecr.us-east-1.amazonaws.com/myapp:v1.2.3
+
+<span class="cm"># ECR Lifecycle Policy — automatically delete old images</span>
+aws ecr put-lifecycle-policy \
+  --repository-name myapp \
+  --lifecycle-policy-text '{
+    "rules": [{
+      "rulePriority": 1,
+      "description": "Keep only last 10 versions",
+      "selection": {
+        "tagStatus": "tagged",
+        "tagPrefixList": ["v"],
+        "countType": "imageCountMoreThan",
+        "countNumber": 10
+      },
+      "action": {"type": "expire"}
+    }]
+  }'</pre>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definitions.html" target="_blank">Task Definitions</a>
+  <a class="ref" href="https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs_services.html" target="_blank">ECS Services</a>
+  <a class="ref" href="https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-circuit-breaker.html" target="_blank">Deployment Circuit Breaker</a>
+</div>
+</div>
+
+<!-- ======================================================= S16: ECS + ALB -->
+<div id="s16" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 4 · ECS · Section 16</span>
+  <h1>ECS + ALB + Auto Scaling</h1>
+  <p class="subtitle">How ECS services integrate with load balancers, register/deregister tasks automatically, and scale based on CloudWatch metrics.</p>
+</div>
+
+<h2>ALB + ECS — Dynamic Port Mapping</h2>
+<p>When ECS tasks use Fargate (awsvpc networking), each task gets its own ENI with a unique private IP. The ALB target group tracks these IPs dynamically — as tasks start, their IPs are registered with the ALB; as tasks stop, they're deregistered. All automatic, no manual configuration.</p>
+
+<pre><span class="cm"># Step 1: Create ALB and target group</span>
+aws elbv2 create-load-balancer \
+  --name myapp-alb \
+  --subnets subnet-0pub1a subnet-0pub1b subnet-0pub1c \
+  --security-groups sg-0alb123 \
+  --scheme internet-facing
+
+aws elbv2 create-target-group \
+  --name myapp-targets \
+  --protocol HTTP --port 8080 \
+  --vpc-id vpc-0abc123def456789 \
+  --target-type ip \               <span class="cm"># ip (not instance) for Fargate awsvpc</span>
+  --health-check-path /actuator/health \
+  --health-check-interval-seconds 30 \
+  --healthy-threshold-count 2 \
+  --unhealthy-threshold-count 3
+
+<span class="cm"># Step 2: ECS automatically registers/deregisters task IPs
+# When a new task starts:
+#   ECS registers its IP:port with the ALB target group
+# When a task is stopping:
+#   ECS deregisters it → ALB waits for connections to drain (deregistration delay)
+#   → ECS stops the container
+# This ensures in-flight requests complete before container is killed</span>
+
+<span class="cm"># Configure deregistration delay (how long ALB waits for connections to drain)</span>
+aws elbv2 modify-target-group-attributes \
+  --target-group-arn arn:aws:elasticloadbalancing:...:targetgroup/myapp-targets/xxx \
+  --attributes Key=deregistration_delay.timeout_seconds,Value=30</pre>
+
+<h2>ECS Service Auto Scaling</h2>
+<pre><span class="cm"># Register ECS service as a scalable target</span>
+aws application-autoscaling register-scalable-target \
+  --service-namespace ecs \
+  --resource-id service/production/myapp-service \
+  --scalable-dimension ecs:service:DesiredCount \
+  --min-capacity 2 \
+  --max-capacity 50
+
+<span class="cm"># Target tracking — keep average CPU utilisation at 70%</span>
+aws application-autoscaling put-scaling-policy \
+  --service-namespace ecs \
+  --resource-id service/production/myapp-service \
+  --scalable-dimension ecs:service:DesiredCount \
+  --policy-name cpu-target-tracking \
+  --policy-type TargetTrackingScaling \
+  --target-tracking-scaling-policy-configuration '{
+    "TargetValue": 70.0,
+    "PredefinedMetricSpecification": {
+      "PredefinedMetricType": "ECSServiceAverageCPUUtilization"
+    },
+    "ScaleInCooldown": 300,
+    "ScaleOutCooldown": 60
+  }'
+
+<span class="cm"># Also scale on memory utilisation</span>
+aws application-autoscaling put-scaling-policy \
+  --policy-name memory-target-tracking \
+  --target-tracking-scaling-policy-configuration '{
+    "TargetValue": 80.0,
+    "PredefinedMetricSpecification": {
+      "PredefinedMetricType": "ECSServiceAverageMemoryUtilization"
+    }
+  }'
+
+<span class="cm"># ALB request count per target scaling (scale on request rate)</span>
+aws application-autoscaling put-scaling-policy \
+  --policy-name alb-request-count \
+  --target-tracking-scaling-policy-configuration '{
+    "TargetValue": 1000.0,
+    "PredefinedMetricSpecification": {
+      "PredefinedMetricType": "ALBRequestCountPerTarget",
+      "ResourceLabel": "app/myapp-alb/xxx/targetgroup/myapp-targets/yyy"
+    }
+  }'</pre>
+
+<h2>Complete ECS Deploy Pipeline</h2>
+<pre><span class="cm">#!/bin/bash
+# CI/CD deployment script: build → push → deploy → verify</span>
+
+VERSION=$1          <span class="cm"># e.g. v1.2.3</span>
+REPO="123456789012.dkr.ecr.us-east-1.amazonaws.com/myapp"
+CLUSTER="production"
+SERVICE="myapp-service"
+
+<span class="cm"># 1. Build Docker image</span>
+docker build -t myapp:$VERSION .
+
+<span class="cm"># 2. Push to ECR</span>
+aws ecr get-login-password | docker login --username AWS --password-stdin $REPO
+docker tag myapp:$VERSION $REPO:$VERSION
+docker push $REPO:$VERSION
+
+<span class="cm"># 3. Register new task definition with new image</span>
+NEW_TASK_DEF=$(aws ecs describe-task-definition \
+  --task-definition myapp-task --query taskDefinition | \
+  jq --arg IMG "$REPO:$VERSION" \
+    '.containerDefinitions[0].image = $IMG | del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy)')
+
+NEW_TASK_ARN=$(aws ecs register-task-definition \
+  --cli-input-json "$NEW_TASK_DEF" \
+  --query "taskDefinition.taskDefinitionArn" --output text)
+
+<span class="cm"># 4. Update the service</span>
+aws ecs update-service \
+  --cluster $CLUSTER \
+  --service $SERVICE \
+  --task-definition $NEW_TASK_ARN \
+  --force-new-deployment
+
+<span class="cm"># 5. Wait for deployment to complete</span>
+aws ecs wait services-stable \
+  --cluster $CLUSTER \
+  --services $SERVICE
+
+echo "Deployment of $VERSION complete"</pre>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-auto-scaling.html" target="_blank">ECS Auto Scaling</a>
+  <a class="ref" href="https://docs.aws.amazon.com/AmazonECS/latest/developerguide/rolling-updates.html" target="_blank">Rolling Updates</a>
+</div>
+</div>
+
+<!-- ======================================================= S17: COMPARISON -->
+<div id="s17" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 4 · Section 17</span>
+  <h1>EC2 vs Lambda vs ECS — Decision Guide</h1>
+  <p class="subtitle">Choosing the right compute model is the most impactful architecture decision. Here's the framework to make the right call every time.</p>
+</div>
+
+<h2>The Complete Comparison</h2>
+<table>
+  <tr><th>Dimension</th><th>EC2</th><th>Lambda</th><th>ECS (Fargate)</th></tr>
+  <tr><td><strong>Server management</strong></td><td>Full — OS, patches, capacity</td><td>None</td><td>None (Fargate) / Some (EC2 launch type)</td></tr>
+  <tr><td><strong>Startup time</strong></td><td>30–90 seconds</td><td>Warm: &lt;1ms, Cold: 100ms–3s</td><td>15–60 seconds</td></tr>
+  <tr><td><strong>Scaling</strong></td><td>Minutes (ASG + AMI boot)</td><td>Seconds (concurrent execs)</td><td>Seconds–minutes (Fargate task boot)</td></tr>
+  <tr><td><strong>Max execution duration</strong></td><td>Unlimited</td><td>15 minutes</td><td>Unlimited</td></tr>
+  <tr><td><strong>Concurrency model</strong></td><td>Threads per instance</td><td>One request per environment</td><td>Threads per container</td></tr>
+  <tr><td><strong>Cost model</strong></td><td>Per hour (running or stopped pays EBS)</td><td>Per 1ms of execution</td><td>Per second of task running</td></tr>
+  <tr><td><strong>Scale to zero</strong></td><td>No (stopped costs EBS)</td><td>Yes (no invocations = $0)</td><td>Yes (0 tasks = $0)</td></tr>
+  <tr><td><strong>Max memory</strong></td><td>24 TB (x2iedn.metal)</td><td>10 GB</td><td>120 GB (Fargate max)</td></tr>
+  <tr><td><strong>Container support</strong></td><td>Yes (run Docker yourself)</td><td>Yes (container images)</td><td>Native container platform</td></tr>
+  <tr><td><strong>State</strong></td><td>Stateful or stateless</td><td>Stateless (ephemeral env)</td><td>Stateless (containers)</td></tr>
+</table>
+
+<h2>Decision Tree</h2>
+<div class="steps">
+  <div class="step"><div class="step-num">1</div><div class="step-content">
+    <div class="step-title">Does execution exceed 15 minutes? → EC2 or ECS</div>
+    <div class="step-body">Lambda's hard limit is 15 minutes. Batch jobs, ML training, long-running data processing, video rendering → EC2 or ECS. For shorter jobs, continue evaluating.</div>
+  </div></div>
+  <div class="step"><div class="step-num">2</div><div class="step-content">
+    <div class="step-title">Is it event-driven with variable/unpredictable load? → Lambda</div>
+    <div class="step-body">Image processing on uploads, webhook handlers, scheduled jobs, processing SQS/SNS messages, Cognito triggers, S3 event handlers. Pay only when invoked. Scale to zero at night.</div>
+  </div></div>
+  <div class="step"><div class="step-num">3</div><div class="step-content">
+    <div class="step-title">Is it a long-running service (API, web app, microservice)? → ECS Fargate</div>
+    <div class="step-body">HTTP APIs, gRPC services, WebSocket servers, streaming services. Fargate: no server management, containers, pay per running task. The default choice for most microservices in 2024.</div>
+  </div></div>
+  <div class="step"><div class="step-num">4</div><div class="step-content">
+    <div class="step-title">Do you need OS control, GPU, high memory, or custom networking? → EC2</div>
+    <div class="step-body">Machine learning with GPUs, databases, legacy apps requiring specific OS config, applications needing >120GB RAM, workloads requiring placement groups or dedicated tenancy.</div>
+  </div></div>
+</div>
+
+<h2>Real-World Architecture Using All Three</h2>
+<div class="scenario">
+  <div class="scenario-label">Production E-Commerce Platform</div>
+  <div class="scenario-title">Using EC2 + Lambda + ECS together strategically</div>
+  <p><strong>ECS Fargate:</strong> All customer-facing microservices (OrderService, UserService, ProductService, CartService). Consistent long-running APIs, Docker containers, ALB integration, auto scaling.</p>
+  <p style="margin-top:8px"><strong>Lambda:</strong> Image resizing on product photo uploads (S3 trigger), sending order confirmation emails (SQS trigger), scheduled analytics reports (CloudWatch cron), payment webhook handlers (API Gateway sync), database maintenance jobs (scheduled).</p>
+  <p style="margin-top:8px"><strong>EC2:</strong> RDS database (managed by RDS, but runs on EC2 under the hood), ElastiCache Redis cluster, Elasticsearch for product search (needs large memory, m6i.2xlarge), occasional batch ML jobs for product recommendations (spot GPU instances).</p>
+</div>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/decision-guides/latest/serverless-or-kubernetes/serverless-or-kubernetes.html" target="_blank">AWS: Serverless vs Containers Decision Guide</a>
+  <a class="ref" href="https://aws.amazon.com/products/compute/" target="_blank">AWS Compute Services Overview</a>
+</div>
+</div>
+
+<!-- ======================================================= S18: INTERVIEW -->
+<div id="s18" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 4 · Interview Q&amp;A</span>
+  <h1>Interview Questions — Compute</h1>
+  <p class="subtitle">18 questions across EC2, Lambda, and ECS — from junior developer to senior architect.</p>
+</div>
+
+<h2 style="color:var(--green-light)">EC2 — Beginner to Intermediate</h2>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">What is the difference between stopping and terminating an EC2 instance? <span class="qa-arrow">▼</span></div><div class="qa-a"><strong>Stop:</strong> Instance is shut down (like pressing power off). EBS volumes are preserved. Instance can be restarted. RAM contents are lost. The instance may move to a different physical host on restart. Public IP changes (unless Elastic IP). You pay only for EBS storage while stopped, not for compute. <strong>Terminate:</strong> Instance is permanently deleted. Root EBS volume is deleted (by default — this is controlled by the DeleteOnTermination flag). Additional EBS volumes are detached but not deleted by default. Cannot be undone. Enable termination protection on production instances to prevent accidental termination: <code>modify-instance-attribute --disable-api-termination</code>.</div></div>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">What is an AMI and how would you use it for auto scaling? <span class="qa-arrow">▼</span></div><div class="qa-a">An AMI (Amazon Machine Image) is a snapshot of an EC2 instance including the OS, installed software, configuration, and EBS volume data. For auto scaling: (1) Build a "golden AMI" — start with a base OS AMI, install all your software, run your app, verify it works, then create a new AMI from that instance. (2) Reference this AMI in a Launch Template. (3) ASG uses the Launch Template to start new instances from your pre-baked AMI. (4) New instances boot in 30-60 seconds (no software to install) and are healthy immediately. For deployments: create a new AMI with the new version, update the Launch Template, trigger an instance refresh to gradually replace running instances.</div></div>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">What EC2 instance type would you choose for each: web server, ML model training, in-memory database? <span class="qa-arrow">▼</span></div><div class="qa-a"><strong>Web server:</strong> M-family (m7g.large or m7g.xlarge) — general purpose, balanced CPU/RAM. Graviton (g suffix) for 20-40% better price/performance on Linux. Start here for any new web workload and right-size after analysing metrics. <strong>ML model training:</strong> P-family (p4d.24xlarge or p3.16xlarge) — high-performance NVIDIA GPUs specifically designed for deep learning. Or G-family (g5.2xlarge) for less demanding ML workloads. Use Spot Instances to cut cost 70-90% since training jobs are fault-tolerant. <strong>In-memory database (Redis, Memcached):</strong> R-family (r7g.large or r6i.2xlarge) — memory optimised, highest RAM-to-CPU ratio at the best price. Redis is almost entirely RAM-bound so memory capacity determines your working set size.</div></div>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">What are Spot Instances and when should you use them? What's the risk? <span class="qa-arrow">▼</span></div><div class="qa-a">Spot Instances use spare AWS capacity at up to 90% discount vs On-Demand. AWS can reclaim them with 2 minutes notice. Use when: (1) Workload is fault-tolerant — batch jobs, data processing, image rendering, ML training. If interrupted, the job restarts from last checkpoint. (2) Workload is flexible — can run at any time, doesn't need to be continuous. (3) Workload can be distributed — use multiple Spot Instance types across multiple AZs to reduce interruption risk. Never use Spot for: production databases, stateful services, anything where a 2-minute outage is unacceptable. Best practice: use diversified Spot pools (multiple instance types and AZs) and mix 70% Spot with 30% On-Demand for production services.</div></div>
+
+<h2 style="color:var(--yellow-light)">Lambda — Intermediate</h2>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">Explain Lambda cold starts in detail. What causes them and how do you reduce them for Java? <span class="qa-arrow">▼</span></div><div class="qa-a">A cold start happens when Lambda has no warm execution environment and must create one. Phases: (1) Download code package from S3 (50–500ms — large JAR = longer). (2) Start Firecracker microVM (10–50ms). (3) Start the JVM (200–2,000ms — this is Java's main penalty: class loading, JIT compilation warmup). (4) Run initialisation code outside the handler: SDK client creation, Spring context init, config loading (100ms–5,000ms — this is your code's fault). Total Java cold start: 1–5 seconds. Reductions: (1) <strong>Lambda SnapStart:</strong> JVM snapshot — restores in ~300ms instead of starting fresh. Best option for Java. (2) <strong>Provisioned Concurrency:</strong> Pre-warms N environments — zero cold start for those slots. Expensive for high counts. (3) <strong>Minimise init code:</strong> Only create what's needed outside the handler. No Spring ApplicationContext — use lightweight DI. (4) <strong>GraalVM native:</strong> Compile to native binary — ~10ms cold start, no JVM. Complex to set up. (5) <strong>Smaller packages:</strong> Use Lambda Layers for shared deps, reduce JAR size.</div></div>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">What happens to an SQS message if a Lambda function processing it throws an exception? <span class="qa-arrow">▼</span></div><div class="qa-a">If your Lambda function throws an exception when processing an SQS message, the message is NOT deleted from SQS. After the function invocation completes (with failure), the messages become visible in SQS again after the visibility timeout expires (e.g., 30 seconds). SQS then redelivers those messages to Lambda for retry. This continues until either: the function succeeds, or the message's maxReceiveCount is reached (configured on the SQS queue's redrive policy). When maxReceiveCount is reached, the message moves to the Dead Letter Queue (DLQ). For partial batch failures: use ReportBatchItemFailures response type — your function returns the IDs of individual failed messages. Only those specific messages are requeued; successfully processed messages are deleted. Without this, if one message in a batch fails, the entire batch is requeued and all messages are retried.</div></div>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">What is the difference between Reserved Concurrency and Provisioned Concurrency in Lambda? <span class="qa-arrow">▼</span></div><div class="qa-a"><strong>Reserved Concurrency:</strong> Reserves a fixed number of concurrency units from the account's pool for a specific function. Two effects: (1) GUARANTEES this function always has N concurrency available — even if other functions are consuming the pool. (2) CAPS the function — it can never exceed N concurrent executions. Use to: protect important functions from being throttled by other functions, limit a function's scale (cost control, downstream service protection). Setting to 0 disables the function.<br><br><strong>Provisioned Concurrency:</strong> Pre-initialises N execution environments — cold start phases 1-4 run ahead of time. When requests arrive, they hit immediately warm environments. Eliminates cold starts entirely for those N slots. Costs money even when idle (you're paying to keep environments warm). Use for: latency-sensitive APIs where cold start time is unacceptable, functions with heavy init code that causes multi-second cold starts.</div></div>
+
+<h2 style="color:var(--orange-light)">ECS — Intermediate to Advanced</h2>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">What is the difference between ECS Task Role and Task Execution Role? <span class="qa-arrow">▼</span></div><div class="qa-a"><strong>Task Role:</strong> The IAM role that your application code running inside the container assumes. This is what your business logic uses to call AWS services. Example: if your app needs to read from DynamoDB and publish to SNS, the task role has DynamoDB:GetItem, DynamoDB:PutItem, and SNS:Publish permissions. The AWS SDK inside your container automatically fetches credentials from the ECS metadata endpoint (similar to EC2 IMDS).<br><br><strong>Task Execution Role:</strong> The IAM role that the ECS AGENT uses — not your code. The ECS infrastructure needs this to: pull your Docker image from ECR (ecr:GetAuthorizationToken, ecr:BatchGetImage), write container logs to CloudWatch (logs:CreateLogStream, logs:PutLogEvents), inject secrets from Secrets Manager or SSM Parameter Store into container environment variables at startup. Your app code never uses this role.</div></div>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">How does a zero-downtime deployment work in ECS? <span class="qa-arrow">▼</span></div><div class="qa-a">ECS rolling deployment with MinHealthyPercent=100, MaxPercent=200: (1) ECS registers a new task definition with the updated image. (2) ECS starts NEW tasks using the new version (up to MaxPercent=200% of desired count, so if desired=6, up to 12 tasks temporarily). (3) New tasks register with the ALB target group. ALB sends health check requests to new tasks. (4) When new tasks pass ALB health checks (responds 200 OK on /health), ALB starts routing real traffic to them. (5) ECS stops old tasks (one by one). ALB deregisters old tasks — waits for deregistration delay (e.g., 30s) for in-flight requests to complete. (6) Process repeats until all old tasks are replaced. The Deployment Circuit Breaker monitors the deployment: if new tasks repeatedly fail health checks, ECS automatically rolls back to the previous task definition. Result: zero downtime because new tasks handle traffic before old tasks are stopped.</div></div>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">When would you choose ECS Fargate over EC2 launch type? When would you choose EC2? <span class="qa-arrow">▼</span></div><div class="qa-a"><strong>Choose Fargate when:</strong> (1) You want zero server management — no EC2 fleet to maintain, patch, or right-size. (2) Variable workloads that scale to zero — Fargate runs 0 tasks when idle, EC2 launch type still pays for idle EC2 instances. (3) Security isolation is critical — each Fargate task runs in a dedicated microVM. (4) You're starting a new project and don't have enough load to make EC2 cost-effective. <strong>Choose EC2 launch type when:</strong> (1) High-scale production with consistent load — EC2 costs less per compute unit than Fargate at high utilisation. (2) You need Spot Instances for 70-90% savings on non-critical tasks. (3) GPU workloads — Fargate doesn't support GPUs. (4) You need large memory (>120GB) — Fargate max is 120GB. (5) Windows containers requiring specific EC2 instance types. (6) You're already managing an EC2 fleet and just want to containerise workloads on existing capacity.</div></div>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">Describe how you would architect a Java microservice that handles 10,000 requests per minute with 100ms p99 latency requirement. EC2, Lambda, or ECS? <span class="qa-arrow">▼</span></div><div class="qa-a">ECS Fargate is the right choice. Reasoning: (1) 10K RPM = ~167 RPS, steady. Lambda cold starts (1–3s for Java) would occasionally violate 100ms p99 — unless using Provisioned Concurrency (expensive). (2) ECS Fargate runs the JVM continuously — no cold starts after initial boot. JVM JIT compiles hot paths for optimal performance. (3) 100ms p99 with Java is very achievable in ECS — no Lambda overhead. Architecture: Fargate tasks (m-type, java21 runtime, ~1 vCPU / 2GB per task), ALB with 100ms idle timeout, target tracking auto scaling on ALB RequestsCountPerTarget (target ~1000 requests per task). 167 RPS ÷ 1000 = ~0.167 tasks needed at minimum, with headroom set min=3 tasks (for HA across 3 AZs). Java specifics: use G1GC with MaxGCPauseMillis=50 to avoid GC pauses affecting p99, configure JVM heap at 80% container memory, enable JVM tiered compilation. Monitor with CloudWatch Container Insights for CPU/memory, ALB TargetResponseTime for latency, set p99 alarm at 80ms to act before SLA breach.</div></div>
+
+</div>
+</main>
+</div>
+
+<script>
+function show(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.currentTarget.classList.add('active');
+  window.scrollTo(0, 0);
+}
+function toggleQA(el) {
+  const ans = el.nextElementSibling;
+  const arrow = el.querySelector('.qa-arrow');
+  ans.classList.toggle('open');
+  arrow.classList.toggle('open');
+}
+</script>
+</body>
+</html>

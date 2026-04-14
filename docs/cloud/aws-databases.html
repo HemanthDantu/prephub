@@ -1,0 +1,1782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>AWS Module 6 — Databases</title>
+<style>
+:root{--bg:#0c1117;--bg2:#131a24;--bg3:#1a2332;--bg4:#1f2b3d;--border:#243048;--border2:#2e3d55;--text:#e2e8f0;--text2:#94a3b8;--text3:#5a6a82;--orange:#f97316;--orange-bg:#2a1500;--orange-light:#fdba74;--blue:#3b82f6;--blue-bg:#0f2340;--blue-light:#93c5fd;--green:#22c55e;--green-bg:#0a2414;--green-light:#86efac;--red:#ef4444;--red-bg:#2a0a0a;--red-light:#fca5a5;--yellow:#f59e0b;--yellow-bg:#2a1800;--yellow-light:#fcd34d;--purple:#a855f7;--purple-bg:#1e0a35;--purple-light:#d8b4fe;--teal:#14b8a6;--teal-bg:#021e1c;--teal-light:#5eead4;--aws:#ff9900;--aws-bg:#1a0f00;--radius:8px;--radius-lg:12px;--mono:'Fira Code','Cascadia Code','Consolas',monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;line-height:1.7}
+.layout{display:flex;min-height:100vh}
+.sidebar{width:255px;min-width:255px;background:var(--bg2);border-right:1px solid var(--border);position:sticky;top:0;height:100vh;overflow-y:auto}
+.sidebar-header{padding:16px 20px;border-bottom:1px solid var(--border)}
+.sidebar-mod{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--aws);margin-bottom:3px}
+.sidebar-title{font-size:14px;font-weight:700;color:var(--text)}
+.sidebar-sub{font-size:11px;color:var(--text3);margin-top:2px}
+.nav-item{display:flex;align-items:center;gap:8px;padding:8px 20px;cursor:pointer;font-size:12.5px;color:var(--text2);transition:all .15s;border-left:3px solid transparent}
+.nav-item:hover{background:var(--bg3);color:var(--text)}
+.nav-item.active{background:var(--bg3);color:var(--orange-light);border-left-color:var(--aws)}
+.nav-dot{width:5px;height:5px;border-radius:50%;background:var(--border2);flex-shrink:0}
+.nav-item.active .nav-dot{background:var(--aws)}
+.nav-badge{font-size:9.5px;padding:1px 6px;border-radius:10px;background:var(--bg4);color:var(--text3);margin-left:auto}
+.nav-item.active .nav-badge{background:var(--aws-bg);color:var(--orange-light)}
+.nav-group-label{font-size:9.5px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.9px;padding:12px 20px 4px}
+.main{flex:1;padding:44px 52px;max-width:960px;overflow-x:hidden}
+.section{display:none}.section.active{display:block}
+h1{font-size:27px;font-weight:700;margin-bottom:8px;line-height:1.25}
+h2{font-size:19px;font-weight:600;margin:36px 0 14px;color:var(--text)}
+h3{font-size:15px;font-weight:600;margin:22px 0 10px;color:var(--text)}
+h4{font-size:13px;font-weight:600;margin:14px 0 6px;color:var(--orange-light)}
+p{color:var(--text2);margin-bottom:12px;line-height:1.78}
+strong{color:var(--text);font-weight:600}
+a{color:var(--blue-light);text-decoration:none}
+.subtitle{color:var(--text3);font-size:14px;margin-bottom:26px;line-height:1.65}
+pre{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px;font-family:var(--mono);font-size:12.5px;line-height:1.72;overflow-x:auto;margin:14px 0}
+code{font-family:var(--mono);font-size:12px;background:var(--bg3);padding:2px 6px;border-radius:4px;color:var(--teal-light)}
+.cm{color:var(--text3)}.kw{color:var(--purple-light)}.str{color:var(--green-light)}.ty{color:var(--blue-light)}.ak{color:var(--orange-light)}.num{color:var(--yellow-light)}.fn{color:var(--teal-light)}.jk{color:var(--orange-light)}.jv{color:var(--green-light)}.allow{color:#86efac}.deny{color:#fca5a5}
+.card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px;margin-bottom:14px}
+.card-title{font-size:13.5px;font-weight:600;margin-bottom:8px}
+.card-body{font-size:13px;color:var(--text2);line-height:1.75}
+.alert{border-radius:var(--radius);padding:13px 16px;margin:16px 0;font-size:13px;border-left:3px solid;line-height:1.7}
+.a-orange{background:var(--orange-bg);border-color:var(--orange);color:var(--orange-light)}
+.a-blue{background:var(--blue-bg);border-color:var(--blue);color:var(--blue-light)}
+.a-green{background:var(--green-bg);border-color:var(--green);color:var(--green-light)}
+.a-red{background:var(--red-bg);border-color:var(--red);color:var(--red-light)}
+.a-yellow{background:var(--yellow-bg);border-color:var(--yellow);color:var(--yellow-light)}
+.a-purple{background:var(--purple-bg);border-color:var(--purple);color:var(--purple-light)}
+.alert strong{color:inherit}
+.refs{margin:12px 0 16px;display:flex;flex-wrap:wrap;gap:6px}
+.ref{display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:3px 10px;border-radius:10px;background:var(--bg4);color:var(--text3);border:1px solid var(--border);text-decoration:none;transition:all .15s}
+.ref:hover{background:var(--bg3);color:var(--text2)}
+table{width:100%;border-collapse:collapse;margin:14px 0;font-size:13px}
+th{background:var(--bg3);color:var(--text);font-weight:600;padding:10px 14px;text-align:left;border-bottom:1px solid var(--border2)}
+td{padding:9px 14px;border-bottom:1px solid var(--border);color:var(--text2);vertical-align:top}
+tr:hover td{background:var(--bg3)}
+.qa{border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:10px;overflow:hidden}
+.qa-q{padding:13px 18px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;background:var(--bg3);font-size:13px;font-weight:500;transition:background .15s;user-select:none;gap:12px}
+.qa-q:hover{background:var(--bg4)}
+.qa-a{display:none;padding:16px 18px;font-size:13px;color:var(--text2);line-height:1.8;background:var(--bg2);border-top:1px solid var(--border)}
+.qa-a.open{display:block}.qa-arrow{transition:transform .2s;color:var(--text3);font-size:11px;flex-shrink:0}.qa-arrow.open{transform:rotate(180deg)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin:14px 0}
+.pros-cons{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0}
+.pros{background:#061a0d;border:1px solid #14532d;border-radius:var(--radius-lg);padding:16px}
+.cons{background:#1a0606;border:1px solid #5a1a1a;border-radius:var(--radius-lg);padding:16px}
+.pros-title{color:var(--green);font-weight:600;font-size:13px;margin-bottom:10px}
+.cons-title{color:var(--red);font-weight:600;font-size:13px;margin-bottom:10px}
+.pros ul,.cons ul{padding-left:16px}.pros li,.cons li{font-size:12.5px;color:var(--text2);margin-bottom:5px;line-height:1.6}
+.badge{display:inline-flex;align-items:center;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;margin:2px}
+.badge-orange{background:var(--aws-bg);color:var(--orange-light)}.badge-blue{background:var(--blue-bg);color:var(--blue-light)}.badge-green{background:var(--green-bg);color:var(--green-light)}.badge-red{background:var(--red-bg);color:var(--red-light)}.badge-yellow{background:var(--yellow-bg);color:var(--yellow-light)}.badge-purple{background:var(--purple-bg);color:var(--purple-light)}.badge-teal{background:var(--teal-bg);color:var(--teal-light)}
+.section-header{padding-bottom:18px;border-bottom:1px solid var(--border);margin-bottom:26px}
+.mod-badge{font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;display:inline-block;margin-bottom:10px;background:var(--aws-bg);color:var(--aws)}
+.steps{counter-reset:step}
+.step{display:flex;gap:14px;margin-bottom:16px}
+.step-num{counter-increment:step;width:26px;height:26px;min-width:26px;background:var(--aws-bg);color:var(--aws);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;margin-top:2px;border:1px solid var(--orange)}
+.step-content{flex:1}.step-title{font-weight:600;font-size:13px;margin-bottom:3px}.step-body{font-size:13px;color:var(--text2);line-height:1.65}
+.scenario{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:18px 20px;margin:16px 0}
+.scenario-label{font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;color:var(--aws);margin-bottom:6px}
+.scenario-title{font-size:14px;font-weight:600;margin-bottom:10px}
+.compare-row{display:flex;gap:0;margin:14px 0;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+.cmp-a{flex:1;background:var(--red-bg);padding:16px;border-right:1px solid var(--border)}
+.cmp-b{flex:1;background:var(--green-bg);padding:16px}
+.cmp-label{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px}
+.cmp-a .cmp-label{color:var(--red)}.cmp-b .cmp-label{color:var(--green)}
+.traffic-flow{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin:14px 0}
+.traffic-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text3);margin-bottom:12px}
+.traffic-step{display:flex;align-items:flex-start;gap:12px;margin-bottom:10px;font-size:13px}
+.traffic-num{width:22px;height:22px;min-width:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;margin-top:1px}
+.t-green{background:#061a0d;color:var(--green-light);border:1px solid #14532d}
+.t-blue{background:var(--blue-bg);color:var(--blue-light);border:1px solid var(--blue)}
+.t-orange{background:var(--aws-bg);color:var(--aws);border:1px solid var(--orange)}
+.t-purple{background:var(--purple-bg);color:var(--purple-light);border:1px solid var(--purple)}
+.t-red{background:var(--red-bg);color:var(--red-light);border:1px solid var(--red)}
+.aurora-arch{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:20px;margin:14px 0}
+.ddb-visual{background:#080e18;border:1px solid #1a3050;border-radius:var(--radius-lg);padding:18px;margin:14px 0;font-family:var(--mono);font-size:12.5px}
+.ddb-table-header{display:grid;grid-template-columns:160px 140px 1fr;gap:1px;background:var(--border2);border-radius:6px 6px 0 0;overflow:hidden;margin-bottom:1px}
+.ddb-col{background:var(--bg4);padding:8px 12px;font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.8px}
+.ddb-pk{color:var(--orange-light)}.ddb-sk{color:var(--blue-light)}.ddb-attr{color:var(--text3)}
+.ddb-row{display:grid;grid-template-columns:160px 140px 1fr;gap:1px;background:var(--border);margin-bottom:1px}
+.ddb-cell{background:var(--bg3);padding:8px 12px;font-size:12px;color:var(--text2)}
+.ddb-cell.pk{color:var(--orange-light)}.ddb-cell.sk{color:var(--blue-light)}
+.cache-pattern{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin:10px 0}
+.cache-title{font-size:13px;font-weight:600;margin-bottom:10px}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-mod">Module 6</div>
+    <div class="sidebar-title">Databases</div>
+    <div class="sidebar-sub">RDS · Aurora · DynamoDB · ElastiCache</div>
+  </div>
+  <div class="nav-group-label">Foundations</div>
+  <div class="nav-item active" onclick="show('s0')"><span class="nav-dot"></span>0. SQL vs NoSQL — Start Here</div>
+  <div class="nav-group-label">RDS — Managed SQL</div>
+  <div class="nav-item" onclick="show('s1')"><span class="nav-dot"></span>1. What RDS Manages for You</div>
+  <div class="nav-item" onclick="show('s2')"><span class="nav-dot"></span>2. Multi-AZ vs Read Replicas <span class="nav-badge">Key</span></div>
+  <div class="nav-item" onclick="show('s3')"><span class="nav-dot"></span>3. Backups, Security &amp; Connections</div>
+  <div class="nav-item" onclick="show('s4')"><span class="nav-dot"></span>4. RDS Proxy</div>
+  <div class="nav-group-label">Aurora — AWS-Native SQL</div>
+  <div class="nav-item" onclick="show('s5')"><span class="nav-dot"></span>5. Aurora Architecture <span class="nav-badge">Deep</span></div>
+  <div class="nav-item" onclick="show('s6')"><span class="nav-dot"></span>6. Aurora Serverless &amp; Global</div>
+  <div class="nav-group-label">DynamoDB — NoSQL</div>
+  <div class="nav-item" onclick="show('s7')"><span class="nav-dot"></span>7. What is DynamoDB?</div>
+  <div class="nav-item" onclick="show('s8')"><span class="nav-dot"></span>8. Data Modelling — Keys &amp; Indexes <span class="nav-badge">Key</span></div>
+  <div class="nav-item" onclick="show('s9')"><span class="nav-dot"></span>9. Capacity, Reads &amp; Writes</div>
+  <div class="nav-item" onclick="show('s10')"><span class="nav-dot"></span>10. Streams, Transactions &amp; DAX</div>
+  <div class="nav-item" onclick="show('s11')"><span class="nav-dot"></span>11. DynamoDB Patterns &amp; Anti-Patterns</div>
+  <div class="nav-group-label">ElastiCache — Caching</div>
+  <div class="nav-item" onclick="show('s12')"><span class="nav-dot"></span>12. Why Cache? Redis vs Memcached</div>
+  <div class="nav-item" onclick="show('s13')"><span class="nav-dot"></span>13. Caching Patterns in Depth</div>
+  <div class="nav-item" onclick="show('s14')"><span class="nav-dot"></span>14. Redis Data Structures &amp; Use Cases</div>
+  <div class="nav-group-label">Decision</div>
+  <div class="nav-item" onclick="show('s15')"><span class="nav-dot"></span>15. Database Selection Guide</div>
+  <div class="nav-item" onclick="show('s16')"><span class="nav-dot"></span>Interview Q&amp;A <span class="nav-badge">20 Qs</span></div>
+</aside>
+
+<main class="main">
+
+<!-- ======================================================= S0: SQL VS NOSQL -->
+<div id="s0" class="section active">
+<div class="section-header">
+  <span class="mod-badge">Module 6 · Section 0</span>
+  <h1>SQL vs NoSQL — The Mental Model You Need First</h1>
+  <p class="subtitle">Before picking a database, you need to understand what each type fundamentally is, what trade-offs they make, and why both exist. This isn't a debate — they solve different problems.</p>
+</div>
+
+<h2>What a Database Actually Does</h2>
+<p>At its core, a database stores data and lets you retrieve it reliably — even after crashes, power failures, and concurrent access from thousands of users. The hard part is not storing bytes (that's just a file) — it's the guarantees: consistency, durability, and efficient querying at scale.</p>
+
+<h2>SQL (Relational) Databases — Structured, Consistent, Flexible Queries</h2>
+<p>SQL databases organise data into <strong>tables with rows and columns</strong>. Tables relate to each other via foreign keys. You query using SQL — a powerful language that lets you ask arbitrary questions: joins, aggregations, filters, subqueries. The schema is defined upfront and enforced by the database.</p>
+
+<div class="card">
+  <div class="card-title" style="color:var(--blue-light)">What SQL databases are optimised for</div>
+  <div class="card-body">
+    <strong>Complex queries:</strong> "Give me all orders placed in the last 30 days for customers in the UK who haven't ordered in the previous 90 days, grouped by product category." SQL handles this elegantly. NoSQL would require multiple queries and application-side joining.<br><br>
+    <strong>Relationships:</strong> A user has many orders, each order has many items, each item references a product. SQL enforces these relationships via foreign key constraints — the database prevents orphaned records.<br><br>
+    <strong>ACID transactions:</strong> Transfer £100 from Alice's account to Bob's — either both the debit and credit happen, or neither does. SQL gives you true multi-row, multi-table atomicity.
+  </div>
+</div>
+
+<h2>NoSQL Databases — Flexible Schema, Massive Scale, Specific Access Patterns</h2>
+<p>NoSQL is an umbrella term for databases that don't use the SQL relational model. They trade SQL's flexibility for one or more of: massive horizontal scale, flexible schema, specific data model optimisations (key-value, document, graph, time-series).</p>
+
+<div class="card">
+  <div class="card-title" style="color:var(--orange-light)">What NoSQL databases are optimised for</div>
+  <div class="card-body">
+    <strong>Known access patterns:</strong> You always look up a user by their ID, and all their data is returned in one call. NoSQL optimises for this one query — data is stored together on disk so retrieval is one operation.<br><br>
+    <strong>Horizontal scale:</strong> Relational databases are hard to shard across multiple servers. NoSQL (like DynamoDB) distributes data automatically across many servers based on partition key. Add more capacity = add more partition nodes.<br><br>
+    <strong>Variable schema:</strong> User records might have different sets of attributes. NoSQL stores each item independently — no migrations needed when adding new fields.
+  </div>
+</div>
+
+<h2>The Spectrum — Not a Binary Choice</h2>
+<table>
+  <tr><th>Dimension</th><th>SQL (RDS/Aurora)</th><th>NoSQL (DynamoDB)</th></tr>
+  <tr><td>Data model</td><td>Tables, rows, columns, relations</td><td>Items with arbitrary attributes</td></tr>
+  <tr><td>Schema</td><td>Fixed, enforced, migrations needed</td><td>Flexible per item</td></tr>
+  <tr><td>Query language</td><td>SQL — arbitrary complex queries</td><td>Key lookups, range scans on sort key</td></tr>
+  <tr><td>Joins</td><td>Native, any combination</td><td>No joins — denormalise or multi-query</td></tr>
+  <tr><td>Transactions</td><td>Full ACID, multi-table</td><td>ACID within a partition; TransactWrite for multi-item</td></tr>
+  <tr><td>Scale model</td><td>Vertical (bigger instance) + read replicas</td><td>Horizontal (automatic partition sharding)</td></tr>
+  <tr><td>Max scale</td><td>~50TB (Aurora), single-region primary</td><td>Unlimited, multi-region active-active</td></tr>
+  <tr><td>Latency</td><td>Milliseconds (query-dependent)</td><td>Single-digit milliseconds (consistent)</td></tr>
+  <tr><td>Cost model</td><td>Per instance hour (always running)</td><td>Per read/write unit (pay per use)</td></tr>
+</table>
+
+<div class="alert a-orange">
+  <strong>The cardinal rule:</strong> SQL when you need flexible queries and complex relationships. NoSQL when you have known access patterns and need to scale horizontally. Most production systems use both — SQL for core business data, NoSQL for high-throughput read/write paths.
+</div>
+
+<h2>OLTP vs OLAP — Another Critical Distinction</h2>
+<div class="grid2">
+  <div class="card">
+    <div class="card-title" style="color:var(--green-light)">OLTP — Online Transaction Processing</div>
+    <div class="card-body">
+      Many concurrent users doing small, fast operations — insert an order, update a balance, look up a product. Row-oriented storage. Optimise for fast individual record access. <strong>RDS, Aurora, DynamoDB are OLTP.</strong>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--purple-light)">OLAP — Online Analytical Processing</div>
+    <div class="card-body">
+      Few users running complex aggregations over large datasets — "total revenue by month by product line for the last 5 years." Column-oriented storage (faster for aggregations). <strong>Redshift, Athena are OLAP.</strong> Don't run analytics directly on your OLTP database.
+    </div>
+  </div>
+</div>
+
+<div class="refs">
+  <a class="ref" href="https://aws.amazon.com/products/databases/" target="_blank">AWS Database Services Overview</a>
+  <a class="ref" href="https://aws.amazon.com/nosql/" target="_blank">AWS NoSQL</a>
+</div>
+</div>
+
+<!-- ======================================================= S1: WHAT RDS MANAGES -->
+<div id="s1" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 6 · RDS · Section 1</span>
+  <h1>What RDS Manages for You</h1>
+  <p class="subtitle">RDS is not just "a database on EC2." It's a fully managed service that handles a substantial portion of database operations — the undifferentiated work that adds no business value.</p>
+</div>
+
+<h2>The Problem RDS Solves</h2>
+<p>Running a production database yourself means: installing and configuring the database engine, setting up OS-level storage, implementing backups and point-in-time recovery, applying security patches to OS and DB engine, configuring and testing failover, monitoring and alerting, managing SSL certificates, tuning memory parameters. None of this helps your customers — it's all operational overhead. RDS handles all of it.</p>
+
+<div class="grid2">
+  <div class="card" style="border-color:#5a1a1a">
+    <div class="card-title" style="color:var(--red-light)">You manage on EC2 (self-hosted)</div>
+    <div class="card-body" style="line-height:2">
+      ✗ Install PostgreSQL + dependencies<br>
+      ✗ Configure postgresql.conf<br>
+      ✗ Set up pgbackup or WAL archiving<br>
+      ✗ Apply OS security patches<br>
+      ✗ Apply DB version patches<br>
+      ✗ Configure replication for HA<br>
+      ✗ Build failover automation<br>
+      ✗ Monitor replication lag<br>
+      ✗ Manage SSL certificates<br>
+      ✗ Size storage correctly, expand when full<br>
+      ✗ Performance tuning (pg_hba.conf, etc.)
+    </div>
+  </div>
+  <div class="card" style="border-color:#14532d">
+    <div class="card-title" style="color:var(--green-light)">RDS manages for you</div>
+    <div class="card-body" style="line-height:2">
+      ✓ OS installation and maintenance<br>
+      ✓ Database engine installation<br>
+      ✓ Automated backups (daily + transaction logs)<br>
+      ✓ OS and minor version patching<br>
+      ✓ Multi-AZ replication (if enabled)<br>
+      ✓ Automatic failover (&lt;1 min with Multi-AZ)<br>
+      ✓ Replication monitoring<br>
+      ✓ SSL certificate rotation<br>
+      ✓ Storage auto-scaling<br>
+      ✓ CloudWatch metric integration
+    </div>
+  </div>
+</div>
+
+<h2>Supported Database Engines</h2>
+<table>
+  <tr><th>Engine</th><th>Use Case</th><th>Notable Features</th></tr>
+  <tr><td><strong>Amazon Aurora MySQL</strong></td><td>High-performance MySQL workloads</td><td>5x faster than MySQL, custom storage engine, AWS-native</td></tr>
+  <tr><td><strong>Amazon Aurora PostgreSQL</strong></td><td>High-performance Postgres workloads</td><td>3x faster than Postgres, serverless option, global database</td></tr>
+  <tr><td><strong>MySQL</strong></td><td>Web applications, WordPress, standard LAMP</td><td>Most widely deployed, versions 8.0+</td></tr>
+  <tr><td><strong>PostgreSQL</strong></td><td>Complex queries, JSONB, PostGIS, extensions</td><td>Most features, best for analytics on OLTP, extensions</td></tr>
+  <tr><td><strong>MariaDB</strong></td><td>MySQL drop-in replacement</td><td>Community fork of MySQL, some extra features</td></tr>
+  <tr><td><strong>Oracle</strong></td><td>Enterprise legacy Oracle workloads</td><td>Bring Your Own License (BYOL) or License Included</td></tr>
+  <tr><td><strong>SQL Server</strong></td><td>.NET applications, Microsoft stack</td><td>Multiple editions (Standard, Enterprise, Web)</td></tr>
+</table>
+
+<h2>Creating an RDS Instance — Full Configuration</h2>
+<pre><span class="cm"># Create a production PostgreSQL RDS instance</span>
+aws rds create-db-instance \
+  --db-instance-identifier prod-postgres-primary \
+  --db-instance-class db.r6g.2xlarge \   <span class="cm"># 8 vCPU, 64GB RAM — Graviton</span>
+  --engine postgres \
+  --engine-version 16.1 \
+  --master-username dbadmin \
+  --master-user-password-secret-id prod/db/master-password \  <span class="cm"># Secrets Manager</span>
+  --allocated-storage 500 \              <span class="cm"># GB</span>
+  --max-allocated-storage 2000 \         <span class="cm"># auto-scale up to 2TB</span>
+  --storage-type gp3 \
+  --iops 12000 \                         <span class="cm"># provisioned IOPS</span>
+  --storage-encrypted \
+  --kms-key-id arn:aws:kms:...:key/xxx \
+  --multi-az \                           <span class="cm"># high availability (CRITICAL for prod)</span>
+  --vpc-security-group-ids sg-0db123 \
+  --db-subnet-group-name prod-db-subnet-group \
+  --db-parameter-group-name prod-postgres16-params \
+  --backup-retention-period 14 \         <span class="cm"># 14 days PITR</span>
+  --preferred-backup-window "03:00-04:00" \
+  --preferred-maintenance-window "Mon:04:00-Mon:05:00" \
+  --deletion-protection \                <span class="cm"># can't delete without disabling</span>
+  --enable-performance-insights \
+  --performance-insights-retention-period 731 \  <span class="cm"># 2 years</span>
+  --enable-cloudwatch-logs-exports '["postgresql","upgrade"]' \
+  --auto-minor-version-upgrade false     <span class="cm"># control your own upgrade timing</span></pre>
+
+<h2>RDS Instance Classes</h2>
+<pre><span class="cm"># Instance class naming: db.{family}{gen}.{size}</span>
+
+db.t3.micro    <span class="cm">← dev/test only, burstable CPU (1 vCPU, 1GB RAM)</span>
+db.t3.medium   <span class="cm">← small apps (2 vCPU, 4GB)</span>
+db.m7g.large   <span class="cm">← general purpose Graviton (2 vCPU, 8GB)</span>
+db.m7g.4xlarge <span class="cm">← medium production (16 vCPU, 64GB)</span>
+db.r7g.2xlarge <span class="cm">← memory-intensive (8 vCPU, 64GB) — ideal for most SQL</span>
+db.r7g.8xlarge <span class="cm">← large production DB (32 vCPU, 256GB)</span>
+db.x2g.8xlarge <span class="cm">← extreme memory (32 vCPU, 512GB) — SAP HANA etc.</span>
+
+<span class="cm"># r-family is most common for production databases:
+# PostgreSQL, MySQL benefit from large buffer pool (RAM for caching)
+# More RAM = more data cached = fewer disk reads = faster queries</span></pre>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Welcome.html" target="_blank">RDS Documentation</a>
+  <a class="ref" href="https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.DBInstanceClass.html" target="_blank">DB Instance Classes</a>
+  <a class="ref" href="https://aws.amazon.com/rds/pricing/" target="_blank">RDS Pricing</a>
+</div>
+</div>
+
+<!-- ======================================================= S2: MULTI-AZ VS READ REPLICAS -->
+<div id="s2" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 6 · RDS · Section 2</span>
+  <h1>Multi-AZ vs Read Replicas</h1>
+  <p class="subtitle">The most commonly confused RDS concepts. They look similar — both involve a second database — but they solve completely different problems. Get this wrong and you'll either lose data or wonder why your read replica isn't a failover target.</p>
+</div>
+
+<h2>The Core Difference — One Sentence Each</h2>
+<div class="grid2">
+  <div class="card" style="border-color:#1a3050">
+    <div class="card-title" style="color:var(--blue-light)">Multi-AZ = High Availability</div>
+    <div class="card-body">A standby replica in a different AZ that takes over automatically if the primary fails. It's a <strong>failover target</strong>, not a read target. You cannot send queries to the standby.</div>
+  </div>
+  <div class="card" style="border-color:#14532d">
+    <div class="card-title" style="color:var(--green-light)">Read Replica = Horizontal Read Scale</div>
+    <div class="card-body">An asynchronous copy you send read queries to. Offloads read traffic from the primary. It's a <strong>query target</strong>, not a failover target — it won't automatically take over if primary fails.</div>
+  </div>
+</div>
+
+<h2>Multi-AZ — Deep Dive</h2>
+<p>With Multi-AZ enabled, RDS maintains a <strong>synchronous standby replica</strong> in a different AZ. Every write to the primary is synchronously replicated to the standby before acknowledging success to your application. This means zero data loss on failover.</p>
+
+<div class="traffic-flow">
+  <div class="traffic-label">Multi-AZ — What happens when the primary fails</div>
+  <div class="traffic-step"><div class="traffic-num t-orange">1</div><div>Primary DB instance in us-east-1a fails (hardware failure, AZ issue, patching).</div></div>
+  <div class="traffic-step"><div class="traffic-num t-blue">2</div><div>RDS detects the failure within 10-30 seconds (health checks every few seconds).</div></div>
+  <div class="traffic-step"><div class="traffic-num t-blue">3</div><div>RDS flips the DNS CNAME for your endpoint from the failed primary to the standby. This is the key — your application connects to the endpoint hostname, not a specific IP.</div></div>
+  <div class="traffic-step"><div class="traffic-num t-green">4</div><div>DNS propagates. New connections go to the former standby in us-east-1b — now promoted to primary.</div></div>
+  <div class="traffic-step"><div class="traffic-num t-green">5</div><div>Total time: typically 20-60 seconds. Existing connections break — application must reconnect. Connection pools handle this automatically.</div></div>
+</div>
+
+<pre><span class="cm">## Key facts about Multi-AZ:
+# - Synchronous replication = 0 data loss on failover
+# - Standby is NOT accessible for reads (only for failover)
+# - Automatic failover — no human action needed
+# - The endpoint URL stays the same — app doesn't need to change
+# - Failover also triggered by: OS patching, minor version upgrade, storage scaling
+
+# Endpoint your app connects to (never changes during failover):
+prod-postgres-primary.c1abcdef2ghi.us-east-1.rds.amazonaws.com
+#                      ↑ stays the same     ↑ region
+# RDS changes where this DNS name POINTS — primary vs standby — transparently</span>
+
+<span class="cm"># Check replication lag (should be 0 for synchronous Multi-AZ)</span>
+aws cloudwatch get-metric-statistics \
+  --namespace AWS/RDS \
+  --metric-name ReplicaLag \
+  --dimensions Name=DBInstanceIdentifier,Value=prod-postgres-primary \
+  --start-time 2024-01-15T00:00:00 \
+  --end-time 2024-01-15T24:00:00 \
+  --period 60 --statistics Average</pre>
+
+<h2>Read Replicas — Deep Dive</h2>
+<p>Read Replicas use <strong>asynchronous replication</strong>. Your application writes to the primary. Changes are streamed to replicas asynchronously. This means there's a small replication lag (usually milliseconds, can be seconds under heavy load). Replicas have a <strong>separate endpoint</strong> — your application must explicitly route read queries to the replica endpoint.</p>
+
+<pre><span class="cm"># Create a read replica</span>
+aws rds create-db-instance-read-replica \
+  --db-instance-identifier prod-postgres-replica-1 \
+  --source-db-instance-identifier prod-postgres-primary \
+  --db-instance-class db.r6g.xlarge \   <span class="cm"># can be smaller than primary</span>
+  --availability-zone us-east-1b \
+  --publicly-accessible false \
+  --multi-az false                       <span class="cm"># replicas can also be Multi-AZ</span>
+
+<span class="cm"># Replica endpoint (different from primary!)</span>
+<span class="cm">Primary:  prod-postgres-primary.c1abc.us-east-1.rds.amazonaws.com</span>
+<span class="cm">Replica1: prod-postgres-replica-1.c1abc.us-east-1.rds.amazonaws.com</span>
+
+<span class="cm"># In application code — route reads to replica, writes to primary</span></pre>
+
+<pre><span class="cm">// Spring Boot — configure separate read/write data sources</span>
+<span class="kw">@Configuration</span>
+<span class="kw">public class</span> <span class="ty">DataSourceConfig</span> {
+
+    <span class="kw">@Bean</span>
+    <span class="kw">@Primary</span>
+    <span class="kw">public</span> <span class="ty">DataSource</span> <span class="fn">writeDataSource</span>() {
+        <span class="kw">return</span> <span class="ty">DataSourceBuilder</span>.<span class="fn">create</span>()
+            .<span class="fn">url</span>(<span class="str">"jdbc:postgresql://prod-postgres-primary.c1abc.us-east-1.rds.amazonaws.com/mydb"</span>)
+            .<span class="fn">username</span>(dbUser)
+            .<span class="fn">password</span>(dbPassword)
+            .<span class="fn">build</span>();
+    }
+
+    <span class="kw">@Bean</span>
+    <span class="kw">public</span> <span class="ty">DataSource</span> <span class="fn">readDataSource</span>() {
+        <span class="kw">return</span> <span class="ty">DataSourceBuilder</span>.<span class="fn">create</span>()
+            .<span class="fn">url</span>(<span class="str">"jdbc:postgresql://prod-postgres-replica-1.c1abc.us-east-1.rds.amazonaws.com/mydb"</span>)
+            .<span class="fn">username</span>(dbUser)
+            .<span class="fn">password</span>(dbPassword)
+            .<span class="fn">build</span>();
+    }
+}
+
+<span class="cm">// Usage: annotate read-only transactions to use replica</span>
+<span class="kw">@Transactional</span>(readOnly = <span class="kw">true</span>)
+<span class="kw">public</span> <span class="ty">List</span>&lt;<span class="ty">Product</span>&gt; <span class="fn">searchProducts</span>(<span class="ty">String</span> query) {
+    <span class="cm">// Routes to read replica via readDataSource</span>
+    <span class="kw">return</span> productRepo.<span class="fn">search</span>(query);
+}</pre>
+
+<h2>Cross-Region Read Replicas</h2>
+<pre><span class="cm"># Read replica in a different region — for global read latency</span>
+aws rds create-db-instance-read-replica \
+  --db-instance-identifier prod-postgres-eu-replica \
+  --source-db-instance-identifier \
+    arn:aws:rds:us-east-1:123456789012:db:prod-postgres-primary \
+  --region eu-west-1 \                   <span class="cm"># replica in Ireland</span>
+  --db-instance-class db.r6g.large
+
+<span class="cm"># Benefits:
+# - Users in Europe read from eu-west-1 replica (~10ms vs ~100ms from us-east-1)
+# - Disaster recovery: can promote cross-region replica to standalone if entire
+#   us-east-1 fails (manual process, some data loss = replication lag)
+
+# Promote a read replica to standalone (for DR or scaling out a service):
+aws rds promote-read-replica \
+  --db-instance-identifier prod-postgres-replica-1
+# After promotion: no longer receives replication, can accept writes
+# Breaks the replication chain — it's now a fully independent DB</span></pre>
+
+<h2>The Summary Table — Never Confuse These Again</h2>
+<table>
+  <tr><th>Feature</th><th>Multi-AZ</th><th>Read Replica</th></tr>
+  <tr><td>Purpose</td><td><strong>High Availability</strong> — survive AZ failure</td><td><strong>Read Scaling</strong> — offload reads</td></tr>
+  <tr><td>Replication</td><td>Synchronous — 0 data loss</td><td>Asynchronous — small lag</td></tr>
+  <tr><td>Accepts reads?</td><td>No — standby is passive</td><td>Yes — that's the whole point</td></tr>
+  <tr><td>Failover</td><td>Automatic (DNS flip, 20-60s)</td><td>Manual promotion required</td></tr>
+  <tr><td>Same endpoint?</td><td>Yes — DNS redirects automatically</td><td>No — separate endpoint per replica</td></tr>
+  <tr><td>Cross-region?</td><td>No (same region, different AZ)</td><td>Yes — can be in any region</td></tr>
+  <tr><td>Cost</td><td>2x instance cost (standby always running)</td><td>Cost per replica instance</td></tr>
+  <tr><td>Use together?</td><td colspan="2">Yes! Production: Multi-AZ primary + read replicas</td></tr>
+</table>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.html" target="_blank">RDS Multi-AZ</a>
+  <a class="ref" href="https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html" target="_blank">Read Replicas</a>
+</div>
+</div>
+
+<!-- ======================================================= S3: BACKUPS & SECURITY -->
+<div id="s3" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 6 · RDS · Section 3</span>
+  <h1>Backups, Security &amp; Connection Management</h1>
+  <p class="subtitle">RDS automated backups, point-in-time recovery, security hardening, and managing database connections correctly — all the operational topics that matter in production.</p>
+</div>
+
+<h2>Automated Backups and Point-in-Time Recovery</h2>
+<p>RDS automatically backs up your database every day during your specified backup window, and continuously archives transaction logs to S3. This enables <strong>Point-in-Time Recovery (PITR)</strong> — restore to any second within your backup retention period.</p>
+
+<pre><span class="cm"># Automated backup configuration</span>
+<span class="cm">--backup-retention-period 14   ← keep 14 days of backups (max: 35, min: 0 = disable)</span>
+<span class="cm">--preferred-backup-window "03:00-04:00"   ← UTC backup window (low traffic time)</span>
+
+<span class="cm"># Point-in-time restore: restore to 3 days ago at 14:30:00 exactly</span>
+aws rds restore-db-instance-to-point-in-time \
+  --source-db-instance-identifier prod-postgres-primary \
+  --target-db-instance-identifier prod-postgres-restored \
+  --restore-time "2024-01-12T14:30:00Z" \
+  --db-instance-class db.r6g.2xlarge \
+  --db-subnet-group-name prod-db-subnet-group
+
+<span class="cm"># This creates a NEW instance — it doesn't overwrite the existing one
+# After restore: verify data, then update application to point to restored instance
+# Or use it as a recovery reference and copy specific data out</span>
+
+<span class="cm"># Manual snapshots (persist beyond retention period, until you delete them)</span>
+aws rds create-db-snapshot \
+  --db-instance-identifier prod-postgres-primary \
+  --db-snapshot-identifier prod-postgres-pre-migration-2024-01-15
+
+<span class="cm"># Copy snapshot to another region (DR)</span>
+aws rds copy-db-snapshot \
+  --source-db-snapshot-identifier \
+    arn:aws:rds:us-east-1:123:snapshot:prod-postgres-pre-migration-2024-01-15 \
+  --target-db-snapshot-identifier prod-postgres-dr-copy-2024-01-15 \
+  --region eu-west-1</pre>
+
+<h2>RDS Security — Four Layers</h2>
+<div class="steps">
+  <div class="step"><div class="step-num">1</div><div class="step-content">
+    <div class="step-title">Network isolation — VPC + private subnets</div>
+    <div class="step-body">Always deploy RDS in private subnets with no internet route. Use a DB Subnet Group spanning multiple AZs. The database should only be reachable from within your VPC.</div>
+  </div></div>
+  <div class="step"><div class="step-num">2</div><div class="step-content">
+    <div class="step-title">Security group — allow only app servers</div>
+    <div class="step-body">Security group on RDS: inbound TCP 5432 (PostgreSQL) from <code>sg-app</code> only. Nothing else. Not your developer's laptop, not a bastion host directly — use RDS Proxy or SSM Session Manager for developer access.</div>
+  </div></div>
+  <div class="step"><div class="step-num">3</div><div class="step-content">
+    <div class="step-title">Database credentials — Secrets Manager</div>
+    <div class="step-body">Never put database passwords in environment variables or code. Use Secrets Manager with automatic rotation. Your app fetches the current password at startup using an IAM role — if someone reads your environment variables, they can't connect to the DB.</div>
+  </div></div>
+  <div class="step"><div class="step-num">4</div><div class="step-content">
+    <div class="step-title">Encryption — at rest and in transit</div>
+    <div class="step-body">Enable storage encryption with KMS. Enforce SSL/TLS connections with the <code>rds.force_ssl</code> parameter. RDS provides certificates — configure your JDBC URL with <code>?sslmode=require&sslrootcert=...</code>.</div>
+  </div></div>
+</div>
+
+<pre><span class="cm">// Connecting to RDS from Java — complete, secure setup</span>
+<span class="kw">public</span> <span class="ty">DataSource</span> <span class="fn">createSecureDataSource</span>() {
+
+    <span class="cm">// Fetch password from Secrets Manager (not env vars)</span>
+    <span class="ty">SecretsManagerClient</span> sm = <span class="ty">SecretsManagerClient</span>.<span class="fn">create</span>();
+    <span class="ty">String</span> secret = sm.<span class="fn">getSecretValue</span>(r -> r
+        .<span class="fn">secretId</span>(<span class="str">"prod/postgres/master"</span>))
+        .<span class="fn">secretString</span>();
+    <span class="ty">Map</span>&lt;<span class="ty">String</span>, <span class="ty">String</span>&gt; creds = objectMapper.<span class="fn">readValue</span>(secret, <span class="kw">new</span> <span class="ty">TypeRef</span>&lt;&gt;(){});
+
+    <span class="cm">// HikariCP connection pool — production config</span>
+    <span class="ty">HikariConfig</span> config = <span class="kw">new</span> <span class="ty">HikariConfig</span>();
+    config.<span class="fn">setJdbcUrl</span>(<span class="str">"jdbc:postgresql://prod-postgres.c1abc.us-east-1.rds.amazonaws.com:5432/mydb"</span>
+        + <span class="str">"?ssl=true&sslmode=verify-full&sslrootcert=/opt/rds-ca.pem"</span>);
+    config.<span class="fn">setUsername</span>(creds.<span class="fn">get</span>(<span class="str">"username"</span>));
+    config.<span class="fn">setPassword</span>(creds.<span class="fn">get</span>(<span class="str">"password"</span>));
+
+    <span class="cm">// Connection pool sizing — critical for RDS performance</span>
+    config.<span class="fn">setMaximumPoolSize</span>(<span class="num">20</span>);          <span class="cm">// max connections to DB</span>
+    config.<span class="fn">setMinimumIdle</span>(<span class="num">5</span>);              <span class="cm">// keep 5 connections open</span>
+    config.<span class="fn">setConnectionTimeout</span>(<span class="num">3000</span>);     <span class="cm">// 3s to get a connection from pool</span>
+    config.<span class="fn">setIdleTimeout</span>(<span class="num">300000</span>);         <span class="cm">// close idle connections after 5min</span>
+    config.<span class="fn">setMaxLifetime</span>(<span class="num">1800000</span>);        <span class="cm">// replace connections after 30min (handles DB restarts)</span>
+    config.<span class="fn">setLeakDetectionThreshold</span>(<span class="num">60000</span>); <span class="cm">// warn about connections held >1min</span>
+
+    <span class="kw">return new</span> <span class="ty">HikariDataSource</span>(config);
+}</pre>
+
+<div class="alert a-yellow">
+  <strong>Connection limits are real.</strong> An RDS db.r6g.large PostgreSQL has a default connection limit of ~87 connections. If you have 20 ECS tasks each with a 20-connection pool = 400 connections attempted. You'll get "too many connections" errors. Solution: RDS Proxy (see next section) or reduce pool size and use connection pooling.
+</div>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithAutomatedBackups.html" target="_blank">RDS Automated Backups</a>
+  <a class="ref" href="https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL.html" target="_blank">RDS SSL/TLS</a>
+</div>
+</div>
+
+<!-- ======================================================= S4: RDS PROXY -->
+<div id="s4" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 6 · RDS · Section 4</span>
+  <h1>RDS Proxy</h1>
+  <p class="subtitle">A managed connection pooler that sits between your application and RDS. Solves the connection exhaustion problem for serverless and microservice architectures.</p>
+</div>
+
+<h2>The Problem — Connection Limits and Lambda</h2>
+<p>Every connection to PostgreSQL or MySQL consumes memory on the database server. A db.r6g.large PostgreSQL can handle ~87 connections. Now consider a Lambda function with 500 concurrent executions — each trying to open a database connection. That's 500 connections from Lambda alone, crashing through the limit and generating errors for real users.</p>
+
+<p>Even without Lambda: 10 microservices × 10 instances × 5 pool connections = 500 connections. Add read replicas, staging environments, monitoring tools — you hit limits fast.</p>
+
+<div class="card">
+  <div class="card-title">How RDS Proxy Solves This</div>
+  <div class="card-body">
+    RDS Proxy sits between your application and the database. Your <strong>application connects to the proxy</strong> (up to 60,000 connections from the app side). The proxy maintains a small pool of actual connections to RDS and multiplexes them. 10,000 Lambda function connections to the proxy = maybe 50 connections actually held on the RDS instance.<br><br>
+    Additional benefits: automatic failover is faster (proxy holds connections during failover, no reconnect needed from app), IAM authentication for the proxy, Secrets Manager integration.
+  </div>
+</div>
+
+<pre><span class="cm"># Create an RDS Proxy</span>
+aws rds create-db-proxy \
+  --db-proxy-name prod-postgres-proxy \
+  --engine-family POSTGRESQL \
+  --auth '[{
+    "AuthScheme": "SECRETS",
+    "SecretArn": "arn:aws:secretsmanager:...:secret:prod/postgres/master",
+    "IAMAuth": "REQUIRED"            
+  }]' \
+  --role-arn arn:aws:iam::123:role/RDSProxyRole \
+  --vpc-subnet-ids subnet-0app1a subnet-0app1b \
+  --vpc-security-group-ids sg-0proxy123
+
+<span class="cm"># Register the RDS instance with the proxy</span>
+aws rds register-db-proxy-targets \
+  --db-proxy-name prod-postgres-proxy \
+  --db-instance-identifiers prod-postgres-primary
+
+<span class="cm"># Proxy endpoint (use this instead of direct RDS endpoint)</span>
+<span class="cm">prod-postgres-proxy.proxy-c1abc.us-east-1.rds.amazonaws.com</span>
+
+<span class="cm"># Lambda connecting via RDS Proxy with IAM auth (no password needed!)</span>
+<span class="cm"># Generate an auth token (valid 15 minutes, replaces password)</span></pre>
+
+<pre><span class="kw">public class</span> <span class="ty">RdsIamAuthHelper</span> {
+
+    <span class="cm">// Generate RDS IAM auth token — Lambda role auto-provides credentials</span>
+    <span class="kw">public static</span> <span class="ty">String</span> <span class="fn">generateAuthToken</span>(<span class="ty">String</span> hostname, <span class="kw">int</span> port, <span class="ty">String</span> username) {
+        <span class="ty">RdsUtilities</span> utilities = <span class="ty">RdsClient</span>.<span class="fn">create</span>().<span class="fn">utilities</span>();
+        <span class="kw">return</span> utilities.<span class="fn">generateAuthenticationToken</span>(r -> r
+            .<span class="fn">hostname</span>(hostname)
+            .<span class="fn">port</span>(port)
+            .<span class="fn">username</span>(username));
+        <span class="cm">// Token is signed with Lambda's IAM role credentials
+        // Proxy verifies the token against IAM — no password stored anywhere</span>
+    }
+}
+
+<span class="cm">// HikariCP with IAM auth token (refresh token before expiry)</span>
+config.<span class="fn">setPassword</span>(<span class="ty">RdsIamAuthHelper</span>.<span class="fn">generateAuthToken</span>(
+    <span class="str">"prod-postgres-proxy.proxy-c1abc.us-east-1.rds.amazonaws.com"</span>,
+    <span class="num">5432</span>, <span class="str">"lambda_user"</span>));
+config.<span class="fn">setMaxLifetime</span>(<span class="num">840000</span>); <span class="cm">// 14 min — refresh before 15min token expiry</span></pre>
+
+<h2>When to Use RDS Proxy</h2>
+<table>
+  <tr><th>Scenario</th><th>Use RDS Proxy?</th><th>Why</th></tr>
+  <tr><td>Lambda functions connecting to RDS</td><td><span class="badge badge-green">Yes — strongly recommended</span></td><td>Lambda can create thousands of concurrent connections</td></tr>
+  <tr><td>Many small ECS tasks</td><td><span class="badge badge-green">Yes</span></td><td>10s of services × multiple instances = connection exhaustion</td></tr>
+  <tr><td>Monolithic app with one connection pool</td><td><span class="badge badge-red">Probably not needed</span></td><td>One controlled pool, predictable connection count</td></tr>
+  <tr><td>RDS failover speed matters (&lt;30s)</td><td><span class="badge badge-green">Yes</span></td><td>Proxy holds connections during failover (28s vs 60s+)</td></tr>
+  <tr><td>Want IAM-based DB auth</td><td><span class="badge badge-green">Yes</span></td><td>Proxy enables IAM auth even for standard MySQL/Postgres clients</td></tr>
+</table>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.html" target="_blank">RDS Proxy Documentation</a>
+  <a class="ref" href="https://aws.amazon.com/blogs/compute/using-amazon-rds-proxy-with-aws-lambda/" target="_blank">RDS Proxy with Lambda</a>
+</div>
+</div>
+
+<!-- ======================================================= S5: AURORA ARCHITECTURE -->
+<div id="s5" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 6 · Aurora · Section 5</span>
+  <h1>Aurora Architecture</h1>
+  <p class="subtitle">Aurora is not just "a faster RDS." It's a fundamentally different database engine built from the ground up for cloud infrastructure. Understanding why it's faster and more resilient than standard RDS is essential.</p>
+</div>
+
+<h2>The Core Aurora Innovation — Shared Distributed Storage</h2>
+<p>Standard RDS (MySQL, PostgreSQL) separates compute from storage — the database engine runs on EC2 and writes to EBS. EBS is in one AZ. Replication (for Multi-AZ) writes the data twice — to primary EBS, then over the network to a standby EBS in another AZ.</p>
+
+<p>Aurora completely redesigns this. The storage layer is a <strong>shared, distributed, self-healing storage cluster</strong> that spans 3 AZs with 6 copies of your data. The database engine doesn't write to EBS — it writes to this distributed storage layer.</p>
+
+<div class="aurora-arch">
+  <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px">Aurora Architecture</div>
+  <div style="display:flex;gap:12px;margin-bottom:16px">
+    <div style="background:var(--bg4);border:1px solid var(--border2);border-radius:var(--radius);padding:12px;flex:1">
+      <div style="font-size:11px;font-weight:700;color:var(--aws);margin-bottom:6px">Writer Instance</div>
+      <div style="font-size:11px;color:var(--text2)">Aurora MySQL/PostgreSQL engine. Handles all writes. us-east-1a</div>
+    </div>
+    <div style="background:var(--bg4);border:1px solid var(--border2);border-radius:var(--radius);padding:12px;flex:1">
+      <div style="font-size:11px;font-weight:700;color:var(--blue-light);margin-bottom:6px">Reader Instance 1</div>
+      <div style="font-size:11px;color:var(--text2)">Read queries only. Shares storage. us-east-1b</div>
+    </div>
+    <div style="background:var(--bg4);border:1px solid var(--border2);border-radius:var(--radius);padding:12px;flex:1">
+      <div style="font-size:11px;font-weight:700;color:var(--blue-light);margin-bottom:6px">Reader Instance 2</div>
+      <div style="font-size:11px;color:var(--text2)">Read queries only. Shares storage. us-east-1c</div>
+    </div>
+  </div>
+  <div style="background:#0a0a20;border:2px solid #1a1a5a;border-radius:var(--radius);padding:16px">
+    <div style="font-size:11px;font-weight:700;color:var(--purple-light);margin-bottom:10px;text-transform:uppercase;letter-spacing:.8px">Distributed Storage Layer (6 copies across 3 AZs)</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+      <div style="background:var(--bg4);border:1px solid var(--border2);border-radius:6px;padding:8px;text-align:center">
+        <div style="font-size:10px;font-weight:700;color:var(--text3)">us-east-1a</div>
+        <div style="font-size:11px;color:var(--text2);margin-top:4px">Storage node × 2</div>
+        <div style="font-size:10px;color:var(--text3)">Copies 1 &amp; 2</div>
+      </div>
+      <div style="background:var(--bg4);border:1px solid var(--border2);border-radius:6px;padding:8px;text-align:center">
+        <div style="font-size:10px;font-weight:700;color:var(--text3)">us-east-1b</div>
+        <div style="font-size:11px;color:var(--text2);margin-top:4px">Storage node × 2</div>
+        <div style="font-size:10px;color:var(--text3)">Copies 3 &amp; 4</div>
+      </div>
+      <div style="background:var(--bg4);border:1px solid var(--border2);border-radius:6px;padding:8px;text-align:center">
+        <div style="font-size:10px;font-weight:700;color:var(--text3)">us-east-1c</div>
+        <div style="font-size:11px;color:var(--text2);margin-top:4px">Storage node × 2</div>
+        <div style="font-size:10px;color:var(--text3)">Copies 5 &amp; 6</div>
+      </div>
+    </div>
+    <div style="font-size:11px;color:var(--text3);margin-top:10px;text-align:center">Quorum write: 4 of 6 must acknowledge. Quorum read: 3 of 6.</div>
+  </div>
+</div>
+
+<h2>Why This Architecture Wins</h2>
+<div class="grid2">
+  <div class="card">
+    <div class="card-title" style="color:var(--green-light)">Aurora vs RDS Performance</div>
+    <div class="card-body">
+      <strong>Aurora MySQL: 5x faster than RDS MySQL.</strong> Why? RDS MySQL writes data twice (redo log + double-write buffer). Aurora's storage does the redo log only — storage takes care of applying it. Less I/O from compute to storage.<br><br>
+      <strong>Aurora PostgreSQL: 3x faster than RDS PostgreSQL.</strong> Aurora only sends WAL log entries to storage — not full page writes. Dramatically reduces write amplification.
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--green-light)">Resilience</div>
+    <div class="card-body">
+      Can lose 2 AZs (out of 3) and still serve reads. Can lose 1 AZ and still serve writes (quorum of 4 out of 6 needed). Storage self-heals automatically — if a node fails, new node re-synced from remaining nodes automatically.<br><br>
+      Aurora replicas have near-zero lag (milliseconds) because they read from the same storage tier — no replication over the network.
+    </div>
+  </div>
+</div>
+
+<h2>Aurora Cluster Endpoints</h2>
+<pre><span class="cm"># Aurora exposes multiple endpoint types — USE THE RIGHT ONE</span>
+
+<span class="cm"># 1. Cluster endpoint (writer) — always points to the current writer</span>
+mydb.cluster-c1abc.us-east-1.rds.amazonaws.com
+<span class="cm"># Use for ALL writes. If failover happens, this automatically redirects.</span>
+
+<span class="cm"># 2. Reader endpoint — load-balances across all read replicas</span>
+mydb.cluster-ro-c1abc.us-east-1.rds.amazonaws.com
+<span class="cm"># Use for read queries. Automatically distributes reads across readers.</span>
+<span class="cm"># If a reader fails, it's removed from rotation automatically.</span>
+
+<span class="cm"># 3. Instance endpoint — direct connection to one specific instance</span>
+mydb-instance-1.c1abc.us-east-1.rds.amazonaws.com
+<span class="cm"># For specific operations (maintenance, diagnostics). Avoid for app traffic.</span>
+
+<span class="cm"># Aurora failover: faster than RDS (typically &lt;30 seconds vs 60 seconds)
+# Reader becomes writer. Cluster endpoint flips. Zero data loss (shared storage).</span></pre>
+
+<h2>Aurora vs Standard RDS — When to Choose Each</h2>
+<table>
+  <tr><th>Choose Aurora when</th><th>Choose RDS when</th></tr>
+  <tr><td>High transaction rate (&gt;1,000 writes/sec)</td><td>Budget is constrained (Aurora ~20% more expensive)</td></tr>
+  <tr><td>Need &lt;30 second failover</td><td>Need Oracle or SQL Server (Aurora only supports MySQL/Postgres)</td></tr>
+  <tr><td>Need Serverless (auto-scale compute)</td><td>Running a legacy app tested on specific MySQL/Postgres version</td></tr>
+  <tr><td>Global database (multi-region)</td><td>Simpler requirements without need for Aurora features</td></tr>
+  <tr><td>Rapidly growing workload (storage auto-scales)</td><td>Dev/test environments (RDS is cheaper)</td></tr>
+</table>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Overview.html" target="_blank">Aurora Documentation</a>
+  <a class="ref" href="https://aws.amazon.com/blogs/database/introducing-the-aurora-storage-engine/" target="_blank">Aurora Storage Engine Blog</a>
+</div>
+</div>
+
+<!-- ======================================================= S6: AURORA SERVERLESS & GLOBAL -->
+<div id="s6" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 6 · Aurora · Section 6</span>
+  <h1>Aurora Serverless v2 &amp; Global Database</h1>
+  <p class="subtitle">Two Aurora features that address completely different problems — Serverless for variable workloads, Global Database for multi-region active-passive.</p>
+</div>
+
+<h2>Aurora Serverless v2 — Instantly Scalable Compute</h2>
+<p>Standard Aurora has fixed compute (you choose the instance class). Aurora Serverless v2 scales the database engine compute <strong>up and down automatically</strong> in response to your actual load — in increments as fine as 0.5 ACU (Aurora Capacity Units). Scale from dev-level to full production without changing anything.</p>
+
+<pre><span class="cm"># Create Aurora Serverless v2 cluster</span>
+aws rds create-db-cluster \
+  --db-cluster-identifier prod-aurora-serverless \
+  --engine aurora-postgresql \
+  --engine-version 15.4 \
+  --serverless-v2-scaling-configuration \
+    MinCapacity=0.5,MaxCapacity=128 \   <span class="cm"># 0.5 to 128 ACUs</span>
+  --master-username dbadmin \
+  --master-user-password-secret-id prod/aurora/master \
+  --db-subnet-group-name prod-db-subnet-group \
+  --vpc-security-group-ids sg-0db123 \
+  --storage-encrypted \
+  --deletion-protection
+
+<span class="cm"># Create the writer instance (also serverless):</span>
+aws rds create-db-instance \
+  --db-instance-identifier prod-aurora-serverless-writer \
+  --db-cluster-identifier prod-aurora-serverless \
+  --db-instance-class db.serverless \   <span class="cm"># special serverless class</span>
+  --engine aurora-postgresql
+
+<span class="cm"># ACU sizing:
+# 1 ACU ≈ 2 GB RAM + proportional CPU
+# 0.5 ACU = minimum (dev/test idle)
+# 1 ACU = ~$0.12/hour per ACU
+# Scales in milliseconds — no cold start lag like Aurora Serverless v1
+
+# Example: 
+# Off-hours (2am): 0.5 ACU (idle, minimal cost)
+# Morning spike: scales to 32 ACU in seconds
+# Black Friday: peaks at 128 ACU automatically
+# No manual resizing. No downtime.</span></pre>
+
+<h2>Aurora Global Database — Multi-Region Active-Passive</h2>
+<p>Aurora Global Database replicates an Aurora cluster to up to 5 secondary regions with <strong>&lt;1 second replication lag</strong> using Aurora's dedicated replication infrastructure (not standard database replication). If your primary region fails, promote a secondary region to primary in under a minute.</p>
+
+<pre><span class="cm"># Primary region: us-east-1 (accepts writes)
+# Secondary region: eu-west-1 (read-only, under 1 second behind primary)</span>
+
+<span class="cm"># Create global database from existing Aurora cluster</span>
+aws rds create-global-cluster \
+  --global-cluster-identifier prod-global-db \
+  --source-db-cluster-identifier \
+    arn:aws:rds:us-east-1:123:cluster:prod-aurora-primary
+
+<span class="cm"># Add secondary region</span>
+aws rds create-db-cluster \
+  --db-cluster-identifier prod-aurora-eu-secondary \
+  --engine aurora-postgresql \
+  --engine-version 15.4 \
+  --global-cluster-identifier prod-global-db \
+  --db-subnet-group-name eu-db-subnet-group \
+  --vpc-security-group-ids sg-0db-eu \
+  --region eu-west-1
+
+<span class="cm"># Secondary cluster:
+# - Serves read queries for EU users (~10ms latency vs 100ms cross-ocean)
+# - RPO: 1 second (max 1 second of data loss if primary fails)
+# - RTO: < 1 minute (promote secondary, update application endpoints)
+
+# Failover to eu-west-1 (managed failover — detaches primary, promotes secondary):
+aws rds failover-global-cluster \
+  --global-cluster-identifier prod-global-db \
+  --target-db-cluster-identifier \
+    arn:aws:rds:eu-west-1:123:cluster:prod-aurora-eu-secondary</span></pre>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.html" target="_blank">Aurora Serverless v2</a>
+  <a class="ref" href="https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-global-database.html" target="_blank">Aurora Global Database</a>
+</div>
+</div>
+
+<!-- ======================================================= S7: WHAT IS DYNAMODB -->
+<div id="s7" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 6 · DynamoDB · Section 7</span>
+  <h1>What is DynamoDB?</h1>
+  <p class="subtitle">A fully managed NoSQL database with single-digit millisecond performance at any scale. No servers to manage, no schema migrations, no capacity planning beyond choosing a billing mode.</p>
+</div>
+
+<h2>DynamoDB From First Principles</h2>
+<p>DynamoDB is AWS's proprietary NoSQL database, built for internet-scale workloads. It powers Amazon's own infrastructure — shopping cart, retail recommendations, Prime Video metadata. The design goals: predictable single-digit millisecond latency at any scale, fully managed with no operational overhead, automatic multi-AZ replication.</p>
+
+<h2>What Makes DynamoDB Fundamentally Different</h2>
+<div class="grid3">
+  <div class="card">
+    <div class="card-title" style="color:var(--orange-light)">Horizontal scale by default</div>
+    <div class="card-body">Data is automatically distributed across many partitions based on the partition key. Adding more capacity = AWS adds more partitions. No sharding configuration, no manual redistribution. A single DynamoDB table can handle millions of reads/writes per second.</div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--orange-light)">Schemaless (except keys)</div>
+    <div class="card-body">Only the primary key (partition key + optional sort key) is defined at table creation. Every other attribute is completely flexible — each item can have different attributes. Add new fields to some items without any migration.</div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--orange-light)">Key-based access</div>
+    <div class="card-body">All queries must include the partition key. You cannot do "SELECT * WHERE status = 'pending'" — unless you create a Global Secondary Index. Access patterns must be designed upfront. This is the trade-off for the scale.</div>
+  </div>
+</div>
+
+<h2>Core Concepts</h2>
+<table>
+  <tr><th>Concept</th><th>What it is</th><th>Analogy</th></tr>
+  <tr><td><strong>Table</strong></td><td>Top-level container for items</td><td>Like a spreadsheet or SQL table</td></tr>
+  <tr><td><strong>Item</strong></td><td>A single record in a table</td><td>Like a row</td></tr>
+  <tr><td><strong>Attribute</strong></td><td>A data field on an item</td><td>Like a column, but per-item</td></tr>
+  <tr><td><strong>Partition Key (PK)</strong></td><td>The primary identifier — determines which partition holds the item</td><td>First part of the primary key</td></tr>
+  <tr><td><strong>Sort Key (SK)</strong></td><td>Optional second key — multiple items with same PK, sorted by SK</td><td>Allows grouping items under one "parent"</td></tr>
+  <tr><td><strong>GSI</strong></td><td>Global Secondary Index — query on non-key attributes</td><td>Like an index in SQL for a different query pattern</td></tr>
+</table>
+
+<pre><span class="cm">// Basic DynamoDB operations in Java SDK</span>
+<span class="ty">DynamoDbClient</span> ddb = <span class="ty">DynamoDbClient</span>.<span class="fn">create</span>();
+
+<span class="cm">// Put an item</span>
+ddb.<span class="fn">putItem</span>(<span class="ty">PutItemRequest</span>.<span class="fn">builder</span>()
+    .<span class="fn">tableName</span>(<span class="str">"Orders"</span>)
+    .<span class="fn">item</span>(<span class="ty">Map</span>.<span class="fn">of</span>(
+        <span class="str">"orderId"</span>,    <span class="ty">AttributeValue</span>.<span class="fn">fromS</span>(<span class="str">"ord-abc123"</span>),
+        <span class="str">"userId"</span>,     <span class="ty">AttributeValue</span>.<span class="fn">fromS</span>(<span class="str">"user-456"</span>),
+        <span class="str">"status"</span>,     <span class="ty">AttributeValue</span>.<span class="fn">fromS</span>(<span class="str">"PENDING"</span>),
+        <span class="str">"totalAmount"</span>,<span class="ty">AttributeValue</span>.<span class="fn">fromN</span>(<span class="str">"99.99"</span>),
+        <span class="str">"createdAt"</span>,  <span class="ty">AttributeValue</span>.<span class="fn">fromS</span>(<span class="ty">Instant</span>.<span class="fn">now</span>().<span class="fn">toString</span>())
+    ))
+    .<span class="fn">build</span>());
+
+<span class="cm">// Get an item by its primary key</span>
+<span class="ty">GetItemResponse</span> response = ddb.<span class="fn">getItem</span>(<span class="ty">GetItemRequest</span>.<span class="fn">builder</span>()
+    .<span class="fn">tableName</span>(<span class="str">"Orders"</span>)
+    .<span class="fn">key</span>(<span class="ty">Map</span>.<span class="fn">of</span>(<span class="str">"orderId"</span>, <span class="ty">AttributeValue</span>.<span class="fn">fromS</span>(<span class="str">"ord-abc123"</span>)))
+    .<span class="fn">build</span>());
+<span class="ty">Map</span>&lt;<span class="ty">String</span>, <span class="ty">AttributeValue</span>&gt; item = response.<span class="fn">item</span>(); <span class="cm">// empty if not found</span>
+
+<span class="cm">// Update a specific attribute (conditional update)</span>
+ddb.<span class="fn">updateItem</span>(<span class="ty">UpdateItemRequest</span>.<span class="fn">builder</span>()
+    .<span class="fn">tableName</span>(<span class="str">"Orders"</span>)
+    .<span class="fn">key</span>(<span class="ty">Map</span>.<span class="fn">of</span>(<span class="str">"orderId"</span>, <span class="ty">AttributeValue</span>.<span class="fn">fromS</span>(<span class="str">"ord-abc123"</span>)))
+    .<span class="fn">updateExpression</span>(<span class="str">"SET #s = :newStatus, updatedAt = :now"</span>)
+    .<span class="fn">conditionExpression</span>(<span class="str">"#s = :oldStatus"</span>)  <span class="cm">// optimistic locking</span>
+    .<span class="fn">expressionAttributeNames</span>(<span class="ty">Map</span>.<span class="fn">of</span>(<span class="str">"#s"</span>, <span class="str">"status"</span>))
+    .<span class="fn">expressionAttributeValues</span>(<span class="ty">Map</span>.<span class="fn">of</span>(
+        <span class="str">":newStatus"</span>, <span class="ty">AttributeValue</span>.<span class="fn">fromS</span>(<span class="str">"CONFIRMED"</span>),
+        <span class="str">":oldStatus"</span>, <span class="ty">AttributeValue</span>.<span class="fn">fromS</span>(<span class="str">"PENDING"</span>),
+        <span class="str">":now"</span>,       <span class="ty">AttributeValue</span>.<span class="fn">fromS</span>(<span class="ty">Instant</span>.<span class="fn">now</span>().<span class="fn">toString</span>())
+    ))
+    .<span class="fn">build</span>());
+<span class="cm">// ConditionalCheckFailedException if status wasn't PENDING</span></pre>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Introduction.html" target="_blank">DynamoDB Developer Guide</a>
+  <a class="ref" href="https://aws.amazon.com/dynamodb/features/" target="_blank">DynamoDB Features</a>
+</div>
+</div>
+
+<!-- ======================================================= S8: DATA MODELLING -->
+<div id="s8" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 6 · DynamoDB · Section 8</span>
+  <h1>Data Modelling — Keys, Indexes &amp; Single-Table Design</h1>
+  <p class="subtitle">DynamoDB data modelling is the hardest skill in AWS. Get it right and queries are single-digit milliseconds regardless of scale. Get it wrong and you'll be scanning entire tables or needing SQL joins.</p>
+</div>
+
+<h2>Partition Key vs Sort Key — Understanding the Mechanics</h2>
+<p>The <strong>partition key</strong> is hashed to determine which DynamoDB partition stores the item. All items with the same partition key are stored together — physical locality. The <strong>sort key</strong> sorts items within that partition — enabling range queries, prefix queries, and "get all items of type X for user Y."</p>
+
+<div class="ddb-visual">
+  <div style="margin-bottom:12px;font-size:11px;color:var(--text3)">Table: Orders — PK: userId, SK: orderId (composite key)</div>
+  <div class="ddb-table-header">
+    <div class="ddb-col ddb-pk">userId (PK)</div>
+    <div class="ddb-col ddb-sk">orderId (SK)</div>
+    <div class="ddb-col ddb-attr">Other Attributes</div>
+  </div>
+  <div class="ddb-row"><div class="ddb-cell pk">user-alice</div><div class="ddb-cell sk">ord-001</div><div class="ddb-cell">status: DELIVERED, total: 45.99</div></div>
+  <div class="ddb-row"><div class="ddb-cell pk">user-alice</div><div class="ddb-cell sk">ord-002</div><div class="ddb-cell">status: PENDING, total: 120.00</div></div>
+  <div class="ddb-row"><div class="ddb-cell pk">user-alice</div><div class="ddb-cell sk">ord-003</div><div class="ddb-cell">status: CONFIRMED, total: 89.50</div></div>
+  <div class="ddb-row"><div class="ddb-cell pk">user-bob</div><div class="ddb-cell sk">ord-004</div><div class="ddb-cell">status: DELIVERED, total: 200.00</div></div>
+  <div class="ddb-row"><div class="ddb-cell pk">user-bob</div><div class="ddb-cell sk">ord-005</div><div class="ddb-cell">status: PENDING, total: 35.00</div></div>
+</div>
+
+<pre><span class="cm">// Query all of Alice's orders (uses PK — highly efficient)</span>
+<span class="ty">QueryResponse</span> resp = ddb.<span class="fn">query</span>(<span class="ty">QueryRequest</span>.<span class="fn">builder</span>()
+    .<span class="fn">tableName</span>(<span class="str">"Orders"</span>)
+    .<span class="fn">keyConditionExpression</span>(<span class="str">"userId = :uid"</span>)
+    .<span class="fn">expressionAttributeValues</span>(<span class="ty">Map</span>.<span class="fn">of</span>(
+        <span class="str">":uid"</span>, <span class="ty">AttributeValue</span>.<span class="fn">fromS</span>(<span class="str">"user-alice"</span>)))
+    .<span class="fn">build</span>());
+<span class="cm">// Returns all 3 of Alice's orders in one call</span>
+<span class="cm">// Cost: 1 read unit per KB of data read</span>
+
+<span class="cm">// Query Alice's orders starting with ord-002 onwards</span>
+ddb.<span class="fn">query</span>(<span class="ty">QueryRequest</span>.<span class="fn">builder</span>()
+    .<span class="fn">tableName</span>(<span class="str">"Orders"</span>)
+    .<span class="fn">keyConditionExpression</span>(<span class="str">"userId = :uid AND orderId >= :minOrder"</span>)
+    .<span class="fn">expressionAttributeValues</span>(<span class="ty">Map</span>.<span class="fn">of</span>(
+        <span class="str">":uid"</span>,      <span class="ty">AttributeValue</span>.<span class="fn">fromS</span>(<span class="str">"user-alice"</span>),
+        <span class="str">":minOrder"</span>, <span class="ty">AttributeValue</span>.<span class="fn">fromS</span>(<span class="str">"ord-002"</span>)))
+    .<span class="fn">scanIndexForward</span>(<span class="kw">false</span>)  <span class="cm">// descending sort (newest first)</span>
+    .<span class="fn">limit</span>(<span class="num">10</span>)               <span class="cm">// paginate</span>
+    .<span class="fn">build</span>());</pre>
+
+<h2>Global Secondary Indexes (GSI) — Query on Non-Key Attributes</h2>
+<p>A GSI lets you query DynamoDB using attributes that are NOT your primary key. It's a separate copy of your data, with a different key scheme, maintained automatically by DynamoDB. You pay for the extra storage and write capacity.</p>
+
+<div class="scenario">
+  <div class="scenario-label">Real Problem GSI Solves</div>
+  <div class="scenario-title">Finding all PENDING orders — you can't do this without a GSI</div>
+  <p>Your table has PK=userId, SK=orderId. You want all orders with status='PENDING' across all users for the warehouse dashboard. Without a GSI, you'd have to Scan the entire table — expensive and slow. With a GSI on <code>status</code> as the partition key: instant lookup of all PENDING orders.</p>
+</div>
+
+<pre><span class="cm"># Add a GSI to find orders by status</span>
+aws dynamodb update-table \
+  --table-name Orders \
+  --attribute-definitions \
+    AttributeName=status,AttributeType=S \
+    AttributeName=createdAt,AttributeType=S \
+  --global-secondary-index-updates '[{
+    "Create": {
+      "IndexName": "status-createdAt-index",
+      "KeySchema": [
+        {"AttributeName": "status",    "KeyType": "HASH"},
+        {"AttributeName": "createdAt", "KeyType": "RANGE"}
+      ],
+      "Projection": {"ProjectionType": "ALL"},
+      "BillingMode": "PAY_PER_REQUEST"
+    }
+  }]'</pre>
+
+<pre><span class="cm">// Query the GSI — all PENDING orders, newest first</span>
+<span class="ty">QueryResponse</span> pending = ddb.<span class="fn">query</span>(<span class="ty">QueryRequest</span>.<span class="fn">builder</span>()
+    .<span class="fn">tableName</span>(<span class="str">"Orders"</span>)
+    .<span class="fn">indexName</span>(<span class="str">"status-createdAt-index"</span>)  <span class="cm">// use the GSI</span>
+    .<span class="fn">keyConditionExpression</span>(<span class="str">"#s = :pending"</span>)
+    .<span class="fn">expressionAttributeNames</span>(<span class="ty">Map</span>.<span class="fn">of</span>(<span class="str">"#s"</span>, <span class="str">"status"</span>))
+    .<span class="fn">expressionAttributeValues</span>(<span class="ty">Map</span>.<span class="fn">of</span>(
+        <span class="str">":pending"</span>, <span class="ty">AttributeValue</span>.<span class="fn">fromS</span>(<span class="str">"PENDING"</span>)))
+    .<span class="fn">scanIndexForward</span>(<span class="kw">false</span>)  <span class="cm">// newest first</span>
+    .<span class="fn">build</span>());</pre>
+
+<h2>Single-Table Design — The Advanced Pattern</h2>
+<p>Instead of creating separate tables for Users, Orders, Products (like SQL), experienced DynamoDB designers put everything in <strong>one table</strong>. Use generic PK/SK names and store different entity types. This enables fetching related data in a single query — like a JOIN, but at DynamoDB speed.</p>
+
+<div class="ddb-visual">
+  <div style="margin-bottom:12px;font-size:11px;color:var(--text3)">Single-Table Design: PK=pk, SK=sk — all entities in one table</div>
+  <div class="ddb-table-header">
+    <div class="ddb-col ddb-pk">pk</div>
+    <div class="ddb-col ddb-sk">sk</div>
+    <div class="ddb-col ddb-attr">Entity-specific attributes</div>
+  </div>
+  <div class="ddb-row"><div class="ddb-cell pk">USER#alice</div><div class="ddb-cell sk">PROFILE</div><div class="ddb-cell">name, email, createdAt (User entity)</div></div>
+  <div class="ddb-row"><div class="ddb-cell pk">USER#alice</div><div class="ddb-cell sk">ORDER#ord-001</div><div class="ddb-cell">status, total, items (Order entity)</div></div>
+  <div class="ddb-row"><div class="ddb-cell pk">USER#alice</div><div class="ddb-cell sk">ORDER#ord-002</div><div class="ddb-cell">status, total, items (Order entity)</div></div>
+  <div class="ddb-row"><div class="ddb-cell pk">USER#alice</div><div class="ddb-cell sk">ADDRESS#home</div><div class="ddb-cell">street, city, postcode (Address entity)</div></div>
+  <div class="ddb-row"><div class="ddb-cell pk">PRODUCT#p-123</div><div class="ddb-cell sk">DETAILS</div><div class="ddb-cell">name, price, category (Product entity)</div></div>
+  <div class="ddb-row"><div class="ddb-cell pk">PRODUCT#p-123</div><div class="ddb-cell sk">REVIEW#rev-001</div><div class="ddb-cell">rating, comment, userId (Review entity)</div></div>
+</div>
+
+<pre><span class="cm">// Fetch Alice's profile + all her orders in ONE query</span>
+<span class="ty">QueryResponse</span> alice = ddb.<span class="fn">query</span>(<span class="ty">QueryRequest</span>.<span class="fn">builder</span>()
+    .<span class="fn">tableName</span>(<span class="str">"MyApp"</span>)
+    .<span class="fn">keyConditionExpression</span>(<span class="str">"pk = :pk"</span>)        <span class="cm">// all items with pk USER#alice</span>
+    .<span class="fn">expressionAttributeValues</span>(<span class="ty">Map</span>.<span class="fn">of</span>(
+        <span class="str">":pk"</span>, <span class="ty">AttributeValue</span>.<span class="fn">fromS</span>(<span class="str">"USER#alice"</span>)))
+    .<span class="fn">build</span>());
+<span class="cm">// Returns: PROFILE + ORDER#ord-001 + ORDER#ord-002 + ADDRESS#home
+// In one network round-trip. In SQL this would be 3 tables joined.</span>
+
+<span class="cm">// Fetch only Alice's orders (use begins_with on SK)</span>
+ddb.<span class="fn">query</span>(<span class="ty">QueryRequest</span>.<span class="fn">builder</span>()
+    .<span class="fn">keyConditionExpression</span>(<span class="str">"pk = :pk AND begins_with(sk, :prefix)"</span>)
+    .<span class="fn">expressionAttributeValues</span>(<span class="ty">Map</span>.<span class="fn">of</span>(
+        <span class="str">":pk"</span>,     <span class="ty">AttributeValue</span>.<span class="fn">fromS</span>(<span class="str">"USER#alice"</span>),
+        <span class="str">":prefix"</span>, <span class="ty">AttributeValue</span>.<span class="fn">fromS</span>(<span class="str">"ORDER#"</span>)))  <span class="cm">// only orders</span>
+    .<span class="fn">build</span>());</pre>
+
+<div class="alert a-blue">
+  <strong>Design access patterns first, then design the schema.</strong> This is the opposite of SQL (design schema, then figure out queries). For DynamoDB: (1) list every query your application needs, (2) design PK/SK to answer those queries efficiently, (3) add GSIs for access patterns that need different key structures. Working backwards from queries is the only correct approach.
+</div>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/best-practices.html" target="_blank">DynamoDB Best Practices</a>
+  <a class="ref" href="https://www.youtube.com/watch?v=HaEPXoXVf2k" target="_blank">AWS re:Invent: Advanced DynamoDB Design (Rick Houlihan)</a>
+  <a class="ref" href="https://www.dynamodbbook.com/" target="_blank">The DynamoDB Book (Alex DeBrie)</a>
+</div>
+</div>
+
+<!-- ======================================================= S9: CAPACITY -->
+<div id="s9" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 6 · DynamoDB · Section 9</span>
+  <h1>Capacity Modes, Reads &amp; Writes</h1>
+  <p class="subtitle">How DynamoDB billing works, what Read Capacity Units and Write Capacity Units actually mean, and when to use provisioned vs on-demand mode.</p>
+</div>
+
+<h2>Two Billing Modes</h2>
+<div class="grid2">
+  <div class="card">
+    <div class="card-title" style="color:var(--orange-light)">On-Demand Mode (Pay-Per-Request)</div>
+    <div class="card-body">
+      DynamoDB auto-scales instantly to any load. You pay per read/write request. No capacity planning. Good for: unpredictable traffic, new applications, spiky workloads, dev/test.<br><br>
+      <strong>Cost:</strong> ~$1.25 per million writes, ~$0.25 per million reads. More expensive at steady high load than provisioned.
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--blue-light)">Provisioned Mode + Auto Scaling</div>
+    <div class="card-body">
+      You provision RCU (Read Capacity Units) and WCU (Write Capacity Units). Enable Auto Scaling and DynamoDB adjusts within min/max bounds automatically. Good for: predictable, steady traffic patterns. 60-70% cheaper than on-demand at consistent load.<br><br>
+      <strong>Cost:</strong> ~$0.65/RCU-month, ~$0.25/WCU-month (provisioned)
+    </div>
+  </div>
+</div>
+
+<h2>RCU and WCU — What They Actually Mean</h2>
+<pre><span class="cm">## Read Capacity Unit (RCU):
+# 1 RCU = 1 strongly consistent read per second for items up to 4KB
+#       = 2 eventually consistent reads per second for items up to 4KB
+# For items larger than 4KB, multiple RCUs are consumed
+
+# Examples:
+# GetItem of a 1KB item, strong consistency:    1 RCU
+# GetItem of a 1KB item, eventual consistency:  0.5 RCU
+# GetItem of a 5KB item, strong consistency:    2 RCU  (ceil(5/4) = 2)
+# Query returning 40KB total, eventually cons.: 5 RCU  (ceil(40/4) × 0.5 = 5)
+
+## Write Capacity Unit (WCU):
+# 1 WCU = 1 write per second for items up to 1KB
+# Writes are more expensive — 1/1KB vs 1/4KB for reads
+
+# Examples:
+# PutItem of 1KB item:   1 WCU
+# PutItem of 3.5KB item: 4 WCU  (ceil(3.5/1) = 4)
+# DeleteItem of any size: same as write to same item
+
+## Transactional reads/writes cost 2x:
+# TransactGetItems: 2 RCU per item read
+# TransactWriteItems: 2 WCU per item written</span></pre>
+
+<h2>Auto Scaling Configuration</h2>
+<pre><span class="cm"># Enable auto scaling on DynamoDB table</span>
+aws application-autoscaling register-scalable-target \
+  --service-namespace dynamodb \
+  --resource-id table/Orders \
+  --scalable-dimension dynamodb:table:WriteCapacityUnits \
+  --min-capacity 5 \
+  --max-capacity 1000
+
+aws application-autoscaling put-scaling-policy \
+  --service-namespace dynamodb \
+  --resource-id table/Orders \
+  --scalable-dimension dynamodb:table:WriteCapacityUnits \
+  --policy-name WriteScaling \
+  --policy-type TargetTrackingScaling \
+  --target-tracking-scaling-policy-configuration '{
+    "TargetValue": 70.0,
+    "PredefinedMetricSpecification": {
+      "PredefinedMetricType": "DynamoDBWriteCapacityUtilization"
+    },
+    "ScaleOutCooldown": 0,
+    "ScaleInCooldown": 300
+  }'
+
+<span class="cm"># "Keep WriteCapacity at 70% utilisation"
+# Auto scales up immediately (ScaleOutCooldown=0) on traffic spike
+# Scales back down slowly (300s cooldown) to avoid thrashing</span></pre>
+
+<h2>Hot Partitions — The Most Common DynamoDB Problem</h2>
+<p>DynamoDB distributes data across partitions by hashing the partition key. If all your writes go to the same partition key value, all traffic goes to one partition — a "hot partition." DynamoDB limits throughput per partition.</p>
+
+<pre><span class="cm">## ❌ Hot partition example</span>
+<span class="cm">Table: SensorReadings, PK: sensorType</span>
+
+<span class="cm">Every 10ms: PutItem(sensorType="TEMPERATURE", timestamp=now, value=22.5)
+→ All writes to the SAME partition key
+→ One partition handles ALL writes
+→ That partition throttles
+→ ProvisionedThroughputExceededException</span>
+
+<span class="cm">## ✅ Fix: add randomisation to partition key</span>
+<span class="cm">sensorType-0: "TEMPERATURE-0"</span>
+<span class="cm">sensorType-1: "TEMPERATURE-1"</span>
+<span class="cm">...spread writes across 10 partition keys, aggregate on read</span>
+
+<span class="cm">## ✅ Or use a better primary key design</span>
+<span class="cm">PK: sensorId (unique per sensor) + SK: timestamp
+→ Writes distributed across all sensor IDs = no hot partition</span></pre>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadWriteCapacityMode.html" target="_blank">DynamoDB Capacity Modes</a>
+  <a class="ref" href="https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/bp-partition-key-uniform-load.html" target="_blank">Partition Key Best Practices</a>
+</div>
+</div>
+
+<!-- ======================================================= S10: STREAMS, TRANSACTIONS, DAX -->
+<div id="s10" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 6 · DynamoDB · Section 10</span>
+  <h1>Streams, Transactions &amp; DAX</h1>
+  <p class="subtitle">DynamoDB Streams for event-driven architectures, transactions for multi-item consistency, and DAX for microsecond caching.</p>
+</div>
+
+<h2>DynamoDB Streams — Change Data Capture</h2>
+<p>DynamoDB Streams is a time-ordered sequence of item-level changes in a table — a change log. Every insert, update, and delete is recorded. Records are retained for 24 hours. Lambda can poll this stream and react to changes.</p>
+
+<div class="scenario">
+  <div class="scenario-label">Real Use Cases</div>
+  <div class="scenario-title">What you can build with DynamoDB Streams</div>
+  <p><strong>Replicate to OpenSearch:</strong> Order is inserted in DynamoDB → Stream → Lambda → OpenSearch. Now you can full-text search orders without polluting DynamoDB with scan operations.</p>
+  <p style="margin-top:8px"><strong>Send notifications:</strong> Order status changes to SHIPPED → Stream → Lambda → SNS → push notification to user.</p>
+  <p style="margin-top:8px"><strong>Cross-region replication (DynamoDB Global Tables):</strong> Under the hood, Global Tables uses Streams to replicate changes across regions.</p>
+  <p style="margin-top:8px"><strong>Audit log:</strong> Any change to sensitive data → Stream → Lambda → append to immutable audit log in S3.</p>
+</div>
+
+<pre><span class="cm"># Enable streams on a table</span>
+aws dynamodb update-table \
+  --table-name Orders \
+  --stream-specification \
+    StreamEnabled=true,StreamViewType=NEW_AND_OLD_IMAGES
+<span class="cm"># StreamViewType options:
+# KEYS_ONLY         — only PK/SK of changed item
+# NEW_IMAGE         — item after the change
+# OLD_IMAGE         — item before the change
+# NEW_AND_OLD_IMAGES — both (most useful, highest cost)</span>
+
+<span class="cm"># Create Lambda trigger from the stream</span>
+aws lambda create-event-source-mapping \
+  --function-name OrderStreamProcessor \
+  --event-source-arn arn:aws:dynamodb:us-east-1:123:table/Orders/stream/xxx \
+  --batch-size 100 \
+  --starting-position TRIM_HORIZON   <span class="cm"># or LATEST for new records only</span></pre>
+
+<pre><span class="kw">public class</span> <span class="ty">OrderStreamProcessor</span> <span class="kw">implements</span> <span class="ty">RequestHandler</span>&lt;<span class="ty">DynamodbEvent</span>, <span class="ty">Void</span>&gt; {
+
+    <span class="kw">public</span> <span class="ty">Void</span> <span class="fn">handleRequest</span>(<span class="ty">DynamodbEvent</span> event, <span class="ty">Context</span> ctx) {
+        <span class="kw">for</span> (<span class="ty">DynamodbStreamRecord</span> record : event.<span class="fn">getRecords</span>()) {
+            <span class="ty">String</span> eventType = record.<span class="fn">getEventName</span>(); <span class="cm">// INSERT, MODIFY, REMOVE</span>
+
+            <span class="kw">if</span> (<span class="str">"MODIFY"</span>.<span class="fn">equals</span>(eventType)) {
+                <span class="ty">Map</span>&lt;<span class="ty">String</span>, <span class="ty">AttributeValue</span>&gt; newImage = record.<span class="fn">getDynamodb</span>().<span class="fn">getNewImage</span>();
+                <span class="ty">Map</span>&lt;<span class="ty">String</span>, <span class="ty">AttributeValue</span>&gt; oldImage = record.<span class="fn">getDynamodb</span>().<span class="fn">getOldImage</span>();
+
+                <span class="ty">String</span> newStatus = newImage.<span class="fn">get</span>(<span class="str">"status"</span>).<span class="fn">s</span>();
+                <span class="ty">String</span> oldStatus = oldImage.<span class="fn">get</span>(<span class="str">"status"</span>).<span class="fn">s</span>();
+
+                <span class="kw">if</span> (<span class="str">"SHIPPED"</span>.<span class="fn">equals</span>(newStatus) && !<span class="str">"SHIPPED"</span>.<span class="fn">equals</span>(oldStatus)) {
+                    <span class="cm">// Order just shipped — send notification</span>
+                    <span class="ty">String</span> userId = newImage.<span class="fn">get</span>(<span class="str">"userId"</span>).<span class="fn">s</span>();
+                    notificationService.<span class="fn">sendShippingNotification</span>(userId);
+                }
+            }
+        }
+        <span class="kw">return null</span>;
+    }
+}</pre>
+
+<h2>DynamoDB Transactions — Multi-Item Atomicity</h2>
+<pre><span class="cm">// Scenario: Transfer an order from one user's account to another
+// Both operations must succeed or neither should</span>
+
+<span class="ty">TransactWriteItemsRequest</span> transaction = <span class="ty">TransactWriteItemsRequest</span>.<span class="fn">builder</span>()
+    .<span class="fn">transactItems</span>(
+        <span class="cm">// Update inventory: decrement stock</span>
+        <span class="ty">TransactWriteItem</span>.<span class="fn">builder</span>()
+            .<span class="fn">update</span>(<span class="ty">Update</span>.<span class="fn">builder</span>()
+                .<span class="fn">tableName</span>(<span class="str">"Inventory"</span>)
+                .<span class="fn">key</span>(<span class="ty">Map</span>.<span class="fn">of</span>(<span class="str">"productId"</span>, <span class="ty">AttributeValue</span>.<span class="fn">fromS</span>(<span class="str">"prod-123"</span>)))
+                .<span class="fn">updateExpression</span>(<span class="str">"SET stock = stock - :qty"</span>)
+                .<span class="fn">conditionExpression</span>(<span class="str">"stock >= :qty"</span>)  <span class="cm">// must have stock</span>
+                .<span class="fn">expressionAttributeValues</span>(<span class="ty">Map</span>.<span class="fn">of</span>(<span class="str">":qty"</span>, <span class="ty">AttributeValue</span>.<span class="fn">fromN</span>(<span class="str">"1"</span>)))
+                .<span class="fn">build</span>())
+            .<span class="fn">build</span>(),
+        <span class="cm">// Create the order</span>
+        <span class="ty">TransactWriteItem</span>.<span class="fn">builder</span>()
+            .<span class="fn">put</span>(<span class="ty">Put</span>.<span class="fn">builder</span>()
+                .<span class="fn">tableName</span>(<span class="str">"Orders"</span>)
+                .<span class="fn">item</span>(<span class="fn">buildOrderItem</span>())
+                .<span class="fn">conditionExpression</span>(<span class="str">"attribute_not_exists(orderId)"</span>)  <span class="cm">// idempotency</span>
+                .<span class="fn">build</span>())
+            .<span class="fn">build</span>()
+    )
+    .<span class="fn">build</span>();
+
+<span class="kw">try</span> {
+    ddb.<span class="fn">transactWriteItems</span>(transaction);
+} <span class="kw">catch</span> (<span class="ty">TransactionCanceledException</span> e) {
+    <span class="cm">// One of the conditions failed — check e.getCancellationReasons()</span>
+    <span class="cm">// e.g., stock was 0 when we tried to decrement</span>
+}</pre>
+
+<h2>DAX — DynamoDB Accelerator</h2>
+<p>DAX is an in-memory cache cluster that sits in front of DynamoDB. It's DynamoDB-compatible — your application code points to DAX instead of DynamoDB directly, with zero code changes. DAX reduces read latency from single-digit milliseconds to <strong>microseconds</strong>.</p>
+
+<pre><span class="cm"># Without DAX: app → DynamoDB (1-10ms per GetItem)
+# With DAX:    app → DAX (microseconds if cached) → DynamoDB (on cache miss)
+
+# DAX is only useful for:
+# - Read-heavy workloads (reads >> writes)
+# - Same items read repeatedly (cache hit rate matters)
+# - Microsecond latency requirement (gaming leaderboards, real-time bidding)
+
+# NOT useful for:
+# - Write-heavy workloads (writes bypass cache)
+# - Strongly consistent reads required (DAX returns eventually consistent only)
+# - Each item read once (no cache benefit)
+
+# DAX cluster setup (replaces DynamoDB endpoint in your code)</span>
+aws dax create-cluster \
+  --cluster-name prod-orders-dax \
+  --node-type dax.r6g.large \
+  --replication-factor 3 \              <span class="cm"># 3 nodes across AZs</span>
+  --iam-role-arn arn:aws:iam::123:role/DAXRole \
+  --subnet-group-name prod-dax-subnet-group \
+  --security-group-ids sg-0dax123
+
+<span class="cm"># In Java — swap DynamoDbClient for DaxClient (same API!)</span>
+<span class="ty">DaxClient</span> dax = <span class="ty">DaxClient</span>.<span class="fn">builder</span>()
+    .<span class="fn">endpointConfiguration</span>(<span class="str">"dax://prod-orders-dax.abc.dax-clusters.us-east-1.amazonaws.com"</span>)
+    .<span class="fn">build</span>();
+<span class="cm">// Same code as DynamoDB: dax.getItem(...) — transparently uses cache</span></pre>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Streams.html" target="_blank">DynamoDB Streams</a>
+  <a class="ref" href="https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/transactions.html" target="_blank">DynamoDB Transactions</a>
+  <a class="ref" href="https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAX.html" target="_blank">DynamoDB Accelerator (DAX)</a>
+</div>
+</div>
+
+<!-- ======================================================= S11: DYNAMODB PATTERNS -->
+<div id="s11" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 6 · DynamoDB · Section 11</span>
+  <h1>DynamoDB Patterns &amp; Anti-Patterns</h1>
+  <p class="subtitle">The difference between a DynamoDB system that handles millions of requests efficiently and one that collapses under load is almost always in the design.</p>
+</div>
+
+<h2>Patterns — What Works</h2>
+
+<h3>Pattern 1: TTL for Automatic Expiry</h3>
+<pre><span class="cm"># Store sessions, OTP codes, temp data with automatic deletion</span>
+aws dynamodb update-time-to-live \
+  --table-name Sessions \
+  --time-to-live-specification \
+    "Enabled=true, AttributeName=ttl"
+
+<span class="cm">// When storing a session — set ttl to expiry time as Unix timestamp</span>
+<span class="ty">Map</span>&lt;<span class="ty">String</span>, <span class="ty">AttributeValue</span>&gt; session = <span class="ty">Map</span>.<span class="fn">of</span>(
+    <span class="str">"sessionId"</span>, <span class="ty">AttributeValue</span>.<span class="fn">fromS</span>(<span class="str">"sess-abc123"</span>),
+    <span class="str">"userId"</span>,    <span class="ty">AttributeValue</span>.<span class="fn">fromS</span>(<span class="str">"user-456"</span>),
+    <span class="str">"ttl"</span>,       <span class="ty">AttributeValue</span>.<span class="fn">fromN</span>(
+        <span class="ty">String</span>.<span class="fn">valueOf</span>(<span class="ty">Instant</span>.<span class="fn">now</span>().<span class="fn">plusSeconds</span>(<span class="num">86400</span>).<span class="fn">getEpochSecond</span>()))
+);
+<span class="cm">// DynamoDB automatically deletes this item after ttl timestamp</span>
+<span class="cm">// No Lambda, no scheduled cleanup job needed</span></pre>
+
+<h3>Pattern 2: Optimistic Locking (Version Control)</h3>
+<pre><span class="cm">// Prevent concurrent writes from overwriting each other</span>
+<span class="cm">// Add a version attribute; increment on every write with condition</span>
+ddb.<span class="fn">updateItem</span>(<span class="ty">UpdateItemRequest</span>.<span class="fn">builder</span>()
+    .<span class="fn">tableName</span>(<span class="str">"Products"</span>)
+    .<span class="fn">key</span>(<span class="ty">Map</span>.<span class="fn">of</span>(<span class="str">"productId"</span>, <span class="ty">AttributeValue</span>.<span class="fn">fromS</span>(<span class="str">"prod-123"</span>)))
+    .<span class="fn">updateExpression</span>(<span class="str">"SET price = :price, version = :newV"</span>)
+    .<span class="fn">conditionExpression</span>(<span class="str">"version = :currentV"</span>)  <span class="cm">// fails if another writer changed it</span>
+    .<span class="fn">expressionAttributeValues</span>(<span class="ty">Map</span>.<span class="fn">of</span>(
+        <span class="str">":price"</span>,   <span class="ty">AttributeValue</span>.<span class="fn">fromN</span>(<span class="str">"29.99"</span>),
+        <span class="str">":newV"</span>,    <span class="ty">AttributeValue</span>.<span class="fn">fromN</span>(<span class="str">"6"</span>),       <span class="cm">// increment version</span>
+        <span class="str">":currentV"</span>,<span class="ty">AttributeValue</span>.<span class="fn">fromN</span>(<span class="str">"5"</span>)        <span class="cm">// expected current version</span>
+    ))
+    .<span class="fn">build</span>());</pre>
+
+<h2>Anti-Patterns — What Breaks DynamoDB</h2>
+<div class="grid2">
+  <div class="card" style="border-color:#5a1a1a">
+    <div class="card-title" style="color:var(--red-light)">Scan instead of Query</div>
+    <div class="card-body">
+      <code>Scan</code> reads the entire table — every item — and filters in memory. On a 10GB table, scan reads 10GB every call. Extremely expensive and slow.<br><br>
+      <strong>Fix:</strong> Design your schema so every access pattern can be answered with a <code>Query</code> (uses PK) or <code>GetItem</code> (uses full key). If you can't avoid scanning, use a GSI or export to Athena/S3 for analytics.
+    </div>
+  </div>
+  <div class="card" style="border-color:#5a1a1a">
+    <div class="card-title" style="color:var(--red-light)">Using DynamoDB like a relational DB</div>
+    <div class="card-body">
+      Storing normalised data in separate tables and doing multiple queries to "join" them in the application. You lose DynamoDB's speed advantage and make it more complex than just using RDS.<br><br>
+      <strong>Fix:</strong> Denormalise into single-table design. Accept some data duplication in exchange for single-query access patterns.
+    </div>
+  </div>
+  <div class="card" style="border-color:#5a1a1a">
+    <div class="card-title" style="color:var(--red-light)">Monotonically increasing sort keys</div>
+    <div class="card-body">
+      Using <code>orderId = autoincrement</code> or <code>timestamp</code> as sort key. All new writes go to the same "end" of the partition — a hot partition at the leading edge.<br><br>
+      <strong>Fix:</strong> Use UUID sort keys, or add randomisation. If you need time-based ordering, use a partition key that distributes writes.
+    </div>
+  </div>
+  <div class="card" style="border-color:#5a1a1a">
+    <div class="card-title" style="color:var(--red-light)">Storing large items</div>
+    <div class="card-body">
+      Items &gt;4KB consume multiple RCUs per read, and items &gt;400KB aren't supported at all. Storing full HTML pages, binary data, or large JSON blobs in DynamoDB is wasteful.<br><br>
+      <strong>Fix:</strong> Store large data in S3, store the S3 key reference in DynamoDB.
+    </div>
+  </div>
+</div>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/best-practices.html" target="_blank">DynamoDB Best Practices</a>
+  <a class="ref" href="https://www.alexdebrie.com/posts/dynamodb-single-table/" target="_blank">Why Single-Table Design (DeBrie)</a>
+</div>
+</div>
+
+<!-- ======================================================= S12: ELASTICACHE -->
+<div id="s12" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 6 · ElastiCache · Section 12</span>
+  <h1>Why Cache? Redis vs Memcached</h1>
+  <p class="subtitle">ElastiCache is AWS's managed in-memory caching service. A cache layer can reduce database load by 80%+, cut response times from 50ms to &lt;1ms, and make your application feel instantaneous.</p>
+</div>
+
+<h2>Why Caching Is Critical</h2>
+<p>Every database read has latency: a simple PostgreSQL query that hits an index takes 5-20ms. That sounds fast, but consider a page that makes 10 database queries to render = 50-200ms of pure database time. With caching, the second identical request takes &lt;1ms. Multiply across thousands of requests per second and caching is often the single biggest performance improvement possible.</p>
+
+<div class="scenario">
+  <div class="scenario-label">Real-World Impact</div>
+  <div class="scenario-title">Product catalogue for an e-commerce site</div>
+  <p>A product detail page queries: product details (DB: 15ms), product images (DB: 8ms), inventory count (DB: 5ms), related products (DB: 20ms), reviews summary (DB: 12ms). Total: 60ms of database time per page view, thousands of times per second.</p>
+  <p style="margin-top:8px">With Redis cache (1-hour TTL): first user hits database. All subsequent users get the cached result in &lt;1ms. Database load drops from thousands of queries/second to a handful. P99 latency drops from 150ms to 5ms.</p>
+</div>
+
+<h2>Redis vs Memcached</h2>
+<table>
+  <tr><th>Feature</th><th>Redis</th><th>Memcached</th></tr>
+  <tr><td>Data structures</td><td>Rich: strings, hashes, lists, sets, sorted sets, bitmaps, streams</td><td>Simple key-value only</td></tr>
+  <tr><td>Persistence</td><td>Optional: RDB snapshots + AOF log</td><td>None — purely in-memory</td></tr>
+  <tr><td>Replication</td><td>Primary-replica with automatic failover</td><td>No replication</td></tr>
+  <tr><td>Pub/Sub</td><td>Yes — built in</td><td>No</td></tr>
+  <tr><td>Lua scripting</td><td>Yes</td><td>No</td></tr>
+  <tr><td>Cluster mode</td><td>Yes (Redis Cluster)</td><td>Yes (auto-discovery, simpler)</td></tr>
+  <tr><td>Multi-threading</td><td>Single-threaded (I/O multi-threaded since v6)</td><td>Multi-threaded — better for multi-core</td></tr>
+  <tr><td>Use cases</td><td>Caching, sessions, leaderboards, rate limiting, queues, pub/sub</td><td>Simple distributed caching only</td></tr>
+  <tr><td>Choose when</td><td>Almost always — more features, same performance</td><td>Need multi-threaded pure caching, very simple use case</td></tr>
+</table>
+
+<h2>Creating an ElastiCache Redis Cluster</h2>
+<pre><span class="cm"># Create a Redis 7 cluster with replication (Multi-AZ)</span>
+aws elasticache create-replication-group \
+  --replication-group-id prod-redis-orders \
+  --replication-group-description "Orders service cache" \
+  --engine redis \
+  --engine-version 7.0 \
+  --cache-node-type cache.r6g.large \  <span class="cm"># 2 vCPU, 13GB RAM</span>
+  --num-cache-clusters 2 \             <span class="cm"># 1 primary + 1 replica</span>
+  --automatic-failover-enabled \       <span class="cm"># auto-failover on primary failure</span>
+  --multi-az-enabled \
+  --cache-subnet-group-name prod-cache-subnet-group \
+  --security-group-ids sg-0cache123 \
+  --at-rest-encryption-enabled \
+  --transit-encryption-enabled \
+  --auth-token my-secret-auth-token    <span class="cm"># Redis AUTH password</span>
+
+<span class="cm"># Endpoints:
+# Primary endpoint: prod-redis-orders.abc.cache.amazonaws.com:6379 (writes)
+# Reader endpoint: prod-redis-orders-ro.abc.cache.amazonaws.com:6379 (reads)</span></pre>
+
+<pre><span class="cm">// Connecting from Spring Boot (Lettuce client)</span>
+<span class="cm">// application.properties</span>
+spring.redis.host=prod-redis-orders.abc.cache.amazonaws.com
+spring.redis.port=6379
+spring.redis.password=my-secret-auth-token
+spring.redis.ssl.enabled=true
+spring.redis.timeout=500ms        <span class="cm">// fail fast if Redis is slow</span>
+spring.cache.redis.time-to-live=3600000  <span class="cm">// 1 hour default TTL</span>
+
+<span class="cm">// Use @Cacheable to cache method results automatically</span>
+<span class="kw">@Service</span>
+<span class="kw">public class</span> <span class="ty">ProductService</span> {
+
+    <span class="kw">@Cacheable</span>(value = <span class="str">"products"</span>, key = <span class="str">"#productId"</span>)
+    <span class="kw">public</span> <span class="ty">Product</span> <span class="fn">getProduct</span>(<span class="ty">String</span> productId) {
+        <span class="cm">// Only executed on cache miss — cached result returned on hit</span>
+        <span class="kw">return</span> productRepository.<span class="fn">findById</span>(productId).<span class="fn">orElseThrow</span>();
+    }
+
+    <span class="kw">@CacheEvict</span>(value = <span class="str">"products"</span>, key = <span class="str">"#product.productId"</span>)
+    <span class="kw">public</span> <span class="ty">Product</span> <span class="fn">updateProduct</span>(<span class="ty">Product</span> product) {
+        <span class="cm">// Evicts cache when product is updated</span>
+        <span class="kw">return</span> productRepository.<span class="fn">save</span>(product);
+    }
+}</pre>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/WhatIs.html" target="_blank">ElastiCache for Redis</a>
+  <a class="ref" href="https://redis.io/docs/" target="_blank">Redis Documentation</a>
+</div>
+</div>
+
+<!-- ======================================================= S13: CACHING PATTERNS -->
+<div id="s13" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 6 · ElastiCache · Section 13</span>
+  <h1>Caching Patterns in Depth</h1>
+  <p class="subtitle">How data flows between your application, cache, and database — the four patterns with their trade-offs, when each is appropriate, and what happens when things fail.</p>
+</div>
+
+<h2>Pattern 1: Cache-Aside (Lazy Loading) — Most Common</h2>
+<p>The application checks the cache first. On a miss, it reads from the database and writes to the cache. The cache only contains data that has been requested at least once.</p>
+
+<div class="cache-pattern">
+  <div class="cache-title" style="color:var(--orange-light)">Cache-Aside — Read Flow</div>
+<pre style="background:transparent;border:none;padding:0;font-size:12.5px"><span class="kw">public</span> <span class="ty">Product</span> <span class="fn">getProduct</span>(<span class="ty">String</span> id) {
+    <span class="ty">String</span> cacheKey = <span class="str">"product:"</span> + id;
+
+    <span class="cm">// 1. Check cache first</span>
+    <span class="ty">Product</span> cached = redis.<span class="fn">get</span>(cacheKey);
+    <span class="kw">if</span> (cached != <span class="kw">null</span>) <span class="kw">return</span> cached;    <span class="cm">// Cache HIT — return immediately</span>
+
+    <span class="cm">// 2. Cache MISS — go to database</span>
+    <span class="ty">Product</span> product = db.<span class="fn">findById</span>(id);
+
+    <span class="cm">// 3. Populate cache for future requests</span>
+    redis.<span class="fn">setex</span>(cacheKey, <span class="num">3600</span>, product);  <span class="cm">// TTL: 1 hour</span>
+    <span class="kw">return</span> product;
+}</pre>
+</div>
+
+<div class="pros-cons">
+  <div class="pros">
+    <div class="pros-title">✓ Cache-Aside Advantages</div>
+    <ul>
+      <li>Cache only contains requested data — no waste</li>
+      <li>Cache failure is non-fatal — fall through to DB</li>
+      <li>Resilient — if Redis goes down, app still works</li>
+      <li>Simple to implement and reason about</li>
+    </ul>
+  </div>
+  <div class="cons">
+    <div class="cons-title">✗ Cache-Aside Disadvantages</div>
+    <ul>
+      <li>First request always hits DB (cold start)</li>
+      <li>Cache stampede: many requests miss simultaneously, all hit DB</li>
+      <li>Stale data: TTL-based, not event-driven invalidation</li>
+      <li>Extra code for cache population logic</li>
+    </ul>
+  </div>
+</div>
+
+<h2>Pattern 2: Write-Through — Always Fresh Cache</h2>
+<p>Write to the cache and the database simultaneously on every write. Cache is always up to date.</p>
+
+<div class="cache-pattern">
+  <div class="cache-title" style="color:var(--blue-light)">Write-Through — Write Flow</div>
+<pre style="background:transparent;border:none;padding:0;font-size:12.5px"><span class="kw">public</span> <span class="ty">Product</span> <span class="fn">updateProduct</span>(<span class="ty">String</span> id, <span class="ty">ProductUpdate</span> update) {
+    <span class="ty">Product</span> updated = db.<span class="fn">save</span>(id, update);     <span class="cm">// Write to DB first</span>
+    redis.<span class="fn">set</span>(<span class="str">"product:"</span> + id, updated);       <span class="cm">// Immediately update cache</span>
+    <span class="kw">return</span> updated;
+    <span class="cm">// Future reads will find fresh data in cache</span>
+}</pre>
+</div>
+
+<h2>Pattern 3: Write-Behind (Write-Back) — Async Persistence</h2>
+<p>Write to the cache immediately, return success to the client. Asynchronously persist to the database later. Very fast writes but risk of data loss if cache fails before flush.</p>
+
+<pre><span class="cm">// Use for: high-frequency writes where eventual persistence is OK
+// Example: view counters, leaderboard scores, analytics events
+// Risk: if Redis crashes before flush, writes are lost
+// Mitigation: Redis AOF persistence + replicas</span></pre>
+
+<h2>Pattern 4: Read-Through — Cache Manages DB</h2>
+<p>The cache itself handles database reads on a miss — your application only ever talks to the cache. Used by some cache libraries (Spring's @Cacheable is read-through). Simpler application code but less control.</p>
+
+<h2>The Cache Stampede Problem — And How to Fix It</h2>
+<pre><span class="cm">## Problem: 10,000 concurrent users all request the same uncached product
+## All miss, all hit database simultaneously → DB overwhelmed
+
+## Solution 1: Mutex / single-flight
+# First miss acquires a lock and fetches from DB
+# Other misses wait for the lock holder to populate cache
+# Then all get the cached value
+synchronized(<span class="str">"product:"</span> + id) {
+    cached = redis.<span class="fn">get</span>(<span class="str">"product:"</span> + id);  <span class="cm">// re-check after acquiring lock</span>
+    <span class="kw">if</span> (cached == <span class="kw">null</span>) {
+        product = db.<span class="fn">findById</span>(id);
+        redis.<span class="fn">setex</span>(<span class="str">"product:"</span> + id, <span class="num">3600</span>, product);
+    }
+}
+
+## Solution 2: Probabilistic early expiration (cache jitter)
+# Add random jitter to TTL so keys don't all expire simultaneously
+int ttl = 3600 + ThreadLocalRandom.current().nextInt(-300, 300);
+redis.setex("product:" + id, ttl, product);
+
+## Solution 3: Stale-while-revalidate
+# Return slightly stale cache data while asynchronously refreshing
+# User gets fast response, cache updates in background</span></pre>
+
+<h2>Cache Invalidation — The Hard Problem</h2>
+<div class="alert a-yellow">
+  <strong>Phil Karlton:</strong> "There are only two hard things in Computer Science: cache invalidation and naming things." Cache invalidation means knowing when to remove or update cached data so your users don't see stale information.
+</div>
+
+<pre><span class="cm">## Strategy 1: TTL-based (simplest) — accept some staleness
+redis.setex("product:abc", 300, product);  // 5 min TTL, auto-expires
+
+## Strategy 2: Event-driven invalidation — evict on update
+// When product is updated:
+productRepo.save(product);               // save to DB
+redis.del("product:" + product.getId()); // evict from cache
+// Next read will miss cache and fetch fresh from DB
+
+## Strategy 3: Cache versioning — no eviction needed
+// Add a version to every cache key
+String key = "product:" + id + ":v" + productVersion;
+// When product updates, version changes → old key is never hit again
+// Old keys expire via TTL → eventual cleanup
+
+## Strategy 4: DynamoDB Streams → Lambda → Redis invalidation
+// For DynamoDB-backed caches: stream changes → Lambda evicts Redis keys
+// Fully event-driven, no stale data (within stream processing delay)</span></pre>
+
+<div class="refs">
+  <a class="ref" href="https://aws.amazon.com/caching/best-practices/" target="_blank">AWS Caching Best Practices</a>
+  <a class="ref" href="https://redis.io/docs/manual/patterns/" target="_blank">Redis Patterns</a>
+</div>
+</div>
+
+<!-- ======================================================= S14: REDIS DATA STRUCTURES -->
+<div id="s14" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 6 · ElastiCache · Section 14</span>
+  <h1>Redis Data Structures &amp; Use Cases</h1>
+  <p class="subtitle">Redis is much more than a cache. Its native data structures solve common backend problems in a few commands that would otherwise require complex application logic and multiple database queries.</p>
+</div>
+
+<h2>String — The Foundation</h2>
+<pre><span class="cm">// Simple key-value, also used for atomic counters</span>
+redis.<span class="fn">set</span>(<span class="str">"session:abc123"</span>, serialisedSession, <span class="ty">Duration</span>.<span class="fn">ofHours</span>(<span class="num">24</span>));
+redis.<span class="fn">get</span>(<span class="str">"session:abc123"</span>);
+
+<span class="cm">// Atomic increment — race-condition-safe rate limiting</span>
+<span class="kw">long</span> count = redis.<span class="fn">incr</span>(<span class="str">"api-calls:user-123:2024-01-15-14"</span>); <span class="cm">// atomic</span>
+redis.<span class="fn">expire</span>(<span class="str">"api-calls:user-123:2024-01-15-14"</span>, <span class="num">3600</span>);          <span class="cm">// expire after 1h</span>
+<span class="kw">if</span> (count > <span class="num">1000</span>) <span class="kw">throw new</span> <span class="ty">RateLimitException</span>(<span class="str">"API rate limit exceeded"</span>);</pre>
+
+<h2>Hash — Object Storage</h2>
+<pre><span class="cm">// Store user profile as hash — update individual fields without fetching whole object</span>
+redis.<span class="fn">hset</span>(<span class="str">"user:alice"</span>, <span class="str">"name"</span>, <span class="str">"Alice Smith"</span>);
+redis.<span class="fn">hset</span>(<span class="str">"user:alice"</span>, <span class="str">"email"</span>, <span class="str">"alice@example.com"</span>);
+redis.<span class="fn">hset</span>(<span class="str">"user:alice"</span>, <span class="str">"loginCount"</span>, <span class="str">"0"</span>);
+
+<span class="ty">Map</span>&lt;<span class="ty">String</span>,<span class="ty">String</span>&gt; profile = redis.<span class="fn">hgetAll</span>(<span class="str">"user:alice"</span>);      <span class="cm">// get all fields</span>
+<span class="ty">String</span> email = redis.<span class="fn">hget</span>(<span class="str">"user:alice"</span>, <span class="str">"email"</span>);             <span class="cm">// one field</span>
+redis.<span class="fn">hincrBy</span>(<span class="str">"user:alice"</span>, <span class="str">"loginCount"</span>, <span class="num">1</span>);              <span class="cm">// increment one field</span></pre>
+
+<h2>Sorted Set — Leaderboards and Priority Queues</h2>
+<pre><span class="cm">// Game leaderboard: store score alongside player name</span>
+redis.<span class="fn">zadd</span>(<span class="str">"leaderboard:game-123"</span>, <span class="num">9500.0</span>, <span class="str">"alice"</span>);
+redis.<span class="fn">zadd</span>(<span class="str">"leaderboard:game-123"</span>, <span class="num">8200.0</span>, <span class="str">"bob"</span>);
+redis.<span class="fn">zadd</span>(<span class="str">"leaderboard:game-123"</span>, <span class="num">11000.0</span>, <span class="str">"carol"</span>);
+
+<span class="cm">// Get top 10 players (highest scores, descending)</span>
+<span class="ty">Set</span>&lt;<span class="ty">TypedTuple</span>&lt;<span class="ty">String</span>&gt;&gt; top10 = redis.<span class="fn">zrevrangeWithScores</span>(<span class="str">"leaderboard:game-123"</span>, <span class="num">0</span>, <span class="num">9</span>);
+<span class="cm">// Returns: carol (11000), alice (9500), bob (8200)</span>
+
+<span class="cm">// Get Alice's rank (0-indexed, so rank+1 = position)</span>
+<span class="kw">long</span> aliceRank = redis.<span class="fn">zrevrank</span>(<span class="str">"leaderboard:game-123"</span>, <span class="str">"alice"</span>);  <span class="cm">// = 1 (2nd place)</span>
+
+<span class="cm">// Delay queue: schedule tasks for future execution</span>
+<span class="kw">double</span> executeAt = <span class="ty">Instant</span>.<span class="fn">now</span>().<span class="fn">plusSeconds</span>(<span class="num">3600</span>).<span class="fn">toEpochMilli</span>();  <span class="cm">// 1h from now</span>
+redis.<span class="fn">zadd</span>(<span class="str">"scheduled-tasks"</span>, executeAt, taskJson);
+
+<span class="cm">// Worker: poll for tasks due now</span>
+<span class="ty">Set</span>&lt;<span class="ty">String</span>&gt; dueTasks = redis.<span class="fn">zrangeByScore</span>(<span class="str">"scheduled-tasks"</span>,
+    <span class="num">0</span>, <span class="ty">Instant</span>.<span class="fn">now</span>().<span class="fn">toEpochMilli</span>());</pre>
+
+<h2>Pub/Sub — Real-Time Messaging</h2>
+<pre><span class="cm">// Publisher: broadcast events to subscribers</span>
+redis.<span class="fn">publish</span>(<span class="str">"order-events"</span>, <span class="fn">serialise</span>(<span class="kw">new</span> <span class="ty">OrderConfirmedEvent</span>(orderId)));
+
+<span class="cm">// Subscriber: listen for events</span>
+<span class="ty">RedisMessageListenerContainer</span> container = ...;
+container.<span class="fn">addMessageListener</span>((message, pattern) -> {
+    <span class="ty">OrderConfirmedEvent</span> event = <span class="fn">deserialise</span>(message.<span class="fn">getBody</span>());
+    <span class="fn">handleOrderConfirmed</span>(event);
+}, <span class="kw">new</span> <span class="ty">ChannelTopic</span>(<span class="str">"order-events"</span>));
+
+<span class="cm">// Use cases: live dashboards, real-time notifications, chat
+// Limitation: no persistence — messages lost if no subscriber is connected
+// For durable messaging: use SQS or Kinesis instead</span></pre>
+
+<h2>ElastiCache Cluster Mode — Horizontal Scaling</h2>
+<pre><span class="cm"># Redis Cluster Mode: data sharded across multiple shard groups
+# Each shard: 1 primary + up to 5 replicas
+# Up to 500 shards in ElastiCache → massive throughput
+
+# When to use Cluster Mode:
+# - Dataset > single node memory (e.g., 1TB total, 64GB per node → 16 shards)
+# - Write throughput exceeds single node capacity
+# - Need to horizontally scale writes (cluster mode distributes writes)
+
+aws elasticache create-replication-group \
+  --replication-group-id prod-redis-cluster \
+  --cluster-mode enabled \
+  --num-node-groups 3 \              # 3 shards
+  --replicas-per-node-group 2 \      # 2 replicas per shard = 9 nodes total
+  --cache-node-type cache.r6g.xlarge</span></pre>
+
+<div class="refs">
+  <a class="ref" href="https://redis.io/docs/data-types/" target="_blank">Redis Data Types</a>
+  <a class="ref" href="https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/cluster-create-determine-requirements.html" target="_blank">ElastiCache Cluster Sizing</a>
+</div>
+</div>
+
+<!-- ======================================================= S15: DECISION GUIDE -->
+<div id="s15" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 6 · Section 15</span>
+  <h1>Database Selection Guide</h1>
+  <p class="subtitle">Choosing the wrong database is one of the most expensive architectural mistakes. Here's the framework to make the right decision every time.</p>
+</div>
+
+<h2>The Decision Tree</h2>
+<div class="steps">
+  <div class="step"><div class="step-num">1</div><div class="step-content">
+    <div class="step-title">Do you need complex queries (JOINs, aggregations, ad-hoc SQL)?</div>
+    <div class="step-body">Yes → SQL database (RDS or Aurora). No → Consider NoSQL.</div>
+  </div></div>
+  <div class="step"><div class="step-num">2</div><div class="step-content">
+    <div class="step-title">Is your access pattern well-defined and key-based?</div>
+    <div class="step-body">Yes → DynamoDB. Queries like "get user by ID, get user's orders" map perfectly. No defined access patterns → SQL (you can evolve queries freely).</div>
+  </div></div>
+  <div class="step"><div class="step-num">3</div><div class="step-content">
+    <div class="step-title">Do you need millisecond latency AND infinite scale?</div>
+    <div class="step-body">Yes → DynamoDB (guaranteed single-digit ms, horizontal scaling). Can tolerate 10-50ms and moderate scale? → RDS/Aurora is fine and much easier to query.</div>
+  </div></div>
+  <div class="step"><div class="step-num">4</div><div class="step-content">
+    <div class="step-title">For SQL: how large will your dataset grow?</div>
+    <div class="step-body">&lt;1TB, standard OLTP → RDS PostgreSQL/MySQL (simpler, cheaper). &gt;1TB or need &gt;16,000 IOPS or sub-30s failover → Aurora. Multi-region active-passive → Aurora Global Database.</div>
+  </div></div>
+  <div class="step"><div class="step-num">5</div><div class="step-content">
+    <div class="step-title">Is your workload read-heavy with repeated data?</div>
+    <div class="step-body">Yes → Add ElastiCache (Redis) in front of any database. Cache frequently-accessed, rarely-changing data to reduce database load and improve latency.</div>
+  </div></div>
+</div>
+
+<h2>Complete Service Comparison</h2>
+<table>
+  <tr><th>Service</th><th>Type</th><th>Scale</th><th>Use When</th><th>Don't Use When</th></tr>
+  <tr><td><strong>RDS PostgreSQL</strong></td><td>SQL OLTP</td><td>~50TB</td><td>Complex queries, relationships, ACID, standard use case</td><td>Need &gt;50TB or millions of writes/sec</td></tr>
+  <tr><td><strong>RDS MySQL</strong></td><td>SQL OLTP</td><td>~50TB</td><td>Web apps, CMS, standard MySQL workloads</td><td>Need advanced query features (use Postgres)</td></tr>
+  <tr><td><strong>Aurora PostgreSQL</strong></td><td>SQL OLTP</td><td>~128TB</td><td>High-traffic production, fast failover, global DB needed</td><td>Budget is primary concern (20% more expensive)</td></tr>
+  <tr><td><strong>Aurora Serverless v2</strong></td><td>SQL OLTP</td><td>~128TB</td><td>Variable/unpredictable load, dev/test, intermittent apps</td><td>Consistent heavy load (provisioned is cheaper)</td></tr>
+  <tr><td><strong>DynamoDB</strong></td><td>NoSQL</td><td>Unlimited</td><td>Defined access patterns, massive scale, serverless, low latency</td><td>Ad-hoc queries needed, complex relationships</td></tr>
+  <tr><td><strong>ElastiCache Redis</strong></td><td>In-memory</td><td>~100TB cluster</td><td>Caching, sessions, leaderboards, rate limiting, pub/sub</td><td>Primary data store (cache can be evicted)</td></tr>
+  <tr><td><strong>Redshift</strong></td><td>SQL OLAP</td><td>PB scale</td><td>Data warehouse, analytics, BI tools, large aggregations</td><td>OLTP, transactional workloads</td></tr>
+</table>
+
+<h2>The Most Common Production Architecture</h2>
+<div class="scenario">
+  <div class="scenario-label">Typical Production Stack</div>
+  <div class="scenario-title">What most mid-scale AWS applications use</div>
+  <p><strong>Aurora PostgreSQL (Multi-AZ + 1 reader):</strong> Core business data — users, orders, payments, products. Complex queries, transactions, reporting. Aurora's speed and resilience justify the cost.</p>
+  <p style="margin-top:8px"><strong>DynamoDB:</strong> High-throughput, low-latency operations — session storage, user activity feeds, real-time inventory counts, event sourcing. Any operation that needs guaranteed &lt;5ms at any scale.</p>
+  <p style="margin-top:8px"><strong>ElastiCache Redis (1 primary + 1 replica):</strong> Cache frequently-read Aurora data (products, user profiles), store session tokens, rate limiting counters, pub/sub for real-time features.</p>
+  <p style="margin-top:8px"><strong>S3:</strong> Binary data — photos, documents, videos. Reference from Aurora/DynamoDB, store actual files in S3.</p>
+</div>
+
+<div class="refs">
+  <a class="ref" href="https://aws.amazon.com/products/databases/" target="_blank">AWS Database Services</a>
+  <a class="ref" href="https://docs.aws.amazon.com/decision-guides/latest/databases-on-aws-how-to-choose/databases-on-aws-how-to-choose.html" target="_blank">AWS: How to Choose a Database</a>
+</div>
+</div>
+
+<!-- ======================================================= S16: INTERVIEW -->
+<div id="s16" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 6 · Interview Q&amp;A</span>
+  <h1>Interview Questions — Databases</h1>
+  <p class="subtitle">20 questions from beginner to architect. Databases are the most asked-about topic in system design interviews. Click to reveal answers.</p>
+</div>
+
+<h2 style="color:var(--green-light)">Beginner</h2>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">What does RDS actually manage for you? Why not just run MySQL on EC2? <span class="qa-arrow">▼</span></div><div class="qa-a">RDS manages: OS installation, database engine installation and patching, automated backups with point-in-time recovery, multi-AZ replication and automatic failover, read replica creation and management, storage auto-scaling, CloudWatch monitoring integration, SSL certificate management, and minor version updates. Running MySQL on EC2: you do all of this yourself. The engineering time to implement and maintain production-grade automated failover, backup/restore testing, and patch management is enormous. RDS trades some configuration flexibility for freedom from undifferentiated operational work. Most teams can't build better automated failover than AWS's 20+ years of distributed systems engineering.</div></div>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">What is the difference between RDS Multi-AZ and Read Replicas? <span class="qa-arrow">▼</span></div><div class="qa-a"><strong>Multi-AZ:</strong> For high availability. Synchronous standby replica in a different AZ. On primary failure, RDS automatically flips the DNS endpoint to the standby in 20-60 seconds. Zero data loss. The standby is PASSIVE — you cannot read from it. Your application uses one endpoint and failover is transparent. Cost: 2x instance price. <strong>Read Replicas:</strong> For read scaling. Asynchronous copies of the primary. You can send read queries to them (your application must explicitly route to their endpoint). There will be small replication lag (usually milliseconds). Can be in different regions. Multiple replicas possible (up to 5 for MySQL, 15 for Aurora). They do NOT automatically take over if the primary fails — you must manually promote a replica. <strong>Use together:</strong> Multi-AZ primary for HA + read replicas for offloading reports and read-heavy features.</div></div>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">What is the difference between SQL and NoSQL? When would you choose each? <span class="qa-arrow">▼</span></div><div class="qa-a"><strong>SQL (Relational):</strong> Structured tables with enforced schema. Relationships via foreign keys. Powerful SQL for any query pattern — joins, aggregations, subqueries. ACID transactions across multiple tables. Best for: complex queries you can't fully define upfront, data with complex relationships, financial/transactional data requiring strict consistency.<br><br><strong>NoSQL (DynamoDB):</strong> Flexible schema per item. Access via primary key (partition key + sort key). No joins — denormalise. Horizontal auto-scaling. Guaranteed single-digit millisecond latency. Best for: defined, key-based access patterns, massive scale (millions of requests/second), uniform low latency, serverless architectures.<br><br>Choose SQL when you need to ask flexible questions of your data and relationships matter. Choose NoSQL when you know your access patterns upfront and need infinite scale or guaranteed millisecond latency.</div></div>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">What is a cache and why would you put it in front of a database? <span class="qa-arrow">▼</span></div><div class="qa-a">A cache is an in-memory store that holds the results of expensive operations so subsequent identical requests return instantly without re-running the operation. You add a cache (Redis via ElastiCache) in front of a database because: (1) In-memory reads are 100-1000x faster than database queries — microseconds vs milliseconds. (2) Repeated queries (same product viewed by 10,000 users) only hit the database once; subsequent requests get cached results. (3) Reduces database connection and query load — a cache-heavy architecture might reduce DB queries by 80%+, allowing a smaller/cheaper database to handle the same traffic. Trade-off: you introduce a new layer of complexity, must handle cache invalidation, and cache misses still hit the database.</div></div>
+
+<h2 style="color:var(--yellow-light)">Intermediate</h2>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">Why is Aurora faster than standard RDS MySQL/PostgreSQL? <span class="qa-arrow">▼</span></div><div class="qa-a">Aurora's speed comes from its custom distributed storage engine. Standard MySQL/PostgreSQL write data twice — a redo log AND the full page (double-write buffer for MySQL). Aurora's database engine only writes redo log entries to the distributed storage layer — the storage nodes apply those log entries to materialise the data pages themselves. This "log is the database" approach dramatically reduces write amplification: Aurora writes ~7x less data to the storage layer per transaction. Additionally, Aurora's reader instances share the same storage as the writer — they don't receive replicated data over the network, they read directly from the shared storage tier. This is why Aurora read replicas have near-zero lag and failover is extremely fast (no need to catch up on replication backlog). Result: Aurora MySQL is ~5x faster than RDS MySQL, Aurora PostgreSQL is ~3x faster than RDS PostgreSQL on IOPS-intensive workloads.</div></div>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">Explain DynamoDB partition key, sort key, and GSI. When would you add a GSI? <span class="qa-arrow">▼</span></div><div class="qa-a"><strong>Partition key (PK):</strong> Hashed to determine which partition holds an item. Items with the same PK are stored together. To retrieve items efficiently, you must know the PK. <strong>Sort key (SK):</strong> Optional. Orders items within a partition. Enables range queries, begins_with queries, and sorting. Composite key (PK+SK) lets you store multiple related items together (e.g., PK=userId, SK=ORDER#timestamp → all of a user's orders). <strong>GSI:</strong> An additional index with its own PK and SK, automatically maintained by DynamoDB. Add a GSI when you have a query pattern that doesn't include your table's partition key. Example: your table has PK=orderId (for order lookups), but you need to query by status='PENDING' for warehouse dashboard. Create a GSI with PK=status, SK=createdAt. Now you can query all pending orders efficiently without a full table scan. GSIs cost extra (storage + write capacity consumed for index maintenance) but are often essential for NoSQL flexibility.</div></div>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">What is RDS Proxy and when do you need it? <span class="qa-arrow">▼</span></div><div class="qa-a">RDS Proxy is a managed database connection pooler between your application and RDS. It multiplexes thousands of application connections into a much smaller pool of actual database connections. You need it when: (1) Lambda functions connect to RDS — Lambda can create hundreds of concurrent executions each wanting their own DB connection. A db.r6g.large PostgreSQL allows ~87 connections. 500 concurrent Lambdas = 500 connections = crash. RDS Proxy handles 60,000 application connections and keeps only ~50-100 actual DB connections. (2) Many microservices — 10 services × 10 instances × 5 connections = 500 connections from the application side. (3) Faster failover — RDS Proxy holds connections during Multi-AZ failover, reducing failover time from 60+ seconds to 28 seconds as the proxy reconnects transparently. Additional benefit: supports IAM authentication for RDS, meaning your application never handles database passwords.</div></div>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">What are DynamoDB Streams and what can you build with them? <span class="qa-arrow">▼</span></div><div class="qa-a">DynamoDB Streams is a change log for a DynamoDB table — a time-ordered sequence of every item-level modification (insert, update, delete). Records are retained for 24 hours. A Lambda function polls the stream (Event Source Mapping) and processes changes in batches. You can build: (1) Real-time notifications — order status changes to SHIPPED → Lambda → SNS push notification. (2) Search index sync — new/updated product in DynamoDB → Lambda → OpenSearch for full-text search, without polluting DynamoDB with expensive Scans. (3) Audit log — any change to sensitive data → Lambda → append to immutable audit log in S3. (4) Aggregations — order placed → Lambda updates daily revenue counter in a separate DynamoDB summary table. (5) Cross-service events — user registered → Lambda → sends welcome email, creates default preferences, triggers ML personalization. DynamoDB Global Tables uses Streams internally for cross-region replication.</div></div>
+
+<h2 style="color:var(--orange-light)">Advanced</h2>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">How do you design DynamoDB for a social media application where you need: user profile, user's posts, all posts in chronological order, and posts by hashtag? <span class="qa-arrow">▼</span></div><div class="qa-a">Design access patterns first. Using single-table design: <strong>User profile:</strong> PK=USER#userId, SK=PROFILE. <strong>User's posts (newest first):</strong> PK=USER#userId, SK=POST#reversedTimestamp (use MAX_LONG - timestamp for newest-first sort). <strong>Timeline:</strong> Global feed needs a GSI or separate table. Add GSI: PK=entityType (value: "POST"), SK=createdAt. Query GSI for all posts, sorted by time. <strong>Posts by hashtag:</strong> For each hashtag in a post, write an item: PK=HASHTAG#tag, SK=POST#createdAt, with post details denormalised. Querying hashtag #aws → Query PK=HASHTAG#aws, sorted by SK descending = all posts with that hashtag. Key decisions: (1) Denormalise aggressively — duplicate data so each query can be answered independently. (2) Use begins_with("POST#") to distinguish post items from profile items in user partition. (3) GSI for chronological feed (entityType as PK would cause hot partition — consider sharding: entityType = "POST#0" to "POST#9" and fan-out the query).</div></div>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">Explain the cache stampede problem and how you'd prevent it in production. <span class="qa-arrow">▼</span></div><div class="qa-a">Cache stampede (dog-pile): when a popular cached item expires and many concurrent requests all simultaneously miss the cache, all flooding the database. Example: product page cached for 1 hour, 10,000 concurrent users. At expiry time, all 10,000 requests miss simultaneously → 10,000 identical database queries → database overwhelmed → response time spikes → timeout cascade. Solutions: (1) <strong>Mutex/Single-flight pattern:</strong> First miss acquires a distributed lock (Redis SETNX), fetches from DB, populates cache. Other misses wait for the lock, re-check cache, find it populated. Only one DB query per key. (2) <strong>Probabilistic early expiration:</strong> When checking cache, occasionally "expire" items early based on how close to expiry and how long the DB fetch takes. Refresh the item before the deadline. (3) <strong>Background refresh:</strong> Cache items never expire; a background job proactively refreshes them before expiry. (4) <strong>TTL jitter:</strong> Add ±10% randomisation to TTL so items don't all expire simultaneously. (5) <strong>Stale-while-revalidate:</strong> Return stale cached data immediately while triggering an async background refresh. User gets fast response, cache updates in the background.</div></div>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">Design the database layer for an e-commerce order management system handling 100,000 orders/day with requirements: strong consistency for payments, fast order lookup by order ID and by user, weekly analytics, 7-year compliance retention. <span class="qa-arrow">▼</span></div><div class="qa-a">Multi-database architecture: <strong>Aurora PostgreSQL (Multi-AZ + 1 reader):</strong> Core order and payment data. Strong ACID transactions for payment processing — debit customer, create order, update inventory atomically. Multi-AZ for HA (payments can never be down). Read replica for reporting queries without affecting transactional performance. Schema: orders, order_items, payments, customers tables with proper foreign keys. RDS Proxy for connection pooling. <strong>DynamoDB:</strong> Order status lookups (customer-facing). PK=orderId for instant O(1) lookup. GSI on userId+createdAt for "my orders" page. Copy order status here from Aurora via DynamoDB Streams→Lambda sync. DynamoDB serves the 100K daily reads from customers checking status at millisecond latency without hitting Aurora. <strong>ElastiCache Redis:</strong> Cache frequently-viewed active orders, product catalogue, user profile. 1-hour TTL for product data, 5-minute TTL for order status. <strong>Analytics:</strong> Daily job exports Aurora data to S3 (Parquet format). Athena or Redshift for weekly analytics queries — never run analytics on Aurora directly. <strong>7-year retention:</strong> Lifecycle policy moves exported data: S3 Standard (1yr) → Standard-IA (3yr) → Glacier (7yr). Cost: pennies per GB per year for archival.</div></div>
+
+</div>
+</main>
+</div>
+
+<script>
+function show(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.currentTarget.classList.add('active');
+  window.scrollTo(0, 0);
+}
+function toggleQA(el) {
+  const ans = el.nextElementSibling;
+  const arrow = el.querySelector('.qa-arrow');
+  ans.classList.toggle('open');
+  arrow.classList.toggle('open');
+}
+</script>
+</body>
+</html>

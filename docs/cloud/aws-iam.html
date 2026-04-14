@@ -1,0 +1,1811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>AWS Module 2 — IAM Deep Dive</title>
+<style>
+:root{--bg:#0c1117;--bg2:#131a24;--bg3:#1a2332;--bg4:#1f2b3d;--border:#243048;--border2:#2e3d55;--text:#e2e8f0;--text2:#94a3b8;--text3:#5a6a82;--orange:#f97316;--orange-bg:#2a1500;--orange-light:#fdba74;--blue:#3b82f6;--blue-bg:#0f2340;--blue-light:#93c5fd;--green:#22c55e;--green-bg:#0a2414;--green-light:#86efac;--red:#ef4444;--red-bg:#2a0a0a;--red-light:#fca5a5;--yellow:#f59e0b;--yellow-bg:#2a1800;--yellow-light:#fcd34d;--purple:#a855f7;--purple-bg:#1e0a35;--purple-light:#d8b4fe;--teal:#14b8a6;--teal-bg:#021e1c;--teal-light:#5eead4;--aws:#ff9900;--aws-bg:#1a0f00;--radius:8px;--radius-lg:12px;--mono:'Fira Code','Cascadia Code','Consolas',monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;line-height:1.7}
+.layout{display:flex;min-height:100vh}
+.sidebar{width:250px;min-width:250px;background:var(--bg2);border-right:1px solid var(--border);position:sticky;top:0;height:100vh;overflow-y:auto}
+.sidebar-header{padding:16px 20px;border-bottom:1px solid var(--border)}
+.sidebar-mod{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--aws);margin-bottom:3px}
+.sidebar-title{font-size:14px;font-weight:700;color:var(--text)}
+.sidebar-sub{font-size:11px;color:var(--text3);margin-top:2px}
+.nav-item{display:flex;align-items:center;gap:8px;padding:8px 20px;cursor:pointer;font-size:12.5px;color:var(--text2);transition:all .15s;border-left:3px solid transparent}
+.nav-item:hover{background:var(--bg3);color:var(--text)}
+.nav-item.active{background:var(--bg3);color:var(--orange-light);border-left-color:var(--aws)}
+.nav-dot{width:5px;height:5px;border-radius:50%;background:var(--border2);flex-shrink:0}
+.nav-item.active .nav-dot{background:var(--aws)}
+.nav-badge{font-size:9.5px;padding:1px 6px;border-radius:10px;background:var(--bg4);color:var(--text3);margin-left:auto}
+.nav-item.active .nav-badge{background:var(--aws-bg);color:var(--orange-light)}
+.nav-group-label{font-size:9.5px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.9px;padding:12px 20px 4px}
+.main{flex:1;padding:44px 52px;max-width:940px;overflow-x:hidden}
+.section{display:none}.section.active{display:block}
+h1{font-size:27px;font-weight:700;margin-bottom:8px;line-height:1.25}
+h2{font-size:19px;font-weight:600;margin:36px 0 14px;color:var(--text)}
+h3{font-size:15px;font-weight:600;margin:22px 0 10px;color:var(--text)}
+h4{font-size:13px;font-weight:600;margin:16px 0 6px;color:var(--text2)}
+p{color:var(--text2);margin-bottom:12px;line-height:1.78}
+strong{color:var(--text);font-weight:600}
+a{color:var(--blue-light);text-decoration:none}
+.subtitle{color:var(--text3);font-size:14px;margin-bottom:26px;line-height:1.65}
+pre{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px;font-family:var(--mono);font-size:12.5px;line-height:1.72;overflow-x:auto;margin:14px 0}
+code{font-family:var(--mono);font-size:12px;background:var(--bg3);padding:2px 6px;border-radius:4px;color:var(--teal-light)}
+.cm{color:var(--text3)}.kw{color:var(--purple-light)}.str{color:var(--green-light)}.ty{color:var(--blue-light)}.ak{color:var(--orange-light)}.num{color:var(--yellow-light)}.fn{color:var(--teal-light)}.jk{color:var(--orange-light)}.jv{color:var(--green-light)}.jb{color:var(--purple-light)}.allow{color:#86efac}.deny{color:#fca5a5}
+.card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px;margin-bottom:14px}
+.card-title{font-size:13.5px;font-weight:600;margin-bottom:8px}
+.card-body{font-size:13px;color:var(--text2);line-height:1.75}
+.alert{border-radius:var(--radius);padding:13px 16px;margin:16px 0;font-size:13px;border-left:3px solid;line-height:1.7}
+.a-orange{background:var(--orange-bg);border-color:var(--orange);color:var(--orange-light)}
+.a-blue{background:var(--blue-bg);border-color:var(--blue);color:var(--blue-light)}
+.a-green{background:var(--green-bg);border-color:var(--green);color:var(--green-light)}
+.a-red{background:var(--red-bg);border-color:var(--red);color:var(--red-light)}
+.a-yellow{background:var(--yellow-bg);border-color:var(--yellow);color:var(--yellow-light)}
+.a-purple{background:var(--purple-bg);border-color:var(--purple);color:var(--purple-light)}
+.alert strong{color:inherit}
+.refs{margin:12px 0 16px;display:flex;flex-wrap:wrap;gap:6px}
+.ref{display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:3px 10px;border-radius:10px;background:var(--bg4);color:var(--text3);border:1px solid var(--border);text-decoration:none;transition:all .15s}
+.ref:hover{background:var(--bg3);color:var(--text2)}
+table{width:100%;border-collapse:collapse;margin:14px 0;font-size:13px}
+th{background:var(--bg3);color:var(--text);font-weight:600;padding:10px 14px;text-align:left;border-bottom:1px solid var(--border2)}
+td{padding:9px 14px;border-bottom:1px solid var(--border);color:var(--text2);vertical-align:top}
+tr:hover td{background:var(--bg3)}
+.qa{border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:10px;overflow:hidden}
+.qa-q{padding:13px 18px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;background:var(--bg3);font-size:13px;font-weight:500;transition:background .15s;user-select:none;gap:12px}
+.qa-q:hover{background:var(--bg4)}
+.qa-a{display:none;padding:16px 18px;font-size:13px;color:var(--text2);line-height:1.8;background:var(--bg2);border-top:1px solid var(--border)}
+.qa-a.open{display:block}.qa-arrow{transition:transform .2s;color:var(--text3);font-size:11px;flex-shrink:0}.qa-arrow.open{transform:rotate(180deg)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin:14px 0}
+.pros-cons{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0}
+.pros{background:#061a0d;border:1px solid #14532d;border-radius:var(--radius-lg);padding:16px}
+.cons{background:#1a0606;border:1px solid #5a1a1a;border-radius:var(--radius-lg);padding:16px}
+.pros-title{color:var(--green);font-weight:600;font-size:13px;margin-bottom:10px}
+.cons-title{color:var(--red);font-weight:600;font-size:13px;margin-bottom:10px}
+.pros ul,.cons ul{padding-left:16px}.pros li,.cons li{font-size:12.5px;color:var(--text2);margin-bottom:5px;line-height:1.6}
+.badge{display:inline-flex;align-items:center;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;margin:2px}
+.badge-orange{background:var(--aws-bg);color:var(--orange-light)}.badge-blue{background:var(--blue-bg);color:var(--blue-light)}.badge-green{background:var(--green-bg);color:var(--green-light)}.badge-red{background:var(--red-bg);color:var(--red-light)}.badge-yellow{background:var(--yellow-bg);color:var(--yellow-light)}.badge-purple{background:var(--purple-bg);color:var(--purple-light)}.badge-teal{background:var(--teal-bg);color:var(--teal-light)}
+.section-header{padding-bottom:18px;border-bottom:1px solid var(--border);margin-bottom:26px}
+.mod-badge{font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;display:inline-block;margin-bottom:10px;background:var(--aws-bg);color:var(--aws)}
+.steps{counter-reset:step}
+.step{display:flex;gap:14px;margin-bottom:16px}
+.step-num{counter-increment:step;width:26px;height:26px;min-width:26px;background:var(--aws-bg);color:var(--aws);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;margin-top:2px;border:1px solid var(--orange)}
+.step-content{flex:1}.step-title{font-weight:600;font-size:13px;margin-bottom:3px}.step-body{font-size:13px;color:var(--text2);line-height:1.65}
+.scenario{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:18px 20px;margin:16px 0}
+.scenario-label{font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;color:var(--aws);margin-bottom:6px}
+.scenario-title{font-size:14px;font-weight:600;margin-bottom:10px}
+.flow{display:flex;align-items:center;flex-wrap:wrap;gap:4px;margin:14px 0;padding:14px 16px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg)}
+.fbox{background:var(--bg4);border:1px solid var(--border2);border-radius:var(--radius);padding:8px 14px;font-size:12px;font-weight:600;white-space:nowrap}
+.fbox-green{background:#061a0d;border-color:#14532d;color:var(--green-light)}
+.fbox-blue{background:var(--blue-bg);border-color:var(--blue);color:var(--blue-light)}
+.fbox-red{background:var(--red-bg);border-color:var(--red);color:var(--red-light)}
+.fbox-orange{background:var(--aws-bg);border-color:var(--orange);color:var(--orange-light)}
+.fbox-purple{background:var(--purple-bg);border-color:var(--purple);color:var(--purple-light)}
+.farr{padding:0 6px;color:var(--aws);font-size:18px;font-weight:700;line-height:1}
+.compare-row{display:flex;gap:0;margin:14px 0;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+.cmp-a{flex:1;background:var(--red-bg);padding:16px;border-right:1px solid var(--border)}
+.cmp-b{flex:1;background:var(--green-bg);padding:16px}
+.cmp-label{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px}
+.cmp-a .cmp-label{color:var(--red)}.cmp-b .cmp-label{color:var(--green)}
+.policy-json{background:#080e18;border:1px solid #1a3050;border-radius:var(--radius-lg);padding:18px 20px;margin:14px 0;font-family:var(--mono);font-size:12.5px;line-height:1.85;overflow-x:auto}
+.eval-step{border-left:3px solid var(--border2);padding:12px 16px;margin-bottom:8px;border-radius:0 var(--radius) var(--radius) 0;background:var(--bg3)}
+.eval-allow{border-left-color:var(--green);background:#061a0d}
+.eval-deny{border-left-color:var(--red);background:var(--red-bg)}
+.eval-check{border-left-color:var(--blue);background:var(--blue-bg)}
+.eval-title{font-weight:600;font-size:13px;margin-bottom:4px}
+.eval-body{font-size:12.5px;color:var(--text2);line-height:1.6}
+.arch-diagram{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;margin:14px 0}
+.arch-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text3);margin-bottom:14px}
+.arch-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.arch-box{background:var(--bg4);border:1px solid var(--border2);border-radius:var(--radius);padding:8px 14px;font-size:12px;font-weight:600;text-align:center;min-width:100px}
+.arch-arrow{color:var(--aws);font-size:16px;font-weight:700;padding:0 4px}
+.arch-note{font-size:11px;color:var(--text3);font-style:italic;padding:3px 10px;background:var(--bg);border-radius:10px}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-mod">Module 2</div>
+    <div class="sidebar-title">IAM — Deep Dive</div>
+    <div class="sidebar-sub">Identity &amp; Access Management</div>
+  </div>
+  <div class="nav-group-label">Sections</div>
+  <div class="nav-item active" onclick="show('s1')"><span class="nav-dot"></span>1. The Problem Without IAM</div>
+  <div class="nav-item" onclick="show('s2')"><span class="nav-dot"></span>2. Users, Groups, Roles</div>
+  <div class="nav-item" onclick="show('s3')"><span class="nav-dot"></span>3. Policies — Complete Anatomy</div>
+  <div class="nav-item" onclick="show('s4')"><span class="nav-dot"></span>4. How IAM Evaluates Requests</div>
+  <div class="nav-item" onclick="show('s5')"><span class="nav-dot"></span>5. STS &amp; AssumeRole <span class="nav-badge">Deep</span></div>
+  <div class="nav-item" onclick="show('s6')"><span class="nav-dot"></span>6. Service Roles &amp; Profiles <span class="nav-badge">Key</span></div>
+  <div class="nav-item" onclick="show('s7')"><span class="nav-dot"></span>7. Cross-Account Access</div>
+  <div class="nav-item" onclick="show('s8')"><span class="nav-dot"></span>8. SigV4 — IAM in REST</div>
+  <div class="nav-item" onclick="show('s9')"><span class="nav-dot"></span>9. Org, SCPs &amp; Boundaries</div>
+  <div class="nav-item" onclick="show('s10')"><span class="nav-dot"></span>10. Real-World Patterns</div>
+  <div class="nav-item" onclick="show('s11')"><span class="nav-dot"></span>Interview Q&amp;A <span class="nav-badge">18 Qs</span></div>
+</aside>
+
+<main class="main">
+
+<!-- ============================= S1: THE PROBLEM WITHOUT IAM ============================= -->
+<div id="s1" class="section active">
+<div class="section-header">
+  <span class="mod-badge">Module 2 · Section 1</span>
+  <h1>The Problem Without IAM</h1>
+  <p class="subtitle">Before understanding what IAM is, understand why it must exist. Every AWS API call needs an answer to two questions: <em>Who are you?</em> and <em>Are you allowed to do this?</em></p>
+</div>
+
+<h2>Imagine AWS Without IAM</h2>
+<p>Your company has a single AWS account. Everyone shares the same root credentials — the email and password used to create the account. Every developer, every server, every script uses the same master key. Now think about what this means in practice:</p>
+
+<div class="grid3">
+  <div class="card" style="border-color:#5a1a1a">
+    <div class="card-title" style="color:var(--red-light)">No isolation</div>
+    <div class="card-body">A junior developer's script has the same power as the CTO. There's no way to say "Alice can only read from S3" or "Bob can only deploy Lambda functions." Everyone can do everything — including delete your production database.</div>
+  </div>
+  <div class="card" style="border-color:#5a1a1a">
+    <div class="card-title" style="color:var(--red-light)">No audit trail</div>
+    <div class="card-body">When something gets deleted or changed, you can't trace it to a person. Everyone logged in the same way. AWS logs show "root user did X" — but which person was using root? You'll never know.</div>
+  </div>
+  <div class="card" style="border-color:#5a1a1a">
+    <div class="card-title" style="color:var(--red-light)">Services can't authenticate</div>
+    <div class="card-body">Your EC2 server needs to read from S3. Without IAM, it would need a hardcoded username and password somewhere in the code or filesystem — a credential that, if leaked, gives an attacker full account access.</div>
+  </div>
+</div>
+
+<h2>The Two Questions IAM Answers</h2>
+<p>Every single AWS API call — whether from the console, CLI, SDK, or a service calling another service — goes through IAM, which must answer:</p>
+
+<div class="grid2">
+  <div class="card" style="border-color:#1a3050">
+    <div class="card-title" style="color:var(--blue-light)">Authentication — "Who are you?"</div>
+    <div class="card-body">
+      Prove your identity. AWS uses Signature Version 4 (SigV4) — you sign the request with your secret key, AWS verifies the signature. No password ever travels the wire.<br><br>
+      <strong>Result:</strong> AWS knows you are a specific IAM entity (user, role, service). This is stamped on the request as an <strong>ARN</strong> (Amazon Resource Name).
+    </div>
+  </div>
+  <div class="card" style="border-color:#14532d">
+    <div class="card-title" style="color:var(--green-light)">Authorisation — "Are you allowed?"</div>
+    <div class="card-body">
+      Even if you're authenticated, you might not be permitted. IAM evaluates all policies attached to your identity and the target resource to determine: <strong>Allow</strong> or <strong>Deny</strong>.<br><br>
+      <strong>Result:</strong> Request proceeds (200 OK) or is rejected (403 AccessDenied).
+    </div>
+  </div>
+</div>
+
+<h2>A Real Call — What Happens at Every Step</h2>
+<p>Let's trace a developer running <code>aws s3 ls s3://my-company-bucket</code> from their laptop. Here's exactly what happens:</p>
+
+<div class="steps">
+  <div class="step"><div class="step-num">1</div><div class="step-content">
+    <div class="step-title">CLI reads credentials</div>
+    <div class="step-body">CLI checks <code>~/.aws/credentials</code>. Finds <code>AWS_ACCESS_KEY_ID=AKIA...</code> and <code>AWS_SECRET_ACCESS_KEY=...</code> for the "default" profile. These were created when Alice's IAM user was created.</div>
+  </div></div>
+  <div class="step"><div class="step-num">2</div><div class="step-content">
+    <div class="step-title">CLI builds and signs an HTTP request</div>
+    <div class="step-body">Builds: <code>GET https://s3.amazonaws.com/my-company-bucket?list-type=2</code>. Signs it using SigV4 with Alice's secret key. The signature proves the request came from Alice without sending her password.</div>
+  </div></div>
+  <div class="step"><div class="step-num">3</div><div class="step-content">
+    <div class="step-title">AWS receives the request</div>
+    <div class="step-body">S3 receives the HTTPS request. Extracts the <code>Authorization</code> header which contains Alice's Access Key ID (<code>AKIA...</code>). Passes to IAM for authentication.</div>
+  </div></div>
+  <div class="step"><div class="step-num">4</div><div class="step-content">
+    <div class="step-title">IAM authenticates</div>
+    <div class="step-body">IAM looks up <code>AKIA...</code> in its database → finds it belongs to IAM user <code>arn:aws:iam::123456789012:user/alice</code>. Retrieves Alice's secret key, recomputes the expected signature. If signatures match → authenticated. If not → 401 Invalid credentials.</div>
+  </div></div>
+  <div class="step"><div class="step-num">5</div><div class="step-content">
+    <div class="step-title">IAM authorises</div>
+    <div class="step-body">IAM now asks: is <code>arn:aws:iam::123456789012:user/alice</code> allowed to perform <code>s3:ListBucket</code> on <code>arn:aws:s3:::my-company-bucket</code>? It checks Alice's identity policies, the bucket policy, SCPs. If allowed → request proceeds. If not → 403 AccessDenied.</div>
+  </div></div>
+  <div class="step"><div class="step-num">6</div><div class="step-content">
+    <div class="step-title">S3 executes and responds</div>
+    <div class="step-body">S3 lists the bucket contents and returns them to Alice's CLI. The CLI prints the file list. Total time: typically 50–200ms.</div>
+  </div></div>
+</div>
+
+<div class="alert a-orange">
+  <strong>Key insight:</strong> IAM is not a separate call your app makes. It's an automatic part of <em>every</em> AWS API call, invisibly. When your Java application calls <code>s3.listBuckets()</code>, the SDK does steps 1–3 behind the scenes, and AWS does steps 3–6 before returning the response. You never see it — until it fails with a 403.
+</div>
+
+<h2>ARN — Amazon Resource Name</h2>
+<p>Every entity in AWS — users, roles, buckets, instances, functions — has a globally unique identifier called an ARN. IAM uses ARNs everywhere: in policies to specify principals and resources, in trust relationships, in audit logs. You must be able to read these fluently.</p>
+
+<pre><span class="cm"># ARN format: arn:{partition}:{service}:{region}:{account-id}:{resource}</span>
+
+arn:aws:iam::123456789012:user/alice                         <span class="cm"># IAM User</span>
+arn:aws:iam::123456789012:role/MyLambdaRole                  <span class="cm"># IAM Role</span>
+arn:aws:iam::123456789012:group/Developers                   <span class="cm"># IAM Group</span>
+arn:aws:s3:::my-company-bucket                               <span class="cm"># S3 bucket (no region/account — global)</span>
+arn:aws:s3:::my-company-bucket/*                             <span class="cm"># All objects in a bucket</span>
+arn:aws:ec2:us-east-1:123456789012:instance/i-0abc123def456789 <span class="cm"># EC2 instance</span>
+arn:aws:lambda:us-east-1:123456789012:function:my-function    <span class="cm"># Lambda function</span>
+arn:aws:dynamodb:us-east-1:123456789012:table/Users           <span class="cm"># DynamoDB table</span>
+arn:aws:rds:us-east-1:123456789012:db:my-postgres-db          <span class="cm"># RDS instance</span>
+
+<span class="cm"># Wildcard — matches ALL resources of a type</span>
+arn:aws:s3:::*                    <span class="cm"># every bucket</span>
+arn:aws:ec2:us-east-1:*:instance/* <span class="cm"># every EC2 instance in any account in us-east-1</span>
+*                                 <span class="cm"># literally everything — almost never use this</span></pre>
+
+<div class="refs">
+  <span style="font-size:11px;color:var(--text3);margin-right:4px">📖 References:</span>
+  <a class="ref" href="https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction.html" target="_blank">AWS IAM Introduction</a>
+  <a class="ref" href="https://docs.aws.amazon.com/general/latest/gr/aws-arns-and-namespaces.html" target="_blank">ARN Format Reference</a>
+  <a class="ref" href="https://aws.amazon.com/iam/faqs/" target="_blank">IAM FAQ</a>
+</div>
+</div>
+
+<!-- ============================= S2: USERS, GROUPS, ROLES ============================= -->
+<div id="s2" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 2 · Section 2</span>
+  <h1>Users, Groups &amp; Roles</h1>
+  <p class="subtitle">The three types of IAM identity — who they are, when to use each, and the critical difference between users (for humans) and roles (for everything else).</p>
+</div>
+
+<h2>IAM Users — Permanent Identity for Humans</h2>
+<p>An IAM User is a permanent identity representing a specific person or application. It has long-term credentials: an access key pair (for programmatic access) and optionally a username/password (for console access).</p>
+
+<div class="scenario">
+  <div class="scenario-label">Real-World Example</div>
+  <div class="scenario-title">Developer Team Setup</div>
+  <p>Your company has 5 developers. You create an IAM user for each: alice, bob, carol, dave, eve. Each gets their own access key pair. When Alice leaves the company, you disable <em>her</em> user — Bob and Carol are unaffected. CloudTrail logs show exactly which user did what action.</p>
+</div>
+
+<pre><span class="cm"># Create an IAM user and give them console + programmatic access</span>
+aws iam create-user --user-name alice
+
+<span class="cm"># Create access keys (for programmatic/CLI access)</span>
+aws iam create-access-key --user-name alice
+<span class="cm"># Returns: AccessKeyId + SecretAccessKey — give these to Alice securely
+# She puts them in ~/.aws/credentials
+# SecretAccessKey is shown ONCE — if lost, must create new key pair</span>
+
+<span class="cm"># Create console login profile (password for AWS console)</span>
+aws iam create-login-profile \
+  --user-name alice \
+  --password "Temp@Password123!" \
+  --password-reset-required  <span class="cm"># forces Alice to change password on first login</span>
+
+<span class="cm"># Enable MFA for Alice (required for any production user)</span>
+aws iam enable-mfa-device \
+  --user-name alice \
+  --serial-number arn:aws:iam::123456789012:mfa/alice \
+  --authentication-code-1 123456 \
+  --authentication-code-2 789012</pre>
+
+<div class="alert a-red">
+  <strong>Never use IAM users for services or applications.</strong> If you hardcode an IAM user's access key in your EC2 instance, Lambda, or ECS container — that key gets leaked when someone reads your code, checks your logs, or gains access to the filesystem. Use IAM Roles instead. Roles provide temporary credentials that rotate automatically.
+</div>
+
+<h2>IAM Groups — Manage Permissions at Scale</h2>
+<p>An IAM Group is simply a collection of IAM users. You attach policies to the group — all members inherit those permissions. This is how you manage permissions for teams without touching individual user policies.</p>
+
+<div class="scenario">
+  <div class="scenario-label">Real-World Example</div>
+  <div class="scenario-title">Team-Based Permissions</div>
+  <p>You have three groups: <strong>Developers</strong> (read/write S3, deploy Lambda, view CloudWatch), <strong>DataAnalysts</strong> (read-only Athena, S3, Redshift), <strong>DevOps</strong> (full EC2, RDS, VPC access). When a developer is promoted to DevOps, you just move them from the Developers group to the DevOps group — their permissions update instantly.</p>
+</div>
+
+<pre><span class="cm"># Create groups and attach policies</span>
+aws iam create-group --group-name Developers
+
+aws iam attach-group-policy \
+  --group-name Developers \
+  --policy-arn arn:aws:iam::aws:policy/AmazonS3FullAccess       <span class="cm"># AWS managed policy</span>
+
+aws iam attach-group-policy \
+  --group-name Developers \
+  --policy-arn arn:aws:iam::aws:policy/AWSLambda_FullAccess
+
+<span class="cm"># Add Alice to the Developers group</span>
+aws iam add-user-to-group --group-name Developers --user-name alice
+
+<span class="cm"># Alice now inherits Developers group permissions
+# Promote Alice to DevOps:</span>
+aws iam remove-user-from-group --group-name Developers --user-name alice
+aws iam add-user-to-group --group-name DevOps --user-name alice
+<span class="cm"># Done. No policy changes needed on Alice's user directly.</span></pre>
+
+<div class="alert a-blue">
+  <strong>Groups cannot contain other groups.</strong> IAM Groups are flat — no nesting. A user can belong to multiple groups (up to 10). The user's effective permissions are the union of all group policies plus any policies directly attached to the user.
+</div>
+
+<h2>IAM Roles — The Most Important Concept</h2>
+<p>An IAM Role is an identity that <strong>does not belong to a specific person</strong>. It's a set of permissions that can be <em>assumed</em> by anyone or anything that is authorised to do so. When you assume a role, you get <strong>temporary credentials</strong> (via STS) — typically valid for 1–12 hours.</p>
+
+<p>Roles solve the fundamental problem of <em>"how does a piece of software prove its identity to AWS?"</em> without storing long-term credentials anywhere.</p>
+
+<div class="grid2">
+  <div class="card">
+    <div class="card-title" style="color:var(--green-light)">Who can assume a role?</div>
+    <div class="card-body">
+      <strong>AWS services</strong> — EC2, Lambda, ECS, Glue, Step Functions assuming a role to call other services<br><br>
+      <strong>IAM users</strong> — Developers assuming a high-privilege role to perform specific tasks<br><br>
+      <strong>Federated users</strong> — employees logging in via SSO (Active Directory, Okta, Google Workspace)<br><br>
+      <strong>Other AWS accounts</strong> — Account B assuming a role in Account A for cross-account access<br><br>
+      <strong>Web identity providers</strong> — GitHub Actions, Kubernetes pods, mobile app users via Cognito
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--orange-light)">Role = Trust Policy + Permission Policy</div>
+    <div class="card-body">
+      Every role has two parts:<br><br>
+      <strong>Trust Policy</strong> — answers "WHO is allowed to assume this role?" Defines the principal (AWS service, account, user, OIDC provider) that can call AssumeRole.<br><br>
+      <strong>Permission Policy</strong> — answers "WHAT can the role do?" Standard IAM policy attached to the role defining allowed actions.
+    </div>
+  </div>
+</div>
+
+<pre><span class="cm"># A role for Lambda to access DynamoDB — two parts:</span>
+
+<span class="cm"># 1. Trust Policy (who can assume this role?)</span>
+<span class="cm"># Saved as trust-policy.json</span>
+{
+  <span class="jk">"Version"</span>: <span class="jv">"2012-10-17"</span>,
+  <span class="jk">"Statement"</span>: [{
+    <span class="jk">"Effect"</span>: <span class="jv">"Allow"</span>,
+    <span class="jk">"Principal"</span>: {
+      <span class="jk">"Service"</span>: <span class="jv">"lambda.amazonaws.com"</span>  <span class="cm">// Only Lambda can assume this role</span>
+    },
+    <span class="jk">"Action"</span>: <span class="jv">"sts:AssumeRole"</span>
+  }]
+}
+
+<span class="cm"># 2. Create the role</span>
+aws iam create-role \
+  --role-name OrderProcessorLambdaRole \
+  --assume-role-policy-document file://trust-policy.json
+
+<span class="cm"># 3. Permission Policy — what can this role DO?</span>
+aws iam attach-role-policy \
+  --role-name OrderProcessorLambdaRole \
+  --policy-arn arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess
+
+<span class="cm"># Now Lambda functions assigned this role can call DynamoDB.
+# No hardcoded credentials anywhere. AWS handles rotating the temp creds.</span></pre>
+
+<h2>User vs Role — The Key Mental Model</h2>
+<table>
+  <tr><th>Dimension</th><th>IAM User</th><th>IAM Role</th></tr>
+  <tr><td>Belongs to</td><td>A specific person</td><td>No one — it's assumed temporarily</td></tr>
+  <tr><td>Credentials</td><td>Long-term (access key pairs, password)</td><td>Temporary (STS tokens, 1–12h)</td></tr>
+  <tr><td>Use for</td><td>Human console/CLI access</td><td>Services, cross-account, federation, automation</td></tr>
+  <tr><td>Credential rotation</td><td>Manual — you must rotate</td><td>Automatic — STS rotates on expiry</td></tr>
+  <tr><td>If leaked</td><td>Persistent access until revoked manually</td><td>Expires automatically in hours</td></tr>
+  <tr><td>Multiple simultaneous sessions</td><td>Many people can use same key</td><td>Many processes can assume same role concurrently</td></tr>
+</table>
+
+<div class="alert a-green">
+  <strong>Modern AWS best practice:</strong> Minimise IAM users. Use roles everywhere — for services, for humans via SSO, for CI/CD via OIDC. The fewer long-term credentials you have, the smaller your attack surface. Many organisations now run with zero IAM user access keys in production.
+</div>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users.html" target="_blank">IAM Users</a>
+  <a class="ref" href="https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles.html" target="_blank">IAM Roles</a>
+  <a class="ref" href="https://docs.aws.amazon.com/IAM/latest/UserGuide/id_groups.html" target="_blank">IAM Groups</a>
+  <a class="ref" href="https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html" target="_blank">IAM Best Practices</a>
+</div>
+</div>
+
+<!-- ============================= S3: POLICIES ============================= -->
+<div id="s3" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 2 · Section 3</span>
+  <h1>IAM Policies — Complete Anatomy</h1>
+  <p class="subtitle">Policies are the heart of IAM. A JSON document that precisely defines what actions are allowed or denied on which resources under what conditions. Every field matters.</p>
+</div>
+
+<h2>The Policy Document Structure</h2>
+<p>Every IAM policy is a JSON document with a specific structure. Let's dissect every field with real examples:</p>
+
+<div class="policy-json">
+{<br>
+&nbsp;&nbsp;<span class="jk">"Version"</span>: <span class="jv">"2012-10-17"</span>,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// Always this. "2008-10-17" is old, lacks features</span><br>
+&nbsp;&nbsp;<span class="jk">"Statement"</span>: [&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// Array of permission statements</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="jk">"Sid"</span>: <span class="jv">"AllowS3ReadForReports"</span>,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// Optional ID — documentation/debugging aid</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="jk">"Effect"</span>: <span class="allow">"Allow"</span>,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// "Allow" or "Deny" — no default allow, must be explicit</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="jk">"Principal"</span>: <span class="jv">"*"</span>,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// WHO — only in resource policies (S3 bucket, KMS, etc.)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="jk">"Action"</span>: [<span class="jv">"s3:GetObject"</span>, <span class="jv">"s3:ListBucket"</span>],&nbsp;&nbsp;<span class="cm">// WHAT — service:APIName format</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="jk">"Resource"</span>: [&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// WHERE — specific ARNs</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="jv">"arn:aws:s3:::reports-bucket"</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="jv">"arn:aws:s3:::reports-bucket/*"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;],<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="jk">"Condition"</span>: {&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// WHEN — optional constraints</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="jk">"StringEquals"</span>: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="jv">"aws:RequestedRegion"</span>: <span class="jv">"eu-west-1"</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// only from Ireland</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="jk">"Bool"</span>: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="jv">"aws:SecureTransport"</span>: <span class="jb">"true"</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// only over HTTPS</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;]<br>
+}
+</div>
+
+<h2>Effect — Allow vs Deny</h2>
+<p>The default in IAM is <strong>implicit deny</strong>. If nothing says Allow, you're denied. You only need explicit Deny when you want to override an Allow that might come from another policy.</p>
+
+<div class="compare-row">
+  <div class="cmp-a">
+    <div class="cmp-label">Explicit Deny — overrides everything</div>
+    <pre style="background:transparent;border:none;padding:0;font-size:12px">{
+  <span class="jk">"Effect"</span>: <span class="deny">"Deny"</span>,
+  <span class="jk">"Action"</span>: <span class="jv">"ec2:*"</span>,
+  <span class="jk">"Resource"</span>: <span class="jv">"*"</span>,
+  <span class="jk">"Condition"</span>: {
+    <span class="jk">"StringNotEquals"</span>: {
+      <span class="jv">"aws:RequestedRegion"</span>:
+        [<span class="jv">"eu-west-1"</span>, <span class="jv">"eu-central-1"</span>]
+    }
+  }
+}
+<span class="cm">// Denies ALL EC2 actions outside EU
+// Even if another policy says Allow EC2 globally</span></pre>
+  </div>
+  <div class="cmp-b">
+    <div class="cmp-label">Allow — grants permission</div>
+    <pre style="background:transparent;border:none;padding:0;font-size:12px">{
+  <span class="jk">"Effect"</span>: <span class="allow">"Allow"</span>,
+  <span class="jk">"Action"</span>: [
+    <span class="jv">"ec2:DescribeInstances"</span>,
+    <span class="jv">"ec2:StartInstances"</span>
+  ],
+  <span class="jk">"Resource"</span>: <span class="jv">"*"</span>
+}
+<span class="cm">// Grants only these two EC2 actions
+// Cannot do anything else with EC2</span></pre>
+  </div>
+</div>
+
+<h2>Action — The API Operation Being Called</h2>
+<p>Actions map directly to AWS API calls. The format is always <code>service:APIAction</code>. Wildcards are supported.</p>
+
+<pre><span class="cm"># Single action</span>
+<span class="jk">"Action"</span>: <span class="jv">"s3:GetObject"</span>
+
+<span class="cm"># Multiple specific actions</span>
+<span class="jk">"Action"</span>: [<span class="jv">"s3:GetObject"</span>, <span class="jv">"s3:PutObject"</span>, <span class="jv">"s3:DeleteObject"</span>]
+
+<span class="cm"># All actions for a service</span>
+<span class="jk">"Action"</span>: <span class="jv">"s3:*"</span>
+
+<span class="cm"># Read-only actions using prefix wildcard</span>
+<span class="jk">"Action"</span>: [<span class="jv">"s3:Get*"</span>, <span class="jv">"s3:List*"</span>, <span class="jv">"s3:Describe*"</span>]
+
+<span class="cm"># ALL actions on ALL services — almost never do this</span>
+<span class="jk">"Action"</span>: <span class="jv">"*"</span>
+
+<span class="cm"># Common service prefixes to know:</span>
+<span class="jv">"s3:"</span>         <span class="cm">GetObject, PutObject, DeleteObject, ListBucket, CreateBucket...</span>
+<span class="jv">"ec2:"</span>        <span class="cm">RunInstances, TerminateInstances, DescribeInstances, CreateVpc...</span>
+<span class="jv">"lambda:"</span>     <span class="cm">InvokeFunction, CreateFunction, UpdateFunctionCode...</span>
+<span class="jv">"dynamodb:"</span>   <span class="cm">GetItem, PutItem, DeleteItem, Query, Scan, UpdateItem...</span>
+<span class="jv">"rds:"</span>        <span class="cm">CreateDBInstance, DeleteDBInstance, DescribeDBInstances...</span>
+<span class="jv">"iam:"</span>        <span class="cm">CreateUser, DeleteUser, AttachRolePolicy, AssumeRole...</span>
+<span class="jv">"sts:"</span>        <span class="cm">AssumeRole, GetCallerIdentity, GetSessionToken...</span>
+<span class="jv">"sqs:"</span>        <span class="cm">SendMessage, ReceiveMessage, DeleteMessage, CreateQueue...</span>
+<span class="jv">"sns:"</span>        <span class="cm">Publish, Subscribe, CreateTopic, ListTopics...</span>
+<span class="jv">"logs:"</span>       <span class="cm">CreateLogGroup, PutLogEvents, GetLogEvents... (CloudWatch Logs)</span></pre>
+
+<h2>Resource — Which Specific Resources</h2>
+<p>Resources narrow the policy to specific AWS resources using ARNs. This is how you give a Lambda access to one specific DynamoDB table, not all tables.</p>
+
+<pre><span class="cm"># Too broad — access to ALL DynamoDB tables</span>
+<span class="jk">"Resource"</span>: <span class="jv">"*"</span>
+
+<span class="cm"># Specific table only — production-safe</span>
+<span class="jk">"Resource"</span>: <span class="jv">"arn:aws:dynamodb:us-east-1:123456789012:table/Orders"</span>
+
+<span class="cm"># Specific table AND its indexes</span>
+<span class="jk">"Resource"</span>: [
+  <span class="jv">"arn:aws:dynamodb:us-east-1:123456789012:table/Orders"</span>,
+  <span class="jv">"arn:aws:dynamodb:us-east-1:123456789012:table/Orders/index/*"</span>
+]
+
+<span class="cm"># Specific S3 bucket + all objects within it</span>
+<span class="jk">"Resource"</span>: [
+  <span class="jv">"arn:aws:s3:::my-app-uploads"</span>,           <span class="cm">// ListBucket needs the bucket ARN</span>
+  <span class="jv">"arn:aws:s3:::my-app-uploads/*"</span>           <span class="cm">// GetObject/PutObject need the objects ARN</span>
+]
+
+<span class="cm"># Environment-specific resources with prefix matching</span>
+<span class="jk">"Resource"</span>: <span class="jv">"arn:aws:dynamodb:us-east-1:123456789012:table/prod-*"</span>  <span class="cm">// all prod- tables</span>
+
+<span class="cm"># Lambda function (specific function only)</span>
+<span class="jk">"Resource"</span>: <span class="jv">"arn:aws:lambda:us-east-1:123456789012:function:OrderProcessor"</span></pre>
+
+<h2>Condition — Fine-Grained Control</h2>
+<p>Conditions add powerful constraints to when a policy applies. This is one of IAM's most underused features — conditions let you write policies like "allow this action, but only from the corporate IP range, only over HTTPS, only during business hours."</p>
+
+<pre><span class="cm"># Condition structure: ConditionOperator: { ConditionKey: ConditionValue }</span>
+
+<span class="cm"># Only allow from company VPC</span>
+<span class="jk">"Condition"</span>: {
+  <span class="jk">"StringEquals"</span>: { <span class="jv">"aws:SourceVpc"</span>: <span class="jv">"vpc-0abc123"</span> }
+}
+
+<span class="cm"># Require MFA for sensitive operations (e.g., IAM changes, deleting resources)</span>
+<span class="jk">"Condition"</span>: {
+  <span class="jk">"Bool"</span>: { <span class="jv">"aws:MultiFactorAuthPresent"</span>: <span class="jb">"true"</span> }
+}
+
+<span class="cm"># Only allow access to objects with user's own prefix in S3</span>
+<span class="cm"># ${aws:username} is a policy variable — resolves at evaluation time</span>
+<span class="jk">"Resource"</span>: <span class="jv">"arn:aws:s3:::my-app-bucket/home/${aws:username}/*"</span>
+
+<span class="cm"># Only from specific IP ranges (office network)</span>
+<span class="jk">"Condition"</span>: {
+  <span class="jk">"IpAddress"</span>: {
+    <span class="jv">"aws:SourceIp"</span>: [<span class="jv">"203.0.113.0/24"</span>, <span class="jv">"198.51.100.0/24"</span>]
+  }
+}
+
+<span class="cm"># Require encryption on S3 puts</span>
+<span class="jk">"Condition"</span>: {
+  <span class="jk">"StringEquals"</span>: {
+    <span class="jv">"s3:x-amz-server-side-encryption"</span>: <span class="jv">"aws:kms"</span>
+  }
+}
+
+<span class="cm"># Deny if NOT over HTTPS — add to S3 bucket policy</span>
+{
+  <span class="jk">"Effect"</span>: <span class="deny">"Deny"</span>,
+  <span class="jk">"Action"</span>: <span class="jv">"s3:*"</span>,
+  <span class="jk">"Resource"</span>: [<span class="jv">"arn:aws:s3:::my-bucket"</span>, <span class="jv">"arn:aws:s3:::my-bucket/*"</span>],
+  <span class="jk">"Principal"</span>: <span class="jv">"*"</span>,
+  <span class="jk">"Condition"</span>: { <span class="jk">"Bool"</span>: { <span class="jv">"aws:SecureTransport"</span>: <span class="jb">"false"</span> } }
+}</pre>
+
+<h2>Policy Types — Which Attaches Where</h2>
+<table>
+  <tr><th>Type</th><th>Attached To</th><th>Defines</th><th>Use Case</th></tr>
+  <tr><td><strong>Identity-based</strong></td><td>IAM user, group, or role</td><td>What the identity CAN do</td><td>Developer permissions, service roles</td></tr>
+  <tr><td><strong>Resource-based</strong></td><td>S3 bucket, KMS key, Lambda, SQS, SNS…</td><td>Who CAN access this resource + what</td><td>Cross-account access, public S3 websites</td></tr>
+  <tr><td><strong>Permission boundary</strong></td><td>IAM user or role</td><td>Maximum permissions allowed (ceiling)</td><td>Delegating IAM to sub-admins safely</td></tr>
+  <tr><td><strong>SCP</strong> (Service Control Policy)</td><td>AWS Org account or OU</td><td>Maximum permissions for the entire account</td><td>Enforcing org-wide guardrails</td></tr>
+  <tr><td><strong>Session policy</strong></td><td>Temporary STS session</td><td>Further restricts a role session</td><td>Scoping assumed role to minimum needed</td></tr>
+  <tr><td><strong>ACL</strong> (Access Control List)</td><td>S3, VPC (legacy)</td><td>Basic cross-account access</td><td>Legacy only — use resource-based policies</td></tr>
+</table>
+
+<h2>Real-World Policy Examples</h2>
+
+<h3>1. Lambda reading/writing a specific DynamoDB table</h3>
+<pre><span class="cm"># Least-privilege policy for an order processing Lambda</span>
+{
+  <span class="jk">"Version"</span>: <span class="jv">"2012-10-17"</span>,
+  <span class="jk">"Statement"</span>: [
+    {
+      <span class="jk">"Sid"</span>: <span class="jv">"DynamoDBOrdersAccess"</span>,
+      <span class="jk">"Effect"</span>: <span class="allow">"Allow"</span>,
+      <span class="jk">"Action"</span>: [
+        <span class="jv">"dynamodb:GetItem"</span>,
+        <span class="jv">"dynamodb:PutItem"</span>,
+        <span class="jv">"dynamodb:UpdateItem"</span>,
+        <span class="jv">"dynamodb:Query"</span>          <span class="cm">// NOT Scan — too expensive</span>
+      ],
+      <span class="jk">"Resource"</span>: [
+        <span class="jv">"arn:aws:dynamodb:us-east-1:123456789012:table/Orders"</span>,
+        <span class="jv">"arn:aws:dynamodb:us-east-1:123456789012:table/Orders/index/*"</span>
+      ]
+    },
+    {
+      <span class="jk">"Sid"</span>: <span class="jv">"CloudWatchLogging"</span>,
+      <span class="jk">"Effect"</span>: <span class="allow">"Allow"</span>,
+      <span class="jk">"Action"</span>: [
+        <span class="jv">"logs:CreateLogGroup"</span>,
+        <span class="jv">"logs:CreateLogStream"</span>,
+        <span class="jv">"logs:PutLogEvents"</span>       <span class="cm">// Required for Lambda to write logs</span>
+      ],
+      <span class="jk">"Resource"</span>: <span class="jv">"arn:aws:logs:*:*:*"</span>
+    }
+  ]
+}</pre>
+
+<h3>2. S3 bucket policy — allow specific role, deny all HTTP</h3>
+<pre><span class="cm"># Resource-based policy on the S3 bucket itself</span>
+{
+  <span class="jk">"Version"</span>: <span class="jv">"2012-10-17"</span>,
+  <span class="jk">"Statement"</span>: [
+    {
+      <span class="jk">"Sid"</span>: <span class="jv">"AllowAppRole"</span>,
+      <span class="jk">"Effect"</span>: <span class="allow">"Allow"</span>,
+      <span class="jk">"Principal"</span>: {
+        <span class="jk">"AWS"</span>: <span class="jv">"arn:aws:iam::123456789012:role/MyAppRole"</span>
+      },
+      <span class="jk">"Action"</span>: [<span class="jv">"s3:GetObject"</span>, <span class="jv">"s3:PutObject"</span>],
+      <span class="jk">"Resource"</span>: <span class="jv">"arn:aws:s3:::my-app-bucket/*"</span>
+    },
+    {
+      <span class="jk">"Sid"</span>: <span class="jv">"DenyNonHTTPS"</span>,
+      <span class="jk">"Effect"</span>: <span class="deny">"Deny"</span>,
+      <span class="jk">"Principal"</span>: <span class="jv">"*"</span>,
+      <span class="jk">"Action"</span>: <span class="jv">"s3:*"</span>,
+      <span class="jk">"Resource"</span>: [
+        <span class="jv">"arn:aws:s3:::my-app-bucket"</span>,
+        <span class="jv">"arn:aws:s3:::my-app-bucket/*"</span>
+      ],
+      <span class="jk">"Condition"</span>: {
+        <span class="jk">"Bool"</span>: { <span class="jv">"aws:SecureTransport"</span>: <span class="jb">"false"</span> }
+      }
+    }
+  ]
+}</pre>
+
+<h3>3. Developer policy with MFA requirement for destructive actions</h3>
+<pre>{
+  <span class="jk">"Version"</span>: <span class="jv">"2012-10-17"</span>,
+  <span class="jk">"Statement"</span>: [
+    {
+      <span class="jk">"Sid"</span>: <span class="jv">"NormalDevAccess"</span>,
+      <span class="jk">"Effect"</span>: <span class="allow">"Allow"</span>,
+      <span class="jk">"Action"</span>: [
+        <span class="jv">"ec2:Describe*"</span>, <span class="jv">"lambda:List*"</span>, <span class="jv">"lambda:Get*"</span>,
+        <span class="jv">"s3:GetObject"</span>, <span class="jv">"s3:ListBucket"</span>,
+        <span class="jv">"cloudwatch:GetMetricData"</span>, <span class="jv">"logs:GetLogEvents"</span>
+      ],
+      <span class="jk">"Resource"</span>: <span class="jv">"*"</span>
+    },
+    {
+      <span class="jk">"Sid"</span>: <span class="jv">"DestructiveActionsRequireMFA"</span>,
+      <span class="jk">"Effect"</span>: <span class="allow">"Allow"</span>,
+      <span class="jk">"Action"</span>: [
+        <span class="jv">"ec2:TerminateInstances"</span>, <span class="jv">"rds:DeleteDBInstance"</span>,
+        <span class="jv">"s3:DeleteBucket"</span>, <span class="jv">"lambda:DeleteFunction"</span>
+      ],
+      <span class="jk">"Resource"</span>: <span class="jv">"*"</span>,
+      <span class="jk">"Condition"</span>: {
+        <span class="jk">"Bool"</span>: { <span class="jv">"aws:MultiFactorAuthPresent"</span>: <span class="jb">"true"</span> }  <span class="cm">// MFA required</span>
+      }
+    }
+  ]
+}</pre>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html" target="_blank">IAM Policies Overview</a>
+  <a class="ref" href="https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements.html" target="_blank">Policy Element Reference</a>
+  <a class="ref" href="https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_condition-keys.html" target="_blank">Global Condition Keys</a>
+  <a class="ref" href="https://policysim.aws.amazon.com/" target="_blank">IAM Policy Simulator</a>
+</div>
+</div>
+
+<!-- ============================= S4: EVALUATION LOGIC ============================= -->
+<div id="s4" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 2 · Section 4</span>
+  <h1>How IAM Evaluates Requests</h1>
+  <p class="subtitle">When a request arrives, IAM evaluates all applicable policies in a precise order. Understanding this logic is essential for debugging access denials and designing secure systems.</p>
+</div>
+
+<h2>The Evaluation Order — Strict Hierarchy</h2>
+<p>IAM evaluates policies in a specific order, and the first matching rule wins. The key principle: <strong>explicit Deny always beats any Allow</strong>.</p>
+
+<div class="eval-step eval-deny">
+  <div class="eval-title" style="color:var(--red-light)">Step 1 — Explicit Deny wins immediately</div>
+  <div class="eval-body">Before anything else, IAM checks if any applicable policy explicitly denies this action. If ANY policy (SCP, identity, resource, permission boundary) contains an explicit Deny → REQUEST DENIED. Full stop. No other evaluation happens. This is why Deny is a powerful guardrail.</div>
+</div>
+<div class="eval-step eval-check">
+  <div class="eval-title" style="color:var(--blue-light)">Step 2 — SCP check (if using AWS Organizations)</div>
+  <div class="eval-body">Service Control Policies set the maximum permissions for an entire AWS account. Even if your IAM user has a policy allowing an action, if the SCP for your account doesn't allow it → DENIED. SCPs are org-level guardrails that even account admins can't bypass.</div>
+</div>
+<div class="eval-step eval-check">
+  <div class="eval-title" style="color:var(--blue-light)">Step 3 — Permission Boundary check (if set)</div>
+  <div class="eval-body">If the IAM identity has a permission boundary, the effective permissions are the INTERSECTION of (identity policy) AND (boundary). If the boundary doesn't allow an action, the identity policy Allow is irrelevant — still DENIED.</div>
+</div>
+<div class="eval-step eval-check">
+  <div class="eval-title" style="color:var(--blue-light)">Step 4 — Resource-based policy check</div>
+  <div class="eval-body">If the target resource (S3 bucket, KMS key, SQS queue…) has its own policy, IAM checks it. A resource-based policy can ALLOW access independent of identity policies — this is how cross-account access works.</div>
+</div>
+<div class="eval-step eval-allow">
+  <div class="eval-title" style="color:var(--green-light)">Step 5 — Identity-based policy Allow</div>
+  <div class="eval-body">Finally, check the identity's own policies (attached directly or via groups). If an Allow is found here AND passed all previous checks → REQUEST ALLOWED.</div>
+</div>
+<div class="eval-step eval-deny">
+  <div class="eval-title" style="color:var(--red-light)">Default — Implicit Deny</div>
+  <div class="eval-body">If no policy explicitly allows the action → DENIED. There is no default Allow in IAM. Silence means no.</div>
+</div>
+
+<h2>The Simplified Mental Model</h2>
+
+<div class="policy-json" style="font-size:13px;font-family:inherit;line-height:2">
+<span class="deny">Explicit Deny anywhere</span> → <span class="deny">DENY (highest priority, overrides everything)</span><br>
+⬇ No explicit deny? Continue...<br>
+<span class="jk">SCP doesn't allow it</span> → <span class="deny">DENY</span><br>
+⬇ SCP allows it? Continue...<br>
+<span class="jk">Permission boundary doesn't allow it</span> → <span class="deny">DENY</span><br>
+⬇ Boundary allows it? Continue...<br>
+<span class="allow">Resource policy allows it</span> → <span class="allow">ALLOW (for cross-account: identity policy also needed)</span><br>
+<span class="allow">Identity policy allows it</span> → <span class="allow">ALLOW</span><br>
+⬇ None of the above...<br>
+<span class="deny">Implicit Deny (no allow found)</span> → <span class="deny">DENY</span>
+</div>
+
+<h2>Same-Account vs Cross-Account Evaluation</h2>
+<p>This is a subtle but critical difference that trips up many engineers:</p>
+
+<div class="grid2">
+  <div class="card">
+    <div class="card-title" style="color:var(--blue-light)">Same-account access</div>
+    <div class="card-body">
+      IAM user in Account A accessing S3 bucket in Account A.<br><br>
+      <strong>Needs:</strong> Identity policy OR resource policy to allow it — either is sufficient.<br><br>
+      If the S3 bucket policy says "Allow account A users to read" → Alice can read even without a policy on her user. Her identity is implicitly trusted because she's in the same account.
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--orange-light)">Cross-account access</div>
+    <div class="card-body">
+      IAM role in Account B accessing S3 bucket in Account A.<br><br>
+      <strong>Needs BOTH:</strong> Identity policy on Account B's role allowing s3:GetObject AND resource policy on Account A's bucket allowing Account B's role.<br><br>
+      Both sides must agree. One alone is not enough. This is the double-lock model.
+    </div>
+  </div>
+</div>
+
+<h2>Debugging Access Denied — The 5-Step Process</h2>
+<pre><span class="cm"># Step 1: Who is making the request?</span>
+aws sts get-caller-identity
+<span class="cm"># Returns: UserId, Account, Arn
+# Example: arn:aws:iam::123456789012:user/alice
+# This is your starting point — now you know the exact principal</span>
+
+<span class="cm"># Step 2: Use IAM Policy Simulator to test</span>
+<span class="cm"># Console: IAM → Policy Simulator → select alice → test s3:GetObject</span>
+<span class="cm"># Or CLI:</span>
+aws iam simulate-principal-policy \
+  --policy-source-arn arn:aws:iam::123456789012:user/alice \
+  --action-names s3:GetObject \
+  --resource-arns arn:aws:s3:::my-bucket/file.txt
+
+<span class="cm"># Step 3: Check the exact error message</span>
+<span class="cm"># "is not authorized to perform: s3:GetObject on resource: arn:aws:s3:::my-bucket/file.txt"</span>
+<span class="cm"># → Missing Allow on either alice's identity policy or the bucket policy</span>
+
+<span class="cm"># "with an explicit deny"</span>
+<span class="cm"># → Something is explicitly denying. Check: SCPs, permission boundaries,</span>
+<span class="cm">#   explicit Deny statements in any policy, VPC endpoint policy</span>
+
+<span class="cm"># Step 4: Check CloudTrail</span>
+<span class="cm"># Every API call is logged. Find the exact call that failed and all context.</span>
+
+<span class="cm"># Step 5: Check resource policy if applicable</span>
+aws s3api get-bucket-policy --bucket my-bucket
+<span class="cm"># Is there a Deny? Does an Allow include your principal?</span></pre>
+
+<h2>Common Gotchas</h2>
+<div class="grid2">
+  <div class="card" style="border-color:#5a1a1a">
+    <div class="card-title" style="color:var(--red-light)">S3 ListBucket vs GetObject need different ARNs</div>
+    <div class="card-body"><code>s3:ListBucket</code> applies to the bucket itself: <code>arn:aws:s3:::my-bucket</code>. <code>s3:GetObject</code> applies to objects: <code>arn:aws:s3:::my-bucket/*</code>. Missing one is the most common S3 IAM mistake.</div>
+  </div>
+  <div class="card" style="border-color:#5a1a1a">
+    <div class="card-title" style="color:var(--red-light)">IAM changes are eventually consistent</div>
+    <div class="card-body">After attaching a policy, it may take a few seconds (sometimes 30–60s) to propagate globally. If a test immediately fails after a policy change, wait and retry.</div>
+  </div>
+  <div class="card" style="border-color:#5a1a1a">
+    <div class="card-title" style="color:var(--red-light)">S3 Block Public Access overrides bucket policies</div>
+    <div class="card-body">Even if your bucket policy says "Allow Principal: *", if Block Public Access is enabled at the account or bucket level, public access is denied. S3 BPA is a higher-level control.</div>
+  </div>
+  <div class="card" style="border-color:#5a1a1a">
+    <div class="card-title" style="color:var(--red-light)">Action name must be exact</div>
+    <div class="card-body">Typos in action names are silently ignored — the policy just never matches. <code>"s3:getobject"</code> won't work — it's <code>"s3:GetObject"</code> (case-insensitive in evaluation but exact spelling required).</div>
+  </div>
+</div>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_evaluation-logic.html" target="_blank">Policy Evaluation Logic</a>
+  <a class="ref" href="https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_understand-policy-summary.html" target="_blank">Policy Summary</a>
+  <a class="ref" href="https://policysim.aws.amazon.com/" target="_blank">IAM Policy Simulator</a>
+  <a class="ref" href="https://docs.aws.amazon.com/IAM/latest/UserGuide/troubleshoot_access-denied.html" target="_blank">Troubleshooting Access Denied</a>
+</div>
+</div>
+
+<!-- ============================= S5: STS & ASSUMEROLE ============================= -->
+<div id="s5" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 2 · Section 5</span>
+  <h1>STS &amp; AssumeRole — Deep Dive</h1>
+  <p class="subtitle">STS (Security Token Service) is the engine behind temporary credentials. AssumeRole is the mechanism that makes service-to-service, cross-account, and federated access work. This is the most important advanced IAM topic.</p>
+</div>
+
+<h2>What is STS?</h2>
+<p>AWS Security Token Service (STS) is a global service that issues <strong>temporary security credentials</strong>. Instead of permanent access keys, STS gives you a set of credentials that expire — typically 1 to 12 hours. After expiry, they're useless even if stolen.</p>
+
+<div class="grid3">
+  <div class="card">
+    <div class="card-title" style="color:var(--orange-light)">AccessKeyId</div>
+    <div class="card-body">Starts with <code>ASIA</code> (temporary) instead of <code>AKIA</code> (permanent). Used in the Authorization header like a normal access key.</div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--orange-light)">SecretAccessKey</div>
+    <div class="card-body">Used to sign requests, same as permanent secret key. But this changes every time you get new credentials.</div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--orange-light)">SessionToken</div>
+    <div class="card-body">A third credential only present with temporary credentials. Must be included in the <code>X-Amz-Security-Token</code> header or AWS will reject the request.</div>
+  </div>
+</div>
+
+<h2>AssumeRole — Step-by-Step With Real Services</h2>
+
+<h3>Scenario 1: EC2 Instance reading from S3</h3>
+<p>This is the most common real-world AssumeRole scenario. Your EC2 instance needs to read files from S3. Here's exactly what happens from instance boot to successful API call:</p>
+
+<div class="arch-diagram">
+  <div class="arch-label">Full flow: EC2 → AssumeRole → S3</div>
+
+  <div class="arch-row">
+    <div class="arch-box" style="background:var(--aws-bg);border-color:var(--orange);color:var(--orange-light)">EC2 Instance</div>
+    <div class="arch-arrow">①</div>
+    <div class="arch-note">At boot, EC2 detects an IAM instance profile is attached</div>
+  </div>
+  <div class="arch-row">
+    <div class="arch-box" style="background:var(--aws-bg);border-color:var(--orange);color:var(--orange-light)">EC2 Instance</div>
+    <div class="arch-arrow">②</div>
+    <div class="arch-box" style="background:var(--bg4)">IMDS<br><span style="font-size:10px;color:var(--text3)">169.254.169.254</span></div>
+    <div class="arch-arrow">③</div>
+    <div class="arch-note">Requests temp credentials from Instance Metadata Service</div>
+  </div>
+  <div class="arch-row">
+    <div class="arch-box" style="background:var(--bg4)">IMDS</div>
+    <div class="arch-arrow">④</div>
+    <div class="arch-box" style="background:var(--blue-bg);border-color:var(--blue);color:var(--blue-light)">STS</div>
+    <div class="arch-note">IMDS calls STS AssumeRole behind the scenes</div>
+  </div>
+  <div class="arch-row">
+    <div class="arch-box" style="background:var(--blue-bg);border-color:var(--blue);color:var(--blue-light)">STS</div>
+    <div class="arch-arrow">⑤</div>
+    <div class="arch-box" style="background:var(--bg4)">IMDS</div>
+    <div class="arch-arrow">⑥</div>
+    <div class="arch-box" style="background:var(--aws-bg);border-color:var(--orange);color:var(--orange-light)">EC2 Instance</div>
+    <div class="arch-note">Temp credentials returned to instance (AccessKeyId, SecretKey, SessionToken, Expiry)</div>
+  </div>
+  <div class="arch-row">
+    <div class="arch-box" style="background:var(--aws-bg);border-color:var(--orange);color:var(--orange-light)">EC2 SDK</div>
+    <div class="arch-arrow">⑦</div>
+    <div class="arch-box" style="background:#061a0d;border-color:#14532d;color:var(--green-light)">S3 API</div>
+    <div class="arch-note">SDK uses temp credentials to sign S3 request (SigV4)</div>
+  </div>
+  <div class="arch-row">
+    <div class="arch-box" style="background:#061a0d;border-color:#14532d;color:var(--green-light)">S3</div>
+    <div class="arch-arrow">⑧</div>
+    <div class="arch-box" style="background:var(--blue-bg);border-color:var(--blue);color:var(--blue-light)">IAM</div>
+    <div class="arch-note">S3 asks IAM: can this role perform s3:GetObject on this bucket?</div>
+  </div>
+  <div class="arch-row">
+    <div class="arch-box" style="background:var(--blue-bg);border-color:var(--blue);color:var(--blue-light)">IAM</div>
+    <div class="arch-arrow">⑨</div>
+    <div class="arch-box" style="background:#061a0d;border-color:#14532d;color:var(--green-light)">S3</div>
+    <div class="arch-arrow">→</div>
+    <div class="arch-box" style="background:var(--aws-bg);border-color:var(--orange);color:var(--orange-light)">EC2</div>
+    <div class="arch-note">IAM says Allow → S3 returns the file</div>
+  </div>
+</div>
+
+<pre><span class="cm"># Step 1: Create the IAM Role with EC2 trust policy</span>
+<span class="cm"># ec2-s3-role-trust.json</span>
+{
+  <span class="jk">"Version"</span>: <span class="jv">"2012-10-17"</span>,
+  <span class="jk">"Statement"</span>: [{
+    <span class="jk">"Effect"</span>: <span class="allow">"Allow"</span>,
+    <span class="jk">"Principal"</span>: { <span class="jk">"Service"</span>: <span class="jv">"ec2.amazonaws.com"</span> },
+    <span class="jk">"Action"</span>: <span class="jv">"sts:AssumeRole"</span>
+  }]
+}
+
+<span class="cm"># Step 2: Create the role</span>
+aws iam create-role \
+  --role-name EC2ReadS3Role \
+  --assume-role-policy-document file://ec2-s3-role-trust.json
+
+<span class="cm"># Step 3: Attach the permission policy</span>
+aws iam put-role-policy \
+  --role-name EC2ReadS3Role \
+  --policy-name S3ReadPolicy \
+  --policy-document '{
+    "Version":"2012-10-17",
+    "Statement":[{
+      "Effect":"Allow",
+      "Action":["s3:GetObject","s3:ListBucket"],
+      "Resource":["arn:aws:s3:::my-app-bucket","arn:aws:s3:::my-app-bucket/*"]
+    }]
+  }'
+
+<span class="cm"># Step 4: Create Instance Profile (the bridge between EC2 and IAM Role)</span>
+aws iam create-instance-profile --instance-profile-name EC2ReadS3Profile
+aws iam add-role-to-instance-profile \
+  --instance-profile-name EC2ReadS3Profile \
+  --role-name EC2ReadS3Role
+
+<span class="cm"># Step 5: Attach to EC2 instance at launch or afterward</span>
+aws ec2 run-instances \
+  --image-id ami-0abc123 \
+  --instance-type t3.medium \
+  --iam-instance-profile Name=EC2ReadS3Profile \  <span class="cm"># THIS attaches the role</span>
+  --subnet-id subnet-0abc123
+
+<span class="cm"># On the EC2 instance — the SDK finds credentials automatically</span>
+<span class="cm"># Java SDK code on EC2:</span>
+<span class="ty">S3Client</span> s3 = <span class="ty">S3Client</span>.<span class="fn">builder</span>()
+    .<span class="fn">region</span>(<span class="ty">Region</span>.US_EAST_1)
+    .<span class="fn">build</span>();  <span class="cm">// No credentials specified — SDK gets them from IMDS automatically</span>
+
+<span class="ty">GetObjectResponse</span> resp = s3.<span class="fn">getObject</span>(<span class="ty">GetObjectRequest</span>.<span class="fn">builder</span>()
+    .<span class="fn">bucket</span>(<span class="str">"my-app-bucket"</span>)
+    .<span class="fn">key</span>(<span class="str">"config/app.properties"</span>)
+    .<span class="fn">build</span>(), <span class="ty">ResponseTransformer</span>.toFile(<span class="ty">Path</span>.<span class="fn">of</span>(<span class="str">"/tmp/app.properties"</span>)));</pre>
+
+<h3>Scenario 2: Developer AssumeRole to get elevated permissions</h3>
+<pre><span class="cm"># Developer's normal user has read-only permissions
+# To deploy, they assume a "Deployer" role — leaves an audit trail</span>
+
+<span class="cm"># deployer-role trust policy — allows alice to assume it</span>
+{
+  <span class="jk">"Version"</span>: <span class="jv">"2012-10-17"</span>,
+  <span class="jk">"Statement"</span>: [{
+    <span class="jk">"Effect"</span>: <span class="allow">"Allow"</span>,
+    <span class="jk">"Principal"</span>: {
+      <span class="jk">"AWS"</span>: <span class="jv">"arn:aws:iam::123456789012:user/alice"</span>
+    },
+    <span class="jk">"Action"</span>: <span class="jv">"sts:AssumeRole"</span>,
+    <span class="jk">"Condition"</span>: {
+      <span class="jk">"Bool"</span>: { <span class="jv">"aws:MultiFactorAuthPresent"</span>: <span class="jb">"true"</span> }  <span class="cm">// Must have MFA active</span>
+    }
+  }]
+}
+
+<span class="cm"># Alice assumes the role from CLI</span>
+aws sts assume-role \
+  --role-arn arn:aws:iam::123456789012:role/DeployerRole \
+  --role-session-name alice-deploy-2024-01-15 \
+  --duration-seconds 3600  <span class="cm"># 1 hour</span>
+
+<span class="cm"># STS returns temporary credentials:</span>
+{
+    <span class="jk">"Credentials"</span>: {
+        <span class="jk">"AccessKeyId"</span>: <span class="jv">"ASIAIOSFODNN7EXAMPLE"</span>,      <span class="cm">← starts with ASIA (temporary)</span>
+        <span class="jk">"SecretAccessKey"</span>: <span class="jv">"wJalrXUtnFEMI/K7MDENG..."</span>,
+        <span class="jk">"SessionToken"</span>: <span class="jv">"AQoDYXdzEJr..."</span>,             <span class="cm">← extra token for STS sessions</span>
+        <span class="jk">"Expiration"</span>: <span class="jv">"2024-01-15T11:00:00Z"</span>        <span class="cm">← expires in 1 hour</span>
+    },
+    <span class="jk">"AssumedRoleUser"</span>: {
+        <span class="jk">"Arn"</span>: <span class="jv">"arn:aws:sts::123456789012:assumed-role/DeployerRole/alice-deploy-2024-01-15"</span>
+    }
+}
+
+<span class="cm"># Use the credentials to deploy</span>
+export AWS_ACCESS_KEY_ID=ASIAIOSFODNN7EXAMPLE
+export AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG...
+export AWS_SESSION_TOKEN=AQoDYXdzEJr...
+aws lambda update-function-code --function-name MyFunction ...
+<span class="cm"># After 1 hour → credentials expire → deployment tools stop working</span></pre>
+
+<h3>Scenario 3: GitHub Actions assuming a role (OIDC — no stored secrets)</h3>
+<pre><span class="cm"># Modern CI/CD: GitHub Actions → OIDC → AWS Role (no AWS keys stored in GitHub)</span>
+
+<span class="cm"># Step 1: Create OIDC Identity Provider in AWS</span>
+aws iam create-open-id-connect-provider \
+  --url https://token.actions.githubusercontent.com \
+  --client-id-list sts.amazonaws.com \
+  --thumbprint-list 6938fd4d98bab03faadb97b34396831e3780aea1
+
+<span class="cm"># Step 2: Create role with GitHub as trusted principal</span>
+{
+  <span class="jk">"Version"</span>: <span class="jv">"2012-10-17"</span>,
+  <span class="jk">"Statement"</span>: [{
+    <span class="jk">"Effect"</span>: <span class="allow">"Allow"</span>,
+    <span class="jk">"Principal"</span>: {
+      <span class="jk">"Federated"</span>: <span class="jv">"arn:aws:iam::123456789012:oidc-provider/token.actions.githubusercontent.com"</span>
+    },
+    <span class="jk">"Action"</span>: <span class="jv">"sts:AssumeRoleWithWebIdentity"</span>,
+    <span class="jk">"Condition"</span>: {
+      <span class="jk">"StringEquals"</span>: {
+        <span class="jv">"token.actions.githubusercontent.com:aud"</span>: <span class="jv">"sts.amazonaws.com"</span>,
+        <span class="jv">"token.actions.githubusercontent.com:sub"</span>: <span class="jv">"repo:myorg/myrepo:ref:refs/heads/main"</span>
+        <span class="cm">// Only the 'main' branch of 'myorg/myrepo' can assume this role</span>
+      }
+    }
+  }]
+}
+
+<span class="cm"># Step 3: GitHub Actions workflow — no AWS credentials stored anywhere</span>
+<span class="cm"># .github/workflows/deploy.yml</span>
+name: Deploy
+on:
+  push:
+    branches: [main]
+permissions:
+  id-token: write   <span class="cm"># Required for OIDC</span>
+  contents: read
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::123456789012:role/GitHubActionsDeployRole
+          aws-region: us-east-1
+      <span class="cm"># GitHub gets an OIDC token, exchanges with STS for temp credentials</span>
+      <span class="cm"># Credentials are injected as environment variables for subsequent steps</span>
+      - run: aws s3 sync dist/ s3://my-website-bucket/</pre>
+
+<h2>What the AssumeRole API Call Actually Returns</h2>
+<pre><span class="cm"># Any principal can call STS directly</span>
+aws sts assume-role \
+  --role-arn arn:aws:iam::123456789012:role/AnalyticsRole \
+  --role-session-name my-session \
+  --duration-seconds 7200 \          <span class="cm"># 2 hours (max depends on role's MaxSessionDuration)</span>
+  --external-id ExternalSecret123 \  <span class="cm"># For 3rd-party access (confused deputy protection)</span>
+  --policy '{                        <span class="cm"># Optional: further restrict the role's permissions</span>
+    "Version":"2012-10-17",
+    "Statement":[{
+      "Effect":"Allow",
+      "Action":"s3:GetObject",
+      "Resource":"arn:aws:s3:::analytics-bucket/2024/*"
+    }]
+  }'
+
+<span class="cm"># STS endpoint: sts.amazonaws.com (global) or regional: sts.us-east-1.amazonaws.com</span>
+<span class="cm"># SessionToken MUST be included in all subsequent requests using these credentials</span>
+<span class="cm"># X-Amz-Security-Token: AQoDYXdz... (in HTTP header)</span></pre>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html" target="_blank">STS AssumeRole API</a>
+  <a class="ref" href="https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-cli.html" target="_blank">Switching Roles (CLI)</a>
+  <a class="ref" href="https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_oidc.html" target="_blank">OIDC Identity Providers</a>
+  <a class="ref" href="https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-amazon-web-services" target="_blank">GitHub OIDC + AWS</a>
+</div>
+</div>
+
+<!-- ============================= S6: SERVICE ROLES & PROFILES ============================= -->
+<div id="s6" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 2 · Section 6</span>
+  <h1>Service Roles &amp; Instance Profiles</h1>
+  <p class="subtitle">How AWS services authenticate when calling other AWS services. The patterns here appear in every real-world AWS application — Lambda calling DynamoDB, ECS calling Secrets Manager, Glue accessing S3.</p>
+</div>
+
+<h2>The Core Problem</h2>
+<p>Your Lambda function needs to read from DynamoDB. Your ECS container needs to write logs to CloudWatch. Your Glue job needs to read from S3. None of these have a "user" behind them — they're automated processes. They need identities too.</p>
+<p><strong>The solution:</strong> Assign an IAM role to the service. The service automatically gets temporary credentials for that role. No passwords, no secrets in code, no rotation headaches.</p>
+
+<h2>Lambda Execution Role — Full Worked Example</h2>
+
+<div class="scenario">
+  <div class="scenario-label">Real Scenario</div>
+  <div class="scenario-title">Order Processing Lambda — reads SQS, writes DynamoDB, publishes SNS, logs to CloudWatch</div>
+  <p>An e-commerce order processing function is triggered by SQS messages. It writes order records to DynamoDB, publishes a confirmation to SNS, reads config from Secrets Manager, and logs everything to CloudWatch. Each permission is a separate statement — least privilege.</p>
+</div>
+
+<pre><span class="cm"># Complete execution role policy for OrderProcessor Lambda</span>
+{
+  <span class="jk">"Version"</span>: <span class="jv">"2012-10-17"</span>,
+  <span class="jk">"Statement"</span>: [
+    {
+      <span class="jk">"Sid"</span>: <span class="jv">"SQSTriggerPermissions"</span>,
+      <span class="jk">"Effect"</span>: <span class="allow">"Allow"</span>,
+      <span class="jk">"Action"</span>: [
+        <span class="jv">"sqs:ReceiveMessage"</span>,
+        <span class="jv">"sqs:DeleteMessage"</span>,
+        <span class="jv">"sqs:GetQueueAttributes"</span>   <span class="cm">// Lambda needs this to poll the queue</span>
+      ],
+      <span class="jk">"Resource"</span>: <span class="jv">"arn:aws:sqs:us-east-1:123456789012:orders-queue"</span>
+    },
+    {
+      <span class="jk">"Sid"</span>: <span class="jv">"DynamoDBOrdersWrite"</span>,
+      <span class="jk">"Effect"</span>: <span class="allow">"Allow"</span>,
+      <span class="jk">"Action"</span>: [
+        <span class="jv">"dynamodb:PutItem"</span>,
+        <span class="jv">"dynamodb:UpdateItem"</span>,
+        <span class="jv">"dynamodb:GetItem"</span>
+      ],
+      <span class="jk">"Resource"</span>: <span class="jv">"arn:aws:dynamodb:us-east-1:123456789012:table/Orders"</span>
+    },
+    {
+      <span class="jk">"Sid"</span>: <span class="jv">"SNSPublish"</span>,
+      <span class="jk">"Effect"</span>: <span class="allow">"Allow"</span>,
+      <span class="jk">"Action"</span>: <span class="jv">"sns:Publish"</span>,
+      <span class="jk">"Resource"</span>: <span class="jv">"arn:aws:sns:us-east-1:123456789012:order-confirmations"</span>
+    },
+    {
+      <span class="jk">"Sid"</span>: <span class="jv">"SecretsAccess"</span>,
+      <span class="jk">"Effect"</span>: <span class="allow">"Allow"</span>,
+      <span class="jk">"Action"</span>: [
+        <span class="jv">"secretsmanager:GetSecretValue"</span>  <span class="cm">// Read payment gateway API keys</span>
+      ],
+      <span class="jk">"Resource"</span>: <span class="jv">"arn:aws:secretsmanager:us-east-1:123456789012:secret:payment-api-key-*"</span>
+    },
+    {
+      <span class="jk">"Sid"</span>: <span class="jv">"CloudWatchLogging"</span>,
+      <span class="jk">"Effect"</span>: <span class="allow">"Allow"</span>,
+      <span class="jk">"Action"</span>: [
+        <span class="jv">"logs:CreateLogGroup"</span>,
+        <span class="jv">"logs:CreateLogStream"</span>,
+        <span class="jv">"logs:PutLogEvents"</span>
+      ],
+      <span class="jk">"Resource"</span>: <span class="jv">"arn:aws:logs:us-east-1:123456789012:log-group:/aws/lambda/OrderProcessor:*"</span>
+    },
+    {
+      <span class="jk">"Sid"</span>: <span class="jv">"KMSDecrypt"</span>,
+      <span class="jk">"Effect"</span>: <span class="allow">"Allow"</span>,
+      <span class="jk">"Action"</span>: [
+        <span class="jv">"kms:Decrypt"</span>,
+        <span class="jv">"kms:GenerateDataKey"</span>
+      ],
+      <span class="jk">"Resource"</span>: <span class="jv">"arn:aws:kms:us-east-1:123456789012:key/mrk-abc123"</span>
+      <span class="cm">// Needed if DynamoDB/SQS use KMS encryption</span>
+    }
+  ]
+}
+
+<span class="cm"># Create and deploy in one CDK block (Java)</span>
+<span class="ty">Role</span> lambdaRole = <span class="ty">Role</span>.<span class="fn">Builder</span>.<span class="fn">create</span>(<span class="kw">this</span>, <span class="str">"OrderProcessorRole"</span>)
+    .<span class="fn">assumedBy</span>(<span class="kw">new</span> <span class="ty">ServicePrincipal</span>(<span class="str">"lambda.amazonaws.com"</span>))
+    .<span class="fn">build</span>();
+
+table.<span class="fn">grantReadWriteData</span>(lambdaRole);  <span class="cm">// CDK helper — adds exact DynamoDB permissions</span>
+queue.<span class="fn">grantConsumeMessages</span>(lambdaRole); <span class="cm">// adds SQS consume permissions</span>
+topic.<span class="fn">grantPublish</span>(lambdaRole);          <span class="cm">// adds SNS publish</span>
+
+<span class="ty">Function</span> fn = <span class="ty">Function</span>.<span class="fn">Builder</span>.<span class="fn">create</span>(<span class="kw">this</span>, <span class="str">"OrderProcessor"</span>)
+    .<span class="fn">runtime</span>(<span class="ty">Runtime</span>.JAVA_21)
+    .<span class="fn">handler</span>(<span class="str">"com.myapp.OrderHandler"</span>)
+    .<span class="fn">code</span>(<span class="ty">Code</span>.<span class="fn">fromAsset</span>(<span class="str">"target/order-processor.jar"</span>))
+    .<span class="fn">role</span>(lambdaRole)                        <span class="cm">// ← attach the role</span>
+    .<span class="fn">build</span>();</pre>
+
+<h3>How Lambda gets credentials internally</h3>
+<pre><span class="cm"># When Lambda invokes your function:
+# 1. Lambda service calls STS AssumeRole with the execution role
+# 2. STS returns temp credentials
+# 3. Lambda injects credentials as environment variables:
+#    AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_SESSION_TOKEN
+# 4. Your SDK reads these automatically — no code needed
+# 5. Credentials refreshed automatically before expiry</span>
+
+<span class="cm"># Your Lambda Java code — zero credential management:</span>
+<span class="kw">public class</span> <span class="ty">OrderHandler</span> <span class="kw">implements</span> <span class="ty">RequestHandler</span>&lt;<span class="ty">SQSEvent</span>, <span class="ty">Void</span>&gt; {
+
+    <span class="kw">private final</span> <span class="ty">DynamoDbClient</span> dynamoDB = <span class="ty">DynamoDbClient</span>.<span class="fn">create</span>();  <span class="cm">// uses env vars</span>
+    <span class="kw">private final</span> <span class="ty">SnsClient</span> sns = <span class="ty">SnsClient</span>.<span class="fn">create</span>();               <span class="cm">// uses env vars</span>
+
+    <span class="kw">public</span> <span class="ty">Void</span> <span class="fn">handleRequest</span>(<span class="ty">SQSEvent</span> event, <span class="ty">Context</span> context) {
+        <span class="kw">for</span> (<span class="ty">SQSEvent.SQSMessage</span> msg : event.<span class="fn">getRecords</span>()) {
+            <span class="ty">Order</span> order = <span class="fn">parseOrder</span>(msg.<span class="fn">getBody</span>());
+
+            <span class="cm">// SDK automatically uses the Lambda's assumed role credentials</span>
+            dynamoDB.<span class="fn">putItem</span>(<span class="ty">PutItemRequest</span>.<span class="fn">builder</span>()
+                .<span class="fn">tableName</span>(<span class="str">"Orders"</span>)
+                .<span class="fn">item</span>(<span class="fn">toAttributeMap</span>(order))
+                .<span class="fn">build</span>());
+
+            sns.<span class="fn">publish</span>(<span class="ty">PublishRequest</span>.<span class="fn">builder</span>()
+                .<span class="fn">topicArn</span>(<span class="str">"arn:aws:sns:us-east-1:123456789012:order-confirmations"</span>)
+                .<span class="fn">message</span>(<span class="str">"Order confirmed: "</span> + order.<span class="fn">getId</span>())
+                .<span class="fn">build</span>());
+        }
+        <span class="kw">return null</span>;
+    }
+}</pre>
+
+<h2>ECS Task Role vs Task Execution Role — Common Confusion</h2>
+<p>ECS has two roles that beginners constantly confuse. They serve completely different purposes:</p>
+
+<table>
+  <tr><th>Role</th><th>Used by</th><th>Permissions it needs</th><th>Example</th></tr>
+  <tr><td><strong>Task Role</strong></td><td>Your application container code</td><td>Whatever your app needs: DynamoDB, S3, SQS, etc.</td><td>Lambda execution role equivalent</td></tr>
+  <tr><td><strong>Task Execution Role</strong></td><td>ECS agent (not your code)</td><td>Pull ECR images, write CloudWatch logs, read Secrets Manager for env vars</td><td>Infrastructure-level permissions</td></tr>
+</table>
+
+<pre><span class="cm"># Task Execution Role — ECS needs this to start your container</span>
+{
+  <span class="jk">"Statement"</span>: [
+    {
+      <span class="jk">"Effect"</span>: <span class="allow">"Allow"</span>,
+      <span class="jk">"Action"</span>: [
+        <span class="jv">"ecr:GetAuthorizationToken"</span>,       <span class="cm">// Pull your Docker image from ECR</span>
+        <span class="jv">"ecr:BatchGetImage"</span>,
+        <span class="jv">"ecr:GetDownloadUrlForLayer"</span>,
+        <span class="jv">"logs:CreateLogStream"</span>,             <span class="cm">// Write container logs</span>
+        <span class="jv">"logs:PutLogEvents"</span>,
+        <span class="jv">"secretsmanager:GetSecretValue"</span>,    <span class="cm">// Inject secrets as env vars at startup</span>
+        <span class="jv">"ssm:GetParameters"</span>                 <span class="cm">// Inject SSM params as env vars</span>
+      ],
+      <span class="jk">"Resource"</span>: <span class="jv">"*"</span>
+    }
+  ]
+}
+
+<span class="cm"># Task Role — YOUR APPLICATION uses this</span>
+{
+  <span class="jk">"Statement"</span>: [
+    {
+      <span class="jk">"Effect"</span>: <span class="allow">"Allow"</span>,
+      <span class="jk">"Action"</span>: [<span class="jv">"dynamodb:GetItem"</span>, <span class="jv">"dynamodb:PutItem"</span>],
+      <span class="jk">"Resource"</span>: <span class="jv">"arn:aws:dynamodb:us-east-1:123456789012:table/Orders"</span>
+    }
+  ]
+}
+
+<span class="cm"># In your task definition JSON:</span>
+{
+  <span class="jk">"taskRoleArn"</span>: <span class="jv">"arn:aws:iam::123456789012:role/OrdersTaskRole"</span>,          <span class="cm">// YOUR app</span>
+  <span class="jk">"executionRoleArn"</span>: <span class="jv">"arn:aws:iam::123456789012:role/ECSTaskExecutionRole"</span>  <span class="cm">// ECS agent</span>
+}</pre>
+
+<h2>Other Services — Quick Reference</h2>
+<table>
+  <tr><th>Service</th><th>Role Type</th><th>Trust Principal</th><th>Common Permissions</th></tr>
+  <tr><td>EC2</td><td>Instance Profile</td><td><code>ec2.amazonaws.com</code></td><td>S3, DynamoDB, Secrets Manager, SSM</td></tr>
+  <tr><td>Lambda</td><td>Execution Role</td><td><code>lambda.amazonaws.com</code></td><td>CloudWatch Logs (minimum), + whatever the function needs</td></tr>
+  <tr><td>ECS</td><td>Task Role + Execution Role</td><td><code>ecs-tasks.amazonaws.com</code></td><td>Task: app resources. Execution: ECR, logs, secrets</td></tr>
+  <tr><td>Glue</td><td>Service Role</td><td><code>glue.amazonaws.com</code></td><td>S3 (read source, write output), Glue catalog, CloudWatch</td></tr>
+  <tr><td>Step Functions</td><td>Execution Role</td><td><code>states.amazonaws.com</code></td><td>Lambda:InvokeFunction, ECS:RunTask, SNS:Publish</td></tr>
+  <tr><td>API Gateway</td><td>Execution Role</td><td><code>apigateway.amazonaws.com</code></td><td>Lambda:InvokeFunction, logs:CreateLogGroup</td></tr>
+  <tr><td>CodePipeline</td><td>Service Role</td><td><code>codepipeline.amazonaws.com</code></td><td>S3 artifact bucket, CodeBuild, CodeDeploy, CloudFormation</td></tr>
+  <tr><td>CloudFormation</td><td>Service Role</td><td><code>cloudformation.amazonaws.com</code></td><td>Whatever resources it needs to create/update/delete</td></tr>
+</table>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-ec2_instance-profiles.html" target="_blank">EC2 Instance Profiles</a>
+  <a class="ref" href="https://docs.aws.amazon.com/lambda/latest/dg/lambda-intro-execution-role.html" target="_blank">Lambda Execution Roles</a>
+  <a class="ref" href="https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_IAM_role.html" target="_blank">ECS Task Roles</a>
+</div>
+</div>
+
+<!-- ============================= S7: CROSS-ACCOUNT ============================= -->
+<div id="s7" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 2 · Section 7</span>
+  <h1>Cross-Account Access</h1>
+  <p class="subtitle">How Account A's resources access Account B's resources — the double-lock model, the confused deputy problem, and the external ID pattern.</p>
+</div>
+
+<h2>Why Cross-Account Access?</h2>
+<p>In real organisations, you have multiple AWS accounts: production, staging, development, security logging, shared services. Services in one account need to access resources in another. Examples: your deployment pipeline (in a tools account) deploys to production (in the prod account); a centralised logging account aggregates logs from all other accounts; a shared database account hosts databases accessed by multiple application accounts.</p>
+
+<h2>The Double-Lock Model</h2>
+<p>Cross-account access requires both accounts to explicitly agree. Unlike same-account access where either an identity policy or resource policy is sufficient, cross-account requires <strong>both</strong>:</p>
+
+<div class="grid2">
+  <div class="card" style="border-color:#1a3050">
+    <div class="card-title" style="color:var(--blue-light)">Lock 1: Account B's role must allow it</div>
+    <div class="card-body">The role in Account B (the one being assumed) must have a trust policy that explicitly names Account A (or specific principals in Account A) as trusted to assume it.</div>
+  </div>
+  <div class="card" style="border-color:#14532d">
+    <div class="card-title" style="color:var(--green-light)">Lock 2: Account A's identity must be allowed</div>
+    <div class="card-body">The principal in Account A (user, role, service) must have an identity policy that allows it to call <code>sts:AssumeRole</code> on the role in Account B.</div>
+  </div>
+</div>
+
+<pre><span class="cm"># Scenario: Account A (111111111111) needs to read Account B's S3 bucket (222222222222)</span>
+
+<span class="cm">## ACCOUNT B setup — create a role that Account A can assume</span>
+
+<span class="cm"># Trust policy for the role in Account B:</span>
+{
+  <span class="jk">"Version"</span>: <span class="jv">"2012-10-17"</span>,
+  <span class="jk">"Statement"</span>: [{
+    <span class="jk">"Effect"</span>: <span class="allow">"Allow"</span>,
+    <span class="jk">"Principal"</span>: {
+      <span class="jk">"AWS"</span>: <span class="jv">"arn:aws:iam::111111111111:root"</span>  <span class="cm">// Trust entire Account A</span>
+      <span class="cm">// Or be more specific:</span>
+      <span class="cm">// "AWS": "arn:aws:iam::111111111111:role/DeployerRole"</span>
+    },
+    <span class="jk">"Action"</span>: <span class="jv">"sts:AssumeRole"</span>
+  }]
+}
+
+<span class="cm"># Create role in Account B with S3 read permissions</span>
+aws iam create-role --role-name CrossAccountS3ReadRole \
+  --assume-role-policy-document file://trust.json   <span class="cm"># run in Account B</span>
+aws iam attach-role-policy \
+  --role-name CrossAccountS3ReadRole \
+  --policy-arn arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess
+
+<span class="cm">## ACCOUNT A setup — allow the specific principal to assume Account B's role</span>
+
+<span class="cm"># Policy attached to the role/user in Account A:</span>
+{
+  <span class="jk">"Version"</span>: <span class="jv">"2012-10-17"</span>,
+  <span class="jk">"Statement"</span>: [{
+    <span class="jk">"Effect"</span>: <span class="allow">"Allow"</span>,
+    <span class="jk">"Action"</span>: <span class="jv">"sts:AssumeRole"</span>,
+    <span class="jk">"Resource"</span>: <span class="jv">"arn:aws:iam::222222222222:role/CrossAccountS3ReadRole"</span>
+  }]
+}
+
+<span class="cm">## Usage from Account A</span>
+aws sts assume-role \
+  --role-arn arn:aws:iam::222222222222:role/CrossAccountS3ReadRole \
+  --role-session-name cross-account-read
+
+<span class="cm"># Now use the returned credentials to access Account B's S3
+# The session ARN looks like:
+# arn:aws:sts::222222222222:assumed-role/CrossAccountS3ReadRole/cross-account-read</span></pre>
+
+<h2>External ID — The Confused Deputy Problem</h2>
+<p>This is a classic AWS security pattern you'll be asked about in interviews. The confused deputy problem occurs when a third party (like a SaaS provider) manages your AWS resources. Without an External ID, any customer of that SaaS provider could potentially use the provider's account to access <em>your</em> AWS resources.</p>
+
+<div class="scenario">
+  <div class="scenario-label">The Confused Deputy Problem</div>
+  <div class="scenario-title">SaaS Provider accessing customer AWS accounts</div>
+  <p>Acme Monitoring SaaS (Account 333) monitors customer AWS accounts. Customer Alice gives Acme access by creating a role with Acme's account as trusted principal. Acme's system includes Alice's role ARN in its system. Now: what stops Acme from also using Alice's role ARN to access Bob's AWS account? Or a malicious Acme employee from using customer A's role ARN with customer B's credentials? Answer: <strong>nothing</strong> — without External ID.</p>
+  <p style="margin-top:10px">The fix: Alice's role trust policy includes an External ID condition — a secret value that only Alice and Acme know. Even if someone knows Alice's role ARN, without the External ID they can't assume the role.</p>
+</div>
+
+<pre><span class="cm"># Customer's role trust policy WITH External ID protection</span>
+{
+  <span class="jk">"Version"</span>: <span class="jv">"2012-10-17"</span>,
+  <span class="jk">"Statement"</span>: [{
+    <span class="jk">"Effect"</span>: <span class="allow">"Allow"</span>,
+    <span class="jk">"Principal"</span>: {
+      <span class="jk">"AWS"</span>: <span class="jv">"arn:aws:iam::333333333333:root"</span>  <span class="cm">// Acme's account</span>
+    },
+    <span class="jk">"Action"</span>: <span class="jv">"sts:AssumeRole"</span>,
+    <span class="jk">"Condition"</span>: {
+      <span class="jk">"StringEquals"</span>: {
+        <span class="jv">"sts:ExternalId"</span>: <span class="jv">"unique-secret-per-customer-8f3k2j"</span>
+        <span class="cm">// Each customer gets a different external ID</span>
+        <span class="cm">// Acme stores this per-customer in their database</span>
+      }
+    }
+  }]
+}
+
+<span class="cm"># Acme's code — must pass the external ID when assuming customer roles</span>
+aws sts assume-role \
+  --role-arn arn:aws:iam::CUSTOMER_ACCOUNT:role/AcmeMonitoringRole \
+  --role-session-name acme-monitoring \
+  --external-id unique-secret-per-customer-8f3k2j  <span class="cm"># Must match the role's condition</span>
+
+<span class="cm"># If a bad actor has Alice's role ARN and tries to assume it without the correct
+# external ID → STS returns: "An error occurred (AccessDenied) when calling
+# the AssumeRole operation: The provided external ID does not match"</span></pre>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_create_for-user_externalid.html" target="_blank">External ID Guide</a>
+  <a class="ref" href="https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies-cross-account-resource-access.html" target="_blank">Cross-Account Resource Access</a>
+  <a class="ref" href="https://aws.amazon.com/blogs/security/how-to-use-external-id-when-granting-access-to-your-aws-resources/" target="_blank">External ID Best Practices</a>
+</div>
+</div>
+
+<!-- ============================= S8: SIGV4 ============================= -->
+<div id="s8" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 2 · Section 8</span>
+  <h1>Signature V4 — IAM in REST</h1>
+  <p class="subtitle">How authentication actually flows at the HTTP level. Understanding this explains presigned URLs, custom HTTP clients, debugging auth failures, and how every AWS SDK works under the hood.</p>
+</div>
+
+<h2>Every AWS Request is a Signed HTTP Request</h2>
+<p>When you call any AWS service — from the SDK, CLI, or directly — you're making an HTTPS request with a specific Authorization header that proves your identity via a cryptographic signature. The signature covers the request body, headers, and timestamp — meaning tampering with any part invalidates it.</p>
+
+<pre><span class="cm"># Complete raw HTTP request to S3 — manually signed (for illustration)</span>
+GET /my-bucket?list-type=2 HTTP/1.1
+Host: s3.us-east-1.amazonaws.com
+X-Amz-Date: 20240115T103045Z                       <span class="cm">← timestamp (15-min window)</span>
+X-Amz-Security-Token: AQoDYXdzEJr...               <span class="cm">← only for STS temp credentials</span>
+Authorization: AWS4-HMAC-SHA256
+    Credential=AKIAIOSFODNN7EXAMPLE/20240115/us-east-1/s3/aws4_request,
+    SignedHeaders=host;x-amz-date;x-amz-security-token,
+    Signature=b638b0c99a5...
+
+<span class="cm">## Breakdown of Authorization header:
+# AWS4-HMAC-SHA256        → algorithm (always this for v4)
+# Credential=             → AccessKeyId/Date/Region/Service/aws4_request
+# SignedHeaders=          → which headers were included in signature (must match)
+# Signature=              → the HMAC-SHA256 hex digest</span></pre>
+
+<h2>Presigned URLs — Time-Limited Access Without Credentials</h2>
+<p>Presigned URLs are one of the most practical applications of SigV4. They let you embed credentials into a URL so that anyone — even unauthenticated users — can perform a specific AWS action for a limited time. No AWS credentials required from the recipient.</p>
+
+<div class="scenario">
+  <div class="scenario-label">Real Use Cases</div>
+  <div class="scenario-title">When Presigned URLs are essential</div>
+  <p><strong>User uploads:</strong> Your React app lets users upload profile photos. You can't expose AWS credentials in the browser. Solution: backend generates a presigned PUT URL valid for 5 minutes. Browser uploads directly to S3 — never touches your server. Zero bandwidth cost on your side.</p>
+  <p style="margin-top:8px"><strong>Secure file sharing:</strong> Generate a presigned GET URL for a private S3 document, email it to a client. URL expires in 24 hours. No need to make the bucket public or build a download proxy.</p>
+</div>
+
+<pre><span class="cm"># Java SDK — generate presigned upload URL</span>
+<span class="ty">S3Presigner</span> presigner = <span class="ty">S3Presigner</span>.<span class="fn">create</span>();
+
+<span class="ty">PutObjectRequest</span> putRequest = <span class="ty">PutObjectRequest</span>.<span class="fn">builder</span>()
+    .<span class="fn">bucket</span>(<span class="str">"user-uploads"</span>)
+    .<span class="fn">key</span>(<span class="str">"profiles/"</span> + userId + <span class="str">"/photo.jpg"</span>)
+    .<span class="fn">contentType</span>(<span class="str">"image/jpeg"</span>)
+    .<span class="fn">build</span>();
+
+<span class="ty">PresignedPutObjectRequest</span> presigned = presigner.<span class="fn">presignPutObject</span>(
+    <span class="ty">PutObjectPresignRequest</span>.<span class="fn">builder</span>()
+        .<span class="fn">signatureDuration</span>(<span class="ty">Duration</span>.<span class="fn">ofMinutes</span>(<span class="num">5</span>))
+        .<span class="fn">putObjectRequest</span>(putRequest)
+        .<span class="fn">build</span>()
+);
+
+<span class="ty">String</span> uploadUrl = presigned.<span class="fn">url</span>().<span class="fn">toString</span>();
+<span class="cm">// Returns URL like:</span>
+<span class="cm">// https://user-uploads.s3.amazonaws.com/profiles/123/photo.jpg</span>
+<span class="cm">// ?X-Amz-Algorithm=AWS4-HMAC-SHA256</span>
+<span class="cm">// &X-Amz-Credential=AKIAIOSFODNN7EXAMPLE%2F20240115%2Fus-east-1%2Fs3%2Faws4_request</span>
+<span class="cm">// &X-Amz-Date=20240115T103045Z</span>
+<span class="cm">// &X-Amz-Expires=300  (5 minutes)</span>
+<span class="cm">// &X-Amz-SignedHeaders=content-type%3Bhost</span>
+<span class="cm">// &X-Amz-Signature=b638b0c99a5...</span>
+
+<span class="cm">// Frontend uses it directly — no AWS SDK needed in browser:</span>
+<span class="cm">// fetch(uploadUrl, { method: 'PUT', body: file, headers: {'Content-Type': 'image/jpeg'} })</span>
+
+<span class="cm"># Generate presigned GET URL — for download</span>
+<span class="ty">GetObjectRequest</span> getRequest = <span class="ty">GetObjectRequest</span>.<span class="fn">builder</span>()
+    .<span class="fn">bucket</span>(<span class="str">"private-docs"</span>)
+    .<span class="fn">key</span>(<span class="str">"contracts/agreement.pdf"</span>)
+    .<span class="fn">build</span>();
+
+<span class="ty">URL</span> downloadUrl = presigner.<span class="fn">presignGetObject</span>(
+    <span class="ty">GetObjectPresignRequest</span>.<span class="fn">builder</span>()
+        .<span class="fn">signatureDuration</span>(<span class="ty">Duration</span>.<span class="fn">ofHours</span>(<span class="num">24</span>))
+        .<span class="fn">getObjectRequest</span>(getRequest)
+        .<span class="fn">build</span>()
+).<span class="fn">url</span>();
+<span class="cm">// Email this URL to the client. Works for 24 hours, then expires.</span></pre>
+
+<h2>Verifying Your Current Identity</h2>
+<pre><span class="cm"># Essential debugging command — who am I right now?</span>
+aws sts get-caller-identity
+
+<span class="cm"># Output:</span>
+{
+    <span class="jk">"UserId"</span>: <span class="jv">"AIDAIOSFODNN7EXAMPLE"</span>,
+    <span class="jk">"Account"</span>: <span class="jv">"123456789012"</span>,
+    <span class="jk">"Arn"</span>: <span class="jv">"arn:aws:iam::123456789012:user/alice"</span>
+}
+
+<span class="cm"># After assuming a role, get-caller-identity shows the role session:</span>
+{
+    <span class="jk">"UserId"</span>: <span class="jv">"AROAIOSFODNN7EXAMPLE:my-session"</span>,
+    <span class="jk">"Account"</span>: <span class="jv">"123456789012"</span>,
+    <span class="jk">"Arn"</span>: <span class="jv">"arn:aws:sts::123456789012:assumed-role/DeployerRole/my-session"</span>
+}
+<span class="cm"># UserId format for assumed role: {RoleUniqueId}:{SessionName}</span></pre>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/PresignedUrlUploadObject.html" target="_blank">S3 Presigned URLs</a>
+  <a class="ref" href="https://docs.aws.amazon.com/general/latest/gr/signing_aws_api_requests.html" target="_blank">SigV4 Complete Guide</a>
+  <a class="ref" href="https://docs.aws.amazon.com/STS/latest/APIReference/API_GetCallerIdentity.html" target="_blank">GetCallerIdentity</a>
+</div>
+</div>
+
+<!-- ============================= S9: SCPs & BOUNDARIES ============================= -->
+<div id="s9" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 2 · Section 9</span>
+  <h1>Organizations, SCPs &amp; Permission Boundaries</h1>
+  <p class="subtitle">The two mechanisms for setting permission ceilings — SCPs for entire accounts, permission boundaries for individual identities. Both limit the maximum possible permissions without granting any.</p>
+</div>
+
+<h2>AWS Organizations — Managing Multiple Accounts</h2>
+<p>Most production AWS environments use multiple accounts managed under AWS Organizations. This gives you: consolidated billing, centrally applied security guardrails (SCPs), and organisational structure that mirrors your teams or environments.</p>
+
+<div class="card">
+  <div class="card-title">Organisation Structure Example</div>
+  <div style="font-family:var(--mono);font-size:12.5px;color:var(--text2);line-height:2.2">
+    Root (Management Account)<br>
+    ├── Production OU<br>
+    │&nbsp;&nbsp;&nbsp;├── prod-account-us (123...)<br>
+    │&nbsp;&nbsp;&nbsp;└── prod-account-eu (456...)<br>
+    ├── Development OU<br>
+    │&nbsp;&nbsp;&nbsp;├── dev-account-alice (789...)<br>
+    │&nbsp;&nbsp;&nbsp;└── dev-account-team (012...)<br>
+    ├── Security OU<br>
+    │&nbsp;&nbsp;&nbsp;└── security-logging-account (345...)<br>
+    └── Sandbox OU<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;└── experiment-account (678...)
+  </div>
+</div>
+
+<h2>SCPs — Service Control Policies</h2>
+<p>SCPs are the most powerful IAM mechanism. They attach to an AWS Organisation, Organisational Unit (OU), or individual account and define the <strong>maximum permissions</strong> any identity in that account can have — including the account's root user. SCPs don't grant permissions; they set an upper bound.</p>
+
+<div class="alert a-orange">
+  <strong>Critical mental model:</strong> SCP + IAM Policy = intersection (the AND, not OR). If SCP allows EC2 but not RDS, and an IAM admin policy allows everything — the user STILL cannot create RDS instances. The SCP wins. Not even the account root user can override an SCP from the parent organization.
+</div>
+
+<pre><span class="cm"># SCP 1: Restrict to EU regions only (GDPR compliance)</span>
+<span class="cm"># Attach to Production OU — prevents any action outside eu-west-1 or eu-central-1</span>
+{
+  <span class="jk">"Version"</span>: <span class="jv">"2012-10-17"</span>,
+  <span class="jk">"Statement"</span>: [
+    {
+      <span class="jk">"Sid"</span>: <span class="jv">"DenyNonEURegions"</span>,
+      <span class="jk">"Effect"</span>: <span class="deny">"Deny"</span>,
+      <span class="jk">"Action"</span>: <span class="jv">"*"</span>,
+      <span class="jk">"Resource"</span>: <span class="jv">"*"</span>,
+      <span class="jk">"Condition"</span>: {
+        <span class="jk">"StringNotEquals"</span>: {
+          <span class="jv">"aws:RequestedRegion"</span>: [
+            <span class="jv">"eu-west-1"</span>,
+            <span class="jv">"eu-central-1"</span>,
+            <span class="jv">"eu-west-2"</span>
+          ]
+        }
+      },
+      <span class="jk">"NotPrincipal"</span>: {  <span class="cm">// Exempt these from the region restriction</span>
+        <span class="jk">"AWS"</span>: [
+          <span class="jv">"arn:aws:iam::123456789012:role/GlobalAdminRole"</span>
+        ]
+      }
+    }
+  ]
+}
+
+<span class="cm"># SCP 2: Prevent disabling CloudTrail (audit immutability)</span>
+{
+  <span class="jk">"Statement"</span>: [{
+    <span class="jk">"Sid"</span>: <span class="jv">"ProtectCloudTrail"</span>,
+    <span class="jk">"Effect"</span>: <span class="deny">"Deny"</span>,
+    <span class="jk">"Action"</span>: [
+      <span class="jv">"cloudtrail:StopLogging"</span>,
+      <span class="jv">"cloudtrail:DeleteTrail"</span>,
+      <span class="jv">"cloudtrail:UpdateTrail"</span>
+    ],
+    <span class="jk">"Resource"</span>: <span class="jv">"*"</span>
+  }]
+}
+
+<span class="cm"># SCP 3: Prevent creating unencrypted S3 buckets or RDS instances</span>
+{
+  <span class="jk">"Statement"</span>: [{
+    <span class="jk">"Sid"</span>: <span class="jv">"RequireEncryptedRDS"</span>,
+    <span class="jk">"Effect"</span>: <span class="deny">"Deny"</span>,
+    <span class="jk">"Action"</span>: <span class="jv">"rds:CreateDBInstance"</span>,
+    <span class="jk">"Resource"</span>: <span class="jv">"*"</span>,
+    <span class="jk">"Condition"</span>: {
+      <span class="jk">"Bool"</span>: { <span class="jv">"rds:StorageEncrypted"</span>: <span class="jb">"false"</span> }
+    }
+  }]
+}</pre>
+
+<h2>Permission Boundaries</h2>
+<p>A permission boundary is an IAM policy attached to a <em>specific</em> IAM user or role (not an account or OU). It defines the maximum permissions that identity can ever have. Even if you attach an AdministratorAccess policy to that user, they can only do what the boundary allows.</p>
+
+<div class="scenario">
+  <div class="scenario-label">Real Use Case</div>
+  <div class="scenario-title">Safe delegation — letting developers create their own roles</div>
+  <p>You want to let developers create IAM roles for their Lambda functions without giving them full IAM admin access (which could be used to escalate their own privileges). Solution: give developers permission to create roles, but require any role they create to have a permission boundary. The boundary ensures developer-created roles can never exceed "Lambda + S3 + DynamoDB" — they can't create a role with admin access.</p>
+</div>
+
+<pre><span class="cm"># Developer policy: can create roles, but ONLY with the required boundary</span>
+{
+  <span class="jk">"Statement"</span>: [
+    {
+      <span class="jk">"Sid"</span>: <span class="jv">"AllowCreateRolesWithBoundary"</span>,
+      <span class="jk">"Effect"</span>: <span class="allow">"Allow"</span>,
+      <span class="jk">"Action"</span>: [<span class="jv">"iam:CreateRole"</span>, <span class="jv">"iam:AttachRolePolicy"</span>, <span class="jv">"iam:PutRolePolicy"</span>],
+      <span class="jk">"Resource"</span>: <span class="jv">"*"</span>,
+      <span class="jk">"Condition"</span>: {
+        <span class="jk">"StringEquals"</span>: {
+          <span class="jv">"iam:PermissionsBoundary"</span>:
+            <span class="jv">"arn:aws:iam::123456789012:policy/DeveloperRoleBoundary"</span>
+          <span class="cm">// Only allowed to create roles that have THIS boundary attached</span>
+        }
+      }
+    }
+  ]
+}
+
+<span class="cm"># DeveloperRoleBoundary policy — caps what developer-created roles can do</span>
+{
+  <span class="jk">"Statement"</span>: [{
+    <span class="jk">"Effect"</span>: <span class="allow">"Allow"</span>,
+    <span class="jk">"Action"</span>: [
+      <span class="jv">"s3:*"</span>, <span class="jv">"dynamodb:*"</span>, <span class="jv">"lambda:*"</span>,
+      <span class="jv">"logs:*"</span>, <span class="jv">"sqs:*"</span>, <span class="jv">"sns:*"</span>
+    ],
+    <span class="jk">"Resource"</span>: <span class="jv">"*"</span>
+  }]
+  <span class="cm">// Note: this doesn't GRANT any of these permissions</span>
+  <span class="cm">// It just says: developer-created roles can NEVER do more than this list</span>
+}
+
+<span class="cm"># Developer creates a Lambda role — must attach the boundary</span>
+aws iam create-role \
+  --role-name my-lambda-role \
+  --assume-role-policy-document file://trust.json \
+  --permissions-boundary arn:aws:iam::123456789012:policy/DeveloperRoleBoundary
+<span class="cm"># Succeeds — boundary is attached</span>
+
+<span class="cm"># Developer tries to create a role WITHOUT the boundary</span>
+aws iam create-role --role-name sneaky-admin-role --assume-role-policy-document ...
+<span class="cm"># Fails — 403 AccessDenied — the condition requires the boundary</span></pre>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html" target="_blank">Service Control Policies</a>
+  <a class="ref" href="https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html" target="_blank">Permission Boundaries</a>
+  <a class="ref" href="https://aws.amazon.com/blogs/security/how-to-use-service-control-policies-in-aws-organizations/" target="_blank">SCP Best Practices Blog</a>
+</div>
+</div>
+
+<!-- ============================= S10: REAL-WORLD PATTERNS ============================= -->
+<div id="s10" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 2 · Section 10</span>
+  <h1>Real-World IAM Patterns &amp; Anti-Patterns</h1>
+  <p class="subtitle">How production systems actually use IAM — patterns you'll see in every serious AWS workload, and mistakes you must never repeat.</p>
+</div>
+
+<h2>Pattern 1: Microservice IAM — Each Service Gets Its Own Role</h2>
+<p>In a microservices architecture, every service gets a narrowly scoped IAM role. Service A's role cannot access Service B's database. This contains blast radius — if Service A is compromised, the attacker can't pivot to Service B's data.</p>
+
+<pre><span class="cm"># UserService role — can only access users table</span>
+UserServiceRole:
+  DynamoDB: users table (GetItem, PutItem, Query)
+  SQS: user-events queue (SendMessage)
+  Secrets Manager: user-service/db-password (GetSecretValue)
+  CloudWatch Logs: /aws/lambda/UserService (PutLogEvents)
+
+<span class="cm"># OrderService role — completely separate permissions</span>
+OrderServiceRole:
+  DynamoDB: orders table, order-items table
+  SQS: orders-queue (ReceiveMessage, DeleteMessage)
+  SNS: order-notifications (Publish)
+  S3: order-attachments bucket (GetObject, PutObject)
+
+<span class="cm"># PaymentService role — tightly scoped</span>
+PaymentServiceRole:
+  Secrets Manager: payment-gateway/api-key (GetSecretValue)
+  DynamoDB: payments table
+  SNS: payment-events (Publish)
+  KMS: payment-encryption-key (Decrypt, GenerateDataKey)</span></pre>
+
+<h2>Pattern 2: Break-Glass Role — Emergency Elevated Access</h2>
+<pre><span class="cm"># Normal admins have read-only access in production
+# For emergencies, a "break-glass" role allows write access
+# Access is strictly audited and time-limited</span>
+
+<span class="cm"># Break-glass role trust policy</span>
+{
+  <span class="jk">"Effect"</span>: <span class="allow">"Allow"</span>,
+  <span class="jk">"Principal"</span>: {
+    <span class="jk">"AWS"</span>: <span class="jv">"arn:aws:iam::123456789012:group/SeniorEngineers"</span>
+  },
+  <span class="jk">"Action"</span>: <span class="jv">"sts:AssumeRole"</span>,
+  <span class="jk">"Condition"</span>: {
+    <span class="jk">"Bool"</span>: { <span class="jv">"aws:MultiFactorAuthPresent"</span>: <span class="jb">"true"</span> },
+    <span class="jk">"NumericLessThan"</span>: { <span class="jv">"aws:MultiFactorAuthAge"</span>: <span class="num">3600</span> }
+    <span class="cm">// MFA must have been used within the last hour</span>
+  }
+}
+
+<span class="cm"># Any assume of this role generates CloudWatch alarm → PagerDuty alert
+# All CloudTrail logs tagged with break-glass session name</span>
+aws sts assume-role \
+  --role-arn arn:aws:iam::123456789012:role/BreakGlassProductionAccess \
+  --role-session-name "INCIDENT-2024-01-15-alice"  <span class="cm"># session name in CloudTrail</span></pre>
+
+<h2>Pattern 3: Resource Tagging + Conditions for Self-Service</h2>
+<pre><span class="cm"># Developers can only manage EC2 instances they created (by tag)</span>
+{
+  <span class="jk">"Statement"</span>: [
+    {
+      <span class="jk">"Sid"</span>: <span class="jv">"StartStopOwnInstances"</span>,
+      <span class="jk">"Effect"</span>: <span class="allow">"Allow"</span>,
+      <span class="jk">"Action"</span>: [<span class="jv">"ec2:StopInstances"</span>, <span class="jv">"ec2:StartInstances"</span>, <span class="jv">"ec2:RebootInstances"</span>],
+      <span class="jk">"Resource"</span>: <span class="jv">"*"</span>,
+      <span class="jk">"Condition"</span>: {
+        <span class="jk">"StringEquals"</span>: {
+          <span class="jv">"ec2:ResourceTag/Owner"</span>: <span class="jv">"${aws:username}"</span>
+          <span class="cm">// Can only act on instances with Owner tag = their IAM username</span>
+        }
+      }
+    },
+    {
+      <span class="jk">"Sid"</span>: <span class="jv">"RequireTagOnCreate"</span>,
+      <span class="jk">"Effect"</span>: <span class="allow">"Allow"</span>,
+      <span class="jk">"Action"</span>: <span class="jv">"ec2:RunInstances"</span>,
+      <span class="jk">"Resource"</span>: <span class="jv">"*"</span>,
+      <span class="jk">"Condition"</span>: {
+        <span class="jk">"StringEquals"</span>: { <span class="jv">"aws:RequestTag/Owner"</span>: <span class="jv">"${aws:username}"</span> }
+        <span class="cm">// Must tag new instances with their username — enables self-service</span>
+      }
+    }
+  ]
+}</pre>
+
+<h2>IAM Anti-Patterns — Never Do These</h2>
+<div class="grid2">
+  <div class="card" style="border-color:#5a1a1a">
+    <div class="card-title" style="color:var(--red-light)">Hardcoded credentials in code</div>
+    <div class="card-body"><code>accessKey = "AKIA..."</code> in your Java class is a career-ending mistake. Leaked to GitHub → AWS account compromised in minutes. Use roles. Always. No exceptions for "just dev".</div>
+  </div>
+  <div class="card" style="border-color:#5a1a1a">
+    <div class="card-title" style="color:var(--red-light)">AdministratorAccess on Lambda roles</div>
+    <div class="card-body">Lambda function only writes to one DynamoDB table but its role has <code>AdministratorAccess</code>. If the function is exploited (SSRF, code injection), attacker has full account control. Least privilege always.</div>
+  </div>
+  <div class="card" style="border-color:#5a1a1a">
+    <div class="card-title" style="color:var(--red-light)">Sharing one role across all microservices</div>
+    <div class="card-body">All 20 microservices use the same <code>AppRole</code> with all permissions. Any service compromise = all data exposed. Each service needs its own tightly scoped role.</div>
+  </div>
+  <div class="card" style="border-color:#5a1a1a">
+    <div class="card-title" style="color:var(--red-light)">Never rotating long-term credentials</div>
+    <div class="card-body">Access keys created years ago and never rotated. If leaked (CI/CD logs, error messages, code commit), the window of exposure is unbounded. Rotate keys every 90 days, or better: eliminate them with roles.</div>
+  </div>
+</div>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html" target="_blank">IAM Security Best Practices</a>
+  <a class="ref" href="https://aws.amazon.com/blogs/security/techniques-for-writing-least-privilege-iam-policies/" target="_blank">Least Privilege Techniques</a>
+  <a class="ref" href="https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_access-advisor.html" target="_blank">IAM Access Advisor (find unused permissions)</a>
+  <a class="ref" href="https://docs.aws.amazon.com/IAM/latest/UserGuide/what-is-access-analyzer.html" target="_blank">IAM Access Analyzer</a>
+</div>
+</div>
+
+<!-- ============================= S11: INTERVIEW Q&A ============================= -->
+<div id="s11" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 2 · Interview Q&amp;A</span>
+  <h1>Interview Questions — IAM</h1>
+  <p class="subtitle">18 questions from beginner to senior architect. IAM is the most commonly tested AWS topic. Click to reveal detailed answers.</p>
+</div>
+
+<h2 style="color:var(--green-light)">Beginner</h2>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">What is the difference between an IAM User and an IAM Role? <span class="qa-arrow">▼</span></div><div class="qa-a"><strong>IAM User:</strong> Permanent identity for a specific human. Has long-term credentials (access key pair, password). You log in as this user.<br><br><strong>IAM Role:</strong> Temporary identity not belonging to any person. It's assumed by someone/something (service, user, account). When assumed, STS provides temporary credentials (AccessKeyId + SecretKey + SessionToken) that expire. No password stored anywhere.<br><br><strong>Rule of thumb:</strong> Users = humans who interact with the console/CLI. Roles = everything else — EC2 instances, Lambda functions, CI/CD pipelines, cross-account access, federated users via SSO. In modern AWS, minimize users, maximise roles.</div></div>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">What is the IAM policy evaluation order? What happens by default if no policy matches? <span class="qa-arrow">▼</span></div><div class="qa-a">Evaluation order: (1) Explicit Deny anywhere (SCP, identity, resource, boundary) → immediately DENIED. (2) SCP must allow it. (3) Permission boundary must allow it. (4) Resource-based policy OR identity-based policy must allow it. Default: if no policy explicitly allows → IMPLICIT DENY. There is no default allow in IAM. You must explicitly grant every permission. The default state for any new IAM identity is "can do nothing."</div></div>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">What is the difference between an IAM identity-based policy and a resource-based policy? <span class="qa-arrow">▼</span></div><div class="qa-a"><strong>Identity-based policy:</strong> Attached to an IAM user, group, or role. Defines what THAT IDENTITY can do. No Principal element (it's implied — the identity it's attached to). Example: Alice's user has a policy allowing s3:GetObject on all buckets.<br><br><strong>Resource-based policy:</strong> Attached to the RESOURCE itself (S3 bucket, KMS key, SQS queue, Lambda function…). Has an explicit Principal element — defines WHO can access this resource and what they can do. Example: an S3 bucket policy allowing a specific role to PutObject.<br><br>Key difference: resource-based policies are how you grant cross-account access to a resource without requiring an AssumeRole flow.</div></div>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">How would you give an EC2 instance access to read from an S3 bucket securely? <span class="qa-arrow">▼</span></div><div class="qa-a">Never hardcode credentials. Use an IAM Instance Profile: (1) Create an IAM role with trust policy <code>{"Service": "ec2.amazonaws.com"}</code>. (2) Attach a permission policy allowing s3:GetObject and s3:ListBucket on the specific bucket. (3) Create an instance profile and add the role to it. (4) Attach the instance profile when launching the EC2 instance. The AWS SDK on the instance automatically calls the IMDS (169.254.169.254) to get temporary credentials. No credentials stored on the instance, no rotation needed — AWS handles it.</div></div>
+
+<h2 style="color:var(--yellow-light)">Intermediate</h2>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">Explain what happens step by step when an EC2 instance with an IAM role makes a call to DynamoDB. <span class="qa-arrow">▼</span></div><div class="qa-a">1. EC2 boots with an IAM instance profile attached. 2. AWS SDK initialises — looks for credentials via the provider chain. Finds nothing in env vars or files. 3. SDK queries IMDS: GET http://169.254.169.254/latest/meta-data/iam/security-credentials/{role-name}. 4. IMDS returns: AccessKeyId (ASIA...), SecretAccessKey, SessionToken, Expiration. 5. SDK caches these credentials and sets a refresh timer before expiry. 6. SDK builds a DynamoDB API request (e.g., PutItem). Signs it with SigV4 using the temp credentials — includes X-Amz-Security-Token header with the SessionToken. 7. Request hits dynamodb.us-east-1.amazonaws.com. DynamoDB passes to IAM. 8. IAM authenticates the signature, identifies the principal as the role session, checks the role's permission policy. If PutItem is allowed on the table → 200 OK. If not → 403 AccessDenied.</div></div>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">What is an IAM permission boundary and when would you use it? <span class="qa-arrow">▼</span></div><div class="qa-a">A permission boundary is a policy attached to an IAM user or role that sets the maximum permissions it can ever have. The effective permissions are the INTERSECTION of the identity policy and the boundary — not the union. Use case: you want to delegate IAM to a team (let them create their own Lambda roles) but prevent privilege escalation. Attach a boundary to all roles they create that limits what those roles can do (e.g., only S3, DynamoDB, Lambda). Even if they attach AdministratorAccess to a role they create, the boundary ensures the role still can't do EC2, RDS, IAM, etc. The boundary is set by a higher-level admin — the delegated admin can't remove it.</div></div>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">What is a presigned URL? How does it work and when would you use it? <span class="qa-arrow">▼</span></div><div class="qa-a">A presigned URL is an S3 URL that contains SigV4 authentication parameters embedded as query string parameters, making the URL self-authenticating. Anyone with the URL can perform the specified S3 action (GET or PUT) without having any AWS credentials, until the URL expires. The URL contains: the signing credentials (access key ID), timestamp, expiry duration (X-Amz-Expires), the specific action (implied by HTTP method), and the HMAC-SHA256 signature of all these. Use cases: (1) Direct browser-to-S3 file uploads — generate a presigned PUT URL on the backend, return it to the frontend, user uploads directly to S3. No data goes through your server. (2) Sharing private S3 files without making the bucket public. (3) Providing time-limited download links. URLs expire between 1 second and 7 days (12 hours max if using STS temp credentials).</div></div>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">What is the "confused deputy problem" in IAM? How does External ID solve it? <span class="qa-arrow">▼</span></div><div class="qa-a">Confused deputy: A third-party service (e.g., SaaS monitoring tool in Account X) can access customer AWS accounts by assuming a role customers create trusting Account X. Problem: if Customer A's role ARN somehow becomes known to a malicious actor who also has access to the SaaS service in Account X, they can call AssumeRole on Customer A's role — exploiting the SaaS service as a "confused deputy." External ID fix: Customer A's role trust policy requires a condition: <code>"sts:ExternalId": "unique-secret-per-customer"</code>. The SaaS provider assigns each customer a unique External ID, stored per-customer in the SaaS database. When assuming a customer's role, the SaaS service must provide the correct External ID. Even if an attacker knows Customer A's role ARN, they don't know the External ID → AssumeRole fails. This ties the role assumption to a specific customer relationship, not just account trust.</div></div>
+
+<h2 style="color:var(--orange-light)">Advanced</h2>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">A Lambda function returns 403 AccessDenied when calling DynamoDB. Walk through your debugging process. <span class="qa-arrow">▼</span></div><div class="qa-a">1. <strong>Read the error message carefully:</strong> AccessDenied messages tell you the exact principal ARN, action, and resource. e.g., "User: arn:aws:sts::123:assumed-role/MyRole/session is not authorized to perform: dynamodb:PutItem on resource: arn:aws:dynamodb:us-east-1:123:table/Orders." 2. <strong>Verify the role:</strong> In Lambda console, check which execution role is attached. Confirm it's the right role. 3. <strong>Use IAM Policy Simulator:</strong> Simulate the exact action on the exact resource for the Lambda's execution role. 4. <strong>Check the role's policies:</strong> aws iam list-attached-role-policies and list-role-policies to see all policies. Check each for the action and resource. 5. <strong>Check DynamoDB resource policy:</strong> Some setups add a resource policy on the table — does it deny anything? 6. <strong>Check for SCPs:</strong> If using Organizations, check if an SCP denies DynamoDB in this account. 7. <strong>Check the region:</strong> Is the Lambda in us-east-1 calling a DynamoDB table in eu-west-1? Different region. 8. <strong>Check for typos:</strong> <code>dynamodb:PuItem</code> (missing t) silently fails to match. 9. <strong>CloudTrail:</strong> Find the exact failed event with all context.</div></div>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">What is the difference between STS AssumeRole, AssumeRoleWithWebIdentity, and AssumeRoleWithSAML? <span class="qa-arrow">▼</span></div><div class="qa-a"><strong>AssumeRole:</strong> Used when an IAM identity (user, role, service) wants to assume another IAM role within the same or different AWS account. Requires AWS credentials to make the call. Most common: services calling services, cross-account access, developer elevation.<br><br><strong>AssumeRoleWithWebIdentity:</strong> Used when you have an external JWT from an OIDC provider (Google, Facebook, GitHub, Cognito, Kubernetes service account). Exchange the external token for AWS credentials. No pre-existing AWS credentials needed. Use cases: mobile apps, GitHub Actions CI/CD, Kubernetes workload identity.<br><br><strong>AssumeRoleWithSAML:</strong> Used for enterprise SSO where users authenticate via SAML 2.0 (Active Directory, Okta, Azure AD). The SAML assertion from the identity provider is exchanged for AWS credentials. Use cases: employees accessing the AWS console via company SSO, federated access without creating individual IAM users.</div></div>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">How does a Service Control Policy differ from an IAM permission boundary? When would you use each? <span class="qa-arrow">▼</span></div><div class="qa-a"><strong>SCP (Service Control Policy):</strong> Applies to an entire AWS account or OU within Organizations. Limits the maximum permissions for EVERY identity in that account — including root user. Set by the organization administrator. Individual account admins can't override them. Use for: org-wide security guardrails (enforce encryption, restrict regions, prevent CloudTrail deletion), compliance enforcement across all accounts, cost control (deny expensive services in dev accounts).<br><br><strong>Permission Boundary:</strong> Applies to a specific IAM user or role. Set within a single account. Limits what that specific identity can do. The identity still needs explicit Allow policies — boundary alone grants nothing. Use for: delegation (letting a team create their own IAM roles without allowing privilege escalation), scoping specific identities to a subset of allowed services.<br><br>Key similarity: both set an upper limit on permissions — they don't grant any. Key difference: SCP scope is account-wide via Organizations; boundary scope is per-identity.</div></div>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">Design an IAM strategy for a team of 20 developers deploying to a prod/staging/dev multi-account setup. <span class="qa-arrow">▼</span></div><div class="qa-a">Architecture: Use AWS Organizations with three accounts: Dev (dev workloads), Staging (pre-prod), Prod (production). Central identity in a separate "identity account." Strategy: (1) <strong>Human access via SSO:</strong> Use AWS IAM Identity Center (SSO). Developers authenticate via company IdP (Okta/Azure AD). Permission sets define what they can do per account. No individual IAM users. (2) <strong>Dev account:</strong> Developers have PowerUser access (everything except IAM changes). No prod data. Can experiment freely. (3) <strong>Staging:</strong> Read-only for developers. Deployments only via CI/CD pipeline (CodePipeline/GitHub Actions). (4) <strong>Prod:</strong> Zero human access by default. Break-glass role for emergencies (requires MFA + approval workflow). All changes via Infrastructure as Code. (5) <strong>CI/CD:</strong> GitHub Actions uses OIDC to assume a deployer role per environment. Branching strategy: PRs → dev, merges to main → staging, releases → prod with approval gates. (6) <strong>SCPs:</strong> Deny root use, require CloudTrail, restrict prod region, prevent disabling security tools. (7) <strong>Service roles:</strong> Each microservice in each account has its own tightly scoped role. No shared service roles across apps.</div></div>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">Explain how IAM works with VPC Endpoint policies — can a VPC Endpoint restrict access? <span class="qa-arrow">▼</span></div><div class="qa-a">Yes — VPC Endpoint policies add a fourth layer to IAM evaluation. A VPC Endpoint policy is attached to a VPC Gateway or Interface Endpoint and controls what requests going through the endpoint can do. Even if an IAM role has full S3 access, if the endpoint policy restricts access to specific buckets, requests through that endpoint are limited. Example: a private subnet has a Gateway Endpoint for S3. The endpoint policy only allows access to the company's own S3 buckets (by account number) — not public buckets or other accounts' buckets. This prevents data exfiltration: a compromised instance in that subnet can't exfiltrate data by copying it to an attacker's S3 bucket, because the endpoint policy blocks access to buckets not in your account. Evaluation: all four must allow the request — SCP, identity policy, resource policy, AND endpoint policy.</div></div>
+
+</div>
+
+</main>
+</div>
+
+<script>
+function show(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.currentTarget.classList.add('active');
+  window.scrollTo(0, 0);
+}
+function toggleQA(el) {
+  const ans = el.nextElementSibling;
+  const arrow = el.querySelector('.qa-arrow');
+  ans.classList.toggle('open');
+  arrow.classList.toggle('open');
+}
+</script>
+</body>
+</html>
