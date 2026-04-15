@@ -1328,42 +1328,10 @@ const SITE_DATA = {
           ]
         },
         {
-          name: 'AWS Essentials',
+          name: 'AWS Modules 1–11',
           concepts: [
             {
-              title:      'EC2, S3 & IAM',
-              subtitle:   'Core compute, object storage, access control, instance profiles, policies',
-              difficulty: 'beginner',
-              time:       '45 min',
-              tags:       ['aws', 'cloud'],
-              file:       'aws-basics.html',
-              status:     'available'
-            },
-            {
-              title:      'Lambda & Serverless',
-              subtitle:   'Function lifecycle, triggers, cold starts, layers, event-driven patterns',
-              difficulty: 'intermediate',
-              time:       '30 min',
-              tags:       ['aws', 'lambda', 'serverless'],
-              file:       'lambda.html',
-              status:     'available'
-            },
-            {
-              title:      'Cloud Interview Reference Sheet',
-              subtitle:   'AWS, Docker, Kubernetes, CI/CD — comprehensive cloud interview cheatsheet',
-              difficulty: 'intermediate',
-              time:       '45 min',
-              tags:       ['reference', 'interview'],
-              file:       'cloud_interview_reference_sheet.html',
-              status:     'available'
-            }
-          ]
-        },
-        {
-          name: 'AWS Deep Dive',
-          concepts: [
-            {
-              title:      'AWS & Cloud Foundations',
+              title:      'Module 1 — AWS & Cloud Foundations',
               subtitle:   'Cloud value proposition, regions and AZs, service models, AWS account model',
               difficulty: 'beginner',
               time:       '45 min',
@@ -1373,7 +1341,7 @@ const SITE_DATA = {
               featured:   true
             },
             {
-              title:      'IAM Deep Dive',
+              title:      'Module 2 — IAM Deep Dive',
               subtitle:   'Users, groups, roles, policies, trust relationships, permission evaluation',
               difficulty: 'intermediate',
               time:       '45 min',
@@ -1382,7 +1350,7 @@ const SITE_DATA = {
               status:     'available'
             },
             {
-              title:      'VPC & Networking',
+              title:      'Module 3 — VPC & Networking',
               subtitle:   'Subnets, route tables, internet gateways, NAT, security groups, NACLs',
               difficulty: 'intermediate',
               time:       '1 hr',
@@ -1391,7 +1359,7 @@ const SITE_DATA = {
               status:     'available'
             },
             {
-              title:      'AWS Compute Deep Dive',
+              title:      'Module 4 — AWS Compute Deep Dive',
               subtitle:   'EC2 instances, AMIs, launch templates, auto scaling, load balancing',
               difficulty: 'intermediate',
               time:       '45 min',
@@ -1400,7 +1368,16 @@ const SITE_DATA = {
               status:     'available'
             },
             {
-              title:      'AWS Storage Deep Dive',
+              title:      'Module 4.5 — Containers & Scaling on AWS',
+              subtitle:   'Docker, ECS, EKS, orchestration choices, scaling trade-offs, deployment patterns',
+              difficulty: 'intermediate',
+              time:       '1 hr',
+              tags:       ['aws', 'containers', 'scaling', 'Guruji'],
+              file:       'aws-containers-scaling.html',
+              status:     'available'
+            },
+            {
+              title:      'Module 5 — AWS Storage Deep Dive',
               subtitle:   'S3, EBS, EFS, consistency, durability, lifecycle policies, access patterns',
               difficulty: 'intermediate',
               time:       '45 min',
@@ -1409,7 +1386,7 @@ const SITE_DATA = {
               status:     'available'
             },
             {
-              title:      'AWS Databases Deep Dive',
+              title:      'Module 6 — AWS Databases Deep Dive',
               subtitle:   'RDS, DynamoDB, OLTP vs OLAP, managed database trade-offs',
               difficulty: 'intermediate',
               time:       '45 min',
@@ -1418,7 +1395,7 @@ const SITE_DATA = {
               status:     'available'
             },
             {
-              title:      'AWS Messaging & Eventing',
+              title:      'Module 7 — AWS Messaging & Eventing',
               subtitle:   'SQS, SNS, event-driven patterns, retries, fan-out, decoupling services',
               difficulty: 'intermediate',
               time:       '45 min',
@@ -1427,12 +1404,71 @@ const SITE_DATA = {
               status:     'available'
             },
             {
-              title:      'Containers & Scaling on AWS',
-              subtitle:   'Docker, ECS, EKS, orchestration choices, scaling trade-offs, deployment patterns',
+              title:      'Module 8 — API Gateway',
+              subtitle:   'REST, HTTP, and WebSocket APIs, integrations, routing, request transforms',
               difficulty: 'intermediate',
+              time:       '45 min',
+              tags:       ['aws', 'apigateway', 'serverless', 'Guruji'],
+              file:       'aws_module8_apigateway.html',
+              status:     'available'
+            },
+            {
+              title:      'Module 9 — Security',
+              subtitle:   'Shared responsibility, encryption, KMS, envelope encryption, service-level security',
+              difficulty: 'advanced',
               time:       '1 hr',
-              tags:       ['aws', 'containers', 'scaling', 'Guruji'],
-              file:       'aws-containers-scaling.html',
+              tags:       ['aws', 'security', 'kms', 'Guruji'],
+              file:       'aws_module9_security.html',
+              status:     'available'
+            },
+            {
+              title:      'Module 10 — Observability',
+              subtitle:   'Metrics, alarms, dashboards, logs, tracing, production troubleshooting',
+              difficulty: 'advanced',
+              time:       '1 hr',
+              tags:       ['aws', 'observability', 'cloudwatch', 'Guruji'],
+              file:       'aws_module10_observability.html',
+              status:     'available'
+            },
+            {
+              title:      'Module 11 — Infrastructure as Code',
+              subtitle:   'CloudFormation, templates, stacks, change sets, drift detection, parameters',
+              difficulty: 'advanced',
+              time:       '1 hr',
+              tags:       ['aws', 'iac', 'cloudformation', 'Guruji'],
+              file:       'aws_module11_iac.html',
+              status:     'available'
+            }
+          ]
+        },
+        {
+          name: 'AWS Quick Reference',
+          concepts: [
+            {
+              title:      'EC2, S3 & IAM',
+              subtitle:   'Core compute, object storage, access control, instance profiles, policies',
+              difficulty: 'beginner',
+              time:       '45 min',
+              tags:       ['aws', 'cloud', 'Guruji'],
+              file:       'aws-basics.html',
+              status:     'available'
+            },
+            {
+              title:      'Lambda & Serverless',
+              subtitle:   'Function lifecycle, triggers, cold starts, layers, event-driven patterns',
+              difficulty: 'intermediate',
+              time:       '30 min',
+              tags:       ['aws', 'lambda', 'serverless', 'Guruji'],
+              file:       'lambda.html',
+              status:     'available'
+            },
+            {
+              title:      'Cloud Interview Reference Sheet',
+              subtitle:   'AWS, Docker, Kubernetes, CI/CD — comprehensive cloud interview cheatsheet',
+              difficulty: 'intermediate',
+              time:       '45 min',
+              tags:       ['reference', 'interview', 'Guruji'],
+              file:       'cloud_interview_reference_sheet.html',
               status:     'available'
             }
           ]

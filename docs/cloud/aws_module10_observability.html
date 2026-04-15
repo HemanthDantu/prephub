@@ -1,0 +1,1545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>AWS Module 10 — Observability</title>
+<style>
+:root{--bg:#0c1117;--bg2:#131a24;--bg3:#1a2332;--bg4:#1f2b3d;--border:#243048;--border2:#2e3d55;--text:#e2e8f0;--text2:#94a3b8;--text3:#5a6a82;--orange:#f97316;--orange-bg:#2a1500;--orange-light:#fdba74;--blue:#3b82f6;--blue-bg:#0f2340;--blue-light:#93c5fd;--green:#22c55e;--green-bg:#0a2414;--green-light:#86efac;--red:#ef4444;--red-bg:#2a0a0a;--red-light:#fca5a5;--yellow:#f59e0b;--yellow-bg:#2a1800;--yellow-light:#fcd34d;--purple:#a855f7;--purple-bg:#1e0a35;--purple-light:#d8b4fe;--teal:#14b8a6;--teal-bg:#021e1c;--teal-light:#5eead4;--aws:#ff9900;--aws-bg:#1a0f00;--radius:8px;--radius-lg:12px;--mono:'Fira Code','Cascadia Code','Consolas',monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;line-height:1.7}
+.layout{display:flex;min-height:100vh}
+.sidebar{width:255px;min-width:255px;background:var(--bg2);border-right:1px solid var(--border);position:sticky;top:0;height:100vh;overflow-y:auto}
+.sidebar-header{padding:16px 20px;border-bottom:1px solid var(--border)}
+.sidebar-mod{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--aws);margin-bottom:3px}
+.sidebar-title{font-size:14px;font-weight:700;color:var(--text)}
+.sidebar-sub{font-size:11px;color:var(--text3);margin-top:2px}
+.nav-item{display:flex;align-items:center;gap:8px;padding:8px 20px;cursor:pointer;font-size:12.5px;color:var(--text2);transition:all .15s;border-left:3px solid transparent}
+.nav-item:hover{background:var(--bg3);color:var(--text)}
+.nav-item.active{background:var(--bg3);color:var(--orange-light);border-left-color:var(--aws)}
+.nav-dot{width:5px;height:5px;border-radius:50%;background:var(--border2);flex-shrink:0}
+.nav-item.active .nav-dot{background:var(--aws)}
+.nav-badge{font-size:9.5px;padding:1px 6px;border-radius:10px;background:var(--bg4);color:var(--text3);margin-left:auto}
+.nav-item.active .nav-badge{background:var(--aws-bg);color:var(--orange-light)}
+.nav-group-label{font-size:9.5px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.9px;padding:12px 20px 4px}
+.main{flex:1;padding:44px 52px;max-width:960px;overflow-x:hidden}
+.section{display:none}.section.active{display:block}
+h1{font-size:27px;font-weight:700;margin-bottom:8px;line-height:1.25}
+h2{font-size:19px;font-weight:600;margin:36px 0 14px}
+h3{font-size:15px;font-weight:600;margin:22px 0 10px}
+h4{font-size:13px;font-weight:600;margin:14px 0 6px;color:var(--orange-light)}
+p{color:var(--text2);margin-bottom:12px;line-height:1.78}
+strong{color:var(--text);font-weight:600}
+.subtitle{color:var(--text3);font-size:14px;margin-bottom:26px;line-height:1.65}
+pre{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px;font-family:var(--mono);font-size:12.5px;line-height:1.72;overflow-x:auto;margin:14px 0}
+code{font-family:var(--mono);font-size:12px;background:var(--bg3);padding:2px 6px;border-radius:4px;color:var(--teal-light)}
+.cm{color:var(--text3)}.kw{color:var(--purple-light)}.str{color:var(--green-light)}.ty{color:var(--blue-light)}.ak{color:var(--orange-light)}.num{color:var(--yellow-light)}.fn{color:var(--teal-light)}.jk{color:var(--orange-light)}.jv{color:var(--green-light)}
+.card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px;margin-bottom:14px}
+.card-title{font-size:13.5px;font-weight:600;margin-bottom:8px}
+.card-body{font-size:13px;color:var(--text2);line-height:1.75}
+.alert{border-radius:var(--radius);padding:13px 16px;margin:16px 0;font-size:13px;border-left:3px solid;line-height:1.7}
+.a-orange{background:var(--orange-bg);border-color:var(--orange);color:var(--orange-light)}
+.a-blue{background:var(--blue-bg);border-color:var(--blue);color:var(--blue-light)}
+.a-green{background:var(--green-bg);border-color:var(--green);color:var(--green-light)}
+.a-red{background:var(--red-bg);border-color:var(--red);color:var(--red-light)}
+.a-yellow{background:var(--yellow-bg);border-color:var(--yellow);color:var(--yellow-light)}
+.a-purple{background:var(--purple-bg);border-color:var(--purple);color:var(--purple-light)}
+.alert strong{color:inherit}
+.refs{margin:12px 0 16px;display:flex;flex-wrap:wrap;gap:6px}
+.ref{display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:3px 10px;border-radius:10px;background:var(--bg4);color:var(--text3);border:1px solid var(--border);text-decoration:none;transition:all .15s}
+.ref:hover{background:var(--bg3);color:var(--text2)}
+table{width:100%;border-collapse:collapse;margin:14px 0;font-size:13px}
+th{background:var(--bg3);color:var(--text);font-weight:600;padding:10px 14px;text-align:left;border-bottom:1px solid var(--border2)}
+td{padding:9px 14px;border-bottom:1px solid var(--border);color:var(--text2);vertical-align:top}
+tr:hover td{background:var(--bg3)}
+.qa{border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:10px;overflow:hidden}
+.qa-q{padding:13px 18px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;background:var(--bg3);font-size:13px;font-weight:500;transition:background .15s;user-select:none;gap:12px}
+.qa-q:hover{background:var(--bg4)}
+.qa-a{display:none;padding:16px 18px;font-size:13px;color:var(--text2);line-height:1.8;background:var(--bg2);border-top:1px solid var(--border)}
+.qa-a.open{display:block}.qa-arrow{transition:transform .2s;color:var(--text3);font-size:11px;flex-shrink:0}.qa-arrow.open{transform:rotate(180deg)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin:14px 0}
+.section-header{padding-bottom:18px;border-bottom:1px solid var(--border);margin-bottom:26px}
+.mod-badge{font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;display:inline-block;margin-bottom:10px;background:var(--aws-bg);color:var(--aws)}
+.steps{counter-reset:step}
+.step{display:flex;gap:14px;margin-bottom:16px}
+.step-num{counter-increment:step;width:26px;height:26px;min-width:26px;background:var(--aws-bg);color:var(--aws);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;margin-top:2px;border:1px solid var(--orange)}
+.step-content{flex:1}.step-title{font-weight:600;font-size:13px;margin-bottom:3px}.step-body{font-size:13px;color:var(--text2);line-height:1.65}
+.scenario{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:18px 20px;margin:16px 0}
+.scenario-label{font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;color:var(--aws);margin-bottom:6px}
+.scenario-title{font-size:14px;font-weight:600;margin-bottom:10px}
+.compare-row{display:flex;gap:0;margin:14px 0;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+.cmp-a{flex:1;background:var(--red-bg);padding:16px;border-right:1px solid var(--border)}
+.cmp-b{flex:1;background:var(--green-bg);padding:16px}
+.cmp-label{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px}
+.cmp-a .cmp-label{color:var(--red)}.cmp-b .cmp-label{color:var(--green)}
+.traffic-flow{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin:14px 0}
+.traffic-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text3);margin-bottom:12px}
+.traffic-step{display:flex;align-items:flex-start;gap:12px;margin-bottom:10px;font-size:13px}
+.traffic-num{width:22px;height:22px;min-width:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;margin-top:1px}
+.t-green{background:#061a0d;color:var(--green-light);border:1px solid #14532d}
+.t-blue{background:var(--blue-bg);color:var(--blue-light);border:1px solid var(--blue)}
+.t-orange{background:var(--aws-bg);color:var(--aws);border:1px solid var(--orange)}
+.t-purple{background:var(--purple-bg);color:var(--purple-light);border:1px solid var(--purple)}
+.t-red{background:var(--red-bg);color:var(--red-light);border:1px solid var(--red)}
+.t-teal{background:var(--teal-bg);color:var(--teal-light);border:1px solid var(--teal)}
+/* Trace diagram */
+.trace-segment{border-left:3px solid;padding:10px 14px;margin-bottom:6px;border-radius:0 var(--radius) var(--radius) 0;position:relative}
+.trace-segment .ts-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:3px}
+.trace-segment .ts-time{font-family:var(--mono);font-size:11px;color:var(--text3);margin-bottom:4px}
+.trace-segment .ts-body{font-size:12.5px;color:var(--text2)}
+.ts-apigw{border-color:var(--orange);background:var(--aws-bg)}
+.ts-apigw .ts-label{color:var(--orange-light)}
+.ts-lambda{border-color:var(--purple);background:var(--purple-bg)}
+.ts-lambda .ts-label{color:var(--purple-light)}
+.ts-ddb{border-color:var(--blue);background:var(--blue-bg)}
+.ts-ddb .ts-label{color:var(--blue-light)}
+.ts-sqs{border-color:var(--green);background:var(--green-bg)}
+.ts-sqs .ts-label{color:var(--green-light)}
+.ts-err{border-color:var(--red);background:var(--red-bg)}
+.ts-err .ts-label{color:var(--red-light)}
+/* Timeline bar */
+.timeline{background:var(--bg3);border-radius:var(--radius);height:28px;position:relative;margin:8px 0;overflow:hidden}
+.timeline-fill{height:100%;border-radius:var(--radius);display:flex;align-items:center;padding:0 8px;font-size:10px;font-weight:700;position:absolute}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-mod">Module 10</div>
+    <div class="sidebar-title">Observability</div>
+    <div class="sidebar-sub">CloudWatch · X-Ray · Logs · Alarms</div>
+  </div>
+  <div class="nav-group-label">Foundation</div>
+  <div class="nav-item active" onclick="show('s0')"><span class="nav-dot"></span>0. The Three Pillars of Observability</div>
+  <div class="nav-group-label">CloudWatch Metrics</div>
+  <div class="nav-item" onclick="show('s1')"><span class="nav-dot"></span>1. Metrics — What They Are &amp; How They Work</div>
+  <div class="nav-item" onclick="show('s2')"><span class="nav-dot"></span>2. Built-in vs Custom Metrics</div>
+  <div class="nav-item" onclick="show('s3')"><span class="nav-dot"></span>3. Alarms — Alerting on Metrics <span class="nav-badge">Key</span></div>
+  <div class="nav-item" onclick="show('s4')"><span class="nav-dot"></span>4. Dashboards</div>
+  <div class="nav-group-label">CloudWatch Logs</div>
+  <div class="nav-item" onclick="show('s5')"><span class="nav-dot"></span>5. Log Groups, Streams &amp; Retention</div>
+  <div class="nav-item" onclick="show('s6')"><span class="nav-dot"></span>6. Logs Insights — Query Your Logs <span class="nav-badge">Key</span></div>
+  <div class="nav-item" onclick="show('s7')"><span class="nav-dot"></span>7. Metric Filters — Logs to Metrics</div>
+  <div class="nav-item" onclick="show('s8')"><span class="nav-dot"></span>8. Structured Logging Best Practices</div>
+  <div class="nav-group-label">X-Ray Tracing</div>
+  <div class="nav-item" onclick="show('s9')"><span class="nav-dot"></span>9. Why Tracing? The Distributed Problem <span class="nav-badge">Key</span></div>
+  <div class="nav-item" onclick="show('s10')"><span class="nav-dot"></span>10. X-Ray Concepts — Traces &amp; Segments</div>
+  <div class="nav-item" onclick="show('s11')"><span class="nav-dot"></span>11. Instrumenting Lambda &amp; ECS</div>
+  <div class="nav-item" onclick="show('s12')"><span class="nav-dot"></span>12. Service Map &amp; Debugging with X-Ray</div>
+  <div class="nav-group-label">Complete Picture</div>
+  <div class="nav-item" onclick="show('s13')"><span class="nav-dot"></span>13. Container Insights</div>
+  <div class="nav-item" onclick="show('s14')"><span class="nav-dot"></span>14. Production Observability Playbook</div>
+  <div class="nav-item" onclick="show('s15')"><span class="nav-dot"></span>Interview Q&amp;A <span class="nav-badge">12 Qs</span></div>
+</aside>
+
+<main class="main">
+
+<!-- ===== S0: THREE PILLARS ===== -->
+<div id="s0" class="section active">
+<div class="section-header">
+  <span class="mod-badge">Module 10 · Section 0</span>
+  <h1>The Three Pillars of Observability</h1>
+  <p class="subtitle">Observability is your ability to understand what's happening inside your system from its external outputs. Without it, you're flying blind in production. Three distinct types of data give you the full picture.</p>
+</div>
+
+<h2>Why Observability is Different from Monitoring</h2>
+<p><strong>Monitoring</strong> is watching known things: "Alert me if CPU goes above 80%." You pre-define what to watch. <strong>Observability</strong> is the ability to ask unknown questions about your system: "Why is the p99 latency spiking only for users in the EU, only between 2–3pm, only for requests containing JSON payloads over 10KB?" You can only answer that if you've captured rich enough data from the beginning.</p>
+
+<div class="grid3">
+  <div class="card">
+    <div class="card-title" style="color:var(--orange-light)">Pillar 1 — Metrics (CloudWatch)</div>
+    <div class="card-body">
+      Numeric measurements over time. CPU at 65%, 200 requests/sec, 45ms average latency, 3 errors in the last minute. Good for trending, alerting, dashboards, and capacity planning. Cheap to store, fast to query.<br><br>
+      <strong>Answers:</strong> Is something wrong? How bad is it? Is it getting worse?
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--blue-light)">Pillar 2 — Logs (CloudWatch Logs)</div>
+    <div class="card-body">
+      Timestamped records of discrete events. "User alice placed order ord-123 at 14:32:01." Detailed, verbose, expensive to store at scale. Good for debugging specific incidents — you know something went wrong, now you need to know exactly what.<br><br>
+      <strong>Answers:</strong> What exactly happened? What was the context?
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--green-light)">Pillar 3 — Traces (X-Ray)</div>
+    <div class="card-body">
+      End-to-end journey of a request through your distributed system. Shows: which services were called, in what order, how long each took, where errors occurred. Essential when a request touches 5+ services.<br><br>
+      <strong>Answers:</strong> Where in the flow is the slowness/error? What's the sequence?
+    </div>
+  </div>
+</div>
+
+<h2>The Debugging Journey — How All Three Work Together</h2>
+<div class="scenario">
+  <div class="scenario-label">Real Incident</div>
+  <div class="scenario-title">API response time spiked to 5 seconds at 14:30 today</div>
+  <div class="steps">
+    <div class="step"><div class="step-num">1</div><div class="step-content">
+      <div class="step-title">Metrics detect the problem</div>
+      <div class="step-body">CloudWatch alarm fires: API Gateway p99 latency > 2000ms for 5 consecutive minutes. PagerDuty notifies the on-call engineer at 14:35.</div>
+    </div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-content">
+      <div class="step-title">Traces narrow down where</div>
+      <div class="step-body">X-Ray service map shows the OrderService Lambda has 4.8s average duration. The DynamoDB segment inside it shows 4.6s. Not the Lambda, not the API — it's the DynamoDB call.</div>
+    </div></div>
+    <div class="step"><div class="step-num">3</div><div class="step-content">
+      <div class="step-title">Logs explain why</div>
+      <div class="step-body">CloudWatch Logs Insights query on OrderService logs for that time window: "ProvisionedThroughputExceededException: Exceeded write capacity units on table/Orders/index/status-index." A GSI was throttling due to a hot partition key from a flash sale. Root cause found in 12 minutes.</div>
+    </div></div>
+  </div>
+</div>
+
+<div class="refs">
+  <a class="ref" href="https://aws.amazon.com/cloudwatch/" target="_blank">Amazon CloudWatch</a>
+  <a class="ref" href="https://aws.amazon.com/xray/" target="_blank">AWS X-Ray</a>
+</div>
+</div>
+
+<!-- ===== S1: METRICS ===== -->
+<div id="s1" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 10 · CloudWatch Metrics · Section 1</span>
+  <h1>Metrics — What They Are &amp; How They Work</h1>
+  <p class="subtitle">A metric is a time-ordered set of data points that measures something about your system. Understanding namespaces, dimensions, statistics, and periods is essential for reading and creating alarms correctly.</p>
+</div>
+
+<h2>Metric Anatomy</h2>
+<p>Every CloudWatch metric has four identifying components:</p>
+
+<div class="card">
+  <div class="card-title">Metric Components</div>
+  <div class="card-body">
+    <strong>Namespace:</strong> A container that groups related metrics. AWS services each have their own namespace. Example: <code>AWS/EC2</code>, <code>AWS/Lambda</code>, <code>AWS/RDS</code>, <code>AWS/SQS</code>. Your custom metrics go in a namespace you define like <code>MyApp/OrderService</code>.<br><br>
+    <strong>Metric Name:</strong> The thing being measured within a namespace. Example: <code>CPUUtilization</code>, <code>Errors</code>, <code>Duration</code>, <code>ApproximateNumberOfMessagesVisible</code>.<br><br>
+    <strong>Dimensions:</strong> Key-value pairs that identify a specific instance of a metric. <code>FunctionName=OrderProcessor</code> distinguishes this Lambda's Duration from every other Lambda's Duration. Without dimensions, all Lambda functions' Duration metrics would be indistinguishable. One metric can have up to 30 dimensions.<br><br>
+    <strong>Data point:</strong> A value + timestamp. CloudWatch aggregates multiple data points into statistics (Average, Sum, Max, Min, p99) over a period (1 min, 5 min, etc.).
+  </div>
+</div>
+
+<pre><span class="cm"># A metric is identified by: namespace + name + all dimensions together
+# These are THREE DIFFERENT metrics (different dimensions):
+
+AWS/Lambda : Duration : FunctionName=OrderProcessor
+AWS/Lambda : Duration : FunctionName=UserService  
+AWS/Lambda : Duration : FunctionName=PaymentService
+
+<span class="cm"># Get metric statistics via CLI</span>
+aws cloudwatch get-metric-statistics \
+  --namespace AWS/Lambda \
+  --metric-name Duration \
+  --dimensions Name=FunctionName,Value=OrderProcessor \
+  --start-time 2024-01-15T14:00:00Z \
+  --end-time 2024-01-15T15:00:00Z \
+  --period 60 \                      <span class="cm"># aggregate into 60-second buckets</span>
+  --statistics Average Maximum p99    <span class="cm"># what to compute per bucket</span>
+<span class="cm"># Returns: 60 data points (one per minute), each with Average/Max/p99</span></pre>
+
+<h2>Statistics — What Each Means</h2>
+<table>
+  <tr><th>Statistic</th><th>What it computes</th><th>Best for</th></tr>
+  <tr><td><strong>Average</strong></td><td>Sum ÷ count of data points in period</td><td>CPU utilisation, latency (overall feel)</td></tr>
+  <tr><td><strong>Sum</strong></td><td>Total of all data points</td><td>Request count, error count, bytes transferred</td></tr>
+  <tr><td><strong>Maximum</strong></td><td>Highest value in the period</td><td>Memory spikes, latency worst case</td></tr>
+  <tr><td><strong>Minimum</strong></td><td>Lowest value in the period</td><td>Detecting downtime (0 requests means nothing ran)</td></tr>
+  <tr><td><strong>p50/p90/p99</strong></td><td>Percentile — value below which X% of data points fall</td><td>Latency SLAs — p99=500ms means 99% of requests &lt;500ms</td></tr>
+  <tr><td><strong>SampleCount</strong></td><td>Number of data points in the period</td><td>Detecting when Lambda wasn't called (count=0)</td></tr>
+</table>
+
+<div class="alert a-blue">
+  <strong>Average latency lies.</strong> If 99 requests take 10ms and 1 request takes 10,000ms, the average is 109ms — which looks fine. The p99 is 10,000ms — a disaster. Always alarm on p99 latency for user-facing APIs, never just average. Average hides the long tail that your slowest users experience.
+</div>
+
+<h2>Metric Resolution — Standard vs High Resolution</h2>
+<pre><span class="cm">## Standard resolution: 1-minute granularity
+## High resolution: 1-second granularity (custom metrics only, higher cost)
+
+# Standard metrics: data stored at 1-min resolution, available 15 months
+# High-res custom metrics: 1-second, available 3 hours at 1-sec, then 1-min
+
+# Most production metrics don't need sub-minute resolution
+# Exception: automated trading, real-time gaming, financial systems
+
+## Retention periods:
+# 1-second metrics:  3 hours
+# 1-minute metrics:  15 days
+# 5-minute metrics:  63 days
+# 1-hour metrics:    455 days (15 months)
+# After retention: data points deleted — you can't look back further</span></pre>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/cloudwatch_concepts.html" target="_blank">CloudWatch Concepts</a>
+  <a class="ref" href="https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CW_Support_For_AWS.html" target="_blank">AWS Services that Publish Metrics</a>
+</div>
+</div>
+
+<!-- ===== S2: BUILT-IN VS CUSTOM ===== -->
+<div id="s2" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 10 · CloudWatch Metrics · Section 2</span>
+  <h1>Built-in Metrics vs Custom Metrics</h1>
+  <p class="subtitle">AWS services automatically publish dozens of metrics. But the most useful metrics for understanding your business — order rate, payment success rate, active users — only you can create.</p>
+</div>
+
+<h2>Key Built-in Metrics to Know Per Service</h2>
+<pre><span class="cm">## Lambda — most important</span>
+Invocations      <span class="cm">← how many times called (Sum)</span>
+Errors           <span class="cm">← how many failed (Sum) — set alarm here</span>
+Throttles        <span class="cm">← how many throttled (Sum) — means concurrency limit hit</span>
+Duration         <span class="cm">← execution time (Average/p99) — set alarm here</span>
+ConcurrentExecutions  <span class="cm">← simultaneous executions (Maximum)</span>
+IteratorAge      <span class="cm">← for Kinesis/DynamoDB stream triggers: how far behind is consumer</span>
+
+<span class="cm">## API Gateway</span>
+Count            <span class="cm">← total request count</span>
+4XXError         <span class="cm">← client errors (Sum) — 400/401/403/404</span>
+5XXError         <span class="cm">← server errors (Sum) — 500/502/503 — set alarm here</span>
+Latency          <span class="cm">← end-to-end request time (p99)</span>
+IntegrationLatency  <span class="cm">← time spent in Lambda (p99)</span>
+
+<span class="cm">## ECS/Fargate</span>
+CPUUtilization   <span class="cm">← container CPU % (Average per service)</span>
+MemoryUtilization  <span class="cm">← container RAM % (Average) — set alarm near limit</span>
+RunningTaskCount <span class="cm">← number of running tasks (Minimum)</span>
+
+<span class="cm">## RDS / Aurora</span>
+CPUUtilization   <span class="cm">← database CPU (average)</span>
+DatabaseConnections  <span class="cm">← active connections (Maximum) — alert near max</span>
+FreeStorageSpace <span class="cm">← remaining disk (Minimum) — alert at 20%</span>
+ReadLatency / WriteLatency  <span class="cm">← query latency (p99)</span>
+ReplicaLag       <span class="cm">← read replica lag in seconds</span>
+
+<span class="cm">## SQS</span>
+ApproximateNumberOfMessagesVisible  <span class="cm">← queue depth — primary scaling signal</span>
+ApproximateAgeOfOldestMessage      <span class="cm">← time oldest message has waited (alarm = processing stuck)</span>
+NumberOfMessagesSent               <span class="cm">← ingestion rate</span>
+NumberOfMessagesDeleted            <span class="cm">← processing rate</span>
+
+<span class="cm">## DynamoDB</span>
+ConsumedReadCapacityUnits / ConsumedWriteCapacityUnits
+ThrottledRequests  <span class="cm">← set alarm — means your app is being throttled</span>
+SuccessfulRequestLatency  <span class="cm">← query latency</span></pre>
+
+<h2>Custom Metrics — Your Business Metrics</h2>
+<p>Custom metrics capture business-level signals that AWS has no knowledge of: order placement rate, payment success rate, user login failures, checkout funnel drops.</p>
+
+<pre><span class="cm">// Publishing custom metrics from Java Lambda</span>
+<span class="ty">CloudWatchClient</span> cw = <span class="ty">CloudWatchClient</span>.<span class="fn">create</span>();
+
+<span class="cm">// Track order placement rate</span>
+cw.<span class="fn">putMetricData</span>(<span class="ty">PutMetricDataRequest</span>.<span class="fn">builder</span>()
+    .<span class="fn">namespace</span>(<span class="str">"MyApp/Orders"</span>)
+    .<span class="fn">metricData</span>(<span class="ty">MetricDatum</span>.<span class="fn">builder</span>()
+        .<span class="fn">metricName</span>(<span class="str">"OrdersPlaced"</span>)
+        .<span class="fn">value</span>(<span class="num">1.0</span>)
+        .<span class="fn">unit</span>(<span class="ty">StandardUnit</span>.COUNT)
+        .<span class="fn">timestamp</span>(<span class="ty">Instant</span>.<span class="fn">now</span>())
+        .<span class="fn">dimensions</span>(
+            <span class="ty">Dimension</span>.<span class="fn">builder</span>().<span class="fn">name</span>(<span class="str">"Environment"</span>).<span class="fn">value</span>(<span class="str">"prod"</span>).<span class="fn">build</span>(),
+            <span class="ty">Dimension</span>.<span class="fn">builder</span>().<span class="fn">name</span>(<span class="str">"OrderType"</span>).<span class="fn">value</span>(order.<span class="fn">getType</span>()).<span class="fn">build</span>()
+        )
+        .<span class="fn">build</span>())
+    .<span class="fn">build</span>());
+
+<span class="cm">// Track payment success/failure</span>
+cw.<span class="fn">putMetricData</span>(<span class="ty">PutMetricDataRequest</span>.<span class="fn">builder</span>()
+    .<span class="fn">namespace</span>(<span class="str">"MyApp/Payments"</span>)
+    .<span class="fn">metricData</span>(
+        <span class="ty">MetricDatum</span>.<span class="fn">builder</span>()
+            .<span class="fn">metricName</span>(<span class="str">"PaymentAttempts"</span>).<span class="fn">value</span>(<span class="num">1.0</span>)
+            .<span class="fn">unit</span>(<span class="ty">StandardUnit</span>.COUNT).<span class="fn">build</span>(),
+        <span class="ty">MetricDatum</span>.<span class="fn">builder</span>()
+            .<span class="fn">metricName</span>(success ? <span class="str">"PaymentSuccess"</span> : <span class="str">"PaymentFailure"</span>)
+            .<span class="fn">value</span>(<span class="num">1.0</span>).<span class="fn">unit</span>(<span class="ty">StandardUnit</span>.COUNT).<span class="fn">build</span>()
+    )
+    .<span class="fn">build</span>());
+
+<span class="cm">// Track latency of a specific operation</span>
+<span class="kw">long</span> start = <span class="ty">System</span>.<span class="fn">currentTimeMillis</span>();
+inventoryService.<span class="fn">reserve</span>(order.<span class="fn">getItems</span>());
+<span class="kw">long</span> duration = <span class="ty">System</span>.<span class="fn">currentTimeMillis</span>() - start;
+
+cw.<span class="fn">putMetricData</span>(<span class="ty">PutMetricDataRequest</span>.<span class="fn">builder</span>()
+    .<span class="fn">namespace</span>(<span class="str">"MyApp/Orders"</span>)
+    .<span class="fn">metricData</span>(<span class="ty">MetricDatum</span>.<span class="fn">builder</span>()
+        .<span class="fn">metricName</span>(<span class="str">"InventoryReservationDuration"</span>)
+        .<span class="fn">value</span>((<span class="kw">double</span>) duration)
+        .<span class="fn">unit</span>(<span class="ty">StandardUnit</span>.MILLISECONDS)
+        .<span class="fn">build</span>())
+    .<span class="fn">build</span>());</pre>
+
+<div class="alert a-orange">
+  <strong>Cost of custom metrics:</strong> $0.30 per metric per month (first 10,000 metrics). Batch PutMetricData calls together — you can send up to 1,000 metric data points per API call. In high-volume Lambdas, don't call PutMetricData on every invocation — buffer and flush every 30 seconds or at function end.
+</div>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/publishingMetrics.html" target="_blank">Publishing Custom Metrics</a>
+  <a class="ref" href="https://aws.amazon.com/cloudwatch/pricing/" target="_blank">CloudWatch Pricing</a>
+</div>
+</div>
+
+<!-- ===== S3: ALARMS ===== -->
+<div id="s3" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 10 · CloudWatch Metrics · Section 3</span>
+  <h1>Alarms — Alerting on Metrics</h1>
+  <p class="subtitle">Alarms watch a metric and trigger actions when it crosses a threshold. The difference between a noisy alarm that pages you at 3am for nothing and a useful alarm that catches real problems is in the configuration.</p>
+</div>
+
+<h2>Alarm States</h2>
+<div class="grid3">
+  <div class="card">
+    <div class="card-title" style="color:var(--green-light)">OK</div>
+    <div class="card-body">Metric is within the acceptable range. No action needed. This is the normal state.</div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--red-light)">ALARM</div>
+    <div class="card-body">Metric has breached the threshold for the configured number of consecutive periods. Action triggered (SNS notification, Auto Scaling, Lambda).</div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--text3)">INSUFFICIENT_DATA</div>
+    <div class="card-body">Not enough data to evaluate. Common when a metric hasn't published yet (Lambda not invoked, service just deployed). Configure how to treat this — usually OK.</div>
+  </div>
+</div>
+
+<h2>Creating Production-Grade Alarms</h2>
+<pre><span class="cm"># Alarm 1: API errors too high (5xx error rate > 1%)</span>
+aws cloudwatch put-metric-alarm \
+  --alarm-name prod-api-5xx-errors \
+  --alarm-description "API 5xx error rate above 1% for 2 consecutive minutes" \
+  --namespace AWS/ApiGateway \
+  --metric-name 5XXError \
+  --dimensions Name=ApiName,Value=users-api Name=Stage,Value=prod \
+  --statistic Sum \
+  --period 60 \                    <span class="cm"># evaluate every 60 seconds</span>
+  --evaluation-periods 2 \         <span class="cm"># must breach for 2 consecutive periods</span>
+  --threshold 5 \                  <span class="cm"># absolute threshold: > 5 errors per minute</span>
+  --comparison-operator GreaterThanThreshold \
+  --treat-missing-data notBreaching \  <span class="cm"># no data = OK (API just not called)</span>
+  --alarm-actions arn:aws:sns:us-east-1:123:pagerduty-alerts \
+  --ok-actions arn:aws:sns:us-east-1:123:pagerduty-alerts
+
+<span class="cm"># Alarm 2: Lambda p99 latency above SLA</span>
+aws cloudwatch put-metric-alarm \
+  --alarm-name prod-orders-lambda-latency \
+  --namespace AWS/Lambda \
+  --metric-name Duration \
+  --dimensions Name=FunctionName,Value=OrderProcessor \
+  --extended-statistic p99 \       <span class="cm"># p99, not average</span>
+  --period 300 \                   <span class="cm"># 5-minute windows</span>
+  --evaluation-periods 3 \         <span class="cm"># 3 windows = 15 minutes sustained</span>
+  --threshold 2000 \               <span class="cm"># 2000ms = 2 seconds p99 SLA</span>
+  --comparison-operator GreaterThanThreshold \
+  --alarm-actions arn:aws:sns:us-east-1:123:engineering-slack
+
+<span class="cm"># Alarm 3: SQS DLQ not empty (alert immediately)</span>
+aws cloudwatch put-metric-alarm \
+  --alarm-name prod-orders-dlq-has-messages \
+  --namespace AWS/SQS \
+  --metric-name ApproximateNumberOfMessagesVisible \
+  --dimensions Name=QueueName,Value=orders-processing-dlq \
+  --statistic Sum \
+  --period 60 \
+  --evaluation-periods 1 \         <span class="cm"># alarm on first occurrence</span>
+  --threshold 0 \
+  --comparison-operator GreaterThanThreshold \
+  --treat-missing-data notBreaching \
+  --alarm-actions arn:aws:sns:us-east-1:123:pagerduty-critical
+
+<span class="cm"># Alarm 4: RDS storage running low</span>
+aws cloudwatch put-metric-alarm \
+  --alarm-name prod-rds-low-storage \
+  --namespace AWS/RDS \
+  --metric-name FreeStorageSpace \
+  --dimensions Name=DBInstanceIdentifier,Value=prod-postgres-primary \
+  --statistic Average \
+  --period 300 \
+  --evaluation-periods 2 \
+  --threshold 10737418240 \        <span class="cm"># 10GB in bytes (10 * 1024^3)</span>
+  --comparison-operator LessThanThreshold \
+  --alarm-actions arn:aws:sns:us-east-1:123:engineering-slack</pre>
+
+<h2>Composite Alarms — Combine Multiple Alarms</h2>
+<pre><span class="cm"># Reduce alert noise: only page when BOTH latency is high AND error rate is high
+# (latency spike alone might be a batch job, not customer impact)</span>
+
+aws cloudwatch put-composite-alarm \
+  --alarm-name prod-api-critical \
+  --alarm-rule "ALARM(prod-api-5xx-errors) AND ALARM(prod-api-p99-latency)" \
+  --alarm-actions arn:aws:sns:us-east-1:123:pagerduty-critical
+
+<span class="cm"># OR: alert if ANY component in a service is alarming</span>
+aws cloudwatch put-composite-alarm \
+  --alarm-name prod-orders-service-degraded \
+  --alarm-rule "ALARM(prod-orders-lambda-errors) OR ALARM(prod-orders-dlq-has-messages) OR ALARM(prod-orders-latency)"</pre>
+
+<h2>Alarm Actions</h2>
+<table>
+  <tr><th>Action Type</th><th>What Happens</th><th>Use Case</th></tr>
+  <tr><td>SNS Notification</td><td>Publishes to an SNS topic → email, SMS, PagerDuty, Slack</td><td>Human notification</td></tr>
+  <tr><td>Auto Scaling</td><td>Scale EC2 ASG or ECS service up/down</td><td>Scale when CPU spikes</td></tr>
+  <tr><td>EC2 Action</td><td>Stop, terminate, reboot, or recover an EC2 instance</td><td>Auto-recover crashed instance</td></tr>
+  <tr><td>Lambda</td><td>Invoke a Lambda function</td><td>Custom remediation</td></tr>
+  <tr><td>Systems Manager</td><td>Run an automation document</td><td>Auto-remediation scripts</td></tr>
+</table>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/AlarmThatSendsEmail.html" target="_blank">Using CloudWatch Alarms</a>
+  <a class="ref" href="https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Create_Composite_Alarm.html" target="_blank">Composite Alarms</a>
+</div>
+</div>
+
+<!-- ===== S4: DASHBOARDS ===== -->
+<div id="s4" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 10 · CloudWatch Metrics · Section 4</span>
+  <h1>CloudWatch Dashboards</h1>
+  <p class="subtitle">A dashboard puts the most important metrics for a service or system in one view. Good dashboards let you assess system health in seconds, not minutes of navigating through individual metric pages.</p>
+</div>
+
+<h2>What Makes a Good Dashboard</h2>
+<div class="grid2">
+  <div class="card" style="border-color:#5a1a1a">
+    <div class="card-title" style="color:var(--red-light)">Bad dashboard habits</div>
+    <div class="card-body">Showing 40+ metrics at once with no hierarchy. Only showing CPU/memory (infrastructure) without business metrics. No annotations for deployments. Mixing different time scales. No alarm state indicators.</div>
+  </div>
+  <div class="card" style="border-color:#14532d">
+    <div class="card-title" style="color:var(--green-light)">Good dashboard design</div>
+    <div class="card-body">Top row: health indicators (RED: Requests, Errors, Duration). Middle: key business metrics (orders/min, payment success rate). Bottom: infrastructure details (CPU, memory, DB connections). Add vertical annotations for deployments. Show alarm states.</div>
+  </div>
+</div>
+
+<h2>Creating a Service Dashboard</h2>
+<pre><span class="cm"># Create an Orders Service dashboard via CLI</span>
+aws cloudwatch put-dashboard \
+  --dashboard-name OrdersService-Production \
+  --dashboard-body '{
+    "widgets": [
+      {
+        "type": "alarm",
+        "properties": {
+          "title": "Service Health",
+          "alarms": [
+            "arn:aws:cloudwatch::alarm:prod-orders-lambda-errors",
+            "arn:aws:cloudwatch::alarm:prod-orders-dlq-has-messages",
+            "arn:aws:cloudwatch::alarm:prod-orders-latency"
+          ]
+        }
+      },
+      {
+        "type": "metric",
+        "properties": {
+          "title": "Request Rate & Errors",
+          "metrics": [
+            ["AWS/Lambda","Invocations","FunctionName","OrderProcessor"],
+            ["AWS/Lambda","Errors","FunctionName","OrderProcessor"],
+            ["AWS/Lambda","Throttles","FunctionName","OrderProcessor"]
+          ],
+          "period": 60,
+          "stat": "Sum",
+          "view": "timeSeries"
+        }
+      },
+      {
+        "type": "metric",
+        "properties": {
+          "title": "Latency (p50, p90, p99)",
+          "metrics": [
+            ["AWS/Lambda","Duration","FunctionName","OrderProcessor",{"stat":"p50","label":"p50"}],
+            ["AWS/Lambda","Duration","FunctionName","OrderProcessor",{"stat":"p90","label":"p90"}],
+            ["AWS/Lambda","Duration","FunctionName","OrderProcessor",{"stat":"p99","label":"p99"}]
+          ],
+          "period": 60,
+          "view": "timeSeries"
+        }
+      },
+      {
+        "type": "metric",
+        "properties": {
+          "title": "Business Metrics: Orders Per Minute",
+          "metrics": [
+            ["MyApp/Orders","OrdersPlaced",{"stat":"Sum","period":60,"label":"Orders/min"}]
+          ],
+          "view": "timeSeries"
+        }
+      },
+      {
+        "type": "metric",
+        "properties": {
+          "title": "SQS Queue Depth",
+          "metrics": [
+            ["AWS/SQS","ApproximateNumberOfMessagesVisible","QueueName","orders-processing"]
+          ],
+          "stat": "Average",
+          "period": 60
+        }
+      }
+    ]
+  }'</pre>
+
+<h2>Annotations — Mark Deployments</h2>
+<pre><span class="cm"># Add a vertical annotation when you deploy
+# This shows a vertical line on the dashboard at the deployment time
+# Instantly visible if metrics changed after deployment</span>
+
+<span class="cm"># In CI/CD pipeline, after deployment:</span>
+aws cloudwatch put-metric-data \
+  --namespace CICDEvents \
+  --metric-data '[{
+    "MetricName": "Deployment",
+    "Dimensions": [{"Name":"Service","Value":"OrderProcessor"}],
+    "Value": 1,
+    "Timestamp": "'$(date -u +%Y-%m-%dT%H:%M:%SZ)'"
+  }]'
+
+<span class="cm"># Add to dashboard as annotation:
+{
+  "annotations": {
+    "vertical": [{
+      "label": "Deployment",
+      "value": "2024-01-15T14:00:00Z"
+    }]
+  }
+}</span></pre>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Dashboards.html" target="_blank">CloudWatch Dashboards</a>
+  <a class="ref" href="https://aws.amazon.com/cloudwatch/pricing/" target="_blank">Dashboard pricing ($3/dashboard/month)</a>
+</div>
+</div>
+
+<!-- ===== S5: LOG GROUPS ===== -->
+<div id="s5" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 10 · CloudWatch Logs · Section 5</span>
+  <h1>Log Groups, Streams &amp; Retention</h1>
+  <p class="subtitle">CloudWatch Logs is where all AWS service logs land. Understanding the hierarchy and retention settings prevents two common problems: paying for logs you'll never read, and discovering you can't look back because logs expired.</p>
+</div>
+
+<h2>The Log Hierarchy</h2>
+<div class="card">
+  <div class="card-title">Log Groups → Log Streams → Log Events</div>
+  <div style="font-family:var(--mono);font-size:12.5px;color:var(--text2);line-height:2.2">
+    <span style="color:var(--aws)">/aws/lambda/OrderProcessor</span> ← Log Group (one per function)<br>
+    &nbsp;&nbsp;└── <span style="color:var(--blue-light)">2024/01/15/[$LATEST]abc123def456</span> ← Log Stream (one per instance/cold start)<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── <span style="color:var(--text2)">14:30:01.123 START RequestId: req-1 ...</span> ← Log Event<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── <span style="color:var(--text2)">14:30:01.456 Order processed: ord-123</span><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── <span style="color:var(--text2)">14:30:01.789 END RequestId: req-1</span><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── <span style="color:var(--text2)">14:30:01.789 REPORT RequestId: req-1 Duration: 330ms ...</span>
+  </div>
+</div>
+
+<h2>Retention — The Setting Everyone Forgets</h2>
+<p>By default, log groups have <strong>no retention policy</strong> — logs are kept forever and you pay storage costs indefinitely. Most logs are only useful for 7-90 days. Set retention on every log group.</p>
+
+<pre><span class="cm"># Set retention on a Lambda log group (must exist first)</span>
+aws logs put-retention-policy \
+  --log-group-name /aws/lambda/OrderProcessor \
+  --retention-in-days 90          <span class="cm"># 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180,
+                                   # 365, 400, 545, 731, 1827, 2192, 2557, 2922,
+                                   # 3288, or 3653</span>
+
+<span class="cm"># Apply retention to all Lambda log groups at once (use org-wide automation)</span>
+aws logs describe-log-groups --query "logGroups[?starts_with(logGroupName, '/aws/lambda/')].logGroupName" \
+  --output text | xargs -I{} aws logs put-retention-policy --log-group-name {} --retention-in-days 90
+
+<span class="cm"># Create log group with retention from the start</span>
+aws logs create-log-group \
+  --log-group-name /myapp/orders-service \
+  --kms-key-id alias/prod-logs-key      <span class="cm"># encrypt sensitive logs</span>
+
+aws logs put-retention-policy \
+  --log-group-name /myapp/orders-service \
+  --retention-in-days 30
+
+<span class="cm"># Retention by environment:
+# Production security/audit logs: 365+ days (compliance)
+# Production application logs:    90 days
+# Staging/dev logs:               14 days
+# Lambda default logs:            30 days</span></pre>
+
+<h2>Lambda Log Format — What AWS Automatically Logs</h2>
+<pre><span class="cm"># Every Lambda invocation automatically logs these 4 lines:</span>
+
+<span class="cm"># 1. START — when function begins</span>
+START RequestId: abc-123-def Version: $LATEST
+
+<span class="cm"># 2. Your application logs (System.out.println or your logging framework)</span>
+2024-01-15T14:30:01.456Z abc-123-def INFO Processing order ord-456 for user alice
+
+<span class="cm"># 3. END — when function returns</span>
+END RequestId: abc-123-def
+
+<span class="cm"># 4. REPORT — performance summary (always logged, very useful)</span>
+REPORT RequestId: abc-123-def  Duration: 330.45 ms  Billed Duration: 331 ms
+       Memory Size: 1024 MB   Max Memory Used: 312 MB  Init Duration: 1250.23 ms
+
+<span class="cm"># Init Duration appears only on COLD STARTS — tells you cold start cost
+# Max Memory Used — use this to right-size memory allocation
+# If Max Memory Used consistently < 50% of Memory Size → reduce allocation</span></pre>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/Working-with-log-groups-and-streams.html" target="_blank">Log Groups and Streams</a>
+  <a class="ref" href="https://aws.amazon.com/cloudwatch/pricing/" target="_blank">CloudWatch Logs Pricing</a>
+</div>
+</div>
+
+<!-- ===== S6: LOGS INSIGHTS ===== -->
+<div id="s6" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 10 · CloudWatch Logs · Section 6</span>
+  <h1>Logs Insights — Query Your Logs</h1>
+  <p class="subtitle">CloudWatch Logs Insights is a query engine for your log data. Instead of grepping through files, you write SQL-like queries that scan across all log streams in a group. Essential for production debugging.</p>
+</div>
+
+<h2>The Query Language</h2>
+<p>Logs Insights uses a pipe-based query language. Each command is separated by <code>|</code>. Commands are applied left-to-right — filter first for performance, then parse, then aggregate.</p>
+
+<pre><span class="cm">## Basic query structure:</span>
+fields @timestamp, @message           <span class="cm">← select which fields to show</span>
+| filter @message like "ERROR"        <span class="cm">← filter rows matching condition</span>
+| sort @timestamp desc                <span class="cm">← order results</span>
+| limit 50                            <span class="cm">← limit number of results</span>
+
+<span class="cm">## Useful built-in fields:
+# @timestamp  - event time
+# @message    - raw log line
+# @logStream  - which log stream (which Lambda instance)
+# @requestId  - Lambda request ID (extracted automatically)
+# @duration   - Lambda duration (from REPORT lines)
+# @billedDuration, @memorySize, @maxMemoryUsed (from REPORT lines)
+# @initDuration - cold start time (only on cold starts)</span></pre>
+
+<h2>Real-World Queries for Production Debugging</h2>
+<pre><span class="cm">## 1. Find all errors in the last hour</span>
+fields @timestamp, @message
+| filter @message like /ERROR|EXCEPTION|Exception/
+| sort @timestamp desc
+| limit 100
+
+<span class="cm">## 2. Find slow Lambda invocations (cold starts over 2 seconds)</span>
+filter @type = "REPORT"
+| parse @message "Init Duration: * ms" as initDuration
+| filter ispresent(initDuration)
+| filter initDuration > 2000
+| sort initDuration desc
+| stats count(), avg(initDuration), max(initDuration)
+
+<span class="cm">## 3. Lambda performance summary — p99 latency and error rate</span>
+filter @type = "REPORT"
+| parse @message "Duration: * ms" as duration
+| stats count() as invocations,
+        avg(duration) as avgMs,
+        pct(duration, 99) as p99Ms,
+        max(duration) as maxMs
+        by bin(5min)
+
+<span class="cm">## 4. Find which requestIds had errors (then look up those in traces)</span>
+fields @requestId, @timestamp
+| filter @message like "EXCEPTION"
+| sort @timestamp desc
+| limit 20
+
+<span class="cm">## 5. Parse structured JSON logs — extract fields from JSON body</span>
+<span class="cm"># If your Lambda logs JSON: {"level":"ERROR","orderId":"ord-123","msg":"DB timeout"}</span>
+fields @timestamp
+| parse @message '{"level":"*","orderId":"*","msg":"*"' as level, orderId, msg
+| filter level = "ERROR"
+| stats count() by orderId
+| sort count desc
+
+<span class="cm">## 6. Memory right-sizing — find over-provisioned Lambdas</span>
+filter @type = "REPORT"
+| parse @message "Memory Size: * MB	Max Memory Used: * MB" as allocated, used
+| stats max(used) as peakUsed, avg(allocated) as alloc
+     by @log
+| sort peakUsed asc
+| filter alloc / peakUsed > 2   <span class="cm"># allocated more than 2x what was actually used</span>
+
+<span class="cm">## 7. 5xx error rate from API Gateway logs</span>
+fields @timestamp, status, ip, requestId
+| filter status >= 500
+| stats count() by bin(1min)
+| sort @timestamp desc
+
+<span class="cm">## 8. Find slow database queries in application logs</span>
+<span class="cm"># Assumes your app logs: "Query executed in Xms: SELECT * FROM..."</span>
+fields @timestamp, @message
+| parse @message "Query executed in *ms: *" as queryMs, queryText
+| filter queryMs > 500
+| sort queryMs desc
+| limit 20</pre>
+
+<h2>Querying Multiple Log Groups at Once</h2>
+<pre><span class="cm"># Query all Lambda functions at once (useful for distributed debugging)
+# Use log group prefix pattern in the query</span>
+
+<span class="cm"># In console: select "Query multiple log groups" and pick a pattern
+# Pattern: /aws/lambda/* matches all Lambda log groups
+
+# CLI with multiple groups:</span>
+aws logs start-query \
+  --log-group-names /aws/lambda/OrderProcessor /aws/lambda/PaymentProcessor /aws/lambda/UserService \
+  --start-time $(date -d '1 hour ago' +%s) \
+  --end-time $(date +%s) \
+  --query-string 'fields @timestamp, @logStream, @message
+| filter @message like "ERROR"
+| sort @timestamp desc
+| limit 50'</pre>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/CWL_QuerySyntax.html" target="_blank">Logs Insights Query Syntax</a>
+  <a class="ref" href="https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/CWL_ExampleQueries.html" target="_blank">Sample Queries</a>
+</div>
+</div>
+
+<!-- ===== S7: METRIC FILTERS ===== -->
+<div id="s7" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 10 · CloudWatch Logs · Section 7</span>
+  <h1>Metric Filters — Logs to Metrics</h1>
+  <p class="subtitle">Metric filters watch your log streams in real time, extract values matching a pattern, and increment a CloudWatch metric. Turns log data into something you can alarm on without changing application code.</p>
+</div>
+
+<h2>What Metric Filters Do</h2>
+<p>Your Lambda logs "ERROR: PaymentFailed for order ord-123." You want to alarm when payment failures exceed 5 per minute. Without metric filters, you'd need to emit a custom metric in code. With metric filters, you create a pattern that matches "ERROR: PaymentFailed" in your logs and increments a counter metric every time it matches — no code change.</p>
+
+<pre><span class="cm"># Create metric filter: count ERROR lines in Lambda logs</span>
+aws logs put-metric-filter \
+  --log-group-name /aws/lambda/PaymentProcessor \
+  --filter-name PaymentFailures \
+  --filter-pattern '"ERROR: PaymentFailed"' \
+  --metric-transformations \
+    metricName=PaymentFailures,\
+    metricNamespace=MyApp/Payments,\
+    metricValue=1,\
+    defaultValue=0     <span class="cm"># 0 when no match in period — prevents INSUFFICIENT_DATA</span>
+
+<span class="cm"># Now alarm on that metric</span>
+aws cloudwatch put-metric-alarm \
+  --alarm-name prod-payment-failures \
+  --namespace MyApp/Payments \
+  --metric-name PaymentFailures \
+  --statistic Sum \
+  --period 60 \
+  --evaluation-periods 2 \
+  --threshold 5 \
+  --comparison-operator GreaterThanThreshold \
+  --alarm-actions arn:aws:sns:us-east-1:123:payment-alerts
+
+<span class="cm"># Extract a numeric value from log line
+# Log: "Order processed in 4532ms for user alice"</span>
+aws logs put-metric-filter \
+  --log-group-name /aws/lambda/OrderProcessor \
+  --filter-name OrderProcessingTime \
+  --filter-pattern '[prefix="Order processed in", time, unit="ms"...]' \
+  --metric-transformations \
+    metricName=OrderProcessingTime,\
+    metricNamespace=MyApp/Orders,\
+    metricValue='$time'   <span class="cm"># extract the numeric value from pattern</span>
+
+<span class="cm"># Filter patterns:
+# Simple text: "ERROR"
+# Quoted phrase: '"payment failed"'
+# JSON field: '{$.level = "ERROR"}'
+# JSON numeric: '{$.duration > 1000}'
+# Multiple terms: '"ORDER" "FAILED"'
+# Exclude: '?"NOT THIS"'</span></pre>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/MonitoringLogData.html" target="_blank">Metric Filters</a>
+  <a class="ref" href="https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/FilterAndPatternSyntax.html" target="_blank">Filter Pattern Syntax</a>
+</div>
+</div>
+
+<!-- ===== S8: STRUCTURED LOGGING ===== -->
+<div id="s8" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 10 · CloudWatch Logs · Section 8</span>
+  <h1>Structured Logging Best Practices</h1>
+  <p class="subtitle">Plain-text logs are hard to query. JSON structured logs are easily parsed by Logs Insights, can be filtered by any field, and work with log aggregation tools. This is the modern approach.</p>
+</div>
+
+<h2>Unstructured vs Structured</h2>
+<div class="compare-row">
+  <div class="cmp-a">
+    <div class="cmp-label">Unstructured — hard to query</div>
+    <pre style="background:transparent;border:none;padding:0;font-size:12px;color:var(--text2)">2024-01-15 14:30:01 ERROR Order ord-123
+failed for user alice. Payment
+declined. Retry 2/3.
+
+# To find all payment failures:
+grep "Payment declined"
+# To find failure rate: grep + wc -l
+# To find slowest orders: manually parse</pre>
+  </div>
+  <div class="cmp-b">
+    <div class="cmp-label">Structured JSON — queryable by any field</div>
+    <pre style="background:transparent;border:none;padding:0;font-size:12px;color:var(--text2)">{
+  "level": "ERROR",
+  "event": "payment_failed",
+  "orderId": "ord-123",
+  "userId": "alice",
+  "reason": "card_declined",
+  "retryCount": 2,
+  "durationMs": 1250,
+  "requestId": "req-abc"
+}
+
+# Logs Insights: filter event = "payment_failed"
+# Stats by reason, userId, any field</pre>
+  </div>
+</div>
+
+<h2>Structured Logging with SLF4J + Logback in Lambda</h2>
+<pre><span class="cm">// pom.xml dependency</span>
+&lt;dependency&gt;
+    &lt;groupId&gt;net.logstash.logback&lt;/groupId&gt;
+    &lt;artifactId&gt;logstash-logback-encoder&lt;/artifactId&gt;
+    &lt;version&gt;7.4&lt;/version&gt;
+&lt;/dependency&gt;
+
+<span class="cm">// logback.xml — output JSON to stdout</span>
+&lt;configuration&gt;
+  &lt;appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender"&gt;
+    &lt;encoder class="net.logstash.logback.encoder.LogstashEncoder"&gt;
+      &lt;includeMdcKeyNames&gt;requestId,userId,orderId&lt;/includeMdcKeyNames&gt;
+    &lt;/encoder&gt;
+  &lt;/appender&gt;
+  &lt;root level="INFO"&gt;&lt;appender-ref ref="STDOUT"/&gt;&lt;/root&gt;
+&lt;/configuration&gt;</pre>
+
+<pre><span class="kw">public class</span> <span class="ty">OrderHandler</span> {
+    <span class="kw">private static final</span> <span class="ty">Logger</span> log = <span class="ty">LoggerFactory</span>.<span class="fn">getLogger</span>(<span class="ty">OrderHandler</span>.<span class="kw">class</span>);
+
+    <span class="kw">public void</span> <span class="fn">handleRequest</span>(<span class="ty">SQSEvent</span> event, <span class="ty">Context</span> ctx) {
+        <span class="cm">// Set correlation IDs in MDC (Mapped Diagnostic Context)</span>
+        <span class="cm">// These appear in every log line for this invocation</span>
+        <span class="ty">MDC</span>.<span class="fn">put</span>(<span class="str">"requestId"</span>, ctx.<span class="fn">getAwsRequestId</span>());
+
+        <span class="kw">for</span> (<span class="kw">var</span> msg : event.<span class="fn">getRecords</span>()) {
+            <span class="ty">Order</span> order = <span class="fn">parseOrder</span>(msg.<span class="fn">getBody</span>());
+            <span class="ty">MDC</span>.<span class="fn">put</span>(<span class="str">"orderId"</span>, order.<span class="fn">getId</span>());
+            <span class="ty">MDC</span>.<span class="fn">put</span>(<span class="str">"userId"</span>, order.<span class="fn">getUserId</span>());
+
+            <span class="kw">long</span> start = <span class="ty">System</span>.<span class="fn">currentTimeMillis</span>();
+            <span class="kw">try</span> {
+                orderService.<span class="fn">process</span>(order);
+
+                <span class="cm">// Structured log event — all context from MDC + explicit fields</span>
+                log.<span class="fn">info</span>(<span class="str">"order_processed"</span>,
+                    <span class="fn">kv</span>(<span class="str">"event"</span>, <span class="str">"order_processed"</span>),
+                    <span class="fn">kv</span>(<span class="str">"durationMs"</span>, <span class="ty">System</span>.<span class="fn">currentTimeMillis</span>() - start),
+                    <span class="fn">kv</span>(<span class="str">"totalAmount"</span>, order.<span class="fn">getTotal</span>())
+                );
+                <span class="cm">// Produces: {"level":"INFO","event":"order_processed","orderId":"ord-123",
+                //            "userId":"alice","durationMs":234,"totalAmount":99.99,...}</span>
+
+            } <span class="kw">catch</span> (<span class="ty">Exception</span> e) {
+                log.<span class="fn">error</span>(<span class="str">"order_processing_failed"</span>,
+                    <span class="fn">kv</span>(<span class="str">"event"</span>, <span class="str">"order_processing_failed"</span>),
+                    <span class="fn">kv</span>(<span class="str">"errorType"</span>, e.<span class="fn">getClass</span>().<span class="fn">getSimpleName</span>()),
+                    <span class="fn">kv</span>(<span class="str">"errorMessage"</span>, e.<span class="fn">getMessage</span>()),
+                    e
+                );
+            } <span class="kw">finally</span> {
+                <span class="ty">MDC</span>.<span class="fn">clear</span>();
+            }
+        }
+    }
+}</pre>
+
+<h2>Querying Structured Logs in Logs Insights</h2>
+<pre><span class="cm">## Query structured JSON logs using field extraction</span>
+
+<span class="cm"># Average order processing time by userId</span>
+fields @timestamp
+| filter event = "order_processed"
+| stats avg(durationMs), count() by userId
+| sort avg(durationMs) desc
+
+<span class="cm"># Error breakdown by errorType</span>
+fields @timestamp, orderId, errorType, errorMessage
+| filter event = "order_processing_failed"
+| stats count() by errorType
+| sort count desc
+
+<span class="cm"># Find orders that took longer than 1 second</span>
+fields @timestamp, orderId, userId, durationMs
+| filter event = "order_processed" and durationMs > 1000
+| sort durationMs desc</pre>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/lambda/latest/operatorguide/logging-best-practices.html" target="_blank">Lambda Logging Best Practices</a>
+  <a class="ref" href="https://github.com/logfellow/logstash-logback-encoder" target="_blank">Logstash Logback Encoder</a>
+</div>
+</div>
+
+<!-- ===== S9: WHY TRACING ===== -->
+<div id="s9" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 10 · X-Ray · Section 9</span>
+  <h1>Why Tracing? The Distributed Request Problem</h1>
+  <p class="subtitle">When a single user request touches 5 services, metrics tell you something is slow and logs tell you what happened in each service — but neither tells you how those services connected. Tracing fills this gap.</p>
+</div>
+
+<h2>The Problem Tracing Solves</h2>
+<p>A user reports that checkout is slow. Your metrics show Lambda p99 is elevated but don't tell you which Lambda in the chain. You grep through logs across 5 different Lambda log groups — but which log events are from the same user request? How do you correlate events in OrderService with events in InventoryService with events in PaymentService?</p>
+
+<div class="scenario">
+  <div class="scenario-label">Without Tracing — The Debugging Nightmare</div>
+  <div class="scenario-title">Finding a slow request across 5 services</div>
+  <p>API Gateway received request ID <code>req-abc</code>. Passed to OrderLambda as a new invocation with request ID <code>req-xyz</code> (different ID). OrderLambda called InventoryLambda — which got invocation ID <code>req-123</code>. Three different log groups. Three different request IDs. No way to correlate them without manually instrumenting correlation IDs across every service call.</p>
+  <p style="margin-top:8px">With X-Ray: one trace ID propagated through the entire call chain automatically. One view showing all five services, exact timing of each hop, where 4.8 seconds of the 5-second request was spent.</p>
+</div>
+
+<h2>What a Trace Looks Like</h2>
+<div class="traffic-flow">
+  <div class="traffic-label">X-Ray trace: user checkout → 5 services, total 4,850ms</div>
+
+  <div class="trace-segment ts-apigw">
+    <div class="ts-label">API Gateway</div>
+    <div class="ts-time">0ms → 4,850ms (total: 4,850ms)</div>
+    <div class="ts-body">POST /v1/checkout received. Cognito JWT validated. Lambda invoked.</div>
+  </div>
+
+  <div style="padding-left:20px">
+    <div class="trace-segment ts-lambda">
+      <div class="ts-label">Lambda: CheckoutHandler</div>
+      <div class="ts-time">35ms → 4,830ms (init: 1,200ms cold start + handler: 3,595ms)</div>
+      <div class="ts-body">🔴 Cold start! JVM init took 1,200ms. Handler then called downstream services.</div>
+    </div>
+
+    <div style="padding-left:20px">
+      <div class="trace-segment ts-ddb">
+        <div class="ts-label">DynamoDB: GetItem (cart)</div>
+        <div class="ts-time">1,240ms → 1,252ms (12ms)</div>
+        <div class="ts-body">Read cart items for user. OK.</div>
+      </div>
+
+      <div class="trace-segment ts-err">
+        <div class="ts-label">DynamoDB: UpdateItem (inventory)</div>
+        <div class="ts-time">1,255ms → 5,850ms (4,595ms) ← HERE IS YOUR PROBLEM</div>
+        <div class="ts-body">🔴 Throttled: ProvisionedThroughputExceededException on status-index GSI. Retried 3 times with exponential backoff. Third retry succeeded at 4,595ms.</div>
+      </div>
+
+      <div class="trace-segment ts-sqs">
+        <div class="ts-label">SQS: SendMessage (order queue)</div>
+        <div class="ts-time">5,852ms → 5,870ms (18ms)</div>
+        <div class="ts-body">OK. Message enqueued.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p>Without tracing: you'd look at Lambda Duration metric (elevated), grep through logs (see the DynamoDB error), but spend 20+ minutes manually correlating. With tracing: you see the waterfall diagram, click on the red segment, and immediately know: DynamoDB inventory GSI throttling, 4.6 seconds of retry, resolve by increasing GSI write capacity.</p>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/xray/latest/devguide/aws-xray.html" target="_blank">AWS X-Ray Documentation</a>
+</div>
+</div>
+
+<!-- ===== S10: X-RAY CONCEPTS ===== -->
+<div id="s10" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 10 · X-Ray · Section 10</span>
+  <h1>X-Ray Concepts — Traces, Segments &amp; Subsegments</h1>
+  <p class="subtitle">Understanding X-Ray's data model is essential before you instrument your code. A small number of concepts cover everything you'll encounter.</p>
+</div>
+
+<h2>The Data Model</h2>
+<div class="grid3">
+  <div class="card">
+    <div class="card-title" style="color:var(--orange-light)">Trace</div>
+    <div class="card-body">One end-to-end request flow from the first service to the last. Has a globally unique Trace ID that's propagated in HTTP headers (<code>X-Amzn-Trace-Id</code>) through every service call. All segments with the same Trace ID are assembled into the trace waterfall.</div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--blue-light)">Segment</div>
+    <div class="card-body">One service's contribution to a trace. Lambda creates one segment per invocation. Contains: service name, timing (start/end), HTTP data, metadata, annotations, and any subsegments.</div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--green-light)">Subsegment</div>
+    <div class="card-body">A named block of work within a segment — a DynamoDB call, an HTTP call to another service, a database query. Created by the X-Ray SDK automatically for AWS SDK calls and HTTP clients, or manually in your code.</div>
+  </div>
+</div>
+
+<h2>Annotations vs Metadata</h2>
+<div class="grid2">
+  <div class="card">
+    <div class="card-title" style="color:var(--orange-light)">Annotations — Indexed, Searchable</div>
+    <div class="card-body">
+      Key-value pairs (string, number, boolean) that X-Ray indexes. You can search/filter traces by annotation values. Use for: things you'll want to search by (userId, orderId, environment, version).<br><br>
+      Max 50 annotations per trace. Keys must be alphanumeric.
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="color:var(--blue-light)">Metadata — Not Indexed, Just Context</div>
+    <div class="card-body">
+      Arbitrary JSON objects. Not searchable but visible in the trace details. Use for: large payloads, debug context you want to inspect manually but don't need to search on (request body, response payload, configuration values).
+    </div>
+  </div>
+</div>
+
+<h2>The Trace Header</h2>
+<pre><span class="cm"># X-Ray propagates the trace context via HTTP header:
+# X-Amzn-Trace-Id: Root=1-5759e988-bd862e3fe1be46a994272793;Parent=53995c3f42cd8ad8;Sampled=1
+
+# Root=1-{epoch-hex}-{16-hex-chars}  ← unique trace ID
+# Parent={16-hex-chars}              ← parent segment ID (so X-Ray knows the tree structure)
+# Sampled=1                          ← this request is sampled (being traced)
+# Sampled=0                          ← not sampled (no trace data sent)
+
+# When your Lambda calls another service (DynamoDB SDK, HTTP to another Lambda):
+# SDK automatically includes this header → X-Ray connects the segments</span></pre>
+
+<h2>Sampling — Not Every Request Gets Traced</h2>
+<pre><span class="cm">## At high traffic, tracing every request would be:
+## - Expensive ($5 per million traces recorded)
+## - High overhead in your Lambda (some CPU for trace data)
+## Sampling: record a representative subset
+
+## Default rule: 1 request per second + 5% of additional requests
+## Custom rules:
+{
+  "version": 2,
+  "default": {
+    "fixed_target": 1,      <span class="cm">// always trace this many per second</span>
+    "rate": 0.05            <span class="cm">// trace 5% of remaining traffic</span>
+  },
+  "rules": [
+    {
+      "description": "Higher rate for payment service",
+      "service_name": "PaymentProcessor",
+      "http_method": "*",
+      "url_path": "*",
+      "fixed_target": 10,
+      "rate": 0.2           <span class="cm">// trace 20% of payment traffic</span>
+    },
+    {
+      "description": "Trace all errors",
+      "service_name": "*",
+      "http_method": "*",
+      "url_path": "*",
+      "fixed_target": 0,
+      "rate": 1.0,
+      "attributes": {"error": true}  <span class="cm">// always trace errors</span>
+    }
+  ]
+}
+
+<span class="cm"># Set sampling rules in X-Ray console or via API
+# Rules are fetched by the X-Ray SDK — no code changes needed to update</span></pre>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/xray/latest/devguide/xray-concepts.html" target="_blank">X-Ray Concepts</a>
+  <a class="ref" href="https://docs.aws.amazon.com/xray/latest/devguide/xray-console-sampling.html" target="_blank">X-Ray Sampling Rules</a>
+  <a class="ref" href="https://aws.amazon.com/xray/pricing/" target="_blank">X-Ray Pricing</a>
+</div>
+</div>
+
+<!-- ===== S11: INSTRUMENTING LAMBDA & ECS ===== -->
+<div id="s11" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 10 · X-Ray · Section 11</span>
+  <h1>Instrumenting Lambda &amp; ECS with X-Ray</h1>
+  <p class="subtitle">Adding X-Ray to your application — automatic instrumentation for AWS SDK calls and manual subsegments for your own code and external HTTP calls.</p>
+</div>
+
+<h2>Lambda — Enable X-Ray in One Setting</h2>
+<pre><span class="cm"># Enable X-Ray tracing on Lambda (Active = full tracing)</span>
+aws lambda update-function-configuration \
+  --function-name OrderProcessor \
+  --tracing-config Mode=Active
+<span class="cm"># Mode=Active: sample and trace all invocations per sampling rules
+# Mode=PassThrough: only trace if upstream (API GW) sends a sampled trace ID
+
+# Lambda automatically creates a segment for each invocation
+# No code changes needed for basic tracing
+# AWS SDK calls automatically create subsegments if you use X-Ray SDK</span></pre>
+
+<h2>Adding X-Ray SDK to Java Lambda</h2>
+<pre><span class="cm">&lt;!-- Maven dependency --&gt;</span>
+&lt;dependency&gt;
+    &lt;groupId&gt;com.amazonaws&lt;/groupId&gt;
+    &lt;artifactId&gt;aws-xray-recorder-sdk-core&lt;/artifactId&gt;
+    &lt;version&gt;2.14.0&lt;/version&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;com.amazonaws&lt;/groupId&gt;
+    &lt;artifactId&gt;aws-xray-recorder-sdk-aws-sdk-v2-instrumentor&lt;/artifactId&gt;
+    &lt;version&gt;2.14.0&lt;/version&gt;
+&lt;/dependency&gt;</pre>
+
+<pre><span class="kw">public class</span> <span class="ty">OrderHandler</span> <span class="kw">implements</span> <span class="ty">RequestHandler</span>&lt;<span class="ty">SQSEvent</span>, <span class="ty">Void</span>&gt; {
+
+    <span class="cm">// SDK clients created with X-Ray instrumentation</span>
+    <span class="cm">// aws-xray-recorder-sdk-aws-sdk-v2-instrumentor patches SDK v2 automatically</span>
+    <span class="cm">// Every DynamoDB, SQS, SNS, S3, etc call creates a subsegment automatically</span>
+    <span class="kw">private static final</span> <span class="ty">DynamoDbClient</span> ddb = <span class="ty">DynamoDbClient</span>.<span class="fn">create</span>();
+    <span class="kw">private static final</span> <span class="ty">SnsClient</span> sns = <span class="ty">SnsClient</span>.<span class="fn">create</span>();
+
+    <span class="kw">public</span> <span class="ty">Void</span> <span class="fn">handleRequest</span>(<span class="ty">SQSEvent</span> event, <span class="ty">Context</span> ctx) {
+
+        <span class="cm">// Add annotations — searchable in X-Ray</span>
+        <span class="ty">AWSXRay</span>.<span class="fn">getCurrentSegment</span>().<span class="fn">putAnnotation</span>(<span class="str">"environment"</span>, <span class="str">"production"</span>);
+        <span class="ty">AWSXRay</span>.<span class="fn">getCurrentSegment</span>().<span class="fn">putAnnotation</span>(<span class="str">"functionVersion"</span>, <span class="str">"v1.2.3"</span>);
+
+        <span class="kw">for</span> (<span class="kw">var</span> msg : event.<span class="fn">getRecords</span>()) {
+            <span class="ty">Order</span> order = <span class="fn">parseOrder</span>(msg.<span class="fn">getBody</span>());
+
+            <span class="cm">// Add per-order annotation</span>
+            <span class="ty">AWSXRay</span>.<span class="fn">getCurrentSegment</span>().<span class="fn">putAnnotation</span>(<span class="str">"orderId"</span>, order.<span class="fn">getId</span>());
+            <span class="ty">AWSXRay</span>.<span class="fn">getCurrentSegment</span>().<span class="fn">putAnnotation</span>(<span class="str">"userId"</span>, order.<span class="fn">getUserId</span>());
+
+            <span class="cm">// Manual subsegment for a custom operation (external HTTP call)</span>
+            <span class="ty">AWSXRay</span>.<span class="fn">beginSubsegment</span>(<span class="str">"stripe-payment-charge"</span>);
+            <span class="kw">try</span> {
+                <span class="ty">PaymentResult</span> result = stripeClient.<span class="fn">charge</span>(order.<span class="fn">getTotal</span>());
+                <span class="ty">AWSXRay</span>.<span class="fn">getCurrentSubsegment</span>().<span class="fn">putMetadata</span>(<span class="str">"paymentId"</span>, result.<span class="fn">getId</span>());
+            } <span class="kw">catch</span> (<span class="ty">Exception</span> e) {
+                <span class="ty">AWSXRay</span>.<span class="fn">getCurrentSubsegment</span>().<span class="fn">addException</span>(e);
+                <span class="kw">throw</span> e;
+            } <span class="kw">finally</span> {
+                <span class="ty">AWSXRay</span>.<span class="fn">endSubsegment</span>();
+            }
+
+            <span class="cm">// DynamoDB call — automatically creates subsegment "DynamoDB"
+            // Subsegment includes: TableName, Operation, request/response data</span>
+            ddb.<span class="fn">putItem</span>(<span class="ty">PutItemRequest</span>.<span class="fn">builder</span>()
+                .<span class="fn">tableName</span>(<span class="str">"Orders"</span>)
+                .<span class="fn">item</span>(<span class="fn">toAttributeMap</span>(order))
+                .<span class="fn">build</span>());
+        }
+
+        <span class="kw">return null</span>;
+    }
+}</pre>
+
+<h2>ECS — X-Ray Sidecar Container</h2>
+<p>For ECS, X-Ray runs as a sidecar container in the same task. Your application sends trace data to localhost on port 2000, and the X-Ray daemon forwards to the X-Ray service.</p>
+
+<pre><span class="cm">// ECS task definition — add X-Ray daemon as sidecar</span>
+{
+  <span class="jk">"containerDefinitions"</span>: [
+    {
+      <span class="jk">"name"</span>: <span class="jv">"myapp"</span>,
+      <span class="jk">"image"</span>: <span class="jv">"myapp:v1.2.3"</span>,
+      <span class="jk">"environment"</span>: [
+        {<span class="jk">"name"</span>: <span class="jv">"AWS_XRAY_DAEMON_ADDRESS"</span>, <span class="jk">"value"</span>: <span class="jv">"xray-daemon:2000"</span>},
+        {<span class="jk">"name"</span>: <span class="jv">"AWS_XRAY_CONTEXT_MISSING"</span>, <span class="jk">"value"</span>: <span class="jv">"IGNORE_ERROR"</span>}
+      ]
+    },
+    {
+      <span class="jk">"name"</span>: <span class="jv">"xray-daemon"</span>,
+      <span class="jk">"image"</span>: <span class="jv">"public.ecr.aws/xray/aws-xray-daemon:3.x"</span>,
+      <span class="jk">"portMappings"</span>: [{<span class="jk">"containerPort"</span>: <span class="num">2000</span>, <span class="jk">"protocol"</span>: <span class="jv">"udp"</span>}],
+      <span class="jk">"cpu"</span>: <span class="num">32</span>,
+      <span class="jk">"memory"</span>: <span class="num">64</span>
+    }
+  ]
+}
+
+<span class="cm">// Task role needs: xray:PutTraceSegments, xray:PutTelemetryRecords</span></pre>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/lambda/latest/dg/services-xray.html" target="_blank">Lambda X-Ray Integration</a>
+  <a class="ref" href="https://docs.aws.amazon.com/xray/latest/devguide/xray-daemon-ecs.html" target="_blank">X-Ray Daemon on ECS</a>
+  <a class="ref" href="https://github.com/aws/aws-xray-sdk-java" target="_blank">X-Ray Java SDK</a>
+</div>
+</div>
+
+<!-- ===== S12: SERVICE MAP ===== -->
+<div id="s12" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 10 · X-Ray · Section 12</span>
+  <h1>Service Map &amp; Debugging with X-Ray</h1>
+  <p class="subtitle">The X-Ray Service Map is a live graph of how your services connect, with latency and error rates on each edge. The most powerful debugging tool for distributed systems.</p>
+</div>
+
+<h2>What the Service Map Shows</h2>
+<p>The Service Map is automatically generated from your trace data. Each node is a service (Lambda function, DynamoDB table, external HTTP endpoint, SQS queue). Each edge is a connection between services, showing: requests per minute, average/p99 latency, and error/fault rates. Nodes with errors turn red. At a glance you can see which service is causing problems.</p>
+
+<h2>Reading the Service Map — What Colors Mean</h2>
+<table>
+  <tr><th>Indicator</th><th>Meaning</th></tr>
+  <tr><td>Green node</td><td>Service is healthy — low error rate, normal latency</td></tr>
+  <tr><td>Yellow node</td><td>Throttled or fault — 429/503 responses being returned</td></tr>
+  <tr><td>Red node</td><td>Errors — 5xx responses</td></tr>
+  <tr><td>Purple node</td><td>High latency — responding slower than baseline</td></tr>
+  <tr><td>Dashed edge</td><td>Asynchronous connection (SQS queue, not direct call)</td></tr>
+</table>
+
+<h2>Trace Detail — Drilling Into a Specific Request</h2>
+<pre><span class="cm">## Workflow for debugging a slow/erroring request:
+
+1. Open X-Ray console → Service Map
+   → See red DynamoDB node in Orders service
+   → Click the DynamoDB node → "View traces"
+
+2. Traces list shows all recent traces with that error
+   → Sort by Duration (slowest first)
+   → Click the slowest trace (e.g., 4,850ms)
+
+3. Trace timeline shows:
+   → API Gateway: 5ms
+   → Lambda:OrderProcessor cold start: 1,200ms (⚠️)
+   → Lambda:OrderProcessor handler: 3,600ms
+     → DynamoDB GetItem: 12ms ✓
+     → DynamoDB UpdateItem: 4,595ms ❌ (ThrottlingException, 3 retries)
+     → SQS SendMessage: 18ms ✓
+
+4. Click the failing DynamoDB segment:
+   → Error: com.amazonaws.services.dynamodbv2.model.ProvisionedThroughputExceededException
+   → Table: Orders
+   → Index: status-index
+   → HTTP status: 400
+   → Retried: 3 times
+
+5. Resolution: 
+   → status-index needs more write capacity
+   → Enable auto scaling or switch to PAY_PER_REQUEST
+   → Fixed in 10 minutes</span></pre>
+
+<h2>X-Ray Analytics — Aggregate Trace Data</h2>
+<pre><span class="cm"># X-Ray Analytics lets you query aggregated trace data
+# Filter by annotation values, compare time ranges, calculate percentiles
+
+# In console: X-Ray → Traces → Analytics
+# Filter: annotation.userId = "alice"  (find all alice's traces)
+# Filter: annotation.orderId = "ord-123"  (trace for specific order)
+# Filter: error = true  (all error traces)
+# Compare: today vs yesterday  (latency regression detection)
+
+# Via API (for automation):
+aws xray get-trace-summaries \
+  --start-time "2024-01-15T14:00:00" \
+  --end-time "2024-01-15T15:00:00" \
+  --filter-expression 'annotation.environment = "production" AND error = true' \
+  --query 'TraceSummaries[].{Id:Id,Duration:Duration,Error:HasError}'</pre>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/xray/latest/devguide/xray-console-servicemap.html" target="_blank">X-Ray Service Map</a>
+  <a class="ref" href="https://docs.aws.amazon.com/xray/latest/devguide/xray-api-gettingdata.html" target="_blank">X-Ray Analytics API</a>
+</div>
+</div>
+
+<!-- ===== S13: CONTAINER INSIGHTS ===== -->
+<div id="s13" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 10 · Section 13</span>
+  <h1>Container Insights</h1>
+  <p class="subtitle">CloudWatch Container Insights collects CPU, memory, disk I/O, and network metrics at the container and task level for ECS and EKS — giving you visibility beyond what ECS service-level metrics provide.</p>
+</div>
+
+<h2>What Container Insights Adds</h2>
+<p>Standard ECS metrics (CPUUtilization, MemoryUtilization) are at the service level — averages across all tasks. Container Insights drills down to individual tasks and containers, providing performance data useful for right-sizing and debugging noisy neighbours.</p>
+
+<pre><span class="cm"># Enable Container Insights on ECS cluster</span>
+aws ecs update-cluster-settings \
+  --cluster production \
+  --settings name=containerInsights,value=enabled
+
+<span class="cm"># After enabling, new metrics appear in CloudWatch under:
+# Namespace: ECS/ContainerInsights
+
+# Metrics available:
+CpuUtilized          <span class="cm">← CPU (vCPU units used)</span>
+MemoryUtilized       <span class="cm">← RAM used (MB)</span>
+MemoryReserved       <span class="cm">← RAM allocated (from task definition)</span>
+NetworkRxBytes       <span class="cm">← bytes received per second</span>
+NetworkTxBytes       <span class="cm">← bytes sent per second</span>
+StorageReadBytes     <span class="cm">← disk read rate</span>
+StorageWriteBytes    <span class="cm">← disk write rate</span>
+RunningTaskCount     <span class="cm">← how many tasks</span>
+TaskCount            <span class="cm">← desired count</span>
+
+<span class="cm"># Dimensions: ClusterName, ServiceName, TaskId, ContainerName
+# Can drill to individual container level — not just service average</span></pre>
+
+<h2>Container Insights Logs — Performance Log Format</h2>
+<pre><span class="cm"># Container Insights also publishes structured performance logs to CloudWatch Logs
+# Under: /aws/ecs/containerinsights/{cluster}/performance
+
+# One log event per container per period:
+{
+  "Type": "Container",
+  "Version": "0",
+  "ClusterName": "production",
+  "TaskDefinitionFamily": "myapp-task",
+  "TaskId": "abc123",
+  "ContainerName": "myapp",
+  "Timestamp": "2024-01-15T14:30:00Z",
+  "CpuUtilized": 450,          <span class="cm">// millicores (0.45 vCPU used)</span>
+  "CpuReserved": 512,          <span class="cm">// 0.5 vCPU allocated</span>
+  "MemoryUtilized": 412,       <span class="cm">// MB used</span>
+  "MemoryReserved": 1024,      <span class="cm">// MB allocated</span>
+  "NetworkRxDropped": 0,
+  "NetworkTxDropped": 0
+}
+
+<span class="cm"># Query Container Insights logs to find memory-hungry tasks:</span>
+fields ClusterName, ServiceName, TaskId, MemoryUtilized, MemoryReserved
+| filter Type = "Container"
+| stats max(MemoryUtilized) as peakMem, avg(MemoryReserved) as reserved
+     by ServiceName, TaskId
+| filter peakMem > reserved * 0.9   <span class="cm"># using > 90% of allocated memory</span>
+| sort peakMem desc</pre>
+
+<div class="refs">
+  <a class="ref" href="https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/ContainerInsights.html" target="_blank">Container Insights Documentation</a>
+</div>
+</div>
+
+<!-- ===== S14: PRODUCTION PLAYBOOK ===== -->
+<div id="s14" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 10 · Section 14</span>
+  <h1>Production Observability Playbook</h1>
+  <p class="subtitle">What every production service should have — the minimum set of metrics, logs, alarms, and traces that give you confidence you'll know when something goes wrong and be able to find out why.</p>
+</div>
+
+<h2>Every Lambda Function Should Have</h2>
+<pre><span class="cm">## Alarms (minimum set):
+✓ Errors > 0 for 2 consecutive minutes → page
+✓ Throttles > 0 for 5 minutes → warn (concurrency limit approaching)
+✓ Duration p99 > {SLA threshold} → page
+✓ If triggered by SQS: DLQ ApproximateNumberOfMessagesVisible > 0 → page
+
+## Logging:
+✓ Structured JSON logs (not plain text)
+✓ Log orderId/userId in every log line via MDC
+✓ Log business events: order_placed, payment_processed, etc.
+✓ Log timing of external calls
+✓ Log retention: 30-90 days (not forever)
+
+## Tracing:
+✓ Active X-Ray tracing enabled
+✓ Annotations: requestId, userId, orderId, environment
+✓ Manual subsegments for external HTTP calls (Stripe, etc.)
+
+## Right-sizing (ongoing):
+✓ Check REPORT lines monthly: Max Memory Used vs Memory Size
+✓ Reduce memory if consistently < 50% used
+✓ Check init Duration in REPORT — if > 1s investigate SnapStart</span></pre>
+
+<h2>Every ECS Service Should Have</h2>
+<pre><span class="cm">## Alarms:
+✓ ECSServiceAverageCPUUtilization > 80% for 5min → scale-out trigger
+✓ ECSServiceAverageMemoryUtilization > 85% → page (OOMKill imminent)
+✓ RunningTaskCount < desired → page (tasks failing to start)
+✓ ALB 5XXError rate > 1% → page
+✓ ALB TargetResponseTime p99 > {SLA} → page
+
+## Container Insights: enabled
+## X-Ray: sidecar container + instrumented SDK
+
+## Dashboard:
+✓ Request Rate (ALB RequestCount)
+✓ Error Rate (ALB 5XXError / RequestCount)
+✓ Latency (ALB TargetResponseTime p50/p99)
+✓ CPU/Memory utilisation
+✓ Task count vs desired
+✓ Downstream dependencies (DDB, RDS latency)</span></pre>
+
+<h2>Every RDS Database Should Have</h2>
+<pre><span class="cm">## Alarms:
+✓ FreeStorageSpace < 10GB → page
+✓ CPUUtilization > 80% for 10min → warn
+✓ DatabaseConnections > 80% of max → page (connection exhaustion)
+✓ ReadLatency or WriteLatency p99 > 100ms → warn
+✓ ReplicaLag > 60s (for read replicas) → warn
+
+## Performance Insights: enabled
+# Shows which queries are consuming the most CPU/time
+# Essential for finding slow queries in production
+
+## Enhanced Monitoring: enabled
+# OS-level metrics (disk I/O, filesystem, network) at 1-second granularity</span></pre>
+
+<h2>The Incident Response Checklist</h2>
+<div class="steps">
+  <div class="step"><div class="step-num">1</div><div class="step-content">
+    <div class="step-title">Check CloudWatch dashboard — which alarm fired? What metric?</div>
+    <div class="step-body">Is it Lambda errors? High latency? SQS DLQ? This tells you which component is affected.</div>
+  </div></div>
+  <div class="step"><div class="step-num">2</div><div class="step-content">
+    <div class="step-title">X-Ray Service Map — which service is red?</div>
+    <div class="step-body">Find the red/yellow node. Is it the Lambda itself or a downstream dependency (DynamoDB, RDS, external API)? Click the node for recent erroring traces.</div>
+  </div></div>
+  <div class="step"><div class="step-num">3</div><div class="step-content">
+    <div class="step-title">Drill into an error trace — what exactly failed?</div>
+    <div class="step-body">Open the slowest or first erroring trace. Find the red subsegment. Read the exception details. This usually tells you the root cause directly.</div>
+  </div></div>
+  <div class="step"><div class="step-num">4</div><div class="step-content">
+    <div class="step-title">Logs Insights — get frequency and context</div>
+    <div class="step-body">Query the relevant log group: how many errors per minute? All the same error or multiple types? When did it start? Did a deployment happen around that time (check dashboard annotations)?</div>
+  </div></div>
+  <div class="step"><div class="step-num">5</div><div class="step-content">
+    <div class="step-title">Check recent deployments — did something change?</div>
+    <div class="step-body">Check ECR/Lambda for recent pushes. CloudTrail for recent IAM or infrastructure changes. Most production incidents correlate with recent deployments.</div>
+  </div></div>
+</div>
+
+<div class="refs">
+  <a class="ref" href="https://aws.amazon.com/cloudwatch/getting-started/" target="_blank">CloudWatch Getting Started</a>
+  <a class="ref" href="https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Best_Practice_Recommended_Alarms_AWS_Services.html" target="_blank">Recommended Alarms by Service</a>
+</div>
+</div>
+
+<!-- ===== S15: INTERVIEW Q&A ===== -->
+<div id="s15" class="section">
+<div class="section-header">
+  <span class="mod-badge">Module 10 · Interview Q&amp;A</span>
+  <h1>Interview Questions — Observability</h1>
+  <p class="subtitle">12 questions covering CloudWatch metrics, logs, and X-Ray tracing.</p>
+</div>
+
+<h2 style="color:var(--green-light)">Beginner</h2>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">What are the three pillars of observability and what does each tell you? <span class="qa-arrow">▼</span></div><div class="qa-a"><strong>Metrics:</strong> Numeric measurements over time. CPU at 65%, 200 requests/second, p99 latency of 450ms. Tell you what is happening and how bad it is. Good for alerting thresholds and capacity planning. Cheap to store, fast to query. Answer: "Is something wrong?" <br><br><strong>Logs:</strong> Timestamped records of discrete events. "Order ord-123 failed with DuplicateKeyException at 14:30:01." Tell you what exactly happened with full context. More expensive than metrics, more useful for debugging a specific incident. Answer: "What happened and why?" <br><br><strong>Traces:</strong> End-to-end journey of a single request through multiple services. Shows each service in the call chain, how long it took, where errors occurred. Unique to distributed systems — you can't get this from metrics or logs alone. Answer: "Where in the flow is the problem?" <br><br>In practice: metrics detect an incident, traces narrow down which service/dependency is responsible, logs explain the specific error details.</div></div>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">What is the difference between Average and p99 latency? Why does p99 matter more for user-facing APIs? <span class="qa-arrow">▼</span></div><div class="qa-a">Average latency is the sum of all response times divided by the count. It's easily skewed by a small number of fast requests hiding a long tail. p99 latency is the 99th percentile — the value that 99% of requests completed faster than. If p99 is 2 seconds, 1% of your users wait more than 2 seconds per request. Example: if 99 requests take 20ms and 1 takes 10,000ms, average = 119ms (looks fine). p99 = 10,000ms (disaster for that user). For user-facing APIs, alarm on p99 because: (1) At 1,000 requests/second, 1% = 10 users/second experiencing the slow path. (2) SLAs are usually defined as percentile guarantees ("p99 < 500ms"), not average guarantees. (3) Average can improve (more fast requests) while p99 stays bad — you'd miss the problem. Always set latency alarms on p99. Use Average only for internal capacity planning.</div></div>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">What does CloudWatch Logs Insights do and how is it different from just reading logs? <span class="qa-arrow">▼</span></div><div class="qa-a">CloudWatch Logs Insights is a query engine that scans your log data and returns aggregated results. Difference from reading logs: (1) <strong>Scale:</strong> A busy Lambda might generate millions of log lines per day across thousands of log streams. You can't grep through all of them. Logs Insights scans them all in seconds. (2) <strong>Aggregation:</strong> "How many PaymentFailed errors occurred per minute in the last hour? Which userId had the most errors?" These are aggregation queries that are impossible with grep. (3) <strong>Structured query:</strong> If you log JSON, Insights automatically parses the JSON fields. You can write <code>filter event = "payment_failed" | stats count() by errorCode</code>. (4) <strong>Cross-stream:</strong> A Lambda function might have 500 concurrent log streams (one per warm instance). Logs Insights queries all of them together. Cost: $0.005 per GB of log data scanned — so write targeted queries with good filters.</div></div>
+
+<h2 style="color:var(--yellow-light)">Intermediate</h2>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">What is X-Ray and why can't you solve the same problem with just logs? <span class="qa-arrow">▼</span></div><div class="qa-a">X-Ray is a distributed tracing service that follows a single request through your entire microservices architecture, recording timing and error information for each service hop. Why logs can't solve this: (1) <strong>Correlation:</strong> When API Gateway invokes Lambda, Lambda invokes DynamoDB, each generates its own log events with different IDs. There's no common identifier linking them unless you manually propagate one. X-Ray auto-propagates a trace ID via HTTP headers. (2) <strong>Causality:</strong> Logs show what happened in each service independently. Traces show the causal chain — Service A called Service B which called Service C, and Service C was slow, causing Service B to be slow, causing the user to see a slow response. You can't reconstruct this from independent logs. (3) <strong>Timing:</strong> Logs have timestamps but no way to know if 50ms in Service A and 50ms in Service B were concurrent or sequential. Traces show the exact temporal relationship. (4) <strong>Service Map:</strong> X-Ray automatically generates a graph of how your services connect, with error rates on each edge — impossible to derive from logs.</div></div>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">What is a metric filter in CloudWatch? When would you use it? <span class="qa-arrow">▼</span></div><div class="qa-a">A metric filter watches a CloudWatch Logs log group in real time, matches log lines against a pattern, and increments a CloudWatch metric each time the pattern matches. Use cases: (1) <strong>No code change needed:</strong> Your application logs "ERROR: payment_failed" and you want to alarm when payment failures spike. Instead of adding custom metric code to your Lambda, create a metric filter with pattern <code>"ERROR: payment_failed"</code> → creates a metric that increments each match → create a CloudWatch alarm on that metric. (2) <strong>Extract numeric values:</strong> If your app logs "Order processed in 4532ms" you can extract 4532 as the metric value. Now you have a latency metric without changing application code. (3) <strong>Legacy applications:</strong> Applications you can't easily modify. (4) Limitation: metric filters have slight delay (seconds) vs real-time metrics from the app. They're also harder to maintain — pattern changes require careful testing. For new code, emitting explicit custom metrics from the application is cleaner and more flexible.</div></div>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">A Lambda function is showing elevated p99 latency. Walk through how you'd debug this. <span class="qa-arrow">▼</span></div><div class="qa-a">(1) <strong>CloudWatch Metrics:</strong> Check Duration p99 trend — is it a sudden spike or gradual increase? Check Errors and Throttles — eliminate those as the cause. Check ConcurrentExecutions — are you hitting the concurrency limit? (2) <strong>Lambda REPORT lines (Logs Insights):</strong> <code>filter @type = "REPORT" | parse @message "Duration: * ms\tBilled Duration" as dur | stats pct(dur, 99) by bin(5min)</code> — see exactly when latency spiked. Also check: <code>filter @type = "REPORT" | parse @message "Init Duration: * ms" as init | filter ispresent(init) | stats count(), avg(init)</code> — are cold starts driving the p99? (3) <strong>X-Ray traces:</strong> Open X-Ray console, find the Lambda in the Service Map (may appear yellow/red). Filter traces from the high-latency period. Sort by Duration. Click the slowest trace. Look for the red/slow subsegment — is it DynamoDB? An external HTTP call? The handler itself? (4) <strong>Application logs (Logs Insights):</strong> For the requestId of a slow trace, find all log lines. Look for: long-running loops, large payloads being parsed, retried calls, lock contention. (5) Check if a deployment happened around the same time (check dashboard annotation or CloudTrail for recent UpdateFunctionCode/UpdateFunctionConfiguration).</div></div>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">What is X-Ray sampling and why doesn't it trace every request by default? <span class="qa-arrow">▼</span></div><div class="qa-a">X-Ray sampling means only a fraction of requests are traced. The default rule: always trace 1 request per second, then trace 5% of additional requests. Reasons not to trace everything: (1) <strong>Cost:</strong> X-Ray charges $5 per million traces recorded and $0.50 per million traces scanned. At 1,000 requests/second, 100% sampling = 86.4 million traces/day = $432/day in recording alone. With 5% sampling = ~4.3 million/day = ~$21/day. (2) <strong>Performance overhead:</strong> The X-Ray SDK adds slight overhead to each traced request (serialising trace data, sending to daemon). At high throughput, this adds up. (3) <strong>Storage:</strong> Traces are retained for 30 days (cannot be extended). Tracing everything would hit storage limits. The 5% sample is statistically sufficient to identify systemic issues — if DynamoDB is throttling 50% of requests, it will show up clearly in a 5% sample. For debugging specific requests (like a customer complaint), you can tag those requests with a specific annotation and create a custom sampling rule to trace 100% of requests with that annotation.</div></div>
+
+<h2 style="color:var(--orange-light)">Advanced</h2>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">Design the observability strategy for a new microservices platform (10 services, Lambda + ECS, API Gateway frontend, RDS + DynamoDB). <span class="qa-arrow">▼</span></div><div class="qa-a">Strategy across all three pillars: <strong>Metrics + Alarms:</strong> Per Lambda: Error rate (Sum, alarm >0), Duration p99 (alarm at SLA), Throttles (alarm >0), cold start rate. Per ECS service: CPU/Memory utilisation (alarm at 80%), RunningTaskCount vs desired (alarm if &lt; desired), ALB 5XX rate and latency. Per DynamoDB table: ThrottledRequests (alarm >0), ConsumedCapacity vs provisioned. Per RDS: CPU, DatabaseConnections (alarm at 80% max), FreeStorageSpace, ReadLatency/WriteLatency p99. All services: custom business metrics (order rate, payment success rate). Composite alarms for "service degraded" that combine component alarms. All alarms → SNS → PagerDuty (critical) or Slack (warning). <strong>Logs:</strong> All 10 services log structured JSON to CloudWatch Logs. Common fields across all services: requestId (X-Ray trace ID), userId, serviceName, environment, version. Retention: 90 days prod, 14 days dev. Log group per service. Metric filters for error patterns → metrics. Logs Insights saved queries for common debugging patterns. <strong>Traces:</strong> X-Ray Active on all Lambdas. X-Ray daemon sidecar on all ECS tasks. Common annotations: environment, version, userId, entityId (orderId, productId, etc.). Custom subsegments for all external calls (Stripe, email service). Sampling: 5% default + 100% error sampling. Service Map shows complete request flow. <strong>Dashboards:</strong> One dashboard per service (RED metrics + business metrics). One org-wide dashboard (all services health at a glance). Deployment annotations in CI/CD pipeline.</div></div>
+
+<div class="qa"><div class="qa-q" onclick="toggleQA(this)">What is structured logging and why is it better than plain text logs? <span class="qa-arrow">▼</span></div><div class="qa-a">Structured logging outputs log events as machine-readable JSON (or another structured format) instead of free-form text strings. Plain text: <code>ERROR: Order ord-123 failed for user alice after 1250ms</code>. Structured JSON: <code>{"level":"ERROR","event":"order_failed","orderId":"ord-123","userId":"alice","durationMs":1250,"timestamp":"..."}</code>. Benefits: (1) <strong>Queryable by any field:</strong> Logs Insights can parse JSON automatically. <code>filter event = "order_failed" | stats count() by userId</code> — instantly find which users are experiencing failures. With plain text you'd need complex regex that breaks when the message format changes. (2) <strong>Consistent structure:</strong> Every developer on the team logs the same fields the same way. No more "you log userId as 'user', I log it as 'userId', she uses 'uid'." (3) <strong>Metric filters:</strong> Create metric filters on exact JSON field values. (4) <strong>Correlation:</strong> Common fields like requestId, userId propagated via MDC appear in every log line — trivially find all logs for a specific request or user. (5) <strong>Tooling integration:</strong> Structured logs integrate with log aggregation tools (Datadog, Splunk, OpenSearch) that auto-index JSON fields. Implementation: add logstash-logback-encoder to Java, use SLF4J structured logging with key-value pairs, set common MDC context (requestId, userId) at the start of each handler.</div></div>
+
+</div>
+</main>
+</div>
+
+<script>
+function show(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.currentTarget.classList.add('active');
+  window.scrollTo(0, 0);
+}
+function toggleQA(el) {
+  const ans = el.nextElementSibling;
+  const arrow = el.querySelector('.qa-arrow');
+  ans.classList.toggle('open');
+  arrow.classList.toggle('open');
+}
+</script>
+</body>
+</html>
