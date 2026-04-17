@@ -18,9 +18,9 @@ const SITE_DATA = {
   meta: {
     title:       'Interview Prep Hub',
     subtitle:    'A focused study system for software engineering interviews',
-    totalTopics:  9,
-    totalHours:  '45+',
-    lastUpdated: '2026-03-22'
+    totalTopics:  10,
+    totalHours:  '50+',
+    lastUpdated: '2026-04-17'
   },
 
   /* ── Recently Added ─────────────────────────────────────── */
@@ -73,6 +73,14 @@ const SITE_DATA = {
       path:       'behavioral/star-method.html',
       badge:      'Start Here',
       badgeColor: 'green'
+    },
+    {
+      topicId:    'important-faq',
+      topicTitle: 'Important FAQ',
+      title:      'Master Interview Reference Sheet',
+      path:       'important-faq/master_interview_reference_sheet.html',
+      badge:      'Reference',
+      badgeColor: 'amber'
     }
   ],
 
@@ -701,6 +709,98 @@ const SITE_DATA = {
               time:       '15 min',
               tags:       ['plan', 'schedule', 'study'],
               file:       'study-plan.html',
+              status:     'available',
+              featured:   true
+            }
+          ]
+        }
+      ]
+    },
+
+    /* ════════════════════════════════════ IMPORTANT FAQ */
+    {
+      id:            'important-faq',
+      title:         'Important FAQ',
+      description:   'High-signal interview study sheets and a master reference vault for reviewing the most important Java, Spring, data, cloud, frontend, and behavioral prep material.',
+      icon:          '📚',
+      accentColor:   '#f59e0b',
+      accentClass:   'amber',
+      estimatedTime: '4 hrs',
+      difficulty:    'intermediate',
+      tags:          ['reference', 'faq', 'interview'],
+      path:          'important-faq/',
+      isNew:         true,
+      groups: [
+        {
+          name: 'Study Sheets',
+          concepts: [
+            {
+              title:      '00 — Interview Study Sheets Index',
+              subtitle:   'Gateway index for the curated daily-review sheets',
+              difficulty: 'beginner',
+              time:       '20 min',
+              tags:       ['overview', 'index', 'Guruji'],
+              file:       '00_index.html',
+              status:     'available',
+              featured:   true
+            },
+            {
+              title:      '01 — Java Core Sheet',
+              subtitle:   'Java core topics, concept map, and review checklist',
+              difficulty: 'intermediate',
+              time:       '30 min',
+              tags:       ['java', 'core', 'Guruji'],
+              file:       '01_java_core_sheet.html',
+              status:     'available'
+            },
+            {
+              title:      '02 — Spring & Microservices Sheet',
+              subtitle:   'Spring Boot, microservices, and system design notes',
+              difficulty: 'intermediate',
+              time:       '30 min',
+              tags:       ['spring', 'microservices', 'Guruji'],
+              file:       '02_spring_microservices_sheet.html',
+              status:     'available'
+            },
+            {
+              title:      '03 — Data, Kafka & Cloud Sheet',
+              subtitle:   'Data processing, messaging, cloud, and infrastructure review',
+              difficulty: 'intermediate',
+              time:       '30 min',
+              tags:       ['data', 'kafka', 'cloud', 'Guruji'],
+              file:       '03_data_kafka_cloud_sheet.html',
+              status:     'available'
+            },
+            {
+              title:      '04 — Frontend, Behavioral & Assessment Sheet',
+              subtitle:   'Frontend concepts, interview stories, and assessment notes',
+              difficulty: 'intermediate',
+              time:       '35 min',
+              tags:       ['frontend', 'behavioral', 'Guruji'],
+              file:       '04_frontend_behavioral_assessment_sheet.html',
+              status:     'available'
+            }
+          ]
+        },
+        {
+          name: 'Reference Vault',
+          concepts: [
+            {
+              title:      '05 — Source Prompt Vault',
+              subtitle:   'Source prompts and generation notes for the study sheets',
+              difficulty: 'advanced',
+              time:       '30 min',
+              tags:       ['prompt', 'vault', 'Guruji'],
+              file:       '05_source_prompt_vault.html',
+              status:     'available'
+            },
+            {
+              title:      'Master — Interview Reference Sheet',
+              subtitle:   'Canonical merged reference sheet for fast revision',
+              difficulty: 'advanced',
+              time:       '45 min',
+              tags:       ['reference', 'master', 'Guruji'],
+              file:       'master_interview_reference_sheet.html',
               status:     'available',
               featured:   true
             }
