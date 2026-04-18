@@ -1,38 +1,377 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="../styles.css" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Interview Sheet 01 — Java Core</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;500;700;800&display=swap" rel="stylesheet">
   <style>
-    .faq-shell{padding:40px 0 64px}
-    .faq-card{background:var(--surface-1);border:1px solid var(--border);border-radius:24px;padding:28px;box-shadow:var(--shadow-card)}
-    .faq-eyebrow{font-family:var(--font-mono);color:var(--amber);text-transform:uppercase;letter-spacing:.12em;font-size:.78rem;margin-bottom:10px}
-    .faq-title{margin:0 0 10px;font-size:2rem}
-    .faq-subtitle{color:var(--text-2);line-height:1.7;margin-bottom:18px}
-    .faq-back{display:inline-flex;align-items:center;gap:8px;color:var(--cyan);margin-bottom:20px}
-    .faq-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:18px}
-    .faq-link{display:block;background:var(--surface-2);border:1px solid var(--border);border-radius:18px;padding:16px;color:var(--text-1);transition:transform .15s ease,border-color .15s ease}
-    .faq-link:hover{transform:translateY(-2px);border-color:rgba(0,212,255,.28)}
-    .faq-link h3{margin:0 0 8px;font-size:1rem}
-    .faq-link p{margin:0;color:var(--text-2);line-height:1.55}
-    .faq-section{margin-top:22px;padding-top:18px;border-top:1px solid var(--border)}
-    .faq-section h2{margin:0 0 10px;font-size:1.15rem}
-    .faq-section p{margin:0 0 10px;color:var(--text-2);line-height:1.75}
-    .faq-list{margin:0;padding-left:18px;color:var(--text-2);line-height:1.7}
-    .faq-list li{margin:6px 0}
-    .pill{display:inline-flex;align-items:center;padding:4px 10px;border-radius:999px;font-family:var(--font-mono);font-size:.75rem;background:rgba(0,212,255,.1);color:var(--cyan);border:1px solid rgba(0,212,255,.18);margin-right:8px;margin-bottom:8px}
-  </style>
+:root{
+  --bg:#0a0e1a;
+  --surface:#111827;
+  --surface-2:#1a2235;
+  --text:#e8eefc;
+  --muted:#9fb1d1;
+  --cyan:#00d4ff;
+  --purple:#7c3aed;
+  --green:#10b981;
+  --amber:#f59e0b;
+  --red:#ef4444;
+  --border:rgba(255,255,255,.08);
+  --shadow:0 12px 32px rgba(0,0,0,.28);
+  --radius:18px;
+  --topbar-h:84px;
+  --sidebar-w:280px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  font-family:"Syne",system-ui,sans-serif;
+  background:
+    radial-gradient(circle at top right, rgba(124,58,237,.18), transparent 28%),
+    radial-gradient(circle at top left, rgba(0,212,255,.12), transparent 26%),
+    var(--bg);
+  color:var(--text);
+}
+a{color:var(--cyan); text-decoration:none}
+a:hover{text-decoration:underline}
+.topbar{
+  position:fixed; inset:0 0 auto 0; height:var(--topbar-h);
+  backdrop-filter: blur(14px);
+  background:rgba(10,14,26,.84);
+  border-bottom:1px solid var(--border);
+  z-index:50;
+}
+.topbar-inner{
+  height:100%; display:grid; grid-template-columns:minmax(240px,1fr) auto auto; gap:16px;
+  align-items:center; padding:14px 20px;
+}
+.title-wrap{min-width:0}
+.title{font-size:1.15rem; font-weight:800; letter-spacing:.02em; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.subtitle{font-size:.78rem; color:var(--muted); margin-top:4px}
+.timer-wrap{display:flex; align-items:center; gap:10px}
+.timer{
+  font-family:"JetBrains Mono", monospace;
+  font-size:1rem; padding:10px 14px; border-radius:999px; background:var(--surface); border:1px solid var(--border);
+  box-shadow:var(--shadow);
+}
+.timer.warn{color:var(--amber); border-color:rgba(245,158,11,.4)}
+.timer.danger{color:#fff; background:rgba(239,68,68,.18); border-color:rgba(239,68,68,.45); animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.35)}50%{box-shadow:0 0 0 10px rgba(239,68,68,0)}}
+.mode-btn{
+  font-family:"JetBrains Mono", monospace; font-size:.86rem;
+  background:linear-gradient(135deg, rgba(0,212,255,.16), rgba(124,58,237,.18));
+  color:#fff; border:1px solid rgba(0,212,255,.28); border-radius:999px; padding:12px 16px;
+  cursor:pointer; transition:transform .18s ease, border-color .18s ease, background .18s ease;
+}
+.mode-btn:hover{transform:translateY(-1px); border-color:rgba(0,212,255,.55)}
+.progress-shell{
+  position:absolute; left:0; right:0; bottom:0; height:4px; background:rgba(255,255,255,.05);
+}
+.progress-bar{
+  height:100%; width:0%;
+  background:linear-gradient(90deg, var(--cyan), var(--green));
+  transition:width 1s linear, background .2s ease;
+}
+.progress-bar.warn{background:linear-gradient(90deg, var(--amber), #fbbf24)}
+.progress-bar.danger{background:linear-gradient(90deg, var(--red), #fb7185)}
+.layout{
+  display:grid; grid-template-columns:var(--sidebar-w) minmax(0,1fr);
+  gap:24px; padding:calc(var(--topbar-h) + 20px) 20px 40px;
+}
+.sidebar{
+  position:sticky; top:calc(var(--topbar-h) + 16px); align-self:start;
+  max-height:calc(100vh - var(--topbar-h) - 32px); overflow:auto;
+  background:rgba(17,24,39,.76); border:1px solid var(--border);
+  border-radius:22px; padding:14px; box-shadow:var(--shadow);
+}
+.sidebar h2{margin:4px 8px 14px; font-size:.88rem; color:var(--muted); letter-spacing:.06em; text-transform:uppercase}
+.nav-list{display:flex; flex-direction:column; gap:8px}
+.nav-link{
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  padding:12px 12px; border-radius:14px; color:#d7e4ff; background:rgba(255,255,255,.02);
+  border:1px solid transparent; transition:background .18s ease, border-color .18s ease, transform .18s ease;
+}
+.nav-link:hover{background:rgba(255,255,255,.05); border-color:rgba(0,212,255,.18); transform:translateX(2px)}
+.badge{
+  min-width:36px; text-align:center; font-family:"JetBrains Mono", monospace; font-size:.78rem;
+  color:var(--cyan); background:rgba(0,212,255,.08); border:1px solid rgba(0,212,255,.15); padding:4px 8px; border-radius:999px;
+}
+.main{min-width:0}
+.hero{
+  background:linear-gradient(180deg, rgba(26,34,53,.95), rgba(17,24,39,.96));
+  border:1px solid var(--border); border-radius:24px; padding:22px 24px; box-shadow:var(--shadow); margin-bottom:22px;
+}
+.hero h1{margin:0 0 8px; font-size:1.55rem}
+.hero p{margin:8px 0 0; color:var(--muted); line-height:1.6}
+.legend{display:flex; flex-wrap:wrap; gap:10px; margin-top:14px}
+.pill{
+  font-family:"JetBrains Mono", monospace; font-size:.78rem;
+  padding:8px 10px; border-radius:999px; border:1px solid var(--border); background:rgba(255,255,255,.03); color:#d9e6ff;
+}
+.section{
+  margin-bottom:22px; background:rgba(17,24,39,.82); border:1px solid var(--border); border-radius:24px;
+  box-shadow:var(--shadow); overflow:hidden;
+}
+.section-head{
+  padding:18px 20px; display:flex; align-items:flex-start; justify-content:space-between; gap:16px;
+  background:linear-gradient(135deg, rgba(0,212,255,.08), rgba(124,58,237,.08));
+  border-bottom:1px solid var(--border);
+}
+.section-head h2{margin:0; font-size:1.05rem}
+.section-head p{margin:6px 0 0; color:var(--muted); line-height:1.5}
+.cards{padding:14px}
+.card{
+  background:var(--surface-2); border:1px solid rgba(255,255,255,.06); border-radius:18px; overflow:hidden; margin-bottom:12px;
+}
+.card:last-child{margin-bottom:0}
+.q-btn{
+  width:100%; text-align:left; background:transparent; color:inherit; border:0; cursor:pointer; padding:0;
+}
+.q-row{
+  display:grid; grid-template-columns:6px 1fr auto; gap:14px; align-items:center;
+  padding:16px 18px; min-height:64px;
+}
+.q-bar{align-self:stretch; border-radius:999px; background:linear-gradient(180deg, var(--cyan), var(--purple))}
+.q-text{font-weight:800; line-height:1.45}
+.q-meta{font-family:"JetBrains Mono", monospace; font-size:.76rem; color:var(--muted)}
+.answer{
+  display:grid; grid-template-rows:0fr; transition:grid-template-rows .26s ease, opacity .26s ease;
+  opacity:.92;
+}
+.answer.open{grid-template-rows:1fr; opacity:1}
+.answer-inner{overflow:hidden}
+.answer-body{
+  padding:0 22px 18px 38px; color:#c8d6f3; line-height:1.7;
+}
+.answer-body p{margin:0 0 10px}
+.answer-body ul{margin:0 0 10px 18px; padding:0}
+.answer-body li{margin:4px 0}
+.recall-hint{
+  display:none; margin-top:6px; font-size:.78rem; color:rgba(232,238,252,.42); font-family:"JetBrains Mono", monospace;
+}
+.recall .card:not(.open) .recall-hint{display:block}
+.recall .answer:not(.open){opacity:.55}
+pre{
+  margin:12px 0 0; background:#050810; border:1px solid rgba(255,255,255,.08);
+  border-radius:16px; padding:14px 16px; overflow:auto;
+}
+code{font-family:"JetBrains Mono", monospace; font-size:.86rem; color:#dbeafe}
+.kw{color:#c084fc}
+.type{color:#67e8f9}
+.fn{color:#fbbf24}
+.str{color:#86efac}
+.cm{color:#6b7280}
+.footer-note{
+  color:var(--muted); font-size:.82rem; margin-top:22px; padding:0 6px;
+}
+.index-grid{
+  display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:16px; margin-top:14px;
+}
+.index-card{
+  display:block; padding:18px; border-radius:20px; background:linear-gradient(180deg, rgba(17,24,39,.98), rgba(26,34,53,.98));
+  border:1px solid var(--border); box-shadow:var(--shadow); color:#fff;
+}
+.index-card h3{margin:0 0 8px}
+.index-card p{margin:0 0 10px; color:var(--muted); line-height:1.55}
+.index-card .badge{display:inline-block}
+@media (max-width: 980px){
+  :root{--sidebar-w:100%}
+  .layout{grid-template-columns:1fr}
+  .sidebar{
+    position:sticky; top:calc(var(--topbar-h) + 10px); z-index:20;
+    display:block; white-space:nowrap; overflow:auto hidden;
+  }
+  .nav-list{display:flex; flex-direction:row; min-width:max-content}
+  .nav-link{min-width:220px}
+}
+@media (max-width: 720px){
+  :root{--topbar-h:112px}
+  .topbar-inner{grid-template-columns:1fr 1fr; align-items:start}
+  .timer-wrap{justify-self:start}
+  .mode-btn{justify-self:end}
+  .title{font-size:1rem}
+  .hero h1{font-size:1.25rem}
+  .q-row{grid-template-columns:6px 1fr; }
+  .q-meta{display:none}
+}
+</style>
 </head>
 <body>
-  <main class="container faq-shell">
-    <a class="faq-back" href="index.html">← Back to Important FAQ</a>
-    <section class="faq-card">
-      <div class="faq-eyebrow">Interview FAQ · 01</div>
-      <h1 class="faq-title">Java Core Sheet</h1>
-      <p class="faq-subtitle">Java fundamentals, collections, concurrency, JVM, and the questions that recur most often in interviews.</p>
-      <div class='faq-section'><h2>What to focus on</h2><p>Use this sheet to refresh Java basics quickly: object-oriented design, collections internals, concurrency primitives, lambda/stream usage, and JVM memory behavior.</p><ul class='faq-list'><li>Know the trade-offs between ArrayList, LinkedList, HashMap, and ConcurrentHashMap.</li><li>Be ready to explain thread safety, synchronization, and common concurrency pitfalls.</li><li>Use the JVM section for memory, GC, and performance questions.</li></ul></div><div class='faq-section'><h2>Study cue</h2><p>Read this one before deeper backend topics so the Spring and AWS sheets have a strong Java base to build on.</p></div>
-    </section>
-  </main>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="title-wrap">
+        <div class="title" id="pageTitle"></div>
+        <div class="subtitle" id="pageSubtitle"></div>
+      </div>
+      <div class="timer-wrap">
+        <div class="timer" id="timer">30:00</div>
+      </div>
+      <button id="modeBtn" class="mode-btn">SCAN MODE</button>
+    </div>
+    <div class="progress-shell"><div id="progressBar" class="progress-bar"></div></div>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <h2>Topic groups</h2>
+      <nav class="nav-list" id="nav"></nav>
+    </aside>
+
+    <main class="main">
+      <section class="hero">
+        <h1 id="heroTitle"></h1>
+        <p id="heroCopy"></p>
+        <div class="legend" id="legend"></div>
+      </section>
+
+      <div id="sections"></div>
+
+      <p class="footer-note">Built as a daily-review interview sheet. In scan mode everything stays open. In recall mode every prompt becomes a self-test card.</p>
+    </main>
+  </div>
+
+  <script>
+  const PAGE_DATA = {"pageTitle": "Interview Sheet 01 — Java Core", "pageSubtitle": "Daily review sheet • Java collections, OOP, streams, concurrency, JVM, and coding patterns", "heroTitle": "Java core and backend foundations", "heroCopy": "This sheet condenses the repeated Java-heavy content across the uploaded docs into a tighter review flow. A few incorrect source notes were corrected here, especially around constructors, destructors, Vector/ArrayList, and Java 8 details.", "legend": ["Dark review mode", "30-minute timer", "Scan ↔ Recall", "Corrected source inaccuracies"], "sections": [{"id": "java-collections", "title": "Collections, maps, equality, and data structure choices", "cards": [{"q": "HashMap vs ConcurrentHashMap vs Collections.synchronizedMap(): when do you use each?", "a": "\n<p><strong>HashMap</strong> is fast and unsynchronized; use it when a map is confined to one thread or guarded externally.</p>\n<p><strong>Collections.synchronizedMap()</strong> wraps a regular map with one coarse lock around most operations. It is simple, but under contention it scales poorly, and iteration still needs external synchronization.</p>\n<p><strong>ConcurrentHashMap</strong> is the best default for shared mutable maps. Reads are mostly non-blocking, updates are granular, and atomic methods like <code>computeIfAbsent</code>, <code>putIfAbsent</code>, and <code>merge</code> make concurrent logic safer.</p>\n<ul>\n<li>Need ordering by key: use <code>TreeMap</code>.</li>\n<li>Need insertion order / LRU behavior: use <code>LinkedHashMap</code>.</li>\n<li>Need mostly reads with rare writes on a list: <code>CopyOnWriteArrayList</code>.</li>\n</ul>\n"}, {"q": "ArrayList vs LinkedList vs Vector vs CopyOnWriteArrayList", "a": "\n<p><strong>ArrayList</strong> is the normal choice: contiguous memory, fast random access, amortized O(1) append, but inserts/removes in the middle are expensive.</p>\n<p><strong>LinkedList</strong> is rarely the best option in real apps. It helps when you already have a node reference and do many local inserts/removes, but it has poor cache locality and slow indexed access.</p>\n<p><strong>Vector</strong> is legacy and synchronized; prefer <code>ArrayList</code> or a concurrent collection instead.</p>\n<p><strong>CopyOnWriteArrayList</strong> shines when reads dominate and writes are rare, because every write copies the array.</p>\n<p>One correction from the source notes: ArrayList is <em>not</em> limited to <code>Iterator</code>; it also supports <code>ListIterator</code> and enhanced for-loops.</p>\n"}, {"q": "equals() vs ==, and why hashCode() matters", "a": "\n<p><code>==</code> compares primitive values directly and compares object references by identity. <code>equals()</code> compares logical equality.</p>\n<p>When you override <code>equals()</code>, you almost always must override <code>hashCode()</code> so equal objects land in the same hash bucket. If that contract is broken, hash-based collections behave incorrectly.</p>\n<p>Interview sound bite: “Use <code>==</code> for primitives or identity checks, and <code>equals()</code> for value equality.”</p>\n"}, {"q": "Access modifiers and clean API boundaries", "a": "\n<p>Java has four visibility levels:</p>\n<ul>\n<li><strong>private</strong>: same class only</li>\n<li><strong>default/package-private</strong>: same package</li>\n<li><strong>protected</strong>: same package + subclasses in other packages</li>\n<li><strong>public</strong>: everywhere</li>\n</ul>\n<p>In interviews, say you prefer the most restrictive modifier that still supports the use case, because it reduces coupling and accidental misuse.</p>\n"}, {"q": "How does TreeMap maintain order?", "a": "\n<p><code>TreeMap</code> stores keys in sorted order using a Red-Black tree, so <code>get</code>, <code>put</code>, and <code>remove</code> are O(log n).</p>\n<p>Use it when you need range queries, floor/ceiling operations, or consistently sorted traversal. If you only need hash lookups, <code>HashMap</code> is cheaper.</p>\n"}], "blurb": "These cards clean up the most common collection and equality questions that kept repeating across the source docs."}, {"id": "java-oop", "title": "OOP, constructors, and design patterns", "cards": [{"q": "What are the core OOP pillars, and how do abstraction and encapsulation differ?", "a": "\n<p>The four pillars are <strong>encapsulation</strong>, <strong>abstraction</strong>, <strong>inheritance</strong>, and <strong>polymorphism</strong>.</p>\n<p><strong>Encapsulation</strong> is about hiding internal state behind a stable API. <strong>Abstraction</strong> is about exposing only the behavior a caller needs, while hiding implementation detail.</p>\n<p>Practical interview phrasing: “Encapsulation protects internals; abstraction simplifies what the caller sees.”</p>\n"}, {"q": "Overloading vs overriding; multiple inheritance; composition vs inheritance", "a": "\n<p><strong>Overloading</strong> means same method name, different parameter list, resolved at compile time. <strong>Overriding</strong> means a subclass provides a new implementation of an inherited method, resolved at runtime.</p>\n<p>Java does <strong>not</strong> support multiple inheritance of classes because of ambiguity such as the diamond problem. It supports multiple interfaces.</p>\n<p>Prefer <strong>composition over inheritance</strong> when you want flexibility, clearer boundaries, and less fragile coupling.</p>\n"}, {"q": "Constructor facts candidates often get wrong", "a": "\n<ul>\n<li>Constructors are <strong>not inherited</strong>.</li>\n<li>You cannot <strong>override</strong> a constructor.</li>\n<li>You cannot mark a constructor <strong>final</strong>, <strong>abstract</strong>, or <strong>synchronized</strong>.</li>\n<li>Java has <strong>no destructor</strong>; cleanup is explicit via <code>try-with-resources</code> / <code>close()</code>.</li>\n<li><strong>Constructor chaining</strong> means one constructor calling another with <code>this(...)</code>, or a subclass delegating to <code>super(...)</code>.</li>\n</ul>\n<p>The source notes mixed Java with C++ ideas like copy constructors and destructors; those are not Java language features.</p>\n"}, {"q": "Singleton, Factory, Strategy, Proxy, and Flyweight in interview language", "a": "\n<ul>\n<li><strong>Singleton</strong>: one shared instance for app-wide coordination. Use sparingly; it can hide dependencies.</li>\n<li><strong>Factory</strong>: centralizes object creation and hides construction details.</li>\n<li><strong>Strategy</strong>: interchangeable behaviors behind one interface.</li>\n<li><strong>Proxy</strong>: controls access to a real object for logging, security, caching, lazy load, or remoting.</li>\n<li><strong>Flyweight</strong>: shares intrinsic state to reduce memory when many similar objects exist.</li>\n</ul>\n<p>Interview tip: always mention the trade-off, not just the definition.</p>\n"}, {"q": "SOLID and dependency injection", "a": "\n<p><strong>SOLID</strong> means single responsibility, open/closed, Liskov substitution, interface segregation, and dependency inversion.</p>\n<p>Dependency injection applies DIP in practice: high-level code depends on abstractions, and the container wires concrete implementations. That improves testability, modularity, and replacement of infrastructure concerns.</p>\n"}], "blurb": "Use this section to correct a few bad source notes, especially around constructors, destructors, and inheritance."}, {"id": "java-streams", "title": "Java 8, lambdas, functional interfaces, and streams", "cards": [{"q": "Why did Java 8 matter?", "a": "\n<p>Java 8 added lambdas, streams, method references, default methods, the modern date/time API, and <code>CompletableFuture</code>. The big practical win was more expressive, less boilerplate-heavy code without leaving Java’s type system.</p>\n"}, {"q": "Lambda expression, functional interface, method reference, default methods", "a": "\n<p>A <strong>lambda</strong> is an anonymous function used where a functional interface is expected. A <strong>functional interface</strong> has exactly one abstract method, even if it also has default/static methods.</p>\n<p><strong>Method references</strong> are a shorter way to point at an existing method, such as <code>String::trim</code>.</p>\n<p><strong>Default methods</strong> let interfaces evolve without breaking all implementations. If two interfaces provide the same default method, the implementing class must resolve the conflict explicitly.</p>\n"}, {"q": "Predicate, Function, Consumer, Supplier — when to use each", "a": "\n<ul>\n<li><strong>Predicate&lt;T&gt;</strong>: takes <code>T</code>, returns boolean.</li>\n<li><strong>Function&lt;T,R&gt;</strong>: transforms <code>T</code> into <code>R</code>.</li>\n<li><strong>Consumer&lt;T&gt;</strong>: takes <code>T</code>, returns nothing.</li>\n<li><strong>Supplier&lt;T&gt;</strong>: returns <code>T</code>, takes no input.</li>\n</ul>\n<p>Common compositions: <code>predicate.and()</code>, <code>predicate.or()</code>, <code>function.andThen()</code>, <code>function.compose()</code>, <code>consumer.andThen()</code>.</p>\n"}, {"q": "filter vs map vs flatMap, and stream performance pitfalls", "a": "\n<p><code>filter</code> keeps or drops elements. <code>map</code> transforms each element one-to-one. <code>flatMap</code> maps then flattens nested streams or collections.</p>\n<p>Streams are lazy until a terminal operation runs. They are great for readable transformations, but avoid collecting huge datasets when you can stream incrementally.</p>\n<p><strong>parallelStream()</strong> is not a free speedup. It can hurt when work is small, ordering matters, thread contention exists, or blocking I/O is involved.</p>\n"}], "blurb": "Fast review of Java 8 language features you are likely to be asked in mid/senior interviews."}, {"id": "java-concurrency", "title": "Concurrency, async programming, and synchronization", "cards": [{"q": "Thread vs task vs reactive stream; Runnable vs Callable", "a": "\n<p>A <strong>thread</strong> is an execution resource. A <strong>task</strong> is the unit of work you submit to an executor. A <strong>reactive stream</strong> is a non-blocking push/pull model with backpressure.</p>\n<p><strong>Runnable</strong> returns no value and cannot throw checked exceptions. <strong>Callable</strong> returns a value and can throw checked exceptions.</p>\n"}, {"q": "synchronized vs Lock vs ReentrantLock vs ReadWriteLock", "a": "\n<p><code>synchronized</code> is simple and safe for intrinsic monitor locking. <code>ReentrantLock</code> adds features like timed lock acquisition, interruptible lock, and multiple conditions. <code>ReadWriteLock</code> helps when many reads can proceed together and writes are rarer.</p>\n<p>Use the simplest tool first. Reach for explicit locks only when you need features monitors do not provide.</p>\n"}, {"q": "volatile, final fields, happens-before, and safe publication", "a": "\n<p><code>volatile</code> gives visibility and ordering guarantees for a variable, but not atomic compound actions like increment.</p>\n<p><strong>happens-before</strong> is the JMM rule that determines which writes are visible to which reads. Synchronization, volatile writes/reads, thread start/join, and safe publication create happens-before relationships.</p>\n<p><strong>final</strong> fields help with immutability and safe initialization when an object is published correctly.</p>\n"}, {"q": "ExecutorService vs CompletableFuture vs Fork/Join", "a": "\n<p><strong>ExecutorService</strong> manages pools and task submission. <strong>CompletableFuture</strong> is better when you want to compose async stages, combine results, and build pipelines.</p>\n<p><strong>Fork/Join</strong> is for divide-and-conquer CPU work with recursive task splitting. Use it for CPU-bound parallelism, not blocking I/O.</p>\n"}, {"q": "Producer-consumer, backpressure, thread pool saturation, and deadlock debugging", "a": "\n<p>Producer-consumer usually means a bounded queue between producers and workers. Bounded queues are important because they create <strong>backpressure</strong> instead of unlimited memory growth.</p>\n<p>Monitor queue depth, active threads, rejected tasks, and service latency to catch pool saturation.</p>\n<p>For deadlocks and contention: grab thread dumps, look for BLOCKED threads, analyze lock ownership, reduce coarse locking, and move I/O outside synchronized paths.</p>\n"}], "blurb": "Focus on vocabulary, trade-offs, and how to reason about thread safety under load."}, {"id": "java-jvm", "title": "JVM, memory management, profiling, and performance", "cards": [{"q": "How garbage collection works in modern JVMs", "a": "\n<p>Modern collectors optimize pause time vs throughput trade-offs. <strong>G1</strong> is the general-purpose default for many services; it partitions the heap into regions and targets pause goals. <strong>ZGC</strong> is built for very low pause times on large heaps.</p>\n<p>Tuning starts with metrics: allocation rate, pause time, heap occupancy, GC frequency, and latency impact. Tune only after measuring.</p>\n"}, {"q": "Common memory leak causes in Java microservices", "a": "\n<ul>\n<li>Unbounded caches or maps</li>\n<li>Listeners / thread-locals never cleared</li>\n<li>Large request/response objects held too long</li>\n<li>Executor queues growing without limits</li>\n<li>Classloader leaks in containers / hot reload scenarios</li>\n</ul>\n<p>Use heap dumps, allocation profiling, retained-size analysis, and metrics around memory growth after GC.</p>\n"}, {"q": "WeakReference vs SoftReference vs PhantomReference", "a": "\n<p><strong>WeakReference</strong> is collected aggressively when nothing strongly references the object. <strong>SoftReference</strong> is retained longer and historically used for memory-sensitive caches, though it is less predictable. <strong>PhantomReference</strong> is for advanced cleanup tracking after finalization reachability, not for retrieving the object.</p>\n"}, {"q": "CPU-bound profiling, class loading, and String performance", "a": "\n<p>For CPU issues, use async-profiler, JFR, or similar tooling. Look at hot methods, lock contention, allocation pressure, and blocking points.</p>\n<p><code>String</code> is immutable. <code>StringBuilder</code> is the usual mutable choice in single-threaded code. <code>StringBuffer</code> is synchronized and rarely needed today.</p>\n<p>Class loading issues in containers often come from duplicate libs, shading mistakes, reflection, or framework/plugin isolation.</p>\n"}], "blurb": "Enough JVM depth to sound like a backend engineer without drifting into trivia."}, {"id": "java-caching", "title": "Caching, rate limiting, time handling, and idempotency", "cards": [{"q": "In-memory vs distributed cache; Redis trade-offs", "a": "\n<p>Use <strong>in-memory cache</strong> for ultra-fast local reads and data that can tolerate per-instance duplication. Use <strong>distributed cache</strong> like Redis when multiple app nodes need shared cache state, centralized invalidation, or cross-node rate limiting.</p>\n<p>Redis advantages: speed, shared state, TTLs, pub/sub, data structures. Trade-offs: network hop, extra infra, consistency/invalidation complexity, and hot-key risk.</p>\n"}, {"q": "LRU eviction, rate limiting, and idempotent operations", "a": "\n<p><strong>LRU</strong> evicts the least recently used item and is good when recent access predicts near-future access.</p>\n<p>For <strong>rate limiting</strong>, common patterns are token bucket, leaky bucket, and sliding window. In a cluster, use Redis or another shared store to coordinate limits.</p>\n<p>For <strong>idempotency</strong>, store an idempotency key plus result/status, reject or replay duplicates, and make the write path atomic.</p>\n"}, {"q": "Time zones and scheduling in distributed systems", "a": "\n<p>Store timestamps in UTC, convert for presentation only, and prefer <code>java.time</code> classes over legacy date APIs.</p>\n<p>For scheduled jobs, define whether the schedule is UTC or business-local time, and be explicit about DST behavior. For globally unique jobs, use leader election or distributed locking.</p>\n"}], "blurb": "Practical backend concerns that show up in API, payments, and distributed-system interviews."}, {"id": "java-coding", "title": "Coding exercises and interview-ready implementations", "cards": [{"q": "Custom HashMap from scratch", "a": "\n<p>Gold-standard points: array of buckets, separate chaining for collisions, stable hash/index computation, update existing key, resize when load factor grows, and generics.</p>\n<pre><code><span class=\"kw\">class</span> <span class=\"type\">CustomHashMap</span>&lt;K,V&gt; {\n  <span class=\"kw\">static class</span> <span class=\"type\">Entry</span>&lt;K,V&gt; {\n    K key; V value; Entry&lt;K,V&gt; next;\n    Entry(K k, V v, Entry&lt;K,V&gt; n) { key = k; value = v; next = n; }\n  }\n  <span class=\"kw\">private</span> Entry&lt;K,V&gt;[] buckets = <span class=\"kw\">new</span> Entry[16];\n\n  <span class=\"kw\">private int</span> idx(Object key) {\n    <span class=\"kw\">int</span> h = (key == <span class=\"kw\">null</span>) ? 0 : key.hashCode();\n    <span class=\"kw\">return</span> (h &amp; 0x7fffffff) % buckets.length;\n  }\n\n  <span class=\"kw\">public void</span> put(K key, V value) {\n    <span class=\"kw\">int</span> i = idx(key);\n    <span class=\"kw\">for</span> (Entry&lt;K,V&gt; e = buckets[i]; e != <span class=\"kw\">null</span>; e = e.next) {\n      <span class=\"kw\">if</span> (java.util.Objects.equals(e.key, key)) { e.value = value; <span class=\"kw\">return</span>; }\n    }\n    buckets[i] = <span class=\"kw\">new</span> Entry&lt;&gt;(key, value, buckets[i]);\n  }\n\n  <span class=\"kw\">public</span> V get(K key) {\n    <span class=\"kw\">for</span> (Entry&lt;K,V&gt; e = buckets[idx(key)]; e != <span class=\"kw\">null</span>; e = e.next) {\n      <span class=\"kw\">if</span> (java.util.Objects.equals(e.key, key)) <span class=\"kw\">return</span> e.value;\n    }\n    <span class=\"kw\">return</span> <span class=\"kw\">null</span>;\n  }\n}</code></pre>"}, {"q": "Thread-safe singleton, reverse linked list, read/write file access, and LRU cache", "a": "\n<p>Use <strong>double-checked locking</strong> with a <code>volatile</code> instance for singleton. Reverse a singly linked list iteratively with <code>prev/current/next</code>. For many readers and one writer, use <code>ReentrantReadWriteLock</code>. For LRU, <code>LinkedHashMap</code> with access order is a clean baseline.</p>\n<pre><code><span class=\"kw\">public class</span> <span class=\"type\">Singleton</span> {\n  <span class=\"kw\">private static volatile</span> Singleton instance;\n  <span class=\"kw\">private</span> Singleton() {}\n  <span class=\"kw\">public static</span> Singleton getInstance() {\n    <span class=\"kw\">if</span> (instance == <span class=\"kw\">null</span>) {\n      <span class=\"kw\">synchronized</span> (Singleton.class) {\n        <span class=\"kw\">if</span> (instance == <span class=\"kw\">null</span>) instance = <span class=\"kw\">new</span> Singleton();\n      }\n    }\n    <span class=\"kw\">return</span> instance;\n  }\n}</code></pre>"}, {"q": "Click counter for the last hour, frequency counting, palindrome, duplicates, and playlist design", "a": "\n<p>For the <strong>click counter</strong>, the best answer is a 3,600-slot ring buffer keyed by current second. That gives O(1) update, bounded memory, and one-second granularity.</p>\n<p>For frequency questions, use a <code>Map&lt;Character,Integer&gt;</code>. For palindrome, use two pointers. For duplicate removal from a list, use an iterator or <code>removeIf</code> depending on the condition.</p>\n<p>For a music app design: model <code>Song</code>, <code>Playlist</code>, and <code>PlayerState</code>; keep the library in a map by song ID; keep each playlist as an ordered list plus current index; use a deque/list for next/previous navigation.</p>\n"}], "blurb": "Representative coding patterns pulled from the attached sheets, with corrected implementations or approach notes."}, {"id": "java-misc", "title": "Quick screening facts and infrastructure basics", "cards": [{"q": "Blue/green, A/B testing, ports, TTL, and load average", "a": "\n<ul>\n<li><strong>Blue/green</strong>: two production environments; deploy to idle one, validate, switch traffic, keep old version for rollback.</li>\n<li><strong>A/B testing</strong>: route different users/traffic segments to different variants and measure outcomes.</li>\n<li><strong>Default ports</strong>: SSH 22, Telnet 23, DNS 53.</li>\n<li><strong>TTL</strong>: time-to-live / hop limit that prevents packets from looping forever.</li>\n<li><strong>Load average</strong>: average runnable + uninterruptible tasks over 1, 5, and 15 minutes; it needs to be interpreted relative to CPU count.</li>\n</ul>\n"}, {"q": "How do you convert an HTTP API to HTTPS?", "a": "\n<p>Put the API behind TLS termination, usually at a load balancer, API gateway, ingress, or reverse proxy. Install a certificate, redirect HTTP to HTTPS, update HSTS/cookie settings, and make sure internal hops are protected where required by policy.</p>\n"}], "blurb": "Quick screening facts and lightweight infra questions that appeared in the source docs."}]};
+  
+const TOTAL_SECONDS = 30 * 60;
+let secondsLeft = TOTAL_SECONDS;
+let recallMode = false;
+
+function formatTime(sec){
+  const m = String(Math.floor(sec / 60)).padStart(2,'0');
+  const s = String(sec % 60).padStart(2,'0');
+  return `${m}:${s}`;
+}
+
+function buildNav(sections){
+  const nav = document.getElementById('nav');
+  nav.innerHTML = '';
+  sections.forEach(section => {
+    const a = document.createElement('a');
+    a.href = `#${section.id}`;
+    a.className = 'nav-link';
+    a.innerHTML = `<span>${section.title}</span><span class="badge">${section.cards.length}</span>`;
+    nav.appendChild(a);
+  });
+}
+
+function createCard(card){
+  const article = document.createElement('article');
+  article.className = 'card open';
+
+  const btn = document.createElement('button');
+  btn.className = 'q-btn';
+  btn.type = 'button';
+
+  const qrow = document.createElement('div');
+  qrow.className = 'q-row';
+  qrow.innerHTML = `
+    <div class="q-bar"></div>
+    <div>
+      <div class="q-text">${card.q}</div>
+      <div class="recall-hint">click to reveal</div>
+    </div>
+    <div class="q-meta">${card.meta || ''}</div>
+  `;
+  btn.appendChild(qrow);
+
+  const answer = document.createElement('div');
+  answer.className = 'answer open';
+  answer.innerHTML = `<div class="answer-inner"><div class="answer-body">${card.a}</div></div>`;
+
+  btn.addEventListener('click', () => {
+    if(!recallMode) return;
+    article.classList.toggle('open');
+    answer.classList.toggle('open');
+  });
+
+  article.appendChild(btn);
+  article.appendChild(answer);
+  return article;
+}
+
+function renderSections(payload){
+  buildNav(payload.sections);
+  const root = document.getElementById('sections');
+  root.innerHTML = '';
+  payload.sections.forEach(section => {
+    const sec = document.createElement('section');
+    sec.className = 'section';
+    sec.id = section.id;
+    sec.innerHTML = `
+      <div class="section-head">
+        <div>
+          <h2>${section.title}</h2>
+          <p>${section.blurb || ''}</p>
+        </div>
+        <span class="badge">${section.cards.length} prompts</span>
+      </div>
+      <div class="cards"></div>
+    `;
+    const cardsEl = sec.querySelector('.cards');
+    section.cards.forEach(card => cardsEl.appendChild(createCard(card)));
+    root.appendChild(sec);
+  });
+}
+
+function setMode(nextRecall){
+  recallMode = nextRecall;
+  document.body.classList.toggle('recall', recallMode);
+  const btn = document.getElementById('modeBtn');
+  btn.textContent = recallMode ? 'RECALL MODE' : 'SCAN MODE';
+  document.querySelectorAll('.card').forEach(card => {
+    const answer = card.querySelector('.answer');
+    if(recallMode){
+      card.classList.remove('open');
+      answer.classList.remove('open');
+    } else {
+      card.classList.add('open');
+      answer.classList.add('open');
+    }
+  });
+}
+
+function initTimer(){
+  const timer = document.getElementById('timer');
+  const bar = document.getElementById('progressBar');
+  timer.textContent = formatTime(secondsLeft);
+  const tick = () => {
+    timer.textContent = formatTime(secondsLeft);
+    const elapsed = TOTAL_SECONDS - secondsLeft;
+    bar.style.width = `${(elapsed / TOTAL_SECONDS) * 100}%`;
+    timer.classList.remove('warn','danger');
+    bar.classList.remove('warn','danger');
+
+    if(secondsLeft <= 60){
+      timer.classList.add('danger');
+      bar.classList.add('danger');
+    } else if(secondsLeft <= 300){
+      timer.classList.add('warn');
+      bar.classList.add('warn');
+    }
+    if(secondsLeft > 0) secondsLeft -= 1;
+  };
+  tick();
+  setInterval(tick, 1000);
+}
+
+function hydratePage(payload){
+  document.getElementById('pageTitle').textContent = payload.pageTitle;
+  document.getElementById('pageSubtitle').textContent = payload.pageSubtitle;
+  document.getElementById('heroTitle').textContent = payload.heroTitle;
+  document.getElementById('heroCopy').innerHTML = payload.heroCopy;
+  document.getElementById('legend').innerHTML = (payload.legend || []).map(x => `<span class="pill">${x}</span>`).join('');
+  renderSections(payload);
+  document.getElementById('modeBtn').addEventListener('click', () => setMode(!recallMode));
+  setMode(false);
+  initTimer();
+}
+
+  hydratePage(PAGE_DATA);
+  </script>
 </body>
 </html>

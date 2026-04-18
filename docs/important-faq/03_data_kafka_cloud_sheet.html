@@ -1,38 +1,377 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="../styles.css" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Interview Sheet 03 — Data, Kafka, Cloud</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;500;700;800&display=swap" rel="stylesheet">
   <style>
-    .faq-shell{padding:40px 0 64px}
-    .faq-card{background:var(--surface-1);border:1px solid var(--border);border-radius:24px;padding:28px;box-shadow:var(--shadow-card)}
-    .faq-eyebrow{font-family:var(--font-mono);color:var(--amber);text-transform:uppercase;letter-spacing:.12em;font-size:.78rem;margin-bottom:10px}
-    .faq-title{margin:0 0 10px;font-size:2rem}
-    .faq-subtitle{color:var(--text-2);line-height:1.7;margin-bottom:18px}
-    .faq-back{display:inline-flex;align-items:center;gap:8px;color:var(--cyan);margin-bottom:20px}
-    .faq-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:18px}
-    .faq-link{display:block;background:var(--surface-2);border:1px solid var(--border);border-radius:18px;padding:16px;color:var(--text-1);transition:transform .15s ease,border-color .15s ease}
-    .faq-link:hover{transform:translateY(-2px);border-color:rgba(0,212,255,.28)}
-    .faq-link h3{margin:0 0 8px;font-size:1rem}
-    .faq-link p{margin:0;color:var(--text-2);line-height:1.55}
-    .faq-section{margin-top:22px;padding-top:18px;border-top:1px solid var(--border)}
-    .faq-section h2{margin:0 0 10px;font-size:1.15rem}
-    .faq-section p{margin:0 0 10px;color:var(--text-2);line-height:1.75}
-    .faq-list{margin:0;padding-left:18px;color:var(--text-2);line-height:1.7}
-    .faq-list li{margin:6px 0}
-    .pill{display:inline-flex;align-items:center;padding:4px 10px;border-radius:999px;font-family:var(--font-mono);font-size:.75rem;background:rgba(0,212,255,.1);color:var(--cyan);border:1px solid rgba(0,212,255,.18);margin-right:8px;margin-bottom:8px}
-  </style>
+:root{
+  --bg:#0a0e1a;
+  --surface:#111827;
+  --surface-2:#1a2235;
+  --text:#e8eefc;
+  --muted:#9fb1d1;
+  --cyan:#00d4ff;
+  --purple:#7c3aed;
+  --green:#10b981;
+  --amber:#f59e0b;
+  --red:#ef4444;
+  --border:rgba(255,255,255,.08);
+  --shadow:0 12px 32px rgba(0,0,0,.28);
+  --radius:18px;
+  --topbar-h:84px;
+  --sidebar-w:280px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  font-family:"Syne",system-ui,sans-serif;
+  background:
+    radial-gradient(circle at top right, rgba(124,58,237,.18), transparent 28%),
+    radial-gradient(circle at top left, rgba(0,212,255,.12), transparent 26%),
+    var(--bg);
+  color:var(--text);
+}
+a{color:var(--cyan); text-decoration:none}
+a:hover{text-decoration:underline}
+.topbar{
+  position:fixed; inset:0 0 auto 0; height:var(--topbar-h);
+  backdrop-filter: blur(14px);
+  background:rgba(10,14,26,.84);
+  border-bottom:1px solid var(--border);
+  z-index:50;
+}
+.topbar-inner{
+  height:100%; display:grid; grid-template-columns:minmax(240px,1fr) auto auto; gap:16px;
+  align-items:center; padding:14px 20px;
+}
+.title-wrap{min-width:0}
+.title{font-size:1.15rem; font-weight:800; letter-spacing:.02em; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.subtitle{font-size:.78rem; color:var(--muted); margin-top:4px}
+.timer-wrap{display:flex; align-items:center; gap:10px}
+.timer{
+  font-family:"JetBrains Mono", monospace;
+  font-size:1rem; padding:10px 14px; border-radius:999px; background:var(--surface); border:1px solid var(--border);
+  box-shadow:var(--shadow);
+}
+.timer.warn{color:var(--amber); border-color:rgba(245,158,11,.4)}
+.timer.danger{color:#fff; background:rgba(239,68,68,.18); border-color:rgba(239,68,68,.45); animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.35)}50%{box-shadow:0 0 0 10px rgba(239,68,68,0)}}
+.mode-btn{
+  font-family:"JetBrains Mono", monospace; font-size:.86rem;
+  background:linear-gradient(135deg, rgba(0,212,255,.16), rgba(124,58,237,.18));
+  color:#fff; border:1px solid rgba(0,212,255,.28); border-radius:999px; padding:12px 16px;
+  cursor:pointer; transition:transform .18s ease, border-color .18s ease, background .18s ease;
+}
+.mode-btn:hover{transform:translateY(-1px); border-color:rgba(0,212,255,.55)}
+.progress-shell{
+  position:absolute; left:0; right:0; bottom:0; height:4px; background:rgba(255,255,255,.05);
+}
+.progress-bar{
+  height:100%; width:0%;
+  background:linear-gradient(90deg, var(--cyan), var(--green));
+  transition:width 1s linear, background .2s ease;
+}
+.progress-bar.warn{background:linear-gradient(90deg, var(--amber), #fbbf24)}
+.progress-bar.danger{background:linear-gradient(90deg, var(--red), #fb7185)}
+.layout{
+  display:grid; grid-template-columns:var(--sidebar-w) minmax(0,1fr);
+  gap:24px; padding:calc(var(--topbar-h) + 20px) 20px 40px;
+}
+.sidebar{
+  position:sticky; top:calc(var(--topbar-h) + 16px); align-self:start;
+  max-height:calc(100vh - var(--topbar-h) - 32px); overflow:auto;
+  background:rgba(17,24,39,.76); border:1px solid var(--border);
+  border-radius:22px; padding:14px; box-shadow:var(--shadow);
+}
+.sidebar h2{margin:4px 8px 14px; font-size:.88rem; color:var(--muted); letter-spacing:.06em; text-transform:uppercase}
+.nav-list{display:flex; flex-direction:column; gap:8px}
+.nav-link{
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  padding:12px 12px; border-radius:14px; color:#d7e4ff; background:rgba(255,255,255,.02);
+  border:1px solid transparent; transition:background .18s ease, border-color .18s ease, transform .18s ease;
+}
+.nav-link:hover{background:rgba(255,255,255,.05); border-color:rgba(0,212,255,.18); transform:translateX(2px)}
+.badge{
+  min-width:36px; text-align:center; font-family:"JetBrains Mono", monospace; font-size:.78rem;
+  color:var(--cyan); background:rgba(0,212,255,.08); border:1px solid rgba(0,212,255,.15); padding:4px 8px; border-radius:999px;
+}
+.main{min-width:0}
+.hero{
+  background:linear-gradient(180deg, rgba(26,34,53,.95), rgba(17,24,39,.96));
+  border:1px solid var(--border); border-radius:24px; padding:22px 24px; box-shadow:var(--shadow); margin-bottom:22px;
+}
+.hero h1{margin:0 0 8px; font-size:1.55rem}
+.hero p{margin:8px 0 0; color:var(--muted); line-height:1.6}
+.legend{display:flex; flex-wrap:wrap; gap:10px; margin-top:14px}
+.pill{
+  font-family:"JetBrains Mono", monospace; font-size:.78rem;
+  padding:8px 10px; border-radius:999px; border:1px solid var(--border); background:rgba(255,255,255,.03); color:#d9e6ff;
+}
+.section{
+  margin-bottom:22px; background:rgba(17,24,39,.82); border:1px solid var(--border); border-radius:24px;
+  box-shadow:var(--shadow); overflow:hidden;
+}
+.section-head{
+  padding:18px 20px; display:flex; align-items:flex-start; justify-content:space-between; gap:16px;
+  background:linear-gradient(135deg, rgba(0,212,255,.08), rgba(124,58,237,.08));
+  border-bottom:1px solid var(--border);
+}
+.section-head h2{margin:0; font-size:1.05rem}
+.section-head p{margin:6px 0 0; color:var(--muted); line-height:1.5}
+.cards{padding:14px}
+.card{
+  background:var(--surface-2); border:1px solid rgba(255,255,255,.06); border-radius:18px; overflow:hidden; margin-bottom:12px;
+}
+.card:last-child{margin-bottom:0}
+.q-btn{
+  width:100%; text-align:left; background:transparent; color:inherit; border:0; cursor:pointer; padding:0;
+}
+.q-row{
+  display:grid; grid-template-columns:6px 1fr auto; gap:14px; align-items:center;
+  padding:16px 18px; min-height:64px;
+}
+.q-bar{align-self:stretch; border-radius:999px; background:linear-gradient(180deg, var(--cyan), var(--purple))}
+.q-text{font-weight:800; line-height:1.45}
+.q-meta{font-family:"JetBrains Mono", monospace; font-size:.76rem; color:var(--muted)}
+.answer{
+  display:grid; grid-template-rows:0fr; transition:grid-template-rows .26s ease, opacity .26s ease;
+  opacity:.92;
+}
+.answer.open{grid-template-rows:1fr; opacity:1}
+.answer-inner{overflow:hidden}
+.answer-body{
+  padding:0 22px 18px 38px; color:#c8d6f3; line-height:1.7;
+}
+.answer-body p{margin:0 0 10px}
+.answer-body ul{margin:0 0 10px 18px; padding:0}
+.answer-body li{margin:4px 0}
+.recall-hint{
+  display:none; margin-top:6px; font-size:.78rem; color:rgba(232,238,252,.42); font-family:"JetBrains Mono", monospace;
+}
+.recall .card:not(.open) .recall-hint{display:block}
+.recall .answer:not(.open){opacity:.55}
+pre{
+  margin:12px 0 0; background:#050810; border:1px solid rgba(255,255,255,.08);
+  border-radius:16px; padding:14px 16px; overflow:auto;
+}
+code{font-family:"JetBrains Mono", monospace; font-size:.86rem; color:#dbeafe}
+.kw{color:#c084fc}
+.type{color:#67e8f9}
+.fn{color:#fbbf24}
+.str{color:#86efac}
+.cm{color:#6b7280}
+.footer-note{
+  color:var(--muted); font-size:.82rem; margin-top:22px; padding:0 6px;
+}
+.index-grid{
+  display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:16px; margin-top:14px;
+}
+.index-card{
+  display:block; padding:18px; border-radius:20px; background:linear-gradient(180deg, rgba(17,24,39,.98), rgba(26,34,53,.98));
+  border:1px solid var(--border); box-shadow:var(--shadow); color:#fff;
+}
+.index-card h3{margin:0 0 8px}
+.index-card p{margin:0 0 10px; color:var(--muted); line-height:1.55}
+.index-card .badge{display:inline-block}
+@media (max-width: 980px){
+  :root{--sidebar-w:100%}
+  .layout{grid-template-columns:1fr}
+  .sidebar{
+    position:sticky; top:calc(var(--topbar-h) + 10px); z-index:20;
+    display:block; white-space:nowrap; overflow:auto hidden;
+  }
+  .nav-list{display:flex; flex-direction:row; min-width:max-content}
+  .nav-link{min-width:220px}
+}
+@media (max-width: 720px){
+  :root{--topbar-h:112px}
+  .topbar-inner{grid-template-columns:1fr 1fr; align-items:start}
+  .timer-wrap{justify-self:start}
+  .mode-btn{justify-self:end}
+  .title{font-size:1rem}
+  .hero h1{font-size:1.25rem}
+  .q-row{grid-template-columns:6px 1fr; }
+  .q-meta{display:none}
+}
+</style>
 </head>
 <body>
-  <main class="container faq-shell">
-    <a class="faq-back" href="index.html">← Back to Important FAQ</a>
-    <section class="faq-card">
-      <div class="faq-eyebrow">Interview FAQ · 03</div>
-      <h1 class="faq-title">Data, Kafka & Cloud Sheet</h1>
-      <p class="faq-subtitle">Data flow, event-driven design, cloud primitives, and the operational side of backend systems.</p>
-      <div class='faq-section'><h2>What to focus on</h2><p>Use this sheet when you want a broad, systems-level review: messaging, cloud services, scaling ideas, deployment concerns, and data movement across services.</p><ul class='faq-list'><li>Keep the difference between sync and async communication very clear.</li><li>Be comfortable describing AWS primitives, queues, and deploy-time trade-offs.</li><li>Use the cloud and Kafka notes to practice architecture stories.</li></ul></div><div class='faq-section'><h2>Study cue</h2><p>This is the bridge between application-level Java/Spring and infrastructure-level thinking.</p></div>
-    </section>
-  </main>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="title-wrap">
+        <div class="title" id="pageTitle"></div>
+        <div class="subtitle" id="pageSubtitle"></div>
+      </div>
+      <div class="timer-wrap">
+        <div class="timer" id="timer">30:00</div>
+      </div>
+      <button id="modeBtn" class="mode-btn">SCAN MODE</button>
+    </div>
+    <div class="progress-shell"><div id="progressBar" class="progress-bar"></div></div>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <h2>Topic groups</h2>
+      <nav class="nav-list" id="nav"></nav>
+    </aside>
+
+    <main class="main">
+      <section class="hero">
+        <h1 id="heroTitle"></h1>
+        <p id="heroCopy"></p>
+        <div class="legend" id="legend"></div>
+      </section>
+
+      <div id="sections"></div>
+
+      <p class="footer-note">Built as a daily-review interview sheet. In scan mode everything stays open. In recall mode every prompt becomes a self-test card.</p>
+    </main>
+  </div>
+
+  <script>
+  const PAGE_DATA = {"pageTitle": "Interview Sheet 03 — Data, Kafka, Cloud", "pageSubtitle": "Daily review sheet • Kafka, AWS, Kubernetes, CI/CD, Postgres, DynamoDB, SQL, migration", "heroTitle": "Event-driven systems, cloud operations, and data-heavy debugging", "heroCopy": "This sheet merges the Kafka/AWS/principal-level architecture banks with the data-migration and analytics-heavy prompts. It is designed for fast scanning before backend, platform, or integration-heavy rounds.", "legend": ["Kafka + reliability", "AWS + EKS", "SQL + migration", "Multi-region thinking"], "sections": [{"id": "kafka-core", "title": "Kafka fundamentals, partitions, consumer groups, and stream architecture", "cards": [{"q": "What is Kafka and why is it useful?", "a": "\n<p>Kafka is a durable distributed event log. Producers write records to topics, topics are split into partitions, brokers store those partitions, and consumers read them independently.</p>\n<p>It is useful when you need decoupling, replay, buffering, throughput, and near-real-time event processing.</p>\n"}, {"q": "Partitions, scaling, ordering, and consumer groups", "a": "\n<p>Partitions are the unit of parallelism. More partitions usually mean more consumer concurrency and more throughput, but ordering is only guaranteed <strong>within a partition</strong>.</p>\n<p>In a consumer group, one partition is actively consumed by at most one group member at a time. If consumers outnumber partitions, extra consumers sit idle.</p>\n"}, {"q": "Kafka Streams vs plain consumers; Kafka vs SNS/SQS/Kinesis", "a": "\n<p><strong>Kafka Streams</strong> is a library for stateful stream processing with windowing, joins, and local state stores. A plain consumer just reads records and runs arbitrary code.</p>\n<p>Choose <strong>Kafka</strong> when replay, stream processing, and large-scale event history matter. Choose <strong>SQS</strong> for simpler queue semantics, <strong>SNS</strong> for fan-out notifications, and <strong>Kinesis</strong> when you are already deep in AWS-managed streaming and its shard model fits the problem.</p>\n"}], "blurb": "Core Kafka vocabulary and scaling ideas that kept repeating across the Kafka and principal banks."}, {"id": "kafka-reliability", "title": "Kafka reliability, exactly-once, idempotency, DLQs, and replay", "cards": [{"q": "At-most-once vs at-least-once vs exactly-once", "a": "\n<p><strong>At-most-once</strong> may lose messages but avoids duplicates. <strong>At-least-once</strong> avoids loss but duplicates are possible. <strong>Exactly-once</strong> is really “exactly-once processing within a defined boundary,” and usually still requires idempotent business logic around the edges.</p>\n"}, {"q": "Idempotent producer, transactions, offsets, and rebalancing", "a": "\n<p>Kafka’s idempotent producer prevents duplicate appends from producer retries to the same partition. Transactions let a producer atomically write multiple records and coordinate consumed offsets in stream-processing scenarios.</p>\n<p>Offset strategy matters: auto-commit is simpler but less controlled; manual commit after successful processing is safer. Rebalances happen when group membership or partition ownership changes, so handlers must be ready for duplicate processing around rebalance boundaries.</p>\n"}, {"q": "DLQ, poison messages, replay, lag, and backpressure", "a": "\n<p>Use a DLQ when a record is persistently bad and retries will not fix it. Keep the original payload, metadata, and error reason. For replay, re-consume from stored offsets or a replay topic after the fix is deployed.</p>\n<p>Monitor <strong>consumer lag</strong>, throughput, rebalance churn, and error rate. If consumers overload downstream systems, reduce concurrency, batch intelligently, or buffer with bounded queues so you create backpressure instead of collapse.</p>\n"}, {"q": "Outbox pattern, schema evolution, and event contract governance", "a": "\n<p>Use an outbox when a DB update and an event publish must stay consistent. For schema evolution, prefer additive change, explicit versioning, and compatibility rules with Avro/Protobuf/JSON schema checks in CI.</p>\n"}], "blurb": "The reliability layer interviewers usually care about more than definitions."}, {"id": "aws-core", "title": "AWS architecture, security, observability, and managed services", "cards": [{"q": "How do you choose core AWS building blocks for Java microservices?", "a": "\n<p>A common production baseline is: ALB or API Gateway at the edge, stateless services on EKS/ECS/Fargate/EC2, data in RDS/DynamoDB/S3, async work via SNS/SQS/Kinesis/MSK, secrets in Secrets Manager or SSM, and observability in CloudWatch plus tracing.</p>\n<p>The right answer depends on traffic shape, operational maturity, latency target, and compliance needs.</p>\n"}, {"q": "IAM, roles, policies, Secrets Manager, KMS, and least privilege", "a": "\n<p>Use short-lived credentials through IAM roles instead of static keys. Scope policies to the minimum resources and actions required. Use Secrets Manager or Parameter Store for secrets, and KMS for key management and encryption control.</p>\n<p>In EKS, mention IRSA so pods assume dedicated roles without node-wide credential sharing.</p>\n"}, {"q": "CloudWatch, X-Ray, custom metrics, Multi-AZ, and high availability", "a": "\n<p>CloudWatch handles logs, alarms, dashboards, and custom metrics. X-Ray or OpenTelemetry-based tracing helps follow distributed requests. Multi-AZ improves availability inside one region; multi-region handles regional failure but costs more and adds consistency complexity.</p>\n"}, {"q": "DynamoDB access patterns and throughput sizing", "a": "\n<p>Start from access patterns, then choose partition key and sort key. Avoid hot partitions. Use conditional writes for idempotency and optimistic concurrency.</p>\n<p>Provisioned throughput is based on expected read/write units and traffic shape; on-demand is easier when load is unpredictable.</p>\n"}], "blurb": "Practical AWS answers for managed services, IAM, observability, and availability."}, {"id": "kubernetes", "title": "Docker, Kubernetes, EKS, scaling, and runtime operations", "cards": [{"q": "Containerization, pods/deployments/services, and health checks", "a": "\n<p>Containerization gives packaging consistency, isolation, and easier scaling. In Kubernetes, a <strong>pod</strong> is the runnable unit, a <strong>Deployment</strong> manages stateless rollout/replicas, and a <strong>Service</strong> gives stable discovery/load balancing.</p>\n<p><strong>Liveness</strong> answers “should this container be restarted?” <strong>readiness</strong> answers “should it receive traffic?”</p>\n"}, {"q": "Resource requests/limits, autoscaling, rolling updates, and rollbacks", "a": "\n<p>Set requests based on observed baseline and limits based on safe ceilings. HPA scales pods from metrics such as CPU, memory, or custom metrics. Rolling updates replace pods gradually; blue/green or canary gives tighter release control.</p>\n<p>For zero-downtime rollout, readiness probes must be correct and shutdown hooks must drain work cleanly.</p>\n"}, {"q": "CrashLoopBackOff, OOMKilled, ingress, and logging", "a": "\n<p><strong>CrashLoopBackOff</strong> means the container keeps failing on startup; check app logs, config, secrets, ports, and probes. <strong>OOMKilled</strong> means the process exceeded memory limits or mis-sized its heap relative to the container.</p>\n<p>For ingress, mention ALB ingress controller / AWS Load Balancer Controller, NLB where appropriate, and centralized log shipping to CloudWatch, Elasticsearch/OpenSearch, or another log platform.</p>\n"}, {"q": "Service mesh, mTLS, sidecars, and multi-cluster DR", "a": "\n<p>A service mesh helps with traffic policy, retries, observability, and mTLS at scale, but it adds operational complexity. Sidecars are useful for proxies, log forwarding, or security agents.</p>\n<p>For DR, separate clusters by region and define failover, data replication, and how traffic shifts.</p>\n"}], "blurb": "Enough container orchestration depth for senior Java/backend/full-stack rounds."}, {"id": "cicd", "title": "CI/CD, DevSecOps, rollback, and release discipline", "cards": [{"q": "Describe a solid CI/CD pipeline for services and infrastructure", "a": "\n<p>A strong pipeline runs lint/static analysis, unit tests, integration tests, container build, image scan, artifact publish, environment deploy, smoke checks, and post-deploy validation. IaC changes should go through validation and review in the same disciplined way.</p>\n"}, {"q": "Rollback, canary, blue/green, quality gates, and flaky tests", "a": "\n<p>Rollback must be fast and boring. That means immutable artifacts, versioned configs, reversible traffic routing, and explicit health checks.</p>\n<p>Use quality gates for code quality, security scan results, and critical test success. If flaky tests exist, isolate and fix them quickly—otherwise teams stop trusting the pipeline.</p>\n"}, {"q": "Database migrations, testcontainers, and contract testing", "a": "\n<p>Run migrations automatically but safely: backward-compatible first, destructive later. Validate migrations in CI against a realistic DB. Testcontainers are great for integration tests that need Kafka, Postgres, or similar dependencies. Contract tests catch drift between microservices before production.</p>\n"}, {"q": "Feature flags and progressive delivery", "a": "\n<p>Feature flags decouple deploy from release. They let you dark-launch, canary by cohort, instantly disable a risky path, and validate production behavior gradually.</p>\n"}], "blurb": "CI/CD and DevSecOps answers in interview-ready language."}, {"id": "db-modeling", "title": "Postgres, DynamoDB, consistency, and access-pattern-driven design", "cards": [{"q": "How do you design relational schemas for transactional systems?", "a": "\n<p>Start from entities, relationships, write paths, and critical queries. Normalize enough to preserve consistency, then denormalize carefully for read-heavy paths. Add indexes to match real filters and joins, not imagined ones.</p>\n"}, {"q": "Isolation levels, locking, and concurrency", "a": "\n<p>Choose the lowest isolation that still prevents the anomalies your workflow cannot tolerate. For high-throughput write paths, shorten transaction scope, use optimistic concurrency where practical, and understand when explicit locking is necessary.</p>\n"}, {"q": "DynamoDB vs Postgres trade-offs", "a": "\n<p>Postgres gives rich joins, relational integrity, and flexible query semantics. DynamoDB gives massive scale and predictable single-digit-millisecond access when the key design matches the query patterns.</p>\n<p>The trade-off is that DynamoDB forces you to model around access patterns up front, while Postgres lets you discover queries more flexibly.</p>\n"}, {"q": "Idempotency, audit trails, replicas, and historical archiving", "a": "\n<p>Use conditional writes or unique constraints for idempotency. Keep append-only audit records for sensitive state changes. Add replicas or caches for read scaling. Archive old partitions/tables so OLTP workloads do not drown in historical data.</p>\n"}], "blurb": "Relational vs NoSQL trade-offs, access patterns, consistency, and auditability."}, {"id": "sql-analytics", "title": "SQL, Snowflake, Oracle, Salesforce, and data-intensive troubleshooting", "cards": [{"q": "How do you use SQL to debug production data problems?", "a": "\n<p>Start by pinning down the cohort and time window. Reconstruct the state path with joins, window functions, and aggregates. Group mismatches by pattern before guessing at the root cause. SQL is not just for fetching rows—it is for narrowing hypotheses fast.</p>\n"}, {"q": "Window functions, EXPLAIN, indexing, and safe backfills", "a": "\n<p>Use <code>ROW_NUMBER</code>, <code>RANK</code>, <code>LAG</code>, and <code>LEAD</code> for duplicates, latest-per-group logic, and sequence analysis. Use <code>EXPLAIN ANALYZE</code> to inspect scans, join strategy, row estimates, and sort/hash cost.</p>\n<p>For large backfills, batch updates, commit in chunks, and avoid long table locks during business-critical hours.</p>\n"}, {"q": "Snowflake, Oracle, Salesforce, and large data movement", "a": "\n<p>For cross-system pipelines, define source-of-truth ownership, mapping rules, and reconciliation queries up front. Use staging areas for validation and dedupe. Track lineage so you know where each transformed field came from.</p>\n<p>When working with Salesforce or other vendor APIs, think about bulk APIs, pagination, throttling, retries, and partial-failure recovery.</p>\n"}], "blurb": "Data-heavy debugging and analytics language for Postgres, Snowflake, Oracle, and Salesforce contexts."}, {"id": "migration-recon", "title": "Data migration, reconciliation, CDC, validation, and quality culture", "cards": [{"q": "How do you approach a migration where ‘the numbers don’t look right’?", "a": "\n<p>Clarify the exact cohort, business definition, and source of truth first. Then compare source vs target by deterministic keys, classify mismatch patterns, and trace those patterns back to transformation logic or timing windows.</p>\n<p>Do not jump straight to patching data until you understand the upstream defect.</p>\n"}, {"q": "Validation before/during/after migration", "a": "\n<ul>\n<li><strong>Before</strong>: profile data quality, nulls, duplicates, bad reference values, and mapping coverage.</li>\n<li><strong>During</strong>: row counts, checksum/aggregate checks, lag, DLQ/error rates, and sample record comparison.</li>\n<li><strong>After</strong>: business-level reconciliation, impossible-state queries, trend monitoring, and replayability.</li>\n</ul>\n"}, {"q": "CDC, reconciliation, and repeatable fixes", "a": "\n<p>For live migrations, CDC keeps source changes flowing while the cutover happens. Reconciliation compares source and target state by key and by business aggregates. The fix must be repeatable: SQL script, rerunnable job, or mapped transformation update—not a one-off manual edit that nobody can audit later.</p>\n"}], "blurb": "Very relevant to the software developer migration/debugging question bank."}, {"id": "multi-region", "title": "Distributed systems, DR, multi-region failover, and platform trade-offs", "cards": [{"q": "How do you answer multi-region / disaster-recovery design questions?", "a": "\n<p>Be explicit about the goal: high availability, low latency, disaster recovery, or all three. Then define:</p>\n<ul>\n<li>traffic routing and failover mechanism</li>\n<li>data replication model</li>\n<li>consistency trade-offs</li>\n<li>RPO/RTO targets</li>\n<li>how you test failover, not just document it</li>\n</ul>\n<p>A strong answer always mentions degraded mode and rollback, not just “deploy in two regions.”</p>\n"}, {"q": "Hybrid / multi-cloud and modernization trade-offs", "a": "\n<p>Portable abstractions help, but the more cloud-agnostic you become, the more you may leave platform advantages on the table. Interviewers like hearing that you use managed services when they solve a real problem, while still isolating business logic from platform glue where possible.</p>\n"}], "blurb": "The short version of how to talk about failover, DR, and platform trade-offs."}]};
+  
+const TOTAL_SECONDS = 30 * 60;
+let secondsLeft = TOTAL_SECONDS;
+let recallMode = false;
+
+function formatTime(sec){
+  const m = String(Math.floor(sec / 60)).padStart(2,'0');
+  const s = String(sec % 60).padStart(2,'0');
+  return `${m}:${s}`;
+}
+
+function buildNav(sections){
+  const nav = document.getElementById('nav');
+  nav.innerHTML = '';
+  sections.forEach(section => {
+    const a = document.createElement('a');
+    a.href = `#${section.id}`;
+    a.className = 'nav-link';
+    a.innerHTML = `<span>${section.title}</span><span class="badge">${section.cards.length}</span>`;
+    nav.appendChild(a);
+  });
+}
+
+function createCard(card){
+  const article = document.createElement('article');
+  article.className = 'card open';
+
+  const btn = document.createElement('button');
+  btn.className = 'q-btn';
+  btn.type = 'button';
+
+  const qrow = document.createElement('div');
+  qrow.className = 'q-row';
+  qrow.innerHTML = `
+    <div class="q-bar"></div>
+    <div>
+      <div class="q-text">${card.q}</div>
+      <div class="recall-hint">click to reveal</div>
+    </div>
+    <div class="q-meta">${card.meta || ''}</div>
+  `;
+  btn.appendChild(qrow);
+
+  const answer = document.createElement('div');
+  answer.className = 'answer open';
+  answer.innerHTML = `<div class="answer-inner"><div class="answer-body">${card.a}</div></div>`;
+
+  btn.addEventListener('click', () => {
+    if(!recallMode) return;
+    article.classList.toggle('open');
+    answer.classList.toggle('open');
+  });
+
+  article.appendChild(btn);
+  article.appendChild(answer);
+  return article;
+}
+
+function renderSections(payload){
+  buildNav(payload.sections);
+  const root = document.getElementById('sections');
+  root.innerHTML = '';
+  payload.sections.forEach(section => {
+    const sec = document.createElement('section');
+    sec.className = 'section';
+    sec.id = section.id;
+    sec.innerHTML = `
+      <div class="section-head">
+        <div>
+          <h2>${section.title}</h2>
+          <p>${section.blurb || ''}</p>
+        </div>
+        <span class="badge">${section.cards.length} prompts</span>
+      </div>
+      <div class="cards"></div>
+    `;
+    const cardsEl = sec.querySelector('.cards');
+    section.cards.forEach(card => cardsEl.appendChild(createCard(card)));
+    root.appendChild(sec);
+  });
+}
+
+function setMode(nextRecall){
+  recallMode = nextRecall;
+  document.body.classList.toggle('recall', recallMode);
+  const btn = document.getElementById('modeBtn');
+  btn.textContent = recallMode ? 'RECALL MODE' : 'SCAN MODE';
+  document.querySelectorAll('.card').forEach(card => {
+    const answer = card.querySelector('.answer');
+    if(recallMode){
+      card.classList.remove('open');
+      answer.classList.remove('open');
+    } else {
+      card.classList.add('open');
+      answer.classList.add('open');
+    }
+  });
+}
+
+function initTimer(){
+  const timer = document.getElementById('timer');
+  const bar = document.getElementById('progressBar');
+  timer.textContent = formatTime(secondsLeft);
+  const tick = () => {
+    timer.textContent = formatTime(secondsLeft);
+    const elapsed = TOTAL_SECONDS - secondsLeft;
+    bar.style.width = `${(elapsed / TOTAL_SECONDS) * 100}%`;
+    timer.classList.remove('warn','danger');
+    bar.classList.remove('warn','danger');
+
+    if(secondsLeft <= 60){
+      timer.classList.add('danger');
+      bar.classList.add('danger');
+    } else if(secondsLeft <= 300){
+      timer.classList.add('warn');
+      bar.classList.add('warn');
+    }
+    if(secondsLeft > 0) secondsLeft -= 1;
+  };
+  tick();
+  setInterval(tick, 1000);
+}
+
+function hydratePage(payload){
+  document.getElementById('pageTitle').textContent = payload.pageTitle;
+  document.getElementById('pageSubtitle').textContent = payload.pageSubtitle;
+  document.getElementById('heroTitle').textContent = payload.heroTitle;
+  document.getElementById('heroCopy').innerHTML = payload.heroCopy;
+  document.getElementById('legend').innerHTML = (payload.legend || []).map(x => `<span class="pill">${x}</span>`).join('');
+  renderSections(payload);
+  document.getElementById('modeBtn').addEventListener('click', () => setMode(!recallMode));
+  setMode(false);
+  initTimer();
+}
+
+  hydratePage(PAGE_DATA);
+  </script>
 </body>
 </html>

@@ -1,38 +1,377 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="../styles.css" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Interview Sheet 04 — Frontend, Behavioral, Assessment</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;500;700;800&display=swap" rel="stylesheet">
   <style>
-    .faq-shell{padding:40px 0 64px}
-    .faq-card{background:var(--surface-1);border:1px solid var(--border);border-radius:24px;padding:28px;box-shadow:var(--shadow-card)}
-    .faq-eyebrow{font-family:var(--font-mono);color:var(--amber);text-transform:uppercase;letter-spacing:.12em;font-size:.78rem;margin-bottom:10px}
-    .faq-title{margin:0 0 10px;font-size:2rem}
-    .faq-subtitle{color:var(--text-2);line-height:1.7;margin-bottom:18px}
-    .faq-back{display:inline-flex;align-items:center;gap:8px;color:var(--cyan);margin-bottom:20px}
-    .faq-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:18px}
-    .faq-link{display:block;background:var(--surface-2);border:1px solid var(--border);border-radius:18px;padding:16px;color:var(--text-1);transition:transform .15s ease,border-color .15s ease}
-    .faq-link:hover{transform:translateY(-2px);border-color:rgba(0,212,255,.28)}
-    .faq-link h3{margin:0 0 8px;font-size:1rem}
-    .faq-link p{margin:0;color:var(--text-2);line-height:1.55}
-    .faq-section{margin-top:22px;padding-top:18px;border-top:1px solid var(--border)}
-    .faq-section h2{margin:0 0 10px;font-size:1.15rem}
-    .faq-section p{margin:0 0 10px;color:var(--text-2);line-height:1.75}
-    .faq-list{margin:0;padding-left:18px;color:var(--text-2);line-height:1.7}
-    .faq-list li{margin:6px 0}
-    .pill{display:inline-flex;align-items:center;padding:4px 10px;border-radius:999px;font-family:var(--font-mono);font-size:.75rem;background:rgba(0,212,255,.1);color:var(--cyan);border:1px solid rgba(0,212,255,.18);margin-right:8px;margin-bottom:8px}
-  </style>
+:root{
+  --bg:#0a0e1a;
+  --surface:#111827;
+  --surface-2:#1a2235;
+  --text:#e8eefc;
+  --muted:#9fb1d1;
+  --cyan:#00d4ff;
+  --purple:#7c3aed;
+  --green:#10b981;
+  --amber:#f59e0b;
+  --red:#ef4444;
+  --border:rgba(255,255,255,.08);
+  --shadow:0 12px 32px rgba(0,0,0,.28);
+  --radius:18px;
+  --topbar-h:84px;
+  --sidebar-w:280px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  font-family:"Syne",system-ui,sans-serif;
+  background:
+    radial-gradient(circle at top right, rgba(124,58,237,.18), transparent 28%),
+    radial-gradient(circle at top left, rgba(0,212,255,.12), transparent 26%),
+    var(--bg);
+  color:var(--text);
+}
+a{color:var(--cyan); text-decoration:none}
+a:hover{text-decoration:underline}
+.topbar{
+  position:fixed; inset:0 0 auto 0; height:var(--topbar-h);
+  backdrop-filter: blur(14px);
+  background:rgba(10,14,26,.84);
+  border-bottom:1px solid var(--border);
+  z-index:50;
+}
+.topbar-inner{
+  height:100%; display:grid; grid-template-columns:minmax(240px,1fr) auto auto; gap:16px;
+  align-items:center; padding:14px 20px;
+}
+.title-wrap{min-width:0}
+.title{font-size:1.15rem; font-weight:800; letter-spacing:.02em; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.subtitle{font-size:.78rem; color:var(--muted); margin-top:4px}
+.timer-wrap{display:flex; align-items:center; gap:10px}
+.timer{
+  font-family:"JetBrains Mono", monospace;
+  font-size:1rem; padding:10px 14px; border-radius:999px; background:var(--surface); border:1px solid var(--border);
+  box-shadow:var(--shadow);
+}
+.timer.warn{color:var(--amber); border-color:rgba(245,158,11,.4)}
+.timer.danger{color:#fff; background:rgba(239,68,68,.18); border-color:rgba(239,68,68,.45); animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.35)}50%{box-shadow:0 0 0 10px rgba(239,68,68,0)}}
+.mode-btn{
+  font-family:"JetBrains Mono", monospace; font-size:.86rem;
+  background:linear-gradient(135deg, rgba(0,212,255,.16), rgba(124,58,237,.18));
+  color:#fff; border:1px solid rgba(0,212,255,.28); border-radius:999px; padding:12px 16px;
+  cursor:pointer; transition:transform .18s ease, border-color .18s ease, background .18s ease;
+}
+.mode-btn:hover{transform:translateY(-1px); border-color:rgba(0,212,255,.55)}
+.progress-shell{
+  position:absolute; left:0; right:0; bottom:0; height:4px; background:rgba(255,255,255,.05);
+}
+.progress-bar{
+  height:100%; width:0%;
+  background:linear-gradient(90deg, var(--cyan), var(--green));
+  transition:width 1s linear, background .2s ease;
+}
+.progress-bar.warn{background:linear-gradient(90deg, var(--amber), #fbbf24)}
+.progress-bar.danger{background:linear-gradient(90deg, var(--red), #fb7185)}
+.layout{
+  display:grid; grid-template-columns:var(--sidebar-w) minmax(0,1fr);
+  gap:24px; padding:calc(var(--topbar-h) + 20px) 20px 40px;
+}
+.sidebar{
+  position:sticky; top:calc(var(--topbar-h) + 16px); align-self:start;
+  max-height:calc(100vh - var(--topbar-h) - 32px); overflow:auto;
+  background:rgba(17,24,39,.76); border:1px solid var(--border);
+  border-radius:22px; padding:14px; box-shadow:var(--shadow);
+}
+.sidebar h2{margin:4px 8px 14px; font-size:.88rem; color:var(--muted); letter-spacing:.06em; text-transform:uppercase}
+.nav-list{display:flex; flex-direction:column; gap:8px}
+.nav-link{
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  padding:12px 12px; border-radius:14px; color:#d7e4ff; background:rgba(255,255,255,.02);
+  border:1px solid transparent; transition:background .18s ease, border-color .18s ease, transform .18s ease;
+}
+.nav-link:hover{background:rgba(255,255,255,.05); border-color:rgba(0,212,255,.18); transform:translateX(2px)}
+.badge{
+  min-width:36px; text-align:center; font-family:"JetBrains Mono", monospace; font-size:.78rem;
+  color:var(--cyan); background:rgba(0,212,255,.08); border:1px solid rgba(0,212,255,.15); padding:4px 8px; border-radius:999px;
+}
+.main{min-width:0}
+.hero{
+  background:linear-gradient(180deg, rgba(26,34,53,.95), rgba(17,24,39,.96));
+  border:1px solid var(--border); border-radius:24px; padding:22px 24px; box-shadow:var(--shadow); margin-bottom:22px;
+}
+.hero h1{margin:0 0 8px; font-size:1.55rem}
+.hero p{margin:8px 0 0; color:var(--muted); line-height:1.6}
+.legend{display:flex; flex-wrap:wrap; gap:10px; margin-top:14px}
+.pill{
+  font-family:"JetBrains Mono", monospace; font-size:.78rem;
+  padding:8px 10px; border-radius:999px; border:1px solid var(--border); background:rgba(255,255,255,.03); color:#d9e6ff;
+}
+.section{
+  margin-bottom:22px; background:rgba(17,24,39,.82); border:1px solid var(--border); border-radius:24px;
+  box-shadow:var(--shadow); overflow:hidden;
+}
+.section-head{
+  padding:18px 20px; display:flex; align-items:flex-start; justify-content:space-between; gap:16px;
+  background:linear-gradient(135deg, rgba(0,212,255,.08), rgba(124,58,237,.08));
+  border-bottom:1px solid var(--border);
+}
+.section-head h2{margin:0; font-size:1.05rem}
+.section-head p{margin:6px 0 0; color:var(--muted); line-height:1.5}
+.cards{padding:14px}
+.card{
+  background:var(--surface-2); border:1px solid rgba(255,255,255,.06); border-radius:18px; overflow:hidden; margin-bottom:12px;
+}
+.card:last-child{margin-bottom:0}
+.q-btn{
+  width:100%; text-align:left; background:transparent; color:inherit; border:0; cursor:pointer; padding:0;
+}
+.q-row{
+  display:grid; grid-template-columns:6px 1fr auto; gap:14px; align-items:center;
+  padding:16px 18px; min-height:64px;
+}
+.q-bar{align-self:stretch; border-radius:999px; background:linear-gradient(180deg, var(--cyan), var(--purple))}
+.q-text{font-weight:800; line-height:1.45}
+.q-meta{font-family:"JetBrains Mono", monospace; font-size:.76rem; color:var(--muted)}
+.answer{
+  display:grid; grid-template-rows:0fr; transition:grid-template-rows .26s ease, opacity .26s ease;
+  opacity:.92;
+}
+.answer.open{grid-template-rows:1fr; opacity:1}
+.answer-inner{overflow:hidden}
+.answer-body{
+  padding:0 22px 18px 38px; color:#c8d6f3; line-height:1.7;
+}
+.answer-body p{margin:0 0 10px}
+.answer-body ul{margin:0 0 10px 18px; padding:0}
+.answer-body li{margin:4px 0}
+.recall-hint{
+  display:none; margin-top:6px; font-size:.78rem; color:rgba(232,238,252,.42); font-family:"JetBrains Mono", monospace;
+}
+.recall .card:not(.open) .recall-hint{display:block}
+.recall .answer:not(.open){opacity:.55}
+pre{
+  margin:12px 0 0; background:#050810; border:1px solid rgba(255,255,255,.08);
+  border-radius:16px; padding:14px 16px; overflow:auto;
+}
+code{font-family:"JetBrains Mono", monospace; font-size:.86rem; color:#dbeafe}
+.kw{color:#c084fc}
+.type{color:#67e8f9}
+.fn{color:#fbbf24}
+.str{color:#86efac}
+.cm{color:#6b7280}
+.footer-note{
+  color:var(--muted); font-size:.82rem; margin-top:22px; padding:0 6px;
+}
+.index-grid{
+  display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:16px; margin-top:14px;
+}
+.index-card{
+  display:block; padding:18px; border-radius:20px; background:linear-gradient(180deg, rgba(17,24,39,.98), rgba(26,34,53,.98));
+  border:1px solid var(--border); box-shadow:var(--shadow); color:#fff;
+}
+.index-card h3{margin:0 0 8px}
+.index-card p{margin:0 0 10px; color:var(--muted); line-height:1.55}
+.index-card .badge{display:inline-block}
+@media (max-width: 980px){
+  :root{--sidebar-w:100%}
+  .layout{grid-template-columns:1fr}
+  .sidebar{
+    position:sticky; top:calc(var(--topbar-h) + 10px); z-index:20;
+    display:block; white-space:nowrap; overflow:auto hidden;
+  }
+  .nav-list{display:flex; flex-direction:row; min-width:max-content}
+  .nav-link{min-width:220px}
+}
+@media (max-width: 720px){
+  :root{--topbar-h:112px}
+  .topbar-inner{grid-template-columns:1fr 1fr; align-items:start}
+  .timer-wrap{justify-self:start}
+  .mode-btn{justify-self:end}
+  .title{font-size:1rem}
+  .hero h1{font-size:1.25rem}
+  .q-row{grid-template-columns:6px 1fr; }
+  .q-meta{display:none}
+}
+</style>
 </head>
 <body>
-  <main class="container faq-shell">
-    <a class="faq-back" href="index.html">← Back to Important FAQ</a>
-    <section class="faq-card">
-      <div class="faq-eyebrow">Interview FAQ · 04</div>
-      <h1 class="faq-title">Frontend, Behavioral & Assessment Sheet</h1>
-      <p class="faq-subtitle">Frontend fundamentals, behavioral answers, and assessment notes in one place for interview prep balance.</p>
-      <div class='faq-section'><h2>What to focus on</h2><p>Even for backend-heavy roles, this sheet helps you stay balanced: frontend basics, communication, leadership stories, and how to present your decisions clearly.</p><ul class='faq-list'><li>Use STAR framing for behavioral answers.</li><li>Review the most common frontend concepts at a high level.</li><li>Practice describing trade-offs in a calm, concise way.</li></ul></div><div class='faq-section'><h2>Study cue</h2><p>Good for quick review blocks on lighter study days or before mock interviews.</p></div>
-    </section>
-  </main>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="title-wrap">
+        <div class="title" id="pageTitle"></div>
+        <div class="subtitle" id="pageSubtitle"></div>
+      </div>
+      <div class="timer-wrap">
+        <div class="timer" id="timer">30:00</div>
+      </div>
+      <button id="modeBtn" class="mode-btn">SCAN MODE</button>
+    </div>
+    <div class="progress-shell"><div id="progressBar" class="progress-bar"></div></div>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <h2>Topic groups</h2>
+      <nav class="nav-list" id="nav"></nav>
+    </aside>
+
+    <main class="main">
+      <section class="hero">
+        <h1 id="heroTitle"></h1>
+        <p id="heroCopy"></p>
+        <div class="legend" id="legend"></div>
+      </section>
+
+      <div id="sections"></div>
+
+      <p class="footer-note">Built as a daily-review interview sheet. In scan mode everything stays open. In recall mode every prompt becomes a self-test card.</p>
+    </main>
+  </div>
+
+  <script>
+  const PAGE_DATA = {"pageTitle": "Interview Sheet 04 — Frontend, Behavioral, Assessment", "pageSubtitle": "Daily review sheet • Angular, JavaScript/HTTP, STAR stories, and corrected PDF answer key", "heroTitle": "Frontend refresh + polished STAR stories + assessment corrections", "heroCopy": "This file covers the frontend questions, behavioral answers from the attached STAR document, and a corrected key for the Spring Boot / AWS / mixed MCQ PDF. It is the fastest review sheet when you need both coding and communication polish.", "legend": ["Angular", "JavaScript / Fetch", "STAR answers", "Assessment key"], "sections": [{"id": "angular-architecture", "title": "Angular architecture, services, components, and app structure", "cards": [{"q": "How do you structure an Angular SPA cleanly?", "a": "\n<p>Organize by feature, not by one giant bucket of components. Keep presentation components light, put API and business coordination in services, define interfaces for payloads, and use shared modules/utilities carefully so they do not become dumping grounds.</p>\n"}, {"q": "Angular services for backend calls, retries, and error handling", "a": "\n<p>Wrap HTTP access in services, centralize shared headers/interceptors, and keep the component focused on state and presentation. Retries should be selective—only for transient failures—and error handling should distinguish validation, auth, network, and server issues.</p>\n"}, {"q": "Dynamic component loading and reusable UI", "a": "\n<p>Modern Angular can create components directly from <code>ViewContainerRef.createComponent()</code>. The older <code>ComponentFactoryResolver</code> approach works in older codebases, but for new code prefer the simpler API and keep dynamic rendering behind a clear contract.</p>\n"}], "blurb": "A focused set of Angular answers for architecture, services, and reusable UI patterns."}, {"id": "angular-forms-state", "title": "Forms, routing, auth state, NgRx/RxJS, and lazy loading", "cards": [{"q": "Reactive forms vs template-driven forms", "a": "\n<p>Use <strong>reactive forms</strong> for complex enterprise forms because validation, dynamic controls, and testability are much better. Template-driven forms are fine for smaller/simple screens.</p>\n"}, {"q": "Auth state, route guards, and secure API calls", "a": "\n<p>Keep auth state in a service or store, derive “logged in” from trusted token/session state, and use route guards to prevent navigation where appropriate. Also protect the backend—route guards are UX, not security. For browser apps, store tokens carefully and avoid exposing sensitive data in local cache unnecessarily.</p>\n"}, {"q": "NgRx vs services + RxJS; lazy loading", "a": "\n<p>Use plain services + RxJS when state is local or moderate. Use <strong>NgRx</strong> when the app has complex cross-screen state, explicit action history, or many independent updates.</p>\n<p>Lazy loading keeps the initial bundle smaller by loading feature modules only when needed.</p>\n"}, {"q": "Reactive form password match example", "a": "\n<p>Group-level validation is the clean pattern: compare the password and confirm-password controls and return a custom error object if they differ.</p>\n<pre><code>const form = new FormGroup({\n  password: new FormControl('', Validators.required),\n  confirmPassword: new FormControl('', Validators.required),\n}, { validators: passwordMatch });\n\nfunction passwordMatch(group: AbstractControl) {\n  const p = group.get('password')?.value;\n  const c = group.get('confirmPassword')?.value;\n  return p === c ? null : { mismatch: true };\n}</code></pre>"}], "blurb": "State, auth, forms, and lazy loading questions from the full-stack and software-developer banks."}, {"id": "angular-performance", "title": "Angular performance, change detection, testing, accessibility, and real-time UI", "cards": [{"q": "How do you optimize Angular performance?", "a": "\n<p>Use <code>OnPush</code> change detection where inputs are immutable or event-driven, use <code>trackBy</code> for large lists, avoid unnecessary subscriptions in templates, and paginate or virtualize large tables. Measure before and after; don’t optimize blindly.</p>\n"}, {"q": "Testing Angular components and RxJS-heavy flows", "a": "\n<p>Unit test components and services separately. Use <code>HttpTestingController</code> for HTTP, <code>fakeAsync</code>/<code>tick</code> for async timing, and keep RxJS streams deterministic in tests. For route guards and stores, test the decision logic, not just template rendering.</p>\n"}, {"q": "Accessibility, responsive behavior, and memory leaks", "a": "\n<p>Add proper labels, ARIA only when native semantics are not enough, keyboard navigation, focus management, and contrast checks. Prevent leaks by unsubscribing or using patterns like <code>takeUntil</code> or the async pipe.</p>\n"}, {"q": "Change detection, SSR, WebSocket/SSE updates", "a": "\n<p>Change detection runs on async events; optimize by controlling input churn and avoiding unnecessary mutable state. For SEO-sensitive Angular pages, SSR can improve indexing and first render. For real-time feeds, buffer or coalesce updates so the UI stays smooth under bursty traffic.</p>\n"}], "blurb": "Performance, testing, accessibility, and real-time UI concerns."}, {"id": "js-http", "title": "JavaScript, HTTP, Fetch API, URI design, and web fundamentals", "cards": [{"q": "HTTP status codes, HTTPS, and URI design", "a": "\n<p>Know the families: <strong>2xx</strong> success, <strong>3xx</strong> redirect, <strong>4xx</strong> client-side issue, <strong>5xx</strong> server-side issue. Good URIs are stable, resource-oriented, and do not bake action verbs into the path when HTTP verbs already express that intent.</p>\n<p>To move HTTP to HTTPS, terminate TLS properly, redirect old traffic, and review cookies, CORS, HSTS, and certificate renewal.</p>\n"}, {"q": "Fetch API and browser JavaScript basics", "a": "\n<p><code>fetch()</code> usually resolves on any HTTP response and rejects mainly on network/abort failure. You inspect <code>response.ok</code> or <code>response.status</code> to decide whether the HTTP result is acceptable, and call <code>response.json()</code> to parse JSON.</p>\n<p>Browser JavaScript runs on client resources, supports recursion, and is dynamically typed with runtime coercion rules.</p>\n"}], "blurb": "JavaScript/browser basics plus fetch/HTTP/URI topics from the PDF and source docs."}, {"id": "star-data", "title": "Behavioral STAR — data debugging, analysis, and quality", "cards": [{"q": "Tell me about a time you had to diagnose and fix a complex data issue in production.", "a": "\n<p><strong>Situation:</strong> At Angi, a subset of billing records started showing incorrect invoice amounts close to month-end.</p>\n<p><strong>Task:</strong> I needed to prove whether the bug lived in data, stored procedures, or our Java services, fix it quickly, and protect the upcoming billing run.</p>\n<p><strong>Action:</strong> I pulled suspect invoices, compared them against source events with SQL, traced the flow through our services, and correlated the issue with timing and proration logic. Once I isolated the bad branch, I fixed both the legacy rule and the Java validation layer, then added regression coverage.</p>\n<p><strong>Result:</strong> We prevented incorrect charges, backfilled the affected records, and created a repeatable playbook for future billing anomalies.</p>\n"}, {"q": "Describe a time when you found a subtle, recurring data bug and prevented it from happening again.", "a": "\n<p><strong>Situation:</strong> We saw lead count mismatches across services and our dialer, which sometimes caused duplicate customer contact.</p>\n<p><strong>Task:</strong> Find the root cause and stop it from recurring, not just patch the data.</p>\n<p><strong>Action:</strong> I replayed events in a lower environment, compared state transitions with SQL, and found that retries could reprocess the same business event without proper idempotency. I redesigned that path around explicit lead state transitions and unique guards in Postgres.</p>\n<p><strong>Result:</strong> Duplicate calls dropped, data consistency improved, and customer complaints went down.</p>\n"}, {"q": "Give an example where business partners only said ‘the data is wrong’ and you had to turn that into a concrete root cause.", "a": "\n<p><strong>Situation:</strong> Stakeholders reported that a new tax-related billing flow did not reconcile with finance’s numbers.</p>\n<p><strong>Task:</strong> Turn a vague complaint into a precise defect.</p>\n<p><strong>Action:</strong> I narrowed the issue by customer cohort, time window, and tax scenario, then compared service events to finance data in Snowflake and Postgres. That showed one configuration path applied different rules to manual charges.</p>\n<p><strong>Result:</strong> We corrected the configuration and workflow logic, and finance reports reconciled within expected tolerance.</p>\n"}, {"q": "Tell me about a time you used metrics or dashboards to uncover or validate a data problem.", "a": "\n<p>I built dashboards around throughput, error rate, and key business deltas so we could spot anomalies before customers felt them. During rollout, those dashboards helped us catch edge-case billing issues early, correlate them to specific pushes, and fix them before a wider release.</p>\n"}, {"q": "Describe a time you had to improve overall data quality in an upstream system.", "a": "\n<p>I added stronger validation, deduplication, and normalization rules upstream so downstream systems got cleaner data. The impact was fewer invalid or duplicate records, more predictable downstream behavior, and less manual investigation later in the pipeline.</p>\n"}], "blurb": "Polished STAR answers built from the attached STAR document, tightened into interview-ready versions."}, {"id": "star-backend", "title": "Behavioral STAR — backend ownership, performance, and leadership", "cards": [{"q": "Tell me about a time you owned an end-to-end Java/Spring service that was critical to the business.", "a": "\n<p>I owned a Java/Spring service that consumed high-throughput events, persisted business state, and integrated with downstream systems under rate limits and external failure conditions. I treated it as an end-to-end product: schema design, service logic, resilience, metrics, and operational support. The result was stable high-volume processing with much better visibility when incidents happened.</p>\n"}, {"q": "Describe a situation where you had to balance API stability with ongoing changes in a distributed system.", "a": "\n<p>I kept old consumers stable by preserving contracts, adding behavior in backward-compatible ways, and using feature flags and versioned endpoints where needed. That let us ship new functionality without forcing every dependent system to move at the same time.</p>\n"}, {"q": "Tell me about a time you significantly improved the performance of a backend system.", "a": "\n<p>I profiled the slow path end-to-end, found that expensive queries and unnecessary synchronous calls were dominating response time, then reworked the data access pattern and added selective caching. The biggest impact came from reducing the number of heavy operations in the critical path rather than micro-optimizing Java code.</p>\n"}, {"q": "Give an example where you had to debug a complex production issue across multiple Java services.", "a": "\n<p>I traced the flow with correlation IDs, logs, Kafka offsets, and traces. That showed a race condition plus insufficient retry behavior in a downstream dependency. We fixed the ordering assumptions, tightened retries, and improved error categorization so future incidents were much easier to reason about.</p>\n"}, {"q": "Describe a time you mentored or led other engineers on a Java/Spring initiative.", "a": "\n<p>I wrote design docs, broke the work into clear slices, paired on tricky service patterns, and reviewed code for reliability and testability. The result was not just shipping the project—it was getting other engineers comfortable owning similar services on their own.</p>\n"}, {"q": "Tell me about a time you used SQL/Postgres to analyze and fix a critical production problem.", "a": "\n<p>I used SQL to reconstruct exact state transitions, identify outliers, and isolate the subset of records that violated business rules. After that, I used safe backfill scripts plus new validation and constraints so the same pattern could not quietly reappear.</p>\n"}], "blurb": "Use these when you need backend ownership stories instead of generic teamwork answers."}, {"id": "star-cloud", "title": "Behavioral STAR — cloud, deployment, incidents, and cross-team execution", "cards": [{"q": "Tell me about a time you improved deployment reliability for backend services.", "a": "\n<p>I tightened the pipeline around automated tests, health checks, staged rollout, and better observability. That meant we could release more frequently with less fear, and when something did go wrong we had a clear rollback path.</p>\n"}, {"q": "Describe a time you handled a production incident and drove it to resolution.", "a": "\n<p>I started by stabilizing the user-facing impact, then used logs, JVM metrics, and traces to narrow the issue. Once we found the expensive path and the infrastructure symptoms around it, we fixed both the immediate bottleneck and the missing monitoring so the same incident shape would be caught much earlier next time.</p>\n"}, {"q": "Give an example where you used infrastructure as code or automation to improve reliability.", "a": "\n<p>We moved environment setup and key infrastructure changes into reviewed, repeatable IaC so teams stopped making manual one-off changes. That reduced drift, made environments more predictable, and gave us safer scaling and rollout behavior.</p>\n"}, {"q": "Tell me about a time you had to ensure high availability for a high-throughput system.", "a": "\n<p>I designed for failure from the start: autoscaling, backpressure, rate limiting around external dependencies, retries only where appropriate, and dashboards tied to both technical and business signals. That let the system absorb spikes without turning a dependency problem into a platform-wide outage.</p>\n"}, {"q": "Describe a time you coordinated across teams to solve a complex technical problem.", "a": "\n<p>I aligned backend, data, operations, and product teams through a shared design doc, explicit rollout sequencing, and clear ownership of validation steps. That turned a multi-system change from a vague risk into a plan everyone could execute against.</p>\n"}], "blurb": "Reliability, incident, deployment, and cross-team stories."}, {"id": "assessment-key", "title": "Spring Boot assessment and mixed MCQ answer key", "cards": [{"q": "Q1. Spring Boot Localization", "a": "<p><strong>Correct answer:</strong> <code>ResourceBundle</code>. Spring Boot i18n typically uses message bundles like <code>messages.properties</code>, which are backed by Java resource bundles.</p>"}, {"q": "Q2. Stereotype annotations + contact save/retrieve API", "a": "<p>Use <code>@RestController</code> for the controller, <code>@Service</code> for the service, <code>@Repository</code> for the repository, and an entity/model class for <code>Person</code>. Implement <code>POST /contact/save</code> returning <code>201 Created</code> with the saved record, and <code>GET /contact/retrieve/{id}</code> returning <code>200 OK</code> with the matching person.</p>"}, {"q": "Q3. Spring AOP Usage", "a": "<p><strong>Best answer from the options:</strong> use <code>@Aspect</code> and an <code>@Around</code> advice. You need <code>ProceedingJoinPoint</code> because the advice measures time and calls <code>proceed()</code>.</p>"}, {"q": "Q4. Filter Microservice", "a": "<p>Implement <code>GET /filter/price/{initial}/{final}</code> to return products in range, and <code>GET /sort/price</code> to return products ordered by ascending price. Return <code>400</code> when the filtered result is empty, per the prompt.</p>"}, {"q": "Q5. Github Events API", "a": "<p>Validate event type, assign increasing IDs on create, return all events ordered by ID, filter by repo/user, and return <code>404</code> for missing repo/user/event IDs. Build POST first because the rest depends on stored data.</p>"}, {"q": "Q6. Spring MVC RestController truth table", "a": "<p><strong>True:</strong> it can return JSON because of <code>@RestController</code>; it does <strong>not</strong> accept POST because only <code>@GetMapping</code> is present; and it is not accessible without both <code>id</code> and <code>locale</code> path variables. The statement saying it does not accept GET is false.</p>"}, {"q": "Q7. Spring circular dependency", "a": "<p><strong>Correct answer:</strong> <code>@Lazy</code>. It can defer bean initialization and break some circular dependency cases, though redesign is usually better.</p>"}, {"q": "Q8. How are HTTP requests handled in Spring REST?", "a": "<p><strong>Correct answer:</strong> by a controller, typically annotated with <code>@RestController</code>.</p>"}, {"q": "Q9–Q17. Java coding/OOP tasks in the assessment", "a": "<p>These are implementation questions, not trivia. The study move is to focus on clean interfaces, correct collection usage, inheritance rules, thread safety, and deterministic comparison logic. For example: singleton portal for student registration, interface-driven implementations for movie/zoo/furniture problems, and careful field-by-field comparison for user sync.</p>"}, {"q": "Q18. Java Division Check", "a": "<p><strong>Correct output:</strong> <code>Negative infinity</code>. In Java floating-point arithmetic, <code>10.0 / -0</code> yields negative infinity.</p>"}, {"q": "Q19. Java Print a Sum", "a": "<p><strong>Correct answer:</strong> compilation fails because <code>add</code> is an instance method being referenced from static context in <code>main</code>.</p>"}, {"q": "Q20. Securing Java File Operations", "a": "<p><strong>Correct answer:</strong> path traversal. Concatenating user input into a file path lets an attacker target files outside the intended directory.</p>"}, {"q": "Q21. JavaScript Basics", "a": "<p><strong>True statements:</strong> browser JavaScript uses client compute resources, and Angular/React/Vue are widely used for web apps. JavaScript is not strongly typed in the way the option claims, and recursion is supported.</p>"}, {"q": "Q22. REST API: Elite Clubs List", "a": "<p>Fetch all pages, filter clubs by nation, minimum valuation, and league titles won, then sort by valuation descending and name ascending when valuations tie.</p>"}, {"q": "Q23. REST API: Top Articles", "a": "<p>Fetch all pages, choose <code>title</code> if present else <code>story_title</code>, ignore records with neither, then sort by comment count descending and article name descending alphabetically for ties.</p>"}, {"q": "Q24. REST API: Author Information", "a": "<p>Fetch the author profile, include the <code>about</code> field if non-empty, then fetch every page of the author’s articles and add each <code>title</code> or fallback <code>story_title</code>.</p>"}, {"q": "Q25. Good URI Design", "a": "<p><strong>True:</strong> URIs should be stable, short, use HTTP verbs instead of operation names in the URI itself, and use redirection if a URI must change. <strong>False:</strong> clients should construct URIs arbitrarily; spaces are okay; case-sensitive design is desirable.</p>"}, {"q": "Q26. Wikipedia Article Count", "a": "<p>Call the Wikipedia parse API and count the number of case-sensitive occurrences of the topic string inside the returned HTML text field.</p>"}, {"q": "Q27. Fetch API", "a": "<p><strong>Correct ideas:</strong> <code>fetch()</code> normally resolves even for HTTP error statuses like 404/500, and you call <code>response.json()</code> to parse JSON. Rejection usually means network failure or an aborted request, not a normal HTTP error code.</p>"}, {"q": "Q28. Insurance provider Integration API design", "a": "<p>Use provider adapters behind a canonical integration model, strict validation and transformation at the edge, retries/circuit breakers per provider, async pipelines for slower dependencies, and strong observability. Keep provider-specific quirks out of core business services.</p>"}, {"q": "Q29. Payment API for multiple providers", "a": "<p>Improve performance, flexibility, compliance, and failure isolation. Key moves: provider abstraction layer, idempotent payment requests, tokenization for sensitive data, async reconciliation where allowed, per-provider rate limits, and region-aware routing. Trade-offs are complexity, consistency windows, and operational overhead.</p>"}, {"q": "Q30. AWS globally distributed application", "a": "<p><strong>Closest option:</strong> Global Accelerator + multi-region container deployment + S3 cross-region replication. One nuance: EKS clusters are regional, so in real life you would run separate clusters per region rather than “one cluster across regions.”</p>"}, {"q": "Q31. AWS real-time CDC during live migration", "a": "<p><strong>Correct answer:</strong> AWS DMS with continuous replication and Multi-AZ for availability.</p>"}, {"q": "Q32. AWS Security: SSE-C consideration", "a": "<p><strong>Correct answer:</strong> if the customer-provided encryption key is lost, the object is effectively lost. The salted HMAC cannot decrypt the object.</p>"}, {"q": "Q33. AWS SNS ordering", "a": "<p><strong>Correct answer:</strong> FIFO topic, because strict ordering must be preserved.</p>"}, {"q": "Q34. SQL quarantine report", "a": "<p>Join <code>quarantine_urls</code> to <code>threat_types</code>, filter <code>status = 'Quarantined'</code>, group by <code>domain_name</code> and <code>threat_type</code>, count rows as occurrences, sum <code>users_affected</code>, then sort by total users affected descending and domain ascending.</p>"}, {"q": "Q35. S3 fast browsing storage class", "a": "<p><strong>Correct answer:</strong> <code>Amazon S3 Standard</code>.</p>"}, {"q": "Q36. S3 bucket via CloudFormation", "a": "<p>The best snippet is the one that enables versioning, uses a unique suffix like <code>${AWS::StackId}</code>, and sets <code>AccessControl: PublicRead</code>. In modern AWS accounts, also remember that account-level Block Public Access can override the template.</p>"}, {"q": "Q37. Unique processing with Lambda + Kinesis", "a": "<p>None of the listed settings truly guarantees exactly-once processing by itself. The closest mitigation is small batch size, but the real interview answer is: <strong>make the sink idempotent</strong> and deduplicate by event ID when writing to DynamoDB.</p>"}, {"q": "Q38. AWS SSE-KMS least-configuration upload", "a": "<p><strong>Correct answer:</strong> set <code>x-amz-server-side-encryption: aws:kms</code>. You do not need to pass a KMS key ID if you are using the default AWS-managed KMS key.</p>"}, {"q": "Q39. Cross-zone load balancing traffic distribution", "a": "<p><strong>Correct answer:</strong> each of the 5 targets receives 20% of client traffic because cross-zone balancing spreads load evenly across all registered healthy targets.</p>"}], "blurb": "Corrected answer key and notes for the Spring Boot / mixed MCQ PDF."}]};
+  
+const TOTAL_SECONDS = 30 * 60;
+let secondsLeft = TOTAL_SECONDS;
+let recallMode = false;
+
+function formatTime(sec){
+  const m = String(Math.floor(sec / 60)).padStart(2,'0');
+  const s = String(sec % 60).padStart(2,'0');
+  return `${m}:${s}`;
+}
+
+function buildNav(sections){
+  const nav = document.getElementById('nav');
+  nav.innerHTML = '';
+  sections.forEach(section => {
+    const a = document.createElement('a');
+    a.href = `#${section.id}`;
+    a.className = 'nav-link';
+    a.innerHTML = `<span>${section.title}</span><span class="badge">${section.cards.length}</span>`;
+    nav.appendChild(a);
+  });
+}
+
+function createCard(card){
+  const article = document.createElement('article');
+  article.className = 'card open';
+
+  const btn = document.createElement('button');
+  btn.className = 'q-btn';
+  btn.type = 'button';
+
+  const qrow = document.createElement('div');
+  qrow.className = 'q-row';
+  qrow.innerHTML = `
+    <div class="q-bar"></div>
+    <div>
+      <div class="q-text">${card.q}</div>
+      <div class="recall-hint">click to reveal</div>
+    </div>
+    <div class="q-meta">${card.meta || ''}</div>
+  `;
+  btn.appendChild(qrow);
+
+  const answer = document.createElement('div');
+  answer.className = 'answer open';
+  answer.innerHTML = `<div class="answer-inner"><div class="answer-body">${card.a}</div></div>`;
+
+  btn.addEventListener('click', () => {
+    if(!recallMode) return;
+    article.classList.toggle('open');
+    answer.classList.toggle('open');
+  });
+
+  article.appendChild(btn);
+  article.appendChild(answer);
+  return article;
+}
+
+function renderSections(payload){
+  buildNav(payload.sections);
+  const root = document.getElementById('sections');
+  root.innerHTML = '';
+  payload.sections.forEach(section => {
+    const sec = document.createElement('section');
+    sec.className = 'section';
+    sec.id = section.id;
+    sec.innerHTML = `
+      <div class="section-head">
+        <div>
+          <h2>${section.title}</h2>
+          <p>${section.blurb || ''}</p>
+        </div>
+        <span class="badge">${section.cards.length} prompts</span>
+      </div>
+      <div class="cards"></div>
+    `;
+    const cardsEl = sec.querySelector('.cards');
+    section.cards.forEach(card => cardsEl.appendChild(createCard(card)));
+    root.appendChild(sec);
+  });
+}
+
+function setMode(nextRecall){
+  recallMode = nextRecall;
+  document.body.classList.toggle('recall', recallMode);
+  const btn = document.getElementById('modeBtn');
+  btn.textContent = recallMode ? 'RECALL MODE' : 'SCAN MODE';
+  document.querySelectorAll('.card').forEach(card => {
+    const answer = card.querySelector('.answer');
+    if(recallMode){
+      card.classList.remove('open');
+      answer.classList.remove('open');
+    } else {
+      card.classList.add('open');
+      answer.classList.add('open');
+    }
+  });
+}
+
+function initTimer(){
+  const timer = document.getElementById('timer');
+  const bar = document.getElementById('progressBar');
+  timer.textContent = formatTime(secondsLeft);
+  const tick = () => {
+    timer.textContent = formatTime(secondsLeft);
+    const elapsed = TOTAL_SECONDS - secondsLeft;
+    bar.style.width = `${(elapsed / TOTAL_SECONDS) * 100}%`;
+    timer.classList.remove('warn','danger');
+    bar.classList.remove('warn','danger');
+
+    if(secondsLeft <= 60){
+      timer.classList.add('danger');
+      bar.classList.add('danger');
+    } else if(secondsLeft <= 300){
+      timer.classList.add('warn');
+      bar.classList.add('warn');
+    }
+    if(secondsLeft > 0) secondsLeft -= 1;
+  };
+  tick();
+  setInterval(tick, 1000);
+}
+
+function hydratePage(payload){
+  document.getElementById('pageTitle').textContent = payload.pageTitle;
+  document.getElementById('pageSubtitle').textContent = payload.pageSubtitle;
+  document.getElementById('heroTitle').textContent = payload.heroTitle;
+  document.getElementById('heroCopy').innerHTML = payload.heroCopy;
+  document.getElementById('legend').innerHTML = (payload.legend || []).map(x => `<span class="pill">${x}</span>`).join('');
+  renderSections(payload);
+  document.getElementById('modeBtn').addEventListener('click', () => setMode(!recallMode));
+  setMode(false);
+  initTimer();
+}
+
+  hydratePage(PAGE_DATA);
+  </script>
 </body>
 </html>

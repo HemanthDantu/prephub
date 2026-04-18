@@ -1,38 +1,377 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="../styles.css" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Interview Sheet 02 — Spring &amp; Microservices</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;500;700;800&display=swap" rel="stylesheet">
   <style>
-    .faq-shell{padding:40px 0 64px}
-    .faq-card{background:var(--surface-1);border:1px solid var(--border);border-radius:24px;padding:28px;box-shadow:var(--shadow-card)}
-    .faq-eyebrow{font-family:var(--font-mono);color:var(--amber);text-transform:uppercase;letter-spacing:.12em;font-size:.78rem;margin-bottom:10px}
-    .faq-title{margin:0 0 10px;font-size:2rem}
-    .faq-subtitle{color:var(--text-2);line-height:1.7;margin-bottom:18px}
-    .faq-back{display:inline-flex;align-items:center;gap:8px;color:var(--cyan);margin-bottom:20px}
-    .faq-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:18px}
-    .faq-link{display:block;background:var(--surface-2);border:1px solid var(--border);border-radius:18px;padding:16px;color:var(--text-1);transition:transform .15s ease,border-color .15s ease}
-    .faq-link:hover{transform:translateY(-2px);border-color:rgba(0,212,255,.28)}
-    .faq-link h3{margin:0 0 8px;font-size:1rem}
-    .faq-link p{margin:0;color:var(--text-2);line-height:1.55}
-    .faq-section{margin-top:22px;padding-top:18px;border-top:1px solid var(--border)}
-    .faq-section h2{margin:0 0 10px;font-size:1.15rem}
-    .faq-section p{margin:0 0 10px;color:var(--text-2);line-height:1.75}
-    .faq-list{margin:0;padding-left:18px;color:var(--text-2);line-height:1.7}
-    .faq-list li{margin:6px 0}
-    .pill{display:inline-flex;align-items:center;padding:4px 10px;border-radius:999px;font-family:var(--font-mono);font-size:.75rem;background:rgba(0,212,255,.1);color:var(--cyan);border:1px solid rgba(0,212,255,.18);margin-right:8px;margin-bottom:8px}
-  </style>
+:root{
+  --bg:#0a0e1a;
+  --surface:#111827;
+  --surface-2:#1a2235;
+  --text:#e8eefc;
+  --muted:#9fb1d1;
+  --cyan:#00d4ff;
+  --purple:#7c3aed;
+  --green:#10b981;
+  --amber:#f59e0b;
+  --red:#ef4444;
+  --border:rgba(255,255,255,.08);
+  --shadow:0 12px 32px rgba(0,0,0,.28);
+  --radius:18px;
+  --topbar-h:84px;
+  --sidebar-w:280px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  font-family:"Syne",system-ui,sans-serif;
+  background:
+    radial-gradient(circle at top right, rgba(124,58,237,.18), transparent 28%),
+    radial-gradient(circle at top left, rgba(0,212,255,.12), transparent 26%),
+    var(--bg);
+  color:var(--text);
+}
+a{color:var(--cyan); text-decoration:none}
+a:hover{text-decoration:underline}
+.topbar{
+  position:fixed; inset:0 0 auto 0; height:var(--topbar-h);
+  backdrop-filter: blur(14px);
+  background:rgba(10,14,26,.84);
+  border-bottom:1px solid var(--border);
+  z-index:50;
+}
+.topbar-inner{
+  height:100%; display:grid; grid-template-columns:minmax(240px,1fr) auto auto; gap:16px;
+  align-items:center; padding:14px 20px;
+}
+.title-wrap{min-width:0}
+.title{font-size:1.15rem; font-weight:800; letter-spacing:.02em; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.subtitle{font-size:.78rem; color:var(--muted); margin-top:4px}
+.timer-wrap{display:flex; align-items:center; gap:10px}
+.timer{
+  font-family:"JetBrains Mono", monospace;
+  font-size:1rem; padding:10px 14px; border-radius:999px; background:var(--surface); border:1px solid var(--border);
+  box-shadow:var(--shadow);
+}
+.timer.warn{color:var(--amber); border-color:rgba(245,158,11,.4)}
+.timer.danger{color:#fff; background:rgba(239,68,68,.18); border-color:rgba(239,68,68,.45); animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.35)}50%{box-shadow:0 0 0 10px rgba(239,68,68,0)}}
+.mode-btn{
+  font-family:"JetBrains Mono", monospace; font-size:.86rem;
+  background:linear-gradient(135deg, rgba(0,212,255,.16), rgba(124,58,237,.18));
+  color:#fff; border:1px solid rgba(0,212,255,.28); border-radius:999px; padding:12px 16px;
+  cursor:pointer; transition:transform .18s ease, border-color .18s ease, background .18s ease;
+}
+.mode-btn:hover{transform:translateY(-1px); border-color:rgba(0,212,255,.55)}
+.progress-shell{
+  position:absolute; left:0; right:0; bottom:0; height:4px; background:rgba(255,255,255,.05);
+}
+.progress-bar{
+  height:100%; width:0%;
+  background:linear-gradient(90deg, var(--cyan), var(--green));
+  transition:width 1s linear, background .2s ease;
+}
+.progress-bar.warn{background:linear-gradient(90deg, var(--amber), #fbbf24)}
+.progress-bar.danger{background:linear-gradient(90deg, var(--red), #fb7185)}
+.layout{
+  display:grid; grid-template-columns:var(--sidebar-w) minmax(0,1fr);
+  gap:24px; padding:calc(var(--topbar-h) + 20px) 20px 40px;
+}
+.sidebar{
+  position:sticky; top:calc(var(--topbar-h) + 16px); align-self:start;
+  max-height:calc(100vh - var(--topbar-h) - 32px); overflow:auto;
+  background:rgba(17,24,39,.76); border:1px solid var(--border);
+  border-radius:22px; padding:14px; box-shadow:var(--shadow);
+}
+.sidebar h2{margin:4px 8px 14px; font-size:.88rem; color:var(--muted); letter-spacing:.06em; text-transform:uppercase}
+.nav-list{display:flex; flex-direction:column; gap:8px}
+.nav-link{
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  padding:12px 12px; border-radius:14px; color:#d7e4ff; background:rgba(255,255,255,.02);
+  border:1px solid transparent; transition:background .18s ease, border-color .18s ease, transform .18s ease;
+}
+.nav-link:hover{background:rgba(255,255,255,.05); border-color:rgba(0,212,255,.18); transform:translateX(2px)}
+.badge{
+  min-width:36px; text-align:center; font-family:"JetBrains Mono", monospace; font-size:.78rem;
+  color:var(--cyan); background:rgba(0,212,255,.08); border:1px solid rgba(0,212,255,.15); padding:4px 8px; border-radius:999px;
+}
+.main{min-width:0}
+.hero{
+  background:linear-gradient(180deg, rgba(26,34,53,.95), rgba(17,24,39,.96));
+  border:1px solid var(--border); border-radius:24px; padding:22px 24px; box-shadow:var(--shadow); margin-bottom:22px;
+}
+.hero h1{margin:0 0 8px; font-size:1.55rem}
+.hero p{margin:8px 0 0; color:var(--muted); line-height:1.6}
+.legend{display:flex; flex-wrap:wrap; gap:10px; margin-top:14px}
+.pill{
+  font-family:"JetBrains Mono", monospace; font-size:.78rem;
+  padding:8px 10px; border-radius:999px; border:1px solid var(--border); background:rgba(255,255,255,.03); color:#d9e6ff;
+}
+.section{
+  margin-bottom:22px; background:rgba(17,24,39,.82); border:1px solid var(--border); border-radius:24px;
+  box-shadow:var(--shadow); overflow:hidden;
+}
+.section-head{
+  padding:18px 20px; display:flex; align-items:flex-start; justify-content:space-between; gap:16px;
+  background:linear-gradient(135deg, rgba(0,212,255,.08), rgba(124,58,237,.08));
+  border-bottom:1px solid var(--border);
+}
+.section-head h2{margin:0; font-size:1.05rem}
+.section-head p{margin:6px 0 0; color:var(--muted); line-height:1.5}
+.cards{padding:14px}
+.card{
+  background:var(--surface-2); border:1px solid rgba(255,255,255,.06); border-radius:18px; overflow:hidden; margin-bottom:12px;
+}
+.card:last-child{margin-bottom:0}
+.q-btn{
+  width:100%; text-align:left; background:transparent; color:inherit; border:0; cursor:pointer; padding:0;
+}
+.q-row{
+  display:grid; grid-template-columns:6px 1fr auto; gap:14px; align-items:center;
+  padding:16px 18px; min-height:64px;
+}
+.q-bar{align-self:stretch; border-radius:999px; background:linear-gradient(180deg, var(--cyan), var(--purple))}
+.q-text{font-weight:800; line-height:1.45}
+.q-meta{font-family:"JetBrains Mono", monospace; font-size:.76rem; color:var(--muted)}
+.answer{
+  display:grid; grid-template-rows:0fr; transition:grid-template-rows .26s ease, opacity .26s ease;
+  opacity:.92;
+}
+.answer.open{grid-template-rows:1fr; opacity:1}
+.answer-inner{overflow:hidden}
+.answer-body{
+  padding:0 22px 18px 38px; color:#c8d6f3; line-height:1.7;
+}
+.answer-body p{margin:0 0 10px}
+.answer-body ul{margin:0 0 10px 18px; padding:0}
+.answer-body li{margin:4px 0}
+.recall-hint{
+  display:none; margin-top:6px; font-size:.78rem; color:rgba(232,238,252,.42); font-family:"JetBrains Mono", monospace;
+}
+.recall .card:not(.open) .recall-hint{display:block}
+.recall .answer:not(.open){opacity:.55}
+pre{
+  margin:12px 0 0; background:#050810; border:1px solid rgba(255,255,255,.08);
+  border-radius:16px; padding:14px 16px; overflow:auto;
+}
+code{font-family:"JetBrains Mono", monospace; font-size:.86rem; color:#dbeafe}
+.kw{color:#c084fc}
+.type{color:#67e8f9}
+.fn{color:#fbbf24}
+.str{color:#86efac}
+.cm{color:#6b7280}
+.footer-note{
+  color:var(--muted); font-size:.82rem; margin-top:22px; padding:0 6px;
+}
+.index-grid{
+  display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:16px; margin-top:14px;
+}
+.index-card{
+  display:block; padding:18px; border-radius:20px; background:linear-gradient(180deg, rgba(17,24,39,.98), rgba(26,34,53,.98));
+  border:1px solid var(--border); box-shadow:var(--shadow); color:#fff;
+}
+.index-card h3{margin:0 0 8px}
+.index-card p{margin:0 0 10px; color:var(--muted); line-height:1.55}
+.index-card .badge{display:inline-block}
+@media (max-width: 980px){
+  :root{--sidebar-w:100%}
+  .layout{grid-template-columns:1fr}
+  .sidebar{
+    position:sticky; top:calc(var(--topbar-h) + 10px); z-index:20;
+    display:block; white-space:nowrap; overflow:auto hidden;
+  }
+  .nav-list{display:flex; flex-direction:row; min-width:max-content}
+  .nav-link{min-width:220px}
+}
+@media (max-width: 720px){
+  :root{--topbar-h:112px}
+  .topbar-inner{grid-template-columns:1fr 1fr; align-items:start}
+  .timer-wrap{justify-self:start}
+  .mode-btn{justify-self:end}
+  .title{font-size:1rem}
+  .hero h1{font-size:1.25rem}
+  .q-row{grid-template-columns:6px 1fr; }
+  .q-meta{display:none}
+}
+</style>
 </head>
 <body>
-  <main class="container faq-shell">
-    <a class="faq-back" href="index.html">← Back to Important FAQ</a>
-    <section class="faq-card">
-      <div class="faq-eyebrow">Interview FAQ · 02</div>
-      <h1 class="faq-title">Spring & Microservices Sheet</h1>
-      <p class="faq-subtitle">Spring Boot, REST, dependency injection, service boundaries, and the architecture choices that matter in production.</p>
-      <div class='faq-section'><h2>What to focus on</h2><p>This sheet helps you connect Spring Boot internals with real service design decisions: DI, auto-configuration, web layers, persistence, security, and testing.</p><ul class='faq-list'><li>Explain why Spring uses proxies and how that changes transaction or AOP behavior.</li><li>Connect REST design with service communication and failure handling.</li><li>Review how JPA, transactions, and security fit into the runtime model.</li></ul></div><div class='faq-section'><h2>Study cue</h2><p>Use this after Java Core and before the AWS and backend reference sheets.</p></div>
-    </section>
-  </main>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="title-wrap">
+        <div class="title" id="pageTitle"></div>
+        <div class="subtitle" id="pageSubtitle"></div>
+      </div>
+      <div class="timer-wrap">
+        <div class="timer" id="timer">30:00</div>
+      </div>
+      <button id="modeBtn" class="mode-btn">SCAN MODE</button>
+    </div>
+    <div class="progress-shell"><div id="progressBar" class="progress-bar"></div></div>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <h2>Topic groups</h2>
+      <nav class="nav-list" id="nav"></nav>
+    </aside>
+
+    <main class="main">
+      <section class="hero">
+        <h1 id="heroTitle"></h1>
+        <p id="heroCopy"></p>
+        <div class="legend" id="legend"></div>
+      </section>
+
+      <div id="sections"></div>
+
+      <p class="footer-note">Built as a daily-review interview sheet. In scan mode everything stays open. In recall mode every prompt becomes a self-test card.</p>
+    </main>
+  </div>
+
+  <script>
+  const PAGE_DATA = {"pageTitle": "Interview Sheet 02 — Spring & Microservices", "pageSubtitle": "Daily review sheet • Spring Boot, REST, transactions, security, batch, resilience, architecture", "heroTitle": "Spring Boot, API design, and microservice patterns", "heroCopy": "Use this sheet before senior backend/full-stack interviews when you want the Spring answer to sound natural, architectural, and grounded in production trade-offs instead of pure theory.", "legend": ["Controllers → services → repos", "JWT / OAuth2", "Batch + resilience", "Architecture answers"], "sections": [{"id": "spring-architecture", "title": "Spring Boot architecture, auto-configuration, profiles, and app structure", "cards": [{"q": "Describe a recent Spring Boot architecture end-to-end", "a": "\n<p>A clean answer is: <strong>controller → service → repository/client</strong>. Controllers handle HTTP and validation, services contain business rules and transaction boundaries, repositories talk to the database, and external clients call other services or vendors.</p>\n<p>Cross-cutting concerns such as logging, correlation IDs, metrics, security filters, and exception mapping sit at the edges, not inside business logic.</p>\n"}, {"q": "How auto-configuration works and how to customize it safely", "a": "\n<p>Spring Boot uses classpath detection plus <code>@Conditional...</code> rules to create beans automatically. <code>@SpringBootApplication</code> combines <code>@Configuration</code>, <code>@EnableAutoConfiguration</code>, and <code>@ComponentScan</code>.</p>\n<p>Customize safely by providing explicit beans, using configuration properties, or excluding only the auto-configurations you truly need to replace.</p>\n"}, {"q": "Profiles, properties, YAML, and secrets", "a": "\n<p>Use environment-specific config through profiles, externalized properties, or config services. YAML is easier for nested structure; properties files are simpler for flat key-value config.</p>\n<p>Never hardcode secrets. Use Secrets Manager, SSM Parameter Store, Vault, or platform-native secret injection. Keep secret names in config, not secret values.</p>\n"}, {"q": "How do you structure a large Spring Boot service for maintainability?", "a": "\n<p>Group by domain or feature more than by technical layer once the codebase gets large. Keep DTOs and persistence entities separate. Hide external integrations behind interfaces or clients. Prefer cohesive modules with clear ownership over one giant “shared util” package.</p>\n"}], "blurb": "Use these to explain real services cleanly: structure, config, startup behavior, and operational shape."}, {"id": "spring-rest", "title": "REST API design, versioning, pagination, and compatibility", "cards": [{"q": "How do you design and version REST APIs well?", "a": "\n<p>Start from resources and business actions, not controller methods. Use nouns in URIs, HTTP verbs for intent, consistent status codes, and structured error payloads. Version explicitly when the contract changes in a breaking way, and keep older versions alive long enough for consumers to migrate.</p>\n<p>For zero-downtime evolution, add fields in a backward-compatible way, avoid repurposing old fields, and use feature flags or routing to phase traffic across versions.</p>\n"}, {"q": "PATCH semantics, batch endpoints, and large exports", "a": "\n<p>Use <code>PATCH</code> for partial updates where the client sends only changed fields. Validate patchability carefully so partial updates do not accidentally null out state.</p>\n<p>For batch endpoints, make per-item outcomes explicit, keep them idempotent when possible, and avoid making one bad item poison the whole request unless the business requires atomicity.</p>\n<p>For large exports, stream directly to the response instead of building the whole file in memory.</p>\n"}, {"q": "Pagination, filtering, sorting, and query design", "a": "\n<p>Expose pagination with page/size or cursor style, make sort fields explicit, and keep filtering predictable. For large datasets, cursor pagination is more stable than offset pagination.</p>\n<p>On the server side, push filtering and sorting down to the database when possible; don’t load thousands of rows into Java just to sort them there.</p>\n"}, {"q": "OpenAPI/Swagger and API governance", "a": "\n<p>Use OpenAPI to document schemas, examples, auth rules, error models, and version behavior. In larger organizations, governance matters: naming rules, error format standards, pagination conventions, and review gates keep APIs consistent across teams.</p>\n"}], "blurb": "Concise API-design answers for versioning, pagination, partial updates, and contract quality."}, {"id": "spring-data-tx", "title": "Persistence, transactions, JPA, JDBC, schema evolution, and caching", "cards": [{"q": "JPA vs JDBC template, and when to use each", "a": "\n<p><strong>JPA</strong> is great for typical CRUD, object mapping, and domain-driven persistence when relationships and lifecycle help more than they hurt.</p>\n<p><strong>JDBC</strong> or lower-level SQL is better when you need tight control over joins, batch writes, large-volume reads, vendor-specific SQL, or performance-critical paths.</p>\n<p>Strong interview phrasing: “I use JPA for productivity, but I’m not afraid to drop to explicit SQL where correctness or performance demands it.”</p>\n"}, {"q": "@Transactional pitfalls and transaction boundaries", "a": "\n<ul>\n<li>Only external Spring proxy calls trigger transactional advice; self-invocation does not.</li>\n<li>Choose isolation based on anomalies you can tolerate.</li>\n<li>Keep transactions around the business write path, not around remote calls.</li>\n<li>Use read-only transactions for read paths when supported, but don’t oversell their impact.</li>\n</ul>\n<p>For batch workflows, commit in chunks so failures do not roll back hours of work.</p>\n"}, {"q": "N+1 queries, indexes, schema migrations, and soft delete", "a": "\n<p>Fix N+1 with fetch joins, entity graphs, explicit bulk queries, or DTO projections. Add indexes based on actual query patterns, not guesswork.</p>\n<p>For schema evolution, use Flyway or Liquibase with backward-compatible steps: add new columns first, dual-read or dual-write if needed, then remove old structure later.</p>\n<p>Soft delete is useful when auditability matters, but it complicates queries and indexes, so mention that trade-off.</p>\n"}, {"q": "Caching in Spring services", "a": "\n<p>Cache only read-heavy, stable, and high-value calls. Define TTL and invalidation clearly. Local cache is fastest but per-node; Redis gives shared state across nodes. Avoid caching data that is highly volatile unless staleness is acceptable.</p>\n"}], "blurb": "Persistence and transaction questions showed up heavily across the senior/principal banks."}, {"id": "spring-security", "title": "Spring Security, JWT/OAuth2, scopes, and inter-service auth", "cards": [{"q": "How does Spring Security secure REST APIs with JWT/OAuth2?", "a": "\n<p>The filter chain authenticates the request first, then authorization rules decide what the caller can do. In a JWT-based setup, a resource server validates signature, issuer, audience, expiry, and claims, then turns claims/scopes/roles into authorities.</p>\n<p>Use coarse URL rules plus method-level rules like <code>@PreAuthorize</code> for sensitive endpoints.</p>\n"}, {"q": "Scopes, roles, claims, PKCE, mTLS, and CSRF", "a": "\n<p><strong>Scopes</strong> describe what the token can access. <strong>Roles</strong> are often application-level groupings. <strong>Claims</strong> carry identity and context.</p>\n<p><strong>PKCE</strong> is for public clients such as SPAs/mobile apps where a client secret is not safe. <strong>mTLS</strong> is strong service-to-service authentication in controlled environments.</p>\n<p>For stateless token-based APIs, CSRF risk is different from cookie-session apps; still protect browser flows appropriately and never skip core input validation or output encoding.</p>\n"}, {"q": "Idempotency keys and fine-grained authorization", "a": "\n<p>For payment or transfer style APIs, require an idempotency key on writes, store the first result atomically, and return the original result for retries.</p>\n<p>Fine-grained auth means checking both the caller’s scope/role and whether they are allowed to act on <em>this specific resource</em>, not just this endpoint.</p>\n"}], "blurb": "Security answers that sound backend-heavy instead of generic buzzwords."}, {"id": "spring-validation", "title": "Validation, exception handling, observability, and cross-cutting concerns", "cards": [{"q": "Bean Validation and meaningful error handling", "a": "\n<p>Use Bean Validation for field and object-level rules, then translate failures into a structured JSON error model: error code, human-safe message, field details, correlation ID, and optionally retryability.</p>\n<p>Use <code>@ControllerAdvice</code> for global exception mapping. Do not leak stack traces, SQL, or vendor internals to clients.</p>\n"}, {"q": "AOP, interceptors, filters, correlation IDs, and auditing", "a": "\n<p>Use <strong>filters</strong> for raw HTTP concerns like headers and correlation IDs, <strong>interceptors</strong> for MVC request handling hooks, and <strong>AOP</strong> for method-level cross-cutting concerns such as timing, audit hooks, or transaction logging.</p>\n<p>In distributed systems, propagate a correlation ID through logs, metrics, and downstream calls so one user request can be followed end-to-end.</p>\n"}, {"q": "Actuator, health checks, metrics, and OpenTelemetry", "a": "\n<p>Actuator gives health, info, metrics, and readiness/liveness style endpoints. In production, secure them and expose only what operators need.</p>\n<p>Good observability combines <strong>logs + metrics + traces</strong>. Health endpoints tell you if dependencies are reachable; metrics tell you if the system is healthy under load; traces tell you where latency went.</p>\n"}], "blurb": "Cross-cutting concerns that often separate strong senior answers from average ones."}, {"id": "spring-batch", "title": "Spring Batch, restartability, orchestration, and long-running work", "cards": [{"q": "How Spring Batch works, and how it becomes fault tolerant", "a": "\n<p>Spring Batch is built around <strong>reader → processor → writer</strong> with chunk-based commits. The <code>JobRepository</code> stores execution state, which is what makes restartability and operational visibility possible.</p>\n<p>Fault tolerance comes from chunk commits, skip/retry policies, step restart state, and isolating bad records instead of losing the whole job.</p>\n"}, {"q": "Chunk size, parallel steps, job parameters, and restart-from-last-commit", "a": "\n<p>Chunk size is a throughput vs rollback-size trade-off. Larger chunks reduce overhead but increase redo work on failure.</p>\n<p>Job parameters identify a job instance and are effectively immutable for that run. To restart from the last committed chunk, the framework uses persisted execution metadata in the job repository.</p>\n<p>For parallelization, partition by an independent key range or file partition so workers do not step on each other.</p>\n"}, {"q": "Long-running operations in Spring APIs", "a": "\n<p>Do not keep a request thread blocked for minutes if you can avoid it. Better patterns are async submission + status polling, callback/webhook, message-driven processing, or streaming progress events where appropriate.</p>\n"}], "blurb": "Spring Batch and long-running-work patterns from the attached enterprise question sets."}, {"id": "spring-resilience", "title": "Resilience patterns, sagas, outbox, retries, and graceful degradation", "cards": [{"q": "Retries, timeouts, circuit breakers, bulkheads, and fallback", "a": "\n<p>Set timeouts first. Then add retries only for transient failures, with bounded attempts and backoff + jitter. Use circuit breakers to fail fast when a dependency is unhealthy, and bulkheads to stop one failing path from exhausting all shared resources.</p>\n<p>Fallback should be deliberate: cached data, queued work, partial response, or a safe rejection. Never hide critical write failures behind fake success.</p>\n"}, {"q": "Distributed transactions, saga, orchestration vs choreography", "a": "\n<p>Across microservices, avoid two-phase commit unless you absolutely need it. Use a <strong>saga</strong>: each step commits locally, and compensating actions undo business effects when a later step fails.</p>\n<p><strong>Orchestration</strong> has a coordinator. <strong>Choreography</strong> is event-driven with services reacting to each other. Orchestration is easier to reason about; choreography reduces central coupling but can become harder to trace.</p>\n"}, {"q": "Transactional outbox and exactly-once business effects", "a": "\n<p>The outbox pattern writes business data and an event record in the same DB transaction. A relay then publishes the outbox rows to Kafka or another broker. That avoids “DB commit succeeded but publish failed” inconsistencies.</p>\n<p>For exactly-once <em>business effects</em>, combine outbox on the producer side with idempotent consumption on the consumer side.</p>\n"}], "blurb": "The recurring reliability patterns: retry, circuit breaker, outbox, idempotency, and saga."}, {"id": "spring-design", "title": "Microservices design, modernization, API gateway, and platform-level thinking", "cards": [{"q": "Preventing tight coupling and wrapping legacy systems", "a": "\n<p>Use domain boundaries, stable contracts, asynchronous events where useful, and adapter layers around legacy SOAP/mainframe/vendor systems. Keep canonical domain models inside your service and translate at the edges.</p>\n<p>That is how you modernize incrementally: a strangler pattern outside, not a big-bang rewrite.</p>\n"}, {"q": "API gateway, feature flags, multi-tenancy, and rollout design", "a": "\n<p>An API gateway centralizes auth, throttling, routing, observability, and sometimes protocol translation. Keep business logic behind it, not inside it.</p>\n<p>Feature flags let you do canary rollout, dark launch, or safe fallback. For multi-tenancy, call out tenant isolation, per-tenant limits, config separation, and auditability.</p>\n"}, {"q": "How to answer ‘design a scalable microservice platform’ naturally", "a": "\n<p>Start with core flows and non-functional requirements: traffic, latency, failure modes, auditability, compliance, and observability. Then explain:</p>\n<ul>\n<li>stateless service layer behind load balancing</li>\n<li>durable data store with migration strategy</li>\n<li>asynchronous events for decoupling and recovery</li>\n<li>timeouts/retries/circuit breakers around dependencies</li>\n<li>metrics, traces, logs, and runbooks for operations</li>\n</ul>\n<p>Interviewers want trade-offs and failure handling, not only boxes and arrows.</p>\n"}], "blurb": "When the interviewer zooms out from coding to architecture and modernization."}]};
+  
+const TOTAL_SECONDS = 30 * 60;
+let secondsLeft = TOTAL_SECONDS;
+let recallMode = false;
+
+function formatTime(sec){
+  const m = String(Math.floor(sec / 60)).padStart(2,'0');
+  const s = String(sec % 60).padStart(2,'0');
+  return `${m}:${s}`;
+}
+
+function buildNav(sections){
+  const nav = document.getElementById('nav');
+  nav.innerHTML = '';
+  sections.forEach(section => {
+    const a = document.createElement('a');
+    a.href = `#${section.id}`;
+    a.className = 'nav-link';
+    a.innerHTML = `<span>${section.title}</span><span class="badge">${section.cards.length}</span>`;
+    nav.appendChild(a);
+  });
+}
+
+function createCard(card){
+  const article = document.createElement('article');
+  article.className = 'card open';
+
+  const btn = document.createElement('button');
+  btn.className = 'q-btn';
+  btn.type = 'button';
+
+  const qrow = document.createElement('div');
+  qrow.className = 'q-row';
+  qrow.innerHTML = `
+    <div class="q-bar"></div>
+    <div>
+      <div class="q-text">${card.q}</div>
+      <div class="recall-hint">click to reveal</div>
+    </div>
+    <div class="q-meta">${card.meta || ''}</div>
+  `;
+  btn.appendChild(qrow);
+
+  const answer = document.createElement('div');
+  answer.className = 'answer open';
+  answer.innerHTML = `<div class="answer-inner"><div class="answer-body">${card.a}</div></div>`;
+
+  btn.addEventListener('click', () => {
+    if(!recallMode) return;
+    article.classList.toggle('open');
+    answer.classList.toggle('open');
+  });
+
+  article.appendChild(btn);
+  article.appendChild(answer);
+  return article;
+}
+
+function renderSections(payload){
+  buildNav(payload.sections);
+  const root = document.getElementById('sections');
+  root.innerHTML = '';
+  payload.sections.forEach(section => {
+    const sec = document.createElement('section');
+    sec.className = 'section';
+    sec.id = section.id;
+    sec.innerHTML = `
+      <div class="section-head">
+        <div>
+          <h2>${section.title}</h2>
+          <p>${section.blurb || ''}</p>
+        </div>
+        <span class="badge">${section.cards.length} prompts</span>
+      </div>
+      <div class="cards"></div>
+    `;
+    const cardsEl = sec.querySelector('.cards');
+    section.cards.forEach(card => cardsEl.appendChild(createCard(card)));
+    root.appendChild(sec);
+  });
+}
+
+function setMode(nextRecall){
+  recallMode = nextRecall;
+  document.body.classList.toggle('recall', recallMode);
+  const btn = document.getElementById('modeBtn');
+  btn.textContent = recallMode ? 'RECALL MODE' : 'SCAN MODE';
+  document.querySelectorAll('.card').forEach(card => {
+    const answer = card.querySelector('.answer');
+    if(recallMode){
+      card.classList.remove('open');
+      answer.classList.remove('open');
+    } else {
+      card.classList.add('open');
+      answer.classList.add('open');
+    }
+  });
+}
+
+function initTimer(){
+  const timer = document.getElementById('timer');
+  const bar = document.getElementById('progressBar');
+  timer.textContent = formatTime(secondsLeft);
+  const tick = () => {
+    timer.textContent = formatTime(secondsLeft);
+    const elapsed = TOTAL_SECONDS - secondsLeft;
+    bar.style.width = `${(elapsed / TOTAL_SECONDS) * 100}%`;
+    timer.classList.remove('warn','danger');
+    bar.classList.remove('warn','danger');
+
+    if(secondsLeft <= 60){
+      timer.classList.add('danger');
+      bar.classList.add('danger');
+    } else if(secondsLeft <= 300){
+      timer.classList.add('warn');
+      bar.classList.add('warn');
+    }
+    if(secondsLeft > 0) secondsLeft -= 1;
+  };
+  tick();
+  setInterval(tick, 1000);
+}
+
+function hydratePage(payload){
+  document.getElementById('pageTitle').textContent = payload.pageTitle;
+  document.getElementById('pageSubtitle').textContent = payload.pageSubtitle;
+  document.getElementById('heroTitle').textContent = payload.heroTitle;
+  document.getElementById('heroCopy').innerHTML = payload.heroCopy;
+  document.getElementById('legend').innerHTML = (payload.legend || []).map(x => `<span class="pill">${x}</span>`).join('');
+  renderSections(payload);
+  document.getElementById('modeBtn').addEventListener('click', () => setMode(!recallMode));
+  setMode(false);
+  initTimer();
+}
+
+  hydratePage(PAGE_DATA);
+  </script>
 </body>
 </html>

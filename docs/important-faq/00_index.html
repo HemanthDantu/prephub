@@ -1,45 +1,275 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="../styles.css" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Interview Study Sheets — Index</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;500;700;800&display=swap" rel="stylesheet">
   <style>
-    .faq-shell{padding:40px 0 64px}
-    .faq-card{background:var(--surface-1);border:1px solid var(--border);border-radius:24px;padding:28px;box-shadow:var(--shadow-card)}
-    .faq-eyebrow{font-family:var(--font-mono);color:var(--amber);text-transform:uppercase;letter-spacing:.12em;font-size:.78rem;margin-bottom:10px}
-    .faq-title{margin:0 0 10px;font-size:2rem}
-    .faq-subtitle{color:var(--text-2);line-height:1.7;margin-bottom:18px}
-    .faq-back{display:inline-flex;align-items:center;gap:8px;color:var(--cyan);margin-bottom:20px}
-    .faq-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:18px}
-    .faq-link{display:block;background:var(--surface-2);border:1px solid var(--border);border-radius:18px;padding:16px;color:var(--text-1);transition:transform .15s ease,border-color .15s ease}
-    .faq-link:hover{transform:translateY(-2px);border-color:rgba(0,212,255,.28)}
-    .faq-link h3{margin:0 0 8px;font-size:1rem}
-    .faq-link p{margin:0;color:var(--text-2);line-height:1.55}
-    .faq-list{margin:14px 0 0;padding-left:18px;color:var(--text-2);line-height:1.7}
-    .faq-list li{margin:6px 0}
-  </style>
+:root{
+  --bg:#0a0e1a;
+  --surface:#111827;
+  --surface-2:#1a2235;
+  --text:#e8eefc;
+  --muted:#9fb1d1;
+  --cyan:#00d4ff;
+  --purple:#7c3aed;
+  --green:#10b981;
+  --amber:#f59e0b;
+  --red:#ef4444;
+  --border:rgba(255,255,255,.08);
+  --shadow:0 12px 32px rgba(0,0,0,.28);
+  --radius:18px;
+  --topbar-h:84px;
+  --sidebar-w:280px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  font-family:"Syne",system-ui,sans-serif;
+  background:
+    radial-gradient(circle at top right, rgba(124,58,237,.18), transparent 28%),
+    radial-gradient(circle at top left, rgba(0,212,255,.12), transparent 26%),
+    var(--bg);
+  color:var(--text);
+}
+a{color:var(--cyan); text-decoration:none}
+a:hover{text-decoration:underline}
+.topbar{
+  position:fixed; inset:0 0 auto 0; height:var(--topbar-h);
+  backdrop-filter: blur(14px);
+  background:rgba(10,14,26,.84);
+  border-bottom:1px solid var(--border);
+  z-index:50;
+}
+.topbar-inner{
+  height:100%; display:grid; grid-template-columns:minmax(240px,1fr) auto auto; gap:16px;
+  align-items:center; padding:14px 20px;
+}
+.title-wrap{min-width:0}
+.title{font-size:1.15rem; font-weight:800; letter-spacing:.02em; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.subtitle{font-size:.78rem; color:var(--muted); margin-top:4px}
+.timer-wrap{display:flex; align-items:center; gap:10px}
+.timer{
+  font-family:"JetBrains Mono", monospace;
+  font-size:1rem; padding:10px 14px; border-radius:999px; background:var(--surface); border:1px solid var(--border);
+  box-shadow:var(--shadow);
+}
+.timer.warn{color:var(--amber); border-color:rgba(245,158,11,.4)}
+.timer.danger{color:#fff; background:rgba(239,68,68,.18); border-color:rgba(239,68,68,.45); animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.35)}50%{box-shadow:0 0 0 10px rgba(239,68,68,0)}}
+.mode-btn{
+  font-family:"JetBrains Mono", monospace; font-size:.86rem;
+  background:linear-gradient(135deg, rgba(0,212,255,.16), rgba(124,58,237,.18));
+  color:#fff; border:1px solid rgba(0,212,255,.28); border-radius:999px; padding:12px 16px;
+  cursor:pointer; transition:transform .18s ease, border-color .18s ease, background .18s ease;
+}
+.mode-btn:hover{transform:translateY(-1px); border-color:rgba(0,212,255,.55)}
+.progress-shell{
+  position:absolute; left:0; right:0; bottom:0; height:4px; background:rgba(255,255,255,.05);
+}
+.progress-bar{
+  height:100%; width:0%;
+  background:linear-gradient(90deg, var(--cyan), var(--green));
+  transition:width 1s linear, background .2s ease;
+}
+.progress-bar.warn{background:linear-gradient(90deg, var(--amber), #fbbf24)}
+.progress-bar.danger{background:linear-gradient(90deg, var(--red), #fb7185)}
+.layout{
+  display:grid; grid-template-columns:var(--sidebar-w) minmax(0,1fr);
+  gap:24px; padding:calc(var(--topbar-h) + 20px) 20px 40px;
+}
+.sidebar{
+  position:sticky; top:calc(var(--topbar-h) + 16px); align-self:start;
+  max-height:calc(100vh - var(--topbar-h) - 32px); overflow:auto;
+  background:rgba(17,24,39,.76); border:1px solid var(--border);
+  border-radius:22px; padding:14px; box-shadow:var(--shadow);
+}
+.sidebar h2{margin:4px 8px 14px; font-size:.88rem; color:var(--muted); letter-spacing:.06em; text-transform:uppercase}
+.nav-list{display:flex; flex-direction:column; gap:8px}
+.nav-link{
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  padding:12px 12px; border-radius:14px; color:#d7e4ff; background:rgba(255,255,255,.02);
+  border:1px solid transparent; transition:background .18s ease, border-color .18s ease, transform .18s ease;
+}
+.nav-link:hover{background:rgba(255,255,255,.05); border-color:rgba(0,212,255,.18); transform:translateX(2px)}
+.badge{
+  min-width:36px; text-align:center; font-family:"JetBrains Mono", monospace; font-size:.78rem;
+  color:var(--cyan); background:rgba(0,212,255,.08); border:1px solid rgba(0,212,255,.15); padding:4px 8px; border-radius:999px;
+}
+.main{min-width:0}
+.hero{
+  background:linear-gradient(180deg, rgba(26,34,53,.95), rgba(17,24,39,.96));
+  border:1px solid var(--border); border-radius:24px; padding:22px 24px; box-shadow:var(--shadow); margin-bottom:22px;
+}
+.hero h1{margin:0 0 8px; font-size:1.55rem}
+.hero p{margin:8px 0 0; color:var(--muted); line-height:1.6}
+.legend{display:flex; flex-wrap:wrap; gap:10px; margin-top:14px}
+.pill{
+  font-family:"JetBrains Mono", monospace; font-size:.78rem;
+  padding:8px 10px; border-radius:999px; border:1px solid var(--border); background:rgba(255,255,255,.03); color:#d9e6ff;
+}
+.section{
+  margin-bottom:22px; background:rgba(17,24,39,.82); border:1px solid var(--border); border-radius:24px;
+  box-shadow:var(--shadow); overflow:hidden;
+}
+.section-head{
+  padding:18px 20px; display:flex; align-items:flex-start; justify-content:space-between; gap:16px;
+  background:linear-gradient(135deg, rgba(0,212,255,.08), rgba(124,58,237,.08));
+  border-bottom:1px solid var(--border);
+}
+.section-head h2{margin:0; font-size:1.05rem}
+.section-head p{margin:6px 0 0; color:var(--muted); line-height:1.5}
+.cards{padding:14px}
+.card{
+  background:var(--surface-2); border:1px solid rgba(255,255,255,.06); border-radius:18px; overflow:hidden; margin-bottom:12px;
+}
+.card:last-child{margin-bottom:0}
+.q-btn{
+  width:100%; text-align:left; background:transparent; color:inherit; border:0; cursor:pointer; padding:0;
+}
+.q-row{
+  display:grid; grid-template-columns:6px 1fr auto; gap:14px; align-items:center;
+  padding:16px 18px; min-height:64px;
+}
+.q-bar{align-self:stretch; border-radius:999px; background:linear-gradient(180deg, var(--cyan), var(--purple))}
+.q-text{font-weight:800; line-height:1.45}
+.q-meta{font-family:"JetBrains Mono", monospace; font-size:.76rem; color:var(--muted)}
+.answer{
+  display:grid; grid-template-rows:0fr; transition:grid-template-rows .26s ease, opacity .26s ease;
+  opacity:.92;
+}
+.answer.open{grid-template-rows:1fr; opacity:1}
+.answer-inner{overflow:hidden}
+.answer-body{
+  padding:0 22px 18px 38px; color:#c8d6f3; line-height:1.7;
+}
+.answer-body p{margin:0 0 10px}
+.answer-body ul{margin:0 0 10px 18px; padding:0}
+.answer-body li{margin:4px 0}
+.recall-hint{
+  display:none; margin-top:6px; font-size:.78rem; color:rgba(232,238,252,.42); font-family:"JetBrains Mono", monospace;
+}
+.recall .card:not(.open) .recall-hint{display:block}
+.recall .answer:not(.open){opacity:.55}
+pre{
+  margin:12px 0 0; background:#050810; border:1px solid rgba(255,255,255,.08);
+  border-radius:16px; padding:14px 16px; overflow:auto;
+}
+code{font-family:"JetBrains Mono", monospace; font-size:.86rem; color:#dbeafe}
+.kw{color:#c084fc}
+.type{color:#67e8f9}
+.fn{color:#fbbf24}
+.str{color:#86efac}
+.cm{color:#6b7280}
+.footer-note{
+  color:var(--muted); font-size:.82rem; margin-top:22px; padding:0 6px;
+}
+.index-grid{
+  display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:16px; margin-top:14px;
+}
+.index-card{
+  display:block; padding:18px; border-radius:20px; background:linear-gradient(180deg, rgba(17,24,39,.98), rgba(26,34,53,.98));
+  border:1px solid var(--border); box-shadow:var(--shadow); color:#fff;
+}
+.index-card h3{margin:0 0 8px}
+.index-card p{margin:0 0 10px; color:var(--muted); line-height:1.55}
+.index-card .badge{display:inline-block}
+@media (max-width: 980px){
+  :root{--sidebar-w:100%}
+  .layout{grid-template-columns:1fr}
+  .sidebar{
+    position:sticky; top:calc(var(--topbar-h) + 10px); z-index:20;
+    display:block; white-space:nowrap; overflow:auto hidden;
+  }
+  .nav-list{display:flex; flex-direction:row; min-width:max-content}
+  .nav-link{min-width:220px}
+}
+@media (max-width: 720px){
+  :root{--topbar-h:112px}
+  .topbar-inner{grid-template-columns:1fr 1fr; align-items:start}
+  .timer-wrap{justify-self:start}
+  .mode-btn{justify-self:end}
+  .title{font-size:1rem}
+  .hero h1{font-size:1.25rem}
+  .q-row{grid-template-columns:6px 1fr; }
+  .q-meta{display:none}
+}
+</style>
 </head>
 <body>
-  <main class="container faq-shell">
-    <section class="faq-card">
-      <div class="faq-eyebrow">Important FAQ</div>
-      <h1 class="faq-title">Interview Study Sheets Index</h1>
-      <p class="faq-subtitle">This bundle groups the highest-signal review sheets into one place. Use it as a fast launchpad into Java, Spring, data, cloud, frontend, behavioral, and the master reference sheet.</p>
-      <div class="faq-grid">
-        <a class="faq-link" href="01_java_core_sheet.html"><h3>01 — Java Core Sheet</h3><p>Core Java review with the highest-frequency concepts.</p></a>
-        <a class="faq-link" href="02_spring_microservices_sheet.html"><h3>02 — Spring &amp; Microservices</h3><p>Spring Boot, REST, and microservices interview coverage.</p></a>
-        <a class="faq-link" href="03_data_kafka_cloud_sheet.html"><h3>03 — Data, Kafka &amp; Cloud</h3><p>Data, messaging, cloud, and infrastructure notes.</p></a>
-        <a class="faq-link" href="04_frontend_behavioral_assessment_sheet.html"><h3>04 — Frontend &amp; Behavioral</h3><p>Frontend concepts and assessment story prompts.</p></a>
-        <a class="faq-link" href="05_source_prompt_vault.html"><h3>05 — Source Prompt Vault</h3><p>Source prompts and content-generation notes.</p></a>
-        <a class="faq-link" href="master_interview_reference_sheet.html"><h3>Master Reference</h3><p>The canonical merged reference sheet for quick revision.</p></a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="title-wrap">
+        <div class="title">Interview Study Sheets</div>
+        <div class="subtitle">Index • all generated HTML reference sheets</div>
       </div>
-      <ul class="faq-list">
-        <li>Each sheet is a standalone page and no longer redirects back to this index.</li>
-        <li>The pages stay within the FAQ folder so GitHub Pages can resolve them cleanly.</li>
-        <li>Use the master sheet when you want a single high-level revision pass.</li>
-      </ul>
-    </section>
-  </main>
+      <div class="timer-wrap">
+        <div class="timer">READY</div>
+      </div>
+      <a class="mode-btn" href="01_java_core_sheet.html">OPEN FIRST SHEET</a>
+    </div>
+    <div class="progress-shell"><div class="progress-bar" style="width:100%"></div></div>
+  </header>
+
+  <div class="layout" style="grid-template-columns:1fr;">
+    <main class="main">
+      <section class="hero">
+        <h1>Organized into focused daily-review files</h1>
+        <p>I split the material into focused sheets instead of one giant file so the content stays skimmable and the recall mode remains useful. I also added a separate source vault so the original prompts are preserved instead of being lost during cleanup and deduplication.</p>
+        <div class="legend">
+          <span class="pill">Scan mode</span>
+          <span class="pill">Recall mode</span>
+          <span class="pill">30-minute timer</span>
+          <span class="pill">Dark theme</span>
+          <span class="pill">Corrected inaccuracies</span>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div>
+            <h2>Main sheets</h2>
+            <p>Start with the focused sheets. Use the source vault only when you want to make sure every source prompt is still represented.</p>
+          </div>
+          <span class="badge">5 files</span>
+        </div>
+        <div class="cards">
+          <div class="index-grid">
+            <a class="index-card" href="01_java_core_sheet.html">
+              <h3>01 — Java Core</h3>
+              <p>Collections, OOP, streams, concurrency, JVM, caching, and core coding exercises.</p>
+              <span class="badge">Java</span>
+            </a>
+            <a class="index-card" href="02_spring_microservices_sheet.html">
+              <h3>02 — Spring &amp; Microservices</h3>
+              <p>Spring Boot architecture, REST design, transactions, security, batch, resilience, and system design.</p>
+              <span class="badge">Spring</span>
+            </a>
+            <a class="index-card" href="03_data_kafka_cloud_sheet.html">
+              <h3>03 — Data, Kafka, Cloud</h3>
+              <p>Kafka, AWS, Kubernetes, CI/CD, Postgres, DynamoDB, SQL, Snowflake, Oracle, and migration debugging.</p>
+              <span class="badge">Platform</span>
+            </a>
+            <a class="index-card" href="04_frontend_behavioral_assessment_sheet.html">
+              <h3>04 — Frontend, Behavioral, Assessment</h3>
+              <p>Angular, JavaScript/HTTP, polished STAR answers, and a corrected key for the PDF assessment.</p>
+              <span class="badge">Mixed</span>
+            </a>
+            <a class="index-card" href="05_source_prompt_vault.html">
+              <h3>05 — Source Prompt Vault</h3>
+              <p>Coverage file containing the original prompts grouped by source file and cross-linked to the focused sheets.</p>
+              <span class="badge">Coverage</span>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <p class="footer-note">If you later want this merged into one single master HTML with deeper subsections, this structure can be collapsed cleanly without rebuilding the content.</p>
+    </main>
+  </div>
 </body>
 </html>
