@@ -78,7 +78,7 @@ const SITE_DATA = {
       topicId:    'important-faq',
       topicTitle: 'Important FAQ',
       title:      'Master Interview Reference Sheet',
-      path:       'important-faq/master_interview_reference_sheet.html',
+      path:       'important-faq/Master Interview Reference Sheet.html',
       badge:      'Reference',
       badgeColor: 'amber'
     }
@@ -800,7 +800,7 @@ const SITE_DATA = {
               difficulty: 'advanced',
               time:       '45 min',
               tags:       ['reference', 'master', 'Guruji'],
-              file:       'master_interview_reference_sheet.html',
+              file:       'Master Interview Reference Sheet.html',
               status:     'available',
               featured:   true
             }
